@@ -1,0 +1,2 @@
+41616	SNP probes in this design.
+20363	CGH probes in this design.
