@@ -67,74 +67,74 @@ then
 	rm $projectDirectory"matlab.final_figs.log";
 	echo "\tmatlat.final_figs.log" >> $logName;
 fi
-if [ -f $projectDirectory"fig.ChARM_test.5.eps" ]
-then
-	rm $projectDirectory"fig.ChARM_test.5.eps";
-	echo "\tfig.ChARM_test.5.eps" >> $logName;
-fi
-if [ -f $projectDirectory"fig.ChARM_test.4.eps" ]
-then
-	rm $projectDirectory"fig.ChARM_test.4.eps";
-	echo "\tfig.ChARM_test.4.eps" >> $logName;
-fi
-if [ -f $projectDirectory"fig.ChARM_test.3.eps" ]
-then
-	rm $projectDirectory"fig.ChARM_test.3.eps";
-	echo "\tfig.ChARM_test.3.eps" >> $logName;
-fi
-if [ -f $projectDirectory"fig.ChARM_test.2.eps" ]
-then
-	rm $projectDirectory"fig.ChARM_test.2.eps";
-	echo "\tfig.ChARM_test.2.eps" >> $logName;
-fi
-if [ -f $projectDirectory"fig.ChARM_test.1.eps" ]
-then
-	rm $projectDirectory"fig.ChARM_test.1.eps";
-	echo "\tfig.ChARM_test.1.eps" >> $logName;
-fi
 if [ -f $projectDirectory"matlab.SNP_analysis.log" ]
 then
 	rm $projectDirectory"matlab.SNP_analysis.log";
 	echo "\tmatlab.SNP_analysis.log" >> $logName;
 fi
+if [ -f $projectDirectory"fig.ChARM_test.5.eps" ]
+then
+#	rm $projectDirectory"fig.ChARM_test.5.eps";
+	echo "\tfig.ChARM_test.5.eps" >> $logName;
+fi
+if [ -f $projectDirectory"fig.ChARM_test.4.eps" ]
+then
+#	rm $projectDirectory"fig.ChARM_test.4.eps";
+	echo "\tfig.ChARM_test.4.eps" >> $logName;
+fi
+if [ -f $projectDirectory"fig.ChARM_test.3.eps" ]
+then
+#	rm $projectDirectory"fig.ChARM_test.3.eps";
+	echo "\tfig.ChARM_test.3.eps" >> $logName;
+fi
+if [ -f $projectDirectory"fig.ChARM_test.2.eps" ]
+then
+#	rm $projectDirectory"fig.ChARM_test.2.eps";
+	echo "\tfig.ChARM_test.2.eps" >> $logName;
+fi
+if [ -f $projectDirectory"fig.ChARM_test.1.eps" ]
+then
+#	rm $projectDirectory"fig.ChARM_test.1.eps";
+	echo "\tfig.ChARM_test.1.eps" >> $logName;
+fi
 if [ -f $projectDirectory"data_sorted.bam.bai" ]
 then
-	rm $projectDirectory"data_sorted.bam.bai";
+#	rm $projectDirectory"data_sorted.bam.bai";
 	echo "\tdata_sorted.bam.bai" >> $logName;
 fi
 if [ -f $projectDirectory"data_sorted.bam" ]
 then
-	rm $projectDirectory"data_sorted.bam";
+#	rm $projectDirectory"data_sorted.bam";
 	echo "\tdata_sorted.bam" >> $logName;
 fi
 if [ -f $projectDirectory"data.pileup" ]
 then
-	rm $projectDirectory"data.pileup";
+#	rm $projectDirectory"data.pileup";
 	echo "\tdata.pileup" >> $logName;
 fi
 if [ -f $projectDirectory"data_indelRealigned.bam" ]
 then
-	rm $projectDirectory"data_indelRealigned.bam";
+#	rm $projectDirectory"data_indelRealigned.bam";
 	echo "\tdata_indelRealigned.bam" >> $logName;
 fi
 if [ -f $projectDirectory"data_indelRealigned.bai" ]
 then
-	rm $projectDirectory"data_indelRealigned.bai";
+#	rm $projectDirectory"data_indelRealigned.bai";
 	echo "\tdata_indelRealigned.bai" >> $logName;
 fi
 if [ -f $projectDirectory"data_forIndelRealigner.intervals" ]
 then
-	rm $projectDirectory"data_forIndelRealigner.intervals";
+#	rm $projectDirectory"data_forIndelRealigner.intervals";
 	echo "\tdata_forIndelRealigner.intervals" >> $logName;
 fi
 if [ -f $projectDirectory"data.bam" ]
 then
-	rm $projectDirectory"data.bam";
+#	rm $projectDirectory"data.bam";
 	echo "\tdata.bam" >> $logName;
 fi
 if [ -f $projectDirectory"corrected_CNV.project.mat" ]
 then
-	rm $projectDirectory"corrected_CNV.project.mat";
+#	rm $projectDirectory"corrected_CNV.project.mat";
 	echo "\tcorrected_CNV.project.mat" >> $logName;
 fi
 #	if [ -f $projectDirectory"fragment_CNV_data.mat" ]
@@ -144,17 +144,17 @@ fi
 #	fi
 if [ -f $projectDirectory"Common_ChARM.mat" ]
 then
-	rm $projectDirectory"Common_ChARM.mat";
+#	rm $projectDirectory"Common_ChARM.mat";
 	echo "\tCommon_ChARM.mat" >> $logName;
 fi
 if [ -f $projectDirectory"Common_CNV.mat" ]
 then
-	rm $projectDirectory"Common_CNV.mat";
+#	rm $projectDirectory"Common_CNV.mat";
 	echo "\tCommon_CNV.mat" >> $logName;
 fi
 if [ -f $projectDirectory"SNP_v4.mat" ]
 then
-	rm $projectDirectory"SNP_v4.mat";
+#	rm $projectDirectory"SNP_v4.mat";
 	echo "\tSNP_v4.mat" >> $logName;
 fi
 #	if [ -f $projectDirectory"SNP_v4.all.mat" ]
@@ -164,17 +164,17 @@ fi
 #	fi
 if [ -f $projectDirectory"preprocessed_CNVs.ddRADseq.txt" ]
 then
-	rm $projectDirectory"preprocessed_CNVs.ddRADseq.txt";
+#	rm $projectDirectory"preprocessed_CNVs.ddRADseq.txt";
 	echo "\tpreprocessed_CNVs.ddRADseq.txt" >> $logName;
 fi
 if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.CNV_filtered.txt" ]
 then
-	rm $projectDirectory"preprocessed_SNPs.ddRADseq.CNV_filtered.txt";
+#	rm $projectDirectory"preprocessed_SNPs.ddRADseq.CNV_filtered.txt";
 	echo "\tpreprocessed_SNPs.ddRADseq.CNV_filtered.txt" >> $logName;
 fi
 if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]
 then
-	rm $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
+#	rm $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	echo "\tpreprocessed_SNPs.ddRADseq.txt" >> $logName;
 fi
 if [ -d $projectDirectory"fastqc_temp/" ]
@@ -184,7 +184,7 @@ then
 fi
 if [ -f $projectDirectory"allelic_ratios.txt" ]
 then
-	rm $projectDirectory"allelic_ratios.txt";
+#	rm $projectDirectory"allelic_ratios.txt";
 	echo "\tallelic_ratios" >> $logName;
 fi
 
@@ -200,59 +200,59 @@ then
 	then
 		if [ "$datafile1" != "null1" ]
 		then
-			rm $projectDirectory$datafile1;
+#			rm $projectDirectory$datafile1;
 			echo "\t"$datafile1 >> $logName;
 		fi
 	else
 		if [ "$datafile1" != "null1" ]
 		then
-			rm $projectDirectory$datafile1;
+#			rm $projectDirectory$datafile1;
 			echo "\t"$datafile1 >> $logName;
 		fi
 		if [ "$datafile2" != "null2" ]
 		then
-			rm $projectDirectory$datafile2;
+#			rm $projectDirectory$datafile2;
 			echo "\t"$datafile2 >> $logName;
 		fi
 	fi
-	rm $projectDirectory"datafiles.txt";
+#	rm $projectDirectory"datafiles.txt";
 	echo "\tdatafiles.txt" >> $logName;
 fi
 if [ -f $projectDirectory"SNPdata_parent.txt" ]
 then
-	rm $projectDirectory"SNPdata_parent.txt";
+#	rm $projectDirectory"SNPdata_parent.txt";
 	echo "\tSNPdata_parent.txt" >> $logName;
 fi
 
 
 # Remove potential leftovers from upload restarts.
-pattern="*.zip";
-if [ "$(echo $pattern)" != "$pattern" ]; then rm *.zip; fi
-echo "\t*.zip" >> $logName;
-pattern="*.gz";
-if [ "$(echo $pattern)" != "$pattern" ]; then rm *.gz; fi
-echo "\t*.gz" >> $logName;
-pattern="*.bam";
-if [ "$(echo $pattern)" != "$pattern" ]; then rm *.bam; fi
-echo "\t*.bam" >> $logName;
-pattern="*.sam";
-if [ "$(echo $pattern)" != "$pattern" ]; then rm *.sam; fi
-echo "\t*.sam" >> $logName;
-pattern="*.fastq";
-if [ "$(echo $pattern)" != "$pattern" ]; then rm *.fastq; fi
-echo "\t*.fastq" >> $logName;
+#pattern="*.zip";
+#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.zip; fi
+#echo "\t*.zip" >> $logName;
+#pattern="*.gz";
+#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.gz; fi
+#echo "\t*.gz" >> $logName;
+#pattern="*.bam";
+#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.bam; fi
+#echo "\t*.bam" >> $logName;
+#pattern="*.sam";
+#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.sam; fi
+#echo "\t*.sam" >> $logName;
+#pattern="*.fastq";
+#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.fastq; fi
+#echo "\t*.fastq" >> $logName;
 
 # Compress 'putative_SNPs_v1.txt' and 'SNP_CNVs_v1.txt'.
 if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
 then
 	zip -9 $projectDirectory"putative_SNPs_v4.zip" $projectDirectory"putative_SNPs_v4.txt";
-	rm $projectDirectory"putative_SNPs_v4.txt";
+#	rm $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tputative_SNPs_v4.txt" >> $logName;
 fi
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
 	zip -9 $projectDirectory"SNP_CNV_v1.zip" $projectDirectory"SNP_CNV_v1.txt";
-	rm $projectDirectory"SNP_CNV_v1.txt";
+#	rm $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tSNP_CNV_v1.txt" >> $logName;
 fi
 
