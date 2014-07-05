@@ -110,8 +110,8 @@
 					echo "<button type='submit' onclick=\"update_projectsShown_after_logout();\">Login</button>";
 					echo "</form><br>";
 					echo "<font size='2'>";
-					echo "If you don't have a user account, you may create one by clicking the \"Register\" button below.<br>";
-					echo "<button type='button' onclick=\"update_projectsShown_after_logout(); window.location.href='register.php'\">Register</button>";
+					echo "If you don't have a user account, you may make one by clicking below.<br>";
+					echo "<button type='button' onclick=\"update_projectsShown_after_logout(); window.location.href='register.php'\">Register new user.</button>";
 					echo "</font>";
 				}
 			?></div>
@@ -705,11 +705,18 @@
 			</div>
 <!---------------------------------------------------------------------------!>
 			<div id="panel_system" name="panel_system">
-				<b>System status:</b><br><div id="frameContainer.status"></div><br>
+				<b>Interact with an admin:</b><br>
+				<div class="tab">
 				<?php
 				if (isset($_SESSION['user']) != 0) {
-					echo "<button type='button' onclick=\"window.location.href='bug.php'\">Report Some Bugs!</button>";
+					echo "Report a bug! Request a feature!<br>";
+					echo "Or just as the admin a question about how to use a certain feature.<br>";
+					echo "<button type='button' onclick=\"window.location.href='bug.php'\">Click here...</button>";
+				} else {
+					echo "Log in using the 'User' tab to gain access to the admin.";
 				}?>
+				</div><br>
+				<b>System status:</b><br><div id="frameContainer.status"></div>
 				<script type="text/javascript">
 				var el_status = document.getElementById("frameContainer.status");
 				<?php
