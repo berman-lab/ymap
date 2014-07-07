@@ -16,7 +16,7 @@
 		<b>Ymap : New user registration.</b><br><br>
 		The username doesn't need to correspond to your identity and passwords are encrypted, making them unavailable even to system administrators.<br>
 		The true identity of the users can only be revealed if they choose to notify the administrators, which is generally not needed.<br><br>
-		If a project doesn't seem to complete after a period of time (within a few hours), a comment requesting clarification can be left on the bug-tracking feature found in the "System" tab.<br>
+		If a project displays an error description, or if you have any questions about how to use the tool, you can leave a comment the bug-tracking feature found in the "System" tab.<br>
 		<br>
 		<form action="php/register_server.php" method="post">
 <!--		<b>Required:</b><br>  --!>
