@@ -49,7 +49,7 @@
 		<?php
 	} else if (file_exists($directory."users/".$user."/genomes/".$genome."/working.txt")) {
 		// Load start time from 'working.txt'
-		$startTimeStamp = file_get_contets($directory."users/".$user."/genomes/".$genome."/working.txt");
+		$startTimeStamp = file_get_contents($directory."users/".$user."/genomes/".$genome."/working.txt");
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;

@@ -87,7 +87,7 @@ body {font-family: arial;}
 		<?php
 	} else if (file_exists($dirFigureBase."working.txt")) {
 		// Load start time from 'working.txt'
-		$startTimeStamp = file_get_contets($directory."users/".$user."/genomes/".$genome."/working.txt");
+		$startTimeStamp = file_get_contents($directory."users/".$user."/projects/".$project."/working.txt");
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
@@ -98,12 +98,14 @@ body {font-family: arial;}
 		}
 		if ($intervalTime > $timeLimit) { // likely error.
 			?>
-			<BODY onload = "parent.resize_iframe('<?php echo $key; ?>', 20*2+12);" class="tab">
+			<BODY onload = "parent.resize_iframe('<?PHP echo $key; ?>', 20*2+12);" class="tab">
 				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?><br>
-				<font size="2">Processing of data has taken longer than expected and might be stalled.<br>Contact the admin through the "System" tab with details and they will check on the job.<br>Don't delete the job until the admin has responded, or they will be unable to assist.</font>
+				<font size="2">Processing of data has taken longer than expected and might be stalled.<br>
+				Contact the admin through the "System" tab with details and they will check on the job.<br>
+				Don't delete the job until the admin has responded, or they will be unable to assist.</font>
 			</BODY>
 			</HTML>
-			<?php
+			<?PHP
 		} else {
 			echo "\n<!-- working file found. --!>\n";
 			// Load last line from "condensed_log.txt" file.
