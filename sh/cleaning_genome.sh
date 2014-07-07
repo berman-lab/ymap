@@ -63,13 +63,14 @@ then
 fi
 
 echo "\tGenerating 'complete.txt' file to let pipeline know installation of genome has completed." >> $logName;
+## Generate "complete.txt" to indicate processing has completed normally.
 timesLogFile=$main_dir"completion_times.log";
 completeFile=$reflocation"complete.txt";
-echo $user"("$genome")\t" > $timesLogFile;
-cat $reflocation"working.txt" > $timesLogFile;
+echo -n $user"("$genome")\t" >> $timesLogFile;
+cat $reflocation"working.txt" >> $timesLogFile;
 timestamp=$(date +%T);
-echo $timestamp > $completeFile;
-echo " -> "$timestamp"\n" > $timesLogFile;
+echo $timestamp >> $completeFile;
+echo " -> "$timestamp >> $timesLogFile;
 if [ -f $reflocation"working.txt" ]
 then
 	mv $reflocation"working.txt" $reflocation"working_done.txt";
