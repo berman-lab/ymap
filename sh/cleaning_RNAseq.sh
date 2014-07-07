@@ -224,13 +224,14 @@ fi
 
 ## Generate "complete.txt" to indicate processing has completed normally.
 completeFile=$projectDirectory"complete.txt";
-echo "complete" > $completeFile;
+timestamp=$(date +%T);
+echo $timestamp > $completeFile;
 echo "\tGenerated 'complete.txt' file." >> $logName;
 chmod 0755 $completeFile;
-
 if [ -f $projectDirectory"working.txt" ]
 then
-	rm $projectDirectory"working.txt";
+	mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
+	echo "\tworking.txt" >> $logName;
 fi
 
 #rm $projectDirectory"process_log.txt";

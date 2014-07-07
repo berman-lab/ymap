@@ -216,7 +216,8 @@ else
 
 	## Generate "complete.txt" to indicate processing has completed normally.
 	completeFile=$hapmapDirectory"complete.txt";
-	echo "complete" > $completeFile;
+	timestamp=$(date +%T);
+	echo $timestamp > $completeFile;
 	echo "\tGenerated 'complete.txt' file." >> $logName;
 	chmod 0755 $completeFile;
 fi

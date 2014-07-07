@@ -291,7 +291,8 @@ echo "\n\t======================================================================
 	echo "Concluding analysis." >> $condensedLog;
 	## Output a simple text file to tell the pipeline system that the genome installation has completed.
 	echo "\tGenerating 'complete.txt' file to let pipeline know installation of genome has completed." >> $logName;
-	echo "complete" > $main_dir"users/"$user"/genomes/"$genome"/complete.txt";
+	timestamp=$(date +%T);
+	echo $timestamp > $main_dir"users/"$user"/genomes/"$genome"/complete.txt";
 	chmod 0755 $reflocation"complete.txt";
 
 	chmod 0755 $reflocation"condensed_log.txt";
