@@ -88,7 +88,7 @@
 			$zipTempLines       = file($projectPath."zipTemp.txt");
 			$zipTempArchiveLine = $zipTempLines[3];
 			$columns            = preg_split('/\s+/', $zipTempArchiveLine);
-			$oldName            = $columns[3];
+			$oldName            = $columns[4];
 			$newName            = "datafile_".$key.".fastq";
 			chdir($projectPath);
 			rename($oldName, $newName);

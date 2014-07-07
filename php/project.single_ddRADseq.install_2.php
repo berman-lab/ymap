@@ -61,7 +61,7 @@
 		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
 		fwrite($logOutput, "\tFile ".$key."\n");
-		fwrite($logOutput, "\t\tDatafile    : '$name'.\n");
+		fwrite($logOutput, "\t\tDatafile  : '$name'.\n");
 		fwrite($logOutput, "\t\tFilename  : '$filename.'.\n");
 		fwrite($logOutput, "\t\tExtension : '$ext'.\n");
 		fwrite($logOutput, "\t\tPath      : '$projectPath'.\n");
@@ -86,7 +86,7 @@
 			$zipTempLines       = file($projectPath."zipTemp.txt");
 			$zipTempArchiveLine = $zipTempLines[3];
 			$columns            = preg_split('/\s+/', $zipTempArchiveLine);
-			$oldName            = $columns[3];
+			$oldName            = $columns[4];
 			$newName            = "datafile_".$key.".fastq";
 			chdir($projectPath);
 			rename($oldName, $newName);
