@@ -574,11 +574,11 @@ for chr = 1:num_chrs
 	                c_post = colorNoData;
 	            else
 					% darren
-					colorMix =   colorHET    *   HETplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i) + ...
-					             colorODDHET *   dddd
-					             colorHOM    *   HOMplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i);
-					% colorMix = colorHET    *   HETplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i) + ...
-					%            colorHOM    *   HOMplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i);
+					%colorMix =   colorHET    *   HETplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i) + ...
+					%             colorOddHET *   dddd
+					%             colorHOM    *   HOMplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i);
+					colorMix = colorHET    *   HETplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i) + ...
+					           colorHOM    *   HOMplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i);
 					c_post =     colorMix    *   min(1,SNPs_to_fullData_ratio{chr}(i)) + ...
 					             colorNoData *(1-min(1,SNPs_to_fullData_ratio{chr}(i)));
 	            end;
