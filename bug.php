@@ -40,7 +40,10 @@
 		<div id="bugSubmit">
 			<button type="button" onclick="window.location.href='index.php'">Back to Home</button><b>User: <?php echo $user?></b>
 			<input type="hidden" id="submitter" name="submitter" value="<?php echo $user?>"><br>
-			<textarea id="description" rows="15" cols="150">Describe your bug or feature request. If you are having a problem with a specific project, make sure to include the project name in your comment. Your comments will only be visible to you and site administrators.</textarea><br />
+			Describe your bug or feature request below.<br>
+			If you are having a problem with a specific project, make sure to include the project name in your comment.<br>
+			Your comments will only be visible to you and site administrators.
+			<textarea id="description" rows="5" cols="150">Comment here.</textarea><br />
 			<button type="button" onclick="submitBug()">Submit Bug or Feature!</button><br /><br />
 		</div>
 		<div id="bugList">
