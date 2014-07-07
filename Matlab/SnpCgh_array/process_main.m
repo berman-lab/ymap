@@ -1599,8 +1599,9 @@ archive_data_location = {	[workingDir microarray_design '.' strrep(experiment_na
 							[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.datasetDetails.mat']};
 
 %% Let the processing pipeline know that the analysis has completed.
-new_fid = fopen([workingDir 'complete.txt'],'w');
-fprintf(new_fid,'complete');
+new_fid        = fopen([workingDir 'complete.txt'],'w');
+completionTime = datestr(clock, 0)
+fprintf(new_fid,completionTime);
 fclose(new_fid);
 
 end
