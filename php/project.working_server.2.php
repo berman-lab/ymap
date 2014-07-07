@@ -86,59 +86,79 @@ body {font-family: arial;}
 		</html>
 		<?php
 	} else if (file_exists($dirFigureBase."working.txt")) {
-		echo "\n<!-- working file found. --!>\n";
-		// Load last line from "condensed_log.txt" file.
-		$condensedLog      = explode("\n", trim(file_get_contents($dirFigureBase."condensed_log.txt")));
-		$condensedLogEntry = $condensedLog[count($condensedLog)-1];
-		?>
-		<script type="text/javascript">
-		var user    = "<?php echo $user; ?>";
-		var project = "<?php echo $project; ?>";
-		var key     = "<?php echo $key; ?>";
-		var status  = "<?php echo $status; ?>";
-		reload_page=function() {
-			// Make a form to generate a form to POST information to pass along to page reloads, auto-triggered by form submit.
-			var autoSubmitForm = document.createElement('form');
-			    autoSubmitForm.setAttribute('method','post');
-			    autoSubmitForm.setAttribute('action','project.working_server.2.php');
-			var input2 = document.createElement('input');
-			    input2.setAttribute('type','hidden');
-			    input2.setAttribute('name','key');
-			    input2.setAttribute('value',key);
-			    autoSubmitForm.appendChild(input2);
-			var input2 = document.createElement('input');
-			    input2.setAttribute('type','hidden');
-			    input2.setAttribute('name','user');
-			    input2.setAttribute('value',user);
-			    autoSubmitForm.appendChild(input2);
-			var input3 = document.createElement('input');
-			    input3.setAttribute('type','hidden');
-			    input3.setAttribute('name','project');
-			    input3.setAttribute('value',project);
-			    autoSubmitForm.appendChild(input3);
-			var input4 = document.createElement('input');
-			    input4.setAttribute('type','hidden');
-			    input4.setAttribute('name','status');
-			    input4.setAttribute('value',status);
-			    autoSubmitForm.appendChild(input4);
-			autoSubmitForm.submit();
-		}
-		// Initiate recurrent call to reload_page function, which depends upon project status.
-		var internalIntervalID = window.setInterval(reload_page, 3000);
-		</script>
-		<html>
-		<body onload = "parent.resize_iframe('<?php echo $key; ?>', 10*2+14); parent.update_project_label_color('<?php echo $key; ?>','#BB9900');" class="tab">
-		<div style='color: red; display: inline-block; font-size: 10px;'><b>[Processing uploaded data.]</b></div>
-		<?php
-		echo $clock."<br>";
+		// Load start time from 'working.txt'
+		$startTimeStamp = file_get_contets($directory."users/".$user."/genomes/".$genome."/working.txt");
+		$startTime      = strtotime($startTimeStamp);
+		$currentTime    = time();
+		$intervalTime   = $currentTime - $startTime;
 		if (strcmp($dataType,"0") == 0) {
-			echo "<div style='font-size: 10px;'>";
-			echo "SnpCgh microarray analysis usually complete in a few minutes.";
-			echo "</div>";
+			$timeLimit  = 60*15;   // 15 minutes
 		} else {
-			echo "<div style='font-size: 10px;'>";
-			echo $condensedLogEntry;
-			echo "</div>";
+			$timeLimit  = 60*60*4; // 4 hours
+		}
+		if ($intervalTime > $timeLimit) { // likely error.
+			?>
+			<BODY onload = "parent.resize_iframe('<?php echo $key; ?>', 20*2+12);" class="tab">
+				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?><br>
+				<font size="2">Processing of data has taken longer than expected and might be stalled.<br>Contact the admin through the "System" tab with details and they will check on the job.<br>Don't delete the job until the admin has responded, or they will be unable to assist.</font>
+			</BODY>
+			</HTML>
+			<?php
+		} else {
+			echo "\n<!-- working file found. --!>\n";
+			// Load last line from "condensed_log.txt" file.
+			$condensedLog      = explode("\n", trim(file_get_contents($dirFigureBase."condensed_log.txt")));
+			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
+			?>
+			<script type="text/javascript">
+			var user    = "<?php echo $user; ?>";
+			var project = "<?php echo $project; ?>";
+			var key     = "<?php echo $key; ?>";
+			var status  = "<?php echo $status; ?>";
+			reload_page=function() {
+				// Make a form to generate a form to POST information to pass along to page reloads, auto-triggered by form submit.
+				var autoSubmitForm = document.createElement('form');
+				    autoSubmitForm.setAttribute('method','post');
+				    autoSubmitForm.setAttribute('action','project.working_server.2.php');
+				var input2 = document.createElement('input');
+				    input2.setAttribute('type','hidden');
+				    input2.setAttribute('name','key');
+				    input2.setAttribute('value',key);
+				    autoSubmitForm.appendChild(input2);
+				var input2 = document.createElement('input');
+				    input2.setAttribute('type','hidden');
+				    input2.setAttribute('name','user');
+				    input2.setAttribute('value',user);
+				    autoSubmitForm.appendChild(input2);
+				var input3 = document.createElement('input');
+				    input3.setAttribute('type','hidden');
+				    input3.setAttribute('name','project');
+				    input3.setAttribute('value',project);
+				    autoSubmitForm.appendChild(input3);
+				var input4 = document.createElement('input');
+				    input4.setAttribute('type','hidden');
+				    input4.setAttribute('name','status');
+				    input4.setAttribute('value',status);
+				    autoSubmitForm.appendChild(input4);
+				autoSubmitForm.submit();
+			}
+			// Initiate recurrent call to reload_page function, which depends upon project status.
+			var internalIntervalID = window.setInterval(reload_page, 3000);
+			</script>
+			<html>
+			<body onload = "parent.resize_iframe('<?php echo $key; ?>', 10*2+14); parent.update_project_label_color('<?php echo $key; ?>','#BB9900');" class="tab">
+			<div style='color: red; display: inline-block; font-size: 10px;'><b>[Processing uploaded data.]</b></div>
+			<?php
+			echo $clock."<br>";
+			if (strcmp($dataType,"0") == 0) {
+				echo "<div style='font-size: 10px;'>";
+				echo "SnpCgh microarray analysis usually complete in a few minutes.";
+				echo "</div>";
+			} else {
+				echo "<div style='font-size: 10px;'>";
+				echo $condensedLogEntry;
+				echo "</div>";
+			}
 		}
 	} else {
 		echo "\n<html>\n<body>\n";

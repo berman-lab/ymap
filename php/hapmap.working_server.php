@@ -59,58 +59,73 @@
 		</html>
 		<?php
 	} else if (file_exists($directory."users/".$user."/hapmaps/".$hapmap."/working.txt")) {
-		// Load last line from "condensed_log.txt" file.
-		$condensedLog      = explode("\n", trim(file_get_contents($GLOBALS['directory']."users/".$user."/hapmaps/".$hapmap."/condensed_log.txt")));
-		$condensedLogEntry = $condensedLog[count($condensedLog)-1];
-		?>
-		<script type="text/javascript">
-		var user    = "<?php echo $user; ?>";
-		var hapmap  = "<?php echo $hapmap; ?>";
-		var key     = "<?php echo $key; ?>";
-		var status  = "<?php echo $status; ?>";
-		reload_page=function() {
-			<?php
-			// Make a form to generate a form to POST information to pass along to page reloads, auto-triggered by form submit.
-			echo "\tvar autoSubmitForm = document.createElement('form');\n";
-			echo "\t\tautoSubmitForm.setAttribute('method','post');\n";
-			echo "\t\tautoSubmitForm.setAttribute('action','hapmap.working_server.php');\n";
-			echo "\tvar input2 = document.createElement('input');\n";
-			echo "\t\tinput2.setAttribute('type','hidden');\n";
-			echo "\t\tinput2.setAttribute('name','key');\n";
-			echo "\t\tinput2.setAttribute('value',key);\n";
-			echo "\t\tautoSubmitForm.appendChild(input2);\n";
-			echo "\tvar input2 = document.createElement('input');\n";
-			echo "\t\tinput2.setAttribute('type','hidden');\n";
-			echo "\t\tinput2.setAttribute('name','user');\n";
-			echo "\t\tinput2.setAttribute('value',user);\n";
-			echo "\t\tautoSubmitForm.appendChild(input2);\n";
-			echo "\tvar input3 = document.createElement('input');\n";
-			echo "\t\tinput3.setAttribute('type','hidden');\n";
-			echo "\t\tinput3.setAttribute('name','hapmap');\n";
-			echo "\t\tinput3.setAttribute('value',hapmap);\n";
-			echo "\t\tautoSubmitForm.appendChild(input3);\n";
-			echo "\tvar input4 = document.createElement('input');\n";
-			echo "\t\tinput4.setAttribute('type','hidden');\n";
-			echo "\t\tinput4.setAttribute('name','status');\n";
-			echo "\t\tinput4.setAttribute('value',status);\n";
-			echo "\t\tautoSubmitForm.appendChild(input4);\n";
-			echo "\tautoSubmitForm.submit();\n";
+		// Load start time from 'working.txt'
+		$startTimeStamp = file_get_contets($directory."users/".$user."/genomes/".$genome."/working.txt");
+		$startTime      = strtotime($startTimeStamp);
+		$currentTime    = time();
+		$intervalTime   = $currentTime - $startTime;
+		if ($intervalTime > 60*60*3) { // likely error.
 			?>
-		}
-		// Initiate recurrent call to reload_page function, which depends upon hapmap status.
-		var internalIntervalID = window.setInterval(reload_page, 3000);
-		</script>
-		<HTML>
-		<BODY onload = "parent.resize_iframe('<?php echo $key; ?>', 20*2+12);" class="tab">
-			<font color="red"><b>[Processing selected data.]</b></font>
+			<BODY onload = "parent.resize_iframe('<?php echo $key; ?>', 20*2+12);" class="tab">
+				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?><br>
+				<font size="2">Processing of hapmap data has taken longer than expected and might be stalled.<br>Contact the admin through the "System" tab with details and they will check on the job.</font>
+			</BODY>
+			</HTML>
 			<?php
-			echo $clock."<br>";
-			echo "Haplotype analysis in process.";
-			echo "\n";
+		} else {
+			// Load last line from "condensed_log.txt" file.
+			$condensedLog      = explode("\n", trim(file_get_contents($GLOBALS['directory']."users/".$user."/hapmaps/".$hapmap."/condensed_log.txt")));
+			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
 			?>
-		</BODY>
-		</HTML>
+			<script type="text/javascript">
+			var user    = "<?php echo $user; ?>";
+			var hapmap  = "<?php echo $hapmap; ?>";
+			var key     = "<?php echo $key; ?>";
+			var status  = "<?php echo $status; ?>";
+			reload_page=function() {
+				<?php
+				// Make a form to generate a form to POST information to pass along to page reloads, auto-triggered by form submit.
+				echo "\tvar autoSubmitForm = document.createElement('form');\n";
+				echo "\t\tautoSubmitForm.setAttribute('method','post');\n";
+				echo "\t\tautoSubmitForm.setAttribute('action','hapmap.working_server.php');\n";
+				echo "\tvar input2 = document.createElement('input');\n";
+				echo "\t\tinput2.setAttribute('type','hidden');\n";
+				echo "\t\tinput2.setAttribute('name','key');\n";
+				echo "\t\tinput2.setAttribute('value',key);\n";
+				echo "\t\tautoSubmitForm.appendChild(input2);\n";
+				echo "\tvar input2 = document.createElement('input');\n";
+				echo "\t\tinput2.setAttribute('type','hidden');\n";
+				echo "\t\tinput2.setAttribute('name','user');\n";
+				echo "\t\tinput2.setAttribute('value',user);\n";
+				echo "\t\tautoSubmitForm.appendChild(input2);\n";
+				echo "\tvar input3 = document.createElement('input');\n";
+				echo "\t\tinput3.setAttribute('type','hidden');\n";
+				echo "\t\tinput3.setAttribute('name','hapmap');\n";
+				echo "\t\tinput3.setAttribute('value',hapmap);\n";
+				echo "\t\tautoSubmitForm.appendChild(input3);\n";
+				echo "\tvar input4 = document.createElement('input');\n";
+				echo "\t\tinput4.setAttribute('type','hidden');\n";
+				echo "\t\tinput4.setAttribute('name','status');\n";
+				echo "\t\tinput4.setAttribute('value',status);\n";
+				echo "\t\tautoSubmitForm.appendChild(input4);\n";
+				echo "\tautoSubmitForm.submit();\n";
+				?>
+			}
+			// Initiate recurrent call to reload_page function, which depends upon hapmap status.
+			var internalIntervalID = window.setInterval(reload_page, 3000);
+			</script>
+			<HTML>
+			<BODY onload = "parent.resize_iframe('<?php echo $key; ?>', 20*2+12);" class="tab">
+				<font color="red"><b>[Processing selected data.]</b></font>
+				<?php
+				echo $clock."<br>";
+				echo "Haplotype analysis in process.";
+				echo "\n";
+				?>
+			</BODY>
+			</HTML>
 <?php
+		}
 	} else {
 		?>
 		<html>
