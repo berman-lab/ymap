@@ -40,9 +40,10 @@
     fwrite($outputLog, "Process_log.txt initialized.\n");
 
 // Generate 'working.txt' file to let pipeline know processing is started.
-	$outputName = $directory."users/".$user."/projects/".$project."/working.txt";
-	$output     = fopen($outputName, 'w');
-	fwrite($output, "working");
+	$outputName      = $directory."users/".$user."/projects/".$project."/working.txt";
+	$output          = fopen($outputName, 'w');
+	$startTimeString = date("Y-m-d H:i:s");
+	fwrite($output, $startTimeString);
 	fclose($output);
 	chmod($outputName,0644);
 	fwrite($outputLog, "'working.txt' file generated.\n");

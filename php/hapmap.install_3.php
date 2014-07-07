@@ -87,9 +87,10 @@
 
 
 // Generate 'working.txt' file to let pipeline know that processing is underway.
-	$handleName = $directory."users/".$user."/hapmaps/".$hapmap."/working.txt";
-	$handle     = fopen($handleName, 'w');
-	fwrite($handle, "working");
+	$handleName      = $directory."users/".$user."/hapmaps/".$hapmap."/working.txt";
+	$handle          = fopen($handleName, 'w');
+	$startTimeString = date("Y-m-d H:i:s");
+	fwrite($handle, $startTimeString);
 	fclose($handle);
 
 	fwrite($logOutput, "'sh/hapmap.install_3.php' completed.\n");

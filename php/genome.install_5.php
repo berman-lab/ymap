@@ -63,9 +63,10 @@
 
 // Generate 'working.txt' to tell main page that genome installation is in process.
 	fwrite($logOutput, "\tGenerating 'working.txt' file.\n");
-	$outputName = $directory."users/".$user."/genomes/".$genome."/working.txt";
-	$output     = fopen($outputName, 'w');
-	fwrite($output, "working");
+	$outputName      = $directory."users/".$user."/genomes/".$genome."/working.txt";
+	$output          = fopen($outputName, 'w');
+	$startTimeString = date("Y-m-d H:i:s");
+	fwrite($output, $startTimeString);
 	fclose($output);
 
 // process_log.txt output.

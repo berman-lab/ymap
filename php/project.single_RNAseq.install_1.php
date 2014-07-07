@@ -55,9 +55,10 @@
 	chmod($outputName,0755);
 
 // Generate 'working.txt' file to let pipeline know processing is started.
-	$outputName = $directory."users/".$user."/projects/".$project."/working.txt";
-	$output     = fopen($outputName, 'w');
-	fwrite($output, "working");
+	$outputName      = $directory."users/".$user."/projects/".$project."/working.txt";
+	$output          = fopen($outputName, 'w');
+	$startTimeString = date("Y-m-d H:i:s");
+	fwrite($output, $startTimeString)
 	fclose($output);
 	chmod($outputName,0755);
 	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
