@@ -84,9 +84,9 @@
 			// figure out filename contained in zip archive.
 			$null               = shell_exec("unzip -l ".$projectPath.$name." > ".$projectPath."zipTemp.txt");   // generate txt file containing archive contents.
 			$zipTempLines       = file($projectPath."zipTemp.txt");
-			$zipTempArchiveLine = $zipTempLines[3];
+			$zipTempArchiveLine = trim($zipTempLines[3]);
 			$columns            = preg_split('/\s+/', $zipTempArchiveLine);
-			$oldName            = $columns[4];
+			$oldName            = $columns[3];
 			$newName            = "datafile_".$key.".fastq";
 			chdir($projectPath);
 			rename($oldName, $newName);
