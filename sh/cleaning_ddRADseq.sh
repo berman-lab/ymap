@@ -259,7 +259,9 @@ fi
 ## Generate "complete.txt" to indicate processing has completed normally.
 timesLogFile=$main_dir"completion_times.log";
 completeFile=$projectDirectory"complete.txt";
-echo -n $user"("$project")\t" >> $timesLogFile;
+echo -n $user"("$project")[ddRADseq " >> $timesLogFile;
+cat $projectDirectory"dataType.txt" >> $timesLogFile;
+echo -n "]\t" >> $timesLogFile;
 cat $projectDirectory"working.txt" >> $timesLogFile;
 timestamp=$(date +%T);
 echo $timestamp >> $completeFile;
