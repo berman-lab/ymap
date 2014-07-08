@@ -1515,8 +1515,8 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('Saving figure 3.\n');
 set(GCfig,'PaperPosition',[0 0 8 2]*4);
-saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.eps'], 'epsc');
-saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.png'], 'png');
+saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.MH.eps'], 'epsc');
+saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.MH.png'], 'png');
 delete(GCfig);
 
 
@@ -1627,7 +1627,7 @@ for chr = 1:num_chrs
 			% f = fill(x_,y_,c_);
 			% set(f,'linestyle','none');
 			% draw black dots for each bin.
-			plot(x_,endY,'ko');
+			plot(x_,endY,'k.');
 		end;
 		x2 = chr_size(chr)/bases_per_bin;
 		plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -1944,7 +1944,7 @@ for chr = 1:num_chrs
 				% f = fill(x_,y_,c_);
 				% set(f,'linestyle','none');
 				% draw black dots for each bin.
-				plot(x_,endY,'ko');
+				plot(x_,endY,'k.');
 			end;
 			x2 = chr_size(chr)/bases_per_bin;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -2166,12 +2166,12 @@ set(gcf, 'color', 'none',...
             
 % Save figures.
 set(Main_fig,'PaperPosition',[0 0 8 6]*2);
-saveas(Main_fig,   [projectDir 'fig.CNV-map.1.eps'], 'epsc');
-saveas(Main_fig,   [projectDir 'fig.CNV-map.1.png'], 'png');
+saveas(Main_fig,   [projectDir 'fig.CNV-map.1.MH.eps'], 'epsc');
+saveas(Main_fig,   [projectDir 'fig.CNV-map.1.MH.png'], 'png');
 
 set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
-saveas(Linear_fig, [projectDir 'fig.CNV-map.2.eps'], 'epsc');
-saveas(Linear_fig, [projectDir 'fig.CNV-map.2.png'], 'png');
+saveas(Linear_fig, [projectDir 'fig.CNV-map.2.MH.eps'], 'epsc');
+saveas(Linear_fig, [projectDir 'fig.CNV-map.2.MH.png'], 'png');
 
 %% Delete figures from memory.
 delete(Main_fig);
