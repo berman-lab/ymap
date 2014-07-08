@@ -9,9 +9,10 @@
 #
 
 import string, sys, re, time
-inputFile   = sys.argv[1]
-workingDir  = sys.argv[2]
-logName     = sys.argv[3]
+inputFile      = sys.argv[1]
+workingDir     = sys.argv[2]
+digestedGenome = sys.argv[3]
+logName        = sys.argv[3]
 
 t0 = time.clock()
 
@@ -38,7 +39,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tReference FASTA : " + refFASTA)
 
 # Open restriction-digested genome FASTQ file.
-ddRADseq_FASTA_file = workingDir + string.replace(refFASTA, '.fasta','.MfeI_MboI.fasta')
+ddRADseq_FASTA_file = workingDir + digestedGenome
 ddRADseq_FASTA_data = open(ddRADseq_FASTA_file,'r')
 
 with open(logName, "a") as myfile:
