@@ -1,5 +1,5 @@
-function [] = CNV_v6_fragmentLengthCorrected_9(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
-                                               CNV_verString,displayBREAKS);
+function [] = CNV_v6_fragmentLengthCorrected_9_MH(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
+                                                  CNV_verString,displayBREAKS);
 
 
 %% ========================================================================
@@ -112,7 +112,7 @@ refFASTA         = fgetl(refernce_fid);
 fclose(refernce_fid);
 
 
-fprintf(['$$$ project = "' main_dir 'users/' user       '/projects/' project '/fragment_CNV_data.mat"\n']);
+fprintf(['$$$ project = "' main_dir 'users/' user       '/projects/' project '/fragment_CNV_data.MH.mat"\n']);
 if (useParent)
 	fprintf(['$$$ parent  = "' main_dir 'users/' parentUser '/projects/' parent  '/fragment_CNV_data.mat"\n']);
 end;
@@ -121,7 +121,7 @@ end;
 %%================================================================================================
 % Load pre-processed ddRADseq fragment CNV data for project.
 %-------------------------------------------------------------------------------------------------
-if (exist([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.mat'],'file') == 0)
+if (exist([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.MH.mat'],'file') == 0)
     %  Including : [chrNum, bpStart, bpEnd, maxReads, AveReads, fragmentLength]
     %	1	9638	10115	2	0	478
     %	1	10116	10123	2	1	8
@@ -157,9 +157,9 @@ if (exist([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.mat']
 		end;
 	end;
 	fclose(data_RADseq);
-	save([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.mat'], 'fragments_CNV');
+	save([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.MH.mat'], 'fragments_CNV');
 else
-	load([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.mat']);
+	load([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.MH.mat']);
 end;
 project_fragments_CNV = fragments_CNV;
 clear fragments_CNV;
@@ -731,8 +731,8 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('Saving bias figure 1.\n');
 set(fig1,'PaperPosition',[0 0 8 5]*4);
-saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.eps'], 'epsc');
-saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.png'], 'png');
+saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.MH.eps'], 'epsc');
+saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.MH.png'], 'png');
 delete(fig1);
 
 figTest = figure(99);
@@ -759,8 +759,8 @@ xlim([0 1]);
 ylim([0 20000]);
 fprintf('Saving bias figure test.\n');
 set(figTest,'PaperPosition',[0 0 4 4]*2);
-saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.eps'], 'epsc');
-saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.png'], 'png');
+saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.MH.eps'], 'epsc');
+saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.MH.png'], 'png');
 delete(figTest);
 
 figure(fig2);
@@ -1129,8 +1129,8 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('Saving bias figure 2.\n');
 set(fig2,'PaperPosition',[0 0 8 5]*4);
-saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.eps'], 'epsc');
-saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.png'], 'png');
+saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.MH.eps'], 'epsc');
+saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.MH.png'], 'png');
 delete(fig2);
 
 %
@@ -1146,7 +1146,7 @@ delete(fig2);
 
 %% Save fragment_data for project again, now that we've assigned usable vs. not usable.
 fragments_CNV = fragment_data;
-save([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.mat'], 'fragments_CNV');
+save([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.MH.mat'], 'fragments_CNV');
 
 
 %%=========================================================================
@@ -1188,9 +1188,9 @@ fprintf(['\n\n@#$\n@#$ Data display level = ' num2str(DataDisplayLevel) '\n@#$\n
 % performGCbiasCorrection
 
 %-------------------------------------------------------------------------------------------------
-% Distribute project and parent data into standard bins, then save as 'corrected_CNV.project.mat'.
+% Distribute project and parent data into standard bins, then save as 'corrected_CNV.project.MH.mat'.
 %-------------------------------------------------------------------------------------------------
-if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat'],'file') == 0)
+if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.MH.mat'],'file') == 0)
 	fprintf('\nMAT file containing project CNV information not found, regenerating from prior data files.\n');
 	% Convert bias corrected ave_copy_number per restriction digest fragment into CNV data for plotting
 	fprintf('\n# Adding fragment corrected_ave_read_copy values to map bins.');
@@ -1292,10 +1292,10 @@ if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.m
 	end;
 	fprintf('\n# Fragment corrected_ave_read_copy values have been added to map bins.');
 
-	save([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat'],'chr_CNVdata_RADseq');
+	save([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.MH.mat'],'chr_CNVdata_RADseq');
 else
 	fprintf('\nProject CNV MAT file found, loading.\n');
-	load([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat']);
+	load([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.MH.mat']);
 end;
 % chr_CNVdata_RADseq;
 
@@ -1523,7 +1523,7 @@ delete(GCfig);
 % Save presented CNV data in a file format common across data types being processed.
 fprintf('\nSaving "Common_CNV" data file.');
 genome_CNV = genome;
-save([main_dir 'users/' user '/projects/' project '/Common_CNV.mat'], 'CNVplot2','genome_CNV');
+save([main_dir 'users/' user '/projects/' project '/Common_CNV.MH.mat'], 'CNVplot2','genome_CNV');
 
 
 %% -----------------------------------------------------------------------------------------
@@ -1602,7 +1602,7 @@ for chr = 1:num_chrs
 		fprintf(['figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
 		hold on;
     
-		%% cgh plot section.
+		%% standard : cgh plot section.
 		c_ = [0 0 0];
 		fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 		for i = 1:length(CNVplot2{chr});
@@ -1623,14 +1623,16 @@ for chr = 1:num_chrs
 			end;
 			y_ = [startY endY endY startY];
 
-			% makes a blackbar for each bin.
-			f = fill(x_,y_,c_);
-			set(f,'linestyle','none');
+			% % makes a blackbar for each bin.
+			% f = fill(x_,y_,c_);
+			% set(f,'linestyle','none');
+			% draw black dots for each bin.
+			plot(x_,endY,'ko');
 		end;
 		x2 = chr_size(chr)/bases_per_bin;
 		plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
         
-		%% draw lines across plots for easier interpretation of CNV regions.
+		%% standard : draw lines across plots for easier interpretation of CNV regions.
 		switch ploidyBase
 			case 1
 			case 2
@@ -1673,9 +1675,9 @@ for chr = 1:num_chrs
 				line([0 x2], [maxY/16*12 maxY/16*12],'Color',[0.85 0.85 0.85]);
 				line([0 x2], [maxY/16*14 maxY/16*14],'Color',[0.85 0.85 0.85]);
 		end;
-		%% end cgh plot section.
+		%% standard : end cgh plot section.
                     
-		%axes labels etc.
+		% standard : axes labels etc.
 		hold off;   
 		xlim([0,chr_size(chr)/bases_per_bin]);
             
@@ -1694,7 +1696,7 @@ for chr = 1:num_chrs
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
         
-		% This section sets the Y-axis labelling.
+		% standard : This section sets the Y-axis labelling.
 		axisLabelPosition = -50000/bases_per_bin;
 		switch ploidyBase
 			case 1
@@ -1763,7 +1765,7 @@ for chr = 1:num_chrs
 		hold on;
 		%end axes labels etc.
 
-		%show segmental anueploidy breakpoints.
+		% standard : show segmental anueploidy breakpoints.
 		if (displayBREAKS == true)
 			for segment = 2:length(chr_breaks{chr})-1
 				bP = chr_breaks{chr}(segment)*length(CNVplot2{chr});
@@ -1775,7 +1777,7 @@ for chr = 1:num_chrs
 			end;
 		end;
     
-		%show centromere.
+		% standard : show centromere.
 		if (chr_size(chr) < 100000)
 			Centromere_format = 1;
 		else
@@ -1807,9 +1809,9 @@ for chr = 1:num_chrs
 			% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
 			plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
 		end;
-		%end show centromere.  
-        
-		%show annotation locations
+		% standard : end show centromere.  
+
+		% standard : show annotation locations
 		if (show_annotations) && (length(annotations) > 0)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 			hold on;
@@ -1834,7 +1836,7 @@ for chr = 1:num_chrs
 		end;
 		%end show annotation locations.
          
-		% make CGH histograms to the right of the main chr cartoons.
+		% standard : make CGH histograms to the right of the main chr cartoons.
 		if (HistPlot == true)
 			width     = 0.020;
 			height    = chr_height(chr);
@@ -1882,7 +1884,7 @@ for chr = 1:num_chrs
 			end;
 		end;
             
-		% places chr copy number to the right of the main chr cartoons.
+		% standard : places chr copy number to the right of the main chr cartoons.
 		if (ChrNum == true)
 			% subplot to show chr copy number value.
 			width  = 0.020;
@@ -1907,7 +1909,7 @@ for chr = 1:num_chrs
 		end;
 
         
-		%% Linear figure draw section
+		%% Linear : figure draw section
 		if (Linear_display == true)
 			figure(Linear_fig);  
 			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
@@ -1916,7 +1918,7 @@ for chr = 1:num_chrs
 			hold on;
 			title(chr_label{chr},'Interpreter','none','FontSize',20);
         
-			% linear : cgh plot section.
+			% Linear : cgh plot section.
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(CNVplot2{chr});
@@ -1938,15 +1940,17 @@ for chr = 1:num_chrs
 				end;
 				y_ = [startY endY endY startY];
 
-				% makes a blackbar for each bin.
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
+				% % makes a blackbar for each bin.
+				% f = fill(x_,y_,c_);
+				% set(f,'linestyle','none');
+				% draw black dots for each bin.
+				plot(x_,endY,'ko');
 			end;
 			x2 = chr_size(chr)/bases_per_bin;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-			% linear : end CGH plot section.
+			% Linear : end CGH plot section.
 
-			% linear : draw lines across plots for easier interpretation of CNV regions.
+			% Linear : draw lines across plots for easier interpretation of CNV regions.
 			switch ploidyBase
 				case 1
 				case 2
@@ -1989,9 +1993,9 @@ for chr = 1:num_chrs
 					line([0 x2], [maxY/16*12 maxY/16*12],'Color',[0.85 0.85 0.85]);
 					line([0 x2], [maxY/16*14 maxY/16*14],'Color',[0.85 0.85 0.85]);
 			end;
-			%% linear : end cgh plot section.
+			%% Linear : end cgh plot section.
 
-			% linear : show segmental anueploidy breakpoints.
+			% Linear : show segmental anueploidy breakpoints.
 			if (displayBREAKS == true)
 				for segment = 2:length(chr_breaks{chr})-1
 					bP = chr_breaks{chr}(segment)*length(CNVplot2{chr});
@@ -2002,9 +2006,9 @@ for chr = 1:num_chrs
 					set(f,'linestyle','none');
 				end;
 			end;
-			% linear : end segmental aneuploidy breakpoint section.
+			% Linear : end segmental aneuploidy breakpoint section.
 
-			% linear : show centromere.
+			% Linear : show centromere.
 			if (chr_size(chr) < 100000)
 				Centromere_format = 1;
 			else
@@ -2036,9 +2040,9 @@ for chr = 1:num_chrs
 				% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
 				plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
 			end;
-			% linear : end show centromere.
+			% Linear : end show centromere.
         
-			% linear : show annotation locations
+			% Linear : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
 				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				hold on;
@@ -2061,9 +2065,9 @@ for chr = 1:num_chrs
 				end;
 				hold off;
 			end;
-			% linear : end show annotation locations.
+			% Linear : end show annotation locations.
 
-			% linear :  Final formatting stuff.
+			% Linear :  Final formatting stuff.
 			xlim([0,chr_size(chr)/bases_per_bin]);
 			% modify y axis limits to show annotation locations if any are provided.
 			if (length(annotations) > 0)
@@ -2140,8 +2144,8 @@ for chr = 1:num_chrs
 				set(gca,'YTickLabel',[]);
 			end;
 			set(gca,'FontSize',12);
-			% linear : end final reformatting.
-            
+			% Linear : end final reformatting.
+
 			% shift back to main figure generation.
 			figure(Main_fig);
 			hold on;
