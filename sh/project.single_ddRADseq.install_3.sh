@@ -94,6 +94,14 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
 
+
+reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
+FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.
+FASTAname=$(echo $FASTA | sed 's/.fasta//g');                                  # name of genome file, without file type.
+RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   # Name of FASTA file.
+ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        # Name of digested reference for ddRADseq analysis, using chosen restriction enzymes.
+
+
 echo "#============================================================================== 2" >> $logName;
 
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]

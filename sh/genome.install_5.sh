@@ -152,7 +152,7 @@ else
 
 	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 	matlab -nosplash -r "run "$outputName";";
-	sed 's/^/\t\t\t|/;' $reflocation"matlab.simulated_digest_of_reference.1.log" >> $logName;
+	sed 's/^/\t\t\t|/;' $reflocation"matlab.simulated_digest_of_reference.log" >> $logName;
 fi
 
 if [ -e $reflocation$ddRADseq_FASTA2 ]
@@ -175,7 +175,7 @@ else
 
 	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 	matlab -nosplash -r "run "$outputName";";
-	sed 's/^/\t\t\t|/;' $reflocation"matlab.simulated_digest_of_reference.2.log" >> $logName;
+	sed 's/^/\t\t\t|/;' $reflocation"matlab.simulated_digest_of_reference.log" >> $logName;
 fi
 
 echo "\t---------------------------------------------------------------------------------------------- 7" >> $logName;

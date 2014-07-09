@@ -112,6 +112,28 @@
 					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
 					// Go through each $hapmapFolder and look at 'genome.txt'; build javascript array of hapmapName:genome pairs.
 					?>
+					<div id="hiddenFormSection10" style="display:none">
+						Restriction enzymes :
+						<select id="selectRestrictionEnzymes" name="selectRestrictionEnzymes" onchange="UpdateParent();">
+						<option value="MfeI_MboI">MfeI & MboI</option>
+						<option value="BamHI_BclI">BamHI & BclI</option>
+						</select>
+					</div>
+				</td><td valign="top">
+					<div id="hiddenFormSection11" style="display:none">
+						Analysis of ddRADseq data is limited to restriction fragments bound by both restriction enzymes.<br>
+						If your restriction enzyme pair is not listed, you can request it be added by commenting to the admin in the "System" tab.
+					</div>
+				</td></tr><tr bgcolor="#CCCCFF"><td>
+					<?php
+					// figure out which hapmaps have been defined for this species, if any.
+					$hapmapsDir1       = $directory."users/default/hapmaps/";
+					$hapmapsDir2       = $directory."users/".$user."/hapmaps/";
+					$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
+					$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
+					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
+					// Go through each $hapmapFolder and look at 'genome.txt'; build javascript array of hapmapName:genome pairs.
+					?>
 					<div id="hiddenFormSection5" style="display:none">
 						Haplotype map : <select id="selectHapmap" name="selectHapmap" onchange="UpdateParent();"><option>[choose]</option></select>
 						<script type="text/javascript">
@@ -275,6 +297,8 @@
 					document.getElementById("hiddenFormSection9c").style.display = 'none';
 					document.getElementById("hiddenFormSection9d").style.display = 'none';
 					document.getElementById("hiddenFormSection9e").style.display = 'none';
+					document.getElementById("hiddenFormSection10").style.display = 'none';
+					document.getElementById("hiddenFormSection11").style.display = 'none';
 				} else {														// WGseq or ddRADseq.
 					document.getElementById("hiddenFormSection1").style.display  = 'inline';
 					document.getElementById("hiddenFormSection2").style.display  = 'inline';
@@ -283,6 +307,8 @@
 					document.getElementById("hiddenFormSection5").style.display  = 'inline';
 					document.getElementById("hiddenFormSection6").style.display  = 'inline';
 					document.getElementById("hiddenFormSection7").style.display  = 'inline';
+					document.getElementById("hiddenFormSection10").style.display = 'none';
+					document.getElementById("hiddenFormSection11").style.display = 'none';
 					if (document.getElementById("dataType").value == 1) { // WGseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'inline';
@@ -295,6 +321,8 @@
 						document.getElementById("hiddenFormSection9c").style.display = 'inline';
 						document.getElementById("hiddenFormSection9d").style.display = 'none';
 						document.getElementById("hiddenFormSection9e").style.display = 'none';
+						document.getElementById("hiddenFormSection10").style.display = 'inline';
+						document.getElementById("hiddenFormSection11").style.display = 'inline';
 					} else if (document.getElementById("dataType").value == 3) { // RNAseq (tsting)
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'none';

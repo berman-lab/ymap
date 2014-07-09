@@ -10,22 +10,23 @@
 	}
 
 	// Proces POST data.
-	$bad_chars         = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/"," ","'",'"',"[","]","!");
-	$name              = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING) )) ;
-	$ploidy            = filter_input(INPUT_POST, "ploidy",          FILTER_SANITIZE_STRING);
-	$ploidyBase        = filter_input(INPUT_POST, "ploidyBase",      FILTER_SANITIZE_STRING);
-	$dataType          = filter_input(INPUT_POST, "dataType",        FILTER_SANITIZE_STRING);
-	$showAnnotations   = filter_input(INPUT_POST, "showAnnotations", FILTER_SANITIZE_STRING);
+	$bad_chars              = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/"," ","'",'"',"[","]","!");
+	$name                   = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING) )) ;
+	$ploidy                 = filter_input(INPUT_POST, "ploidy",                   FILTER_SANITIZE_STRING);
+	$ploidyBase             = filter_input(INPUT_POST, "ploidyBase",               FILTER_SANITIZE_STRING);
+	$dataType               = filter_input(INPUT_POST, "dataType",                 FILTER_SANITIZE_STRING);
+	$showAnnotations        = filter_input(INPUT_POST, "showAnnotations",          FILTER_SANITIZE_STRING);
 	if ($dataType != "0") {		// we're dealing with ddRADseq, WGseq, or RNAseq.
-		$readType      = filter_input(INPUT_POST, "readType",        FILTER_SANITIZE_STRING);
-		$genome        = filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING);
-		$hapmap        = filter_input(INPUT_POST, "selectHapmap",    FILTER_SANITIZE_STRING);
-		$parent        = filter_input(INPUT_POST, "selectParent",    FILTER_SANITIZE_STRING);
+		$readType           = filter_input(INPUT_POST, "readType",                 FILTER_SANITIZE_STRING);
+		$genome             = filter_input(INPUT_POST, "genome",                   FILTER_SANITIZE_STRING);
+		$restrictionEnzymes = filter_input(INPUT_POST, "selectRestrictionEnzymes", FILTER_SANITIZE_STRING);
+		$hapmap             = filter_input(INPUT_POST, "selectHapmap",             FILTER_SANITIZE_STRING);
+		$parent             = filter_input(INPUT_POST, "selectParent",             FILTER_SANITIZE_STRING);
 		if (($parent == "none") || ($parent == "")) {
-			$parent = $name;  // no parent is used, so all calculations use the current project name as the parent.
+			$parent         = $name;  // no parent is used, so all calculations use the current project name as the parent.
 		}
 	}
-	$manualLOH         = filter_input(INPUT_POST, "manualLOH",       FILTER_SANITIZE_STRING);
+	$manualLOH         = filter_input(INPUT_POST, "manualLOH",                    FILTER_SANITIZE_STRING);
 
 	$user              = $_SESSION["user"];
 
@@ -65,6 +66,7 @@
 		}
 		fclose($file);
 		chmod($fileName,0644);
+
 	// Generate 'parent.txt' file.
 		$fileName = $directory."users/".$user."/projects/".$name."/parent.txt";
 		$file     = fopen($fileName, 'w');
@@ -123,6 +125,15 @@
 		fclose($file2);
 		chmod($fileName1,0644);
 		chmod($fileName1,0644);
+
+	// Generate 'restrictionEnzymes.txt' file, only fir ddRADseq projects.
+		if ($dataType == "2") { // ddRADseq
+			$fileName = $directory."users/".$user."/projects/".$name."/restrictionEnzymes.txt";
+			$file     = fopen($fileName, 'w');
+			fwrite($file, $restrictionEnzymes);
+			fclose($file);
+			chmod($fileName,0644);
+		}
 
 	// Generate 'snowAnnotations.txt' file.
 		$fileName = $directory."users/".$user."/projects/".$name."/showAnnotations.txt";

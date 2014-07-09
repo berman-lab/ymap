@@ -10,8 +10,8 @@
 #   1) Raw CNV data                 : $workingDir"users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
 #   2) FASTA file name              : $workingDir"users/default/genomes/default/reference.txt",
 #                                  or $workingDir"users/"$user"/genomes/default/reference.txt" as $FastaName.
-#   3) Coordinates of standard bins : $workingDir"users/default/genomes/"$genome"/"$FastaName".MfeI_MboI.fasta",
-#                                  or $workingDir"users/"$user"/genomes/"$genome"/"$FastaName".MfeI_MboI.fasta".
+#   3) Coordinates of standard bins : $workingDir"users/default/genomes/"$genome"/"$FastaName"."$restrictionEnzymes".fasta",
+#                                  or $workingDir"users/"$user"/genomes/"$genome"/"$FastaName"."$restrictionEnzymes".fasta".
 
 # Generate output file:
 #   1) a simplified pileup file containing average read counts per RADseq fragment.   [chr_num,bp_start,bp_end, data_ave]
@@ -23,13 +23,14 @@
 #
 
 import string, sys, re, time
-user       = sys.argv[1]
-project    = sys.argv[2]
-genome     = sys.argv[3]
-genomeUser = sys.argv[4]
-main_dir   = sys.argv[5]
-logName    = sys.argv[6]
-inputFile  = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
+user               = sys.argv[1]
+project            = sys.argv[2]
+genome             = sys.argv[3]
+genomeUser         = sys.argv[4]
+main_dir           = sys.argv[5]
+restrictionEnzymes = sys.argv[6]
+logName            = sys.argv[7]
+inputFile          = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
 
 t0 = time.clock()
 
@@ -69,7 +70,7 @@ FastaName      = FastaName.replace(".fasta", "")
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t|\tLoading ddRADseq fragmented genome FASTA file.\n")
 # Open restriction-digested genome FASTA file.
-ddRADseq_FASTA_file = genomeDirectory + FastaName + ".MfeI_MboI.fasta"
+ddRADseq_FASTA_file = genomeDirectory + FastaName + "." + restrictionEnzymes + ".fasta"
 ddRADseq_FASTA_data = open(ddRADseq_FASTA_file,'r')
 # Setup array and counter for tracking fragment definition data.
 fragments        = []

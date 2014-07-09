@@ -66,6 +66,12 @@ ploidyBase=$(tail -n 1 $projectDirectory"ploidy.txt");
 echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 
 
+reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
+FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.
+FASTAname=$(echo $FASTA | sed 's/.fasta//g');                                  # name of genome file, without file type.
+RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   # Name of FASTA file.
+ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        # Name of digested reference for ddRADseq analysis, using chosen restriction enzymes.
+
 
 ##==============================================================================
 ## Preprocess ddRADseq CNV information.
@@ -75,7 +81,7 @@ then
 	echo "\t\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
 else
 	echo "\t\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
-	python $main_dir"py/dataset_process_for_CNV_analysis.ddRADseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.ddRADseq.txt";
+	python $main_dir"py/dataset_process_for_CNV_analysis.ddRADseq.py" $user $project $genome $genomeUser $main_dir $RestrctionEnzymes $logName  > $projectDirectory"preprocessed_CNVs.ddRADseq.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -100,39 +106,16 @@ else
 		cp $parentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	fi
 
-	# preprocess parent for comparison. abbey
+	# preprocess parent for comparison.
 	python $main_dir"py/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
 
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
-	python $main_dir"py/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
+	python $main_dir"py/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	chmod 0777 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
-
-#	if [ -f $projectDirectory"allelic_ratios.txt" ]
-#	then
-#		echo "\t\tSNP data already preprocessed with python script : 'py/dataset_process_for_allelic_ratio_analysis.ddRADseq.2.py'" >> $logName;
-#	else
-#		echo "\t\tPreprocessing SNP data with python script : 'py/dataset_process_for_allelic_ratio_analysis.ddRADseq.2.py'" >> $logName;
-#		if [ -f $parentDirectory"SNP_CNV_v1.txt" ]
-#		then
-#			echo "\t\tParent SNP data already decompressed." >> $logName;
-#			cp $parentDirectory"SNP_CNV_v1.txt" $projectDirectory"SNPdata_parent.txt";
-#		else
-#			echo "\t\tDecompressing parent SNP data." >> $logName;
-#			cd $parentDirectory;
-#			unzip -j SNP_CNV_v1.zip;
-#			cd $main_dir;
-#			cp $parentDirectory"SNP_CNV_v1.txt" $projectDirectory"SNPdata_parent.txt";
-#		fi
-#
-#		# preprocess project and parent allelic ratios.
-#		python $main_dir"py/dataset_process_for_allelic_ratio_analysis.ddRADseq.2.py" $genome $genomeUser $project $user $parent $parentUser $main_dir > $projectDirectory"allelic_ratios.txt";
-#		chmod 0777 $projectDirectory"allelic_ratios.txt";
-#		echo "\t\tpre-processing complete." >> $logName;
-#	fi
 
 
 ##==============================================================================

@@ -136,6 +136,7 @@ if (exist([workingDir FastaName '.MfeI_MboI.fasta'],'file') == 0)
 			test4 = upper(NewSequenceData(fragment  ).Sequence(1:5));
 			test5 = upper(NewSequenceData(fragment+1).Sequence(1:4));
 
+
 			if ((strcmp(test1,'GATC') == 1) && (strcmp(test2,'C') == 1) && (strcmp(test3,'AATTG') == 1)) || ...
 			   ((strcmp(test4,'AATTG') == 1) && (strcmp(test5,'GATC') == 1))
 				NewSequenceData(fragment).Header = [NewSequenceData(fragment).Header ' [*]'];

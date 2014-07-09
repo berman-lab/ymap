@@ -81,7 +81,7 @@ if (exist([workingDir FastaName '.BamHI_BclI.fasta'],'file') == 0)
 			fprintf(['\n\tFragmenting : ' allNames{chr} ]);
 			for bp = start_coordinate:length(sequences{chr})
 				if (bp < length(sequences{chr})-5)
-					% fragment chromosome by BamHI [G:GATCC].   (MboI = [C:AATTG])
+					% fragment chromosome by BamHI [G:GATCC].
 					test_sequence = sequences{chr}(bp:(bp+5));
 					if (strcmp(upper(test_sequence),'GGATCC') == 1)
 						header_string                      = ['>' genome '.chr' num2str(chr) ' (' num2str(start_coordinate) '..' num2str(bp) ')'];
@@ -91,14 +91,14 @@ if (exist([workingDir FastaName '.BamHI_BclI.fasta'],'file') == 0)
 						start_coordinate                   = bp+1;
 						fragment                           = fragment+1;
 					end;
-					% fragment chromosome by BclI [T:GATCA].   (MboI [:GATC])
+					% fragment chromosome by BclI [T:GATCA].
 					test_sequence = sequences{chr}(bp:(bp+5));
 					if (strcmp(upper(test_sequence),'TGATCA') == 1)
 						header_string                      = ['>' genome '.chr' num2str(chr) ' (' num2str(start_coordinate) '..' num2str(bp-1) ')'];
-						sequence_string                    = sequences{chr}(start_coordinate:(bp-1));
+						sequence_string                    = sequences{chr}(start_coordinate:bp);
 						NewSequenceData(fragment).Header   = header_string;
 						NewSequenceData(fragment).Sequence = sequence_string;
-						start_coordinate                   = bp;
+						start_coordinate                   = bp+1;
 						fragment                           = fragment+1;
 					end;
 				end;
@@ -127,7 +127,7 @@ if (exist([workingDir FastaName '.BamHI_BclI.fasta'],'file') == 0)
 	fragment_test = zeros(1,length(NewSequenceData));
 	fragment_test(end) = 0;
 	for fragment = 1:(length(NewSequenceData)-1)
-		if (length(NewSequenceData(fragment).Sequence) > 4) && (length(NewSequenceData(fragment+1).Sequence) > 4)
+		if (length(NewSequenceData(fragment).Sequence) > 5) && (length(NewSequenceData(fragment+1).Sequence) > 5)
 			% [G:GATCC]..[T:GATCA]
 			test1 = upper(NewSequenceData(fragment  ).Sequence(1:5));
 			test2 = upper(NewSequenceData(fragment  ).Sequence(end));

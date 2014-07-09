@@ -9,8 +9,8 @@
 #	1) Raw SNP data                 : $workingDir"users/"$user"/projects/"$project"/SNP_CNV_v1.txt.txt".
 #	2) FASTA file name              : $workingDir"users/default/genomes/default/reference.txt",
 #	                               or $workingDir"users/"$user"/genomes/default/reference.txt" as $FastaName.
-#	3) Coordinates of standard bins : $workingDir"users/default/genomes/"$genome"/"$FastaName".MfeI_MboI.fasta",
-#	                               or $workingDir"users/"$user"/genomes/"$genome"/"$FastaName".MfeI_MboI.fasta".
+#	3) Coordinates of standard bins : $workingDir"users/default/genomes/"$genome"/"$FastaName"."$restrictionEnzymes".fasta",
+#	                               or $workingDir"users/"$user"/genomes/"$genome"/"$FastaName"."$restrictionEnzymes".fasta".
 
 # Generate output file:
 #	1) a simplified pileup file containing data about parental het loci in child dataset per RADseq fragment.
@@ -25,15 +25,16 @@
 #
 
 import string, sys, re, time, os
-genome           = sys.argv[1]
-genomeUser       = sys.argv[2]
-hapmap           = sys.argv[3]	# 'hapmap' or 'parent project'...            both will contain a 'putative_SNPs_v4.txt'/'SNPdata_parent.txt' format file.
-hapmapUser       = sys.argv[4]	# 'hapmap user' or 'parent project user'... 
-project          = sys.argv[5]	# 'child project'.
-projectUser      = sys.argv[6]	# 'child project user'.
-main_dir         = sys.argv[7]
-logName          = sys.argv[8]
-runMode          = sys.argv[9]  # 'hapmap' or 'LOH' modes.
+genome             = sys.argv[ 1]
+genomeUser         = sys.argv[ 2]
+hapmap             = sys.argv[ 3]	# 'hapmap' or 'parent project'...            both will contain a 'putative_SNPs_v4.txt'/'SNPdata_parent.txt' format file.
+hapmapUser         = sys.argv[ 4]	# 'hapmap user' or 'parent project user'... 
+project            = sys.argv[ 5]	# 'child project'.
+projectUser        = sys.argv[ 6]	# 'child project user'.
+main_dir           = sys.argv[ 7]
+restrictionEnzymes = sys.argv[ 8]
+logName            = sys.argv[ 9]
+runMode            = sys.argv[10]  # 'hapmap' or 'LOH' modes.
 
 with open(logName, "a") as myfile:
 	myfile.write("*---------------------------------------------------------*\n")
@@ -88,7 +89,7 @@ with open(logName, "a") as myfile:
 with open(logName, "a") as myfile:
     myfile.write("\t\t\t|\tLoading ddRADseq fragmented genome FASTA file.\n")
 # Open restriction-digested genome FASTA file.
-ddRADseq_FASTA_file = genomeDirectory + FastaName + ".MfeI_MboI.fasta"
+ddRADseq_FASTA_file = genomeDirectory + FastaName + "." + restrictionEnzymes + ".fasta"
 ddRADseq_FASTA_data = open(ddRADseq_FASTA_file,'r')
 # Setup array and counter for tracking fragment definition data.
 fragments        = []
