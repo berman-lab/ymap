@@ -457,9 +457,9 @@ for chr = 1:num_chrs
 					plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
 				else
 					datumX    = dataX(i)/2;
-					datumY_C  = dataY_C{i}*maxY;
-					datumY_P1 = dataY_P{i}*maxY;
-					datumY_P2 = maxY - dataY_P{i}*maxY;
+					datumY_C  = dataY_C(i)*maxY;
+					datumY_P1 = dataY_P(i)*maxY;
+					datumY_P2 = maxY - dataY_P(i)*maxY;
 					plot([datumX datumX], [maxY datumY_P1],'Color',[1/3 1/3 1/3]);
 					plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
 				end;
@@ -780,9 +780,9 @@ for chr = 1:num_chrs
 						plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
 					else
 						datumX    = dataX(i)/2;
-						datumY_C  = dataY_C{i}*maxY;
-						datumY_P1 = dataY_P{i}*maxY;
-						datumY_P2 = maxY - dataY_P{i}*maxY;
+						datumY_C  = dataY_C(i)*maxY;
+						datumY_P1 = dataY_P(i)*maxY;
+						datumY_P2 = maxY - dataY_P(i)*maxY;
 						plot([datumX datumX], [maxY datumY_P1],'Color',[1/3 1/3 1/3]);
 						plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
 					end;
