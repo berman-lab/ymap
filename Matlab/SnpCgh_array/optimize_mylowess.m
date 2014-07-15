@@ -103,6 +103,8 @@ if ((LOWESS_method == 1) || (LOWESS_method == 2))
 	newY = mylowess([X,Y],X_range,span);
 elseif (LOWESS_method == 3)
 	% Generate final fit as average of fits from LOWESS (on k-fold training subsets) with found best span.
+	%    This final fit better represents the relationship captured in the cumulative error term for the
+	%    10-fold cross validation.
 	newY = zeros(1,range_length);
 	for partitionIndex = 1:10
 		OtherX = [];
