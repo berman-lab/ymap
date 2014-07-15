@@ -19,9 +19,18 @@ Y             = rawData_Y';
 %[minsse,minj] = min(sse);
 %span          = spans(minj);
 span          = 0.7;
+%	fprintf(['X      = ' num2str(X)      '\n']);
+%	fprintf(['min(X) = ' num2str(min(X)) '\n']);
+%	fprintf(['max(X) = ' num2str(max(X)) '\n']);
 X_range       = linspace(min(X),max(X),400);
 
 newX = X_range;
-newY = mylowess([X,Y],X_range,span);
+arrayDim = size(X);
+if (arrayDim(1) > arrayDim(2))
+	newY = mylowess([X, Y],X_range,span);
+else
+	newY = mylowess([X', Y'],X_range,span);
+end;
+%newY = mylowess([X,Y],X_range,span);
 
 end

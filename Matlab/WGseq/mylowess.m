@@ -10,19 +10,24 @@ if nargin<3 || isempty(span)
 end
 
 % Sort and get smoothed version of xy data
-xy         = sortrows(xy);
-x1         = xy(:,1);
-y1         = xy(:,2);
-spanLength = round(span*length(x1));
-ys1        = smooth(x1,y1,spanLength,'rlowess');
+arrayDim  = size(xy);
+if (arrayDim(1) > arrayDim(2))
+	xy    = sortrows(xy);
+else
+	xy    = sortrows(xy');
+end;
+x1        = xy(:,1);
+y1        = xy(:,2);
+
+ys1       = smooth(x1,y1,span,'rlowess');
 
 % Remove repeats so we can interpolate
-t          = diff(x1)==0;
-x1(t)      = [];
-ys1(t)     = [];
+t         = diff(x1)==0;
+x1(t)     = [];
+ys1(t)    = [];
 
 % Interpolate to evaluate this at the xs values
-ys = interp1(x1,ys1,xs,'linear',NaN);
+ys     = interp1(x1,ys1,xs,'linear',NaN);
 
 % Some of the original points may have x values outside the range of the
 % resampled data.  Those are now NaN because we could not interpolate them.

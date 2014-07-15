@@ -25,6 +25,12 @@ span          = 0.7;
 X_range       = linspace(min(X),max(X),400);
 
 newX = X_range;
-newY = mylowess([X,Y],X_range,span);
+arrayDim = size(X);
+if (arrayDim(1) > arrayDim(2))
+	newY = mylowess([X, Y],X_range,span);
+else
+	newY = mylowess([X', Y'],X_range,span);
+end;
+%newY = mylowess([X,Y],X_range,span);
 
 end
