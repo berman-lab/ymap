@@ -321,7 +321,7 @@ else
 
 	wait;
 fi
-if [ -f $projectDirectory"trimmed_SNP_v4.parent.txt" ]
+if [ -f $projectDirectory"trimmed_SNPs_v4.parent.txt" ]
 then
 	echo "\tDone: processing child and parent pileup for SNP coordinate data." >> $logName;
 else
