@@ -6,6 +6,7 @@ sse           = zeros(size(spans));
 cp            = cvpartition(numDat,'k',10);
 X             = rawData_X';
 Y             = rawData_Y';
+final_length  = 250;     % length of resulting fitted lowess vector.
 
 LOWESS_method = 3;
 
@@ -46,6 +47,8 @@ elseif (LOWESS_method == 2)
 elseif (LOWESS_method == 3)
 	% Attempts LOWESS fitting with [numFits] smoothing values evenly spaced from 0.01 to 0.99, using 10-fold cross-validation of randomly partitioned data.
 	fprintf(['\t\t10-fold cross validation, with squared-error minimization:\n']);
+
+	fitCurves = cell(1,numFits);
 	for j = 1:numFits
 		fprintf(['\t\t\tFit type2 #' num2str(j) '/' num2str(numFits) '.\t[']);
 		% Randomly sort the input data into 10 partitions.
@@ -63,6 +66,8 @@ elseif (LOWESS_method == 3)
 		end;
 		fprintf(':');
 		LSerrorSum  = 0;
+		fittingY = cell(10,1);
+		fittingX = linspace(0,1000,final_length);
 		for partitionIndex = 1:10
 			OtherX = [];
 			OtherY = [];
@@ -76,15 +81,24 @@ elseif (LOWESS_method == 3)
 			ThisY   = partitionDataY{partitionIndex};
 			arrayDim = size(OtherX);
 			if (arrayDim(1) > arrayDim(2))
-				ThisYs  = mylowess([OtherX, OtherY],ThisX,spans(j));
+				ThisYs                   = mylowess([OtherX, OtherY],ThisX,spans(j));
+				fittingY{partitionIndex} = mylowess([OtherX, OtherY],fittingX,spans(j));
 			else
-				ThisYs  = mylowess([OtherX', OtherY'],ThisX,spans(j));
+				ThisYs                   = mylowess([OtherX', OtherY'],ThisX,spans(j));
+				fittingY{partitionIndex} = mylowess([OtherX', OtherY'],fittingX,spans(j));
 			end;
 			% determine cumulative error between LOWESS fit and dataset.
 			for i = 1:length(ThisX)
 				LSerrorSum  = LSerrorSum  + (ThisY(i)-ThisYs(i))^2;
 			end;
 		end;
+
+		fittingY_average = zeros(1,final_length);
+		for partitionIndex = 1:10
+			fittingY_average = fittingY_average + fittingY{partitionIndex};
+		end;
+		fitCurves{j} = fittingY_average/10;
+
 		sse(j) = LSerrorSum;
 		fprintf(['](error = ' num2str(sse(j)) ')\n']);
 	end;
@@ -94,36 +108,15 @@ end;
 % Find the smoothing value which produces the least error between the LOWESS fit and the raw data.
 [minsse,minj] = min(sse);
 span          = spans(minj);
-range_length  = 400;
-X_range       = linspace(min(X),max(X),range_length);
+X_range       = linspace(0,1000,final_length);
 
 newX = X_range;
 if ((LOWESS_method == 1) || (LOWESS_method == 2))
 	% Generate final fit from LOWESS (on all data) with found best span.
 	newY = mylowess([X,Y],X_range,span);
 elseif (LOWESS_method == 3)
-	% Generate final fit as average of fits from LOWESS (on k-fold training subsets) with found best span.
-	%    This final fit better represents the relationship captured in the cumulative error term for the
-	%    10-fold cross validation.
-	newY = zeros(1,range_length);
-	for partitionIndex = 1:10
-		OtherX = [];
-		OtherY = [];
-		for i = 1:10
-			if (i ~= partitionIndex)
-				OtherX = [OtherX partitionDataX{partitionIndex}];
-				OtherY = [OtherY partitionDataY{partitionIndex}];
-			end;
-		end;
-		arrayDim = size(OtherX);
-		if (arrayDim(1) > arrayDim(2))
-			newY_part = mylowess([OtherX, OtherY],X_range,spans(j));
-		else
-			newY_part = mylowess([OtherX', OtherY'],X_range,spans(j));
-		end;
-		newY = newY+newY_part;
-	end;
-	newY = newY/10;
+	% pull the curve fit produced earlier.
+	newY = fitCurves{minj};
 end;
 
 end
