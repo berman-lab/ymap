@@ -26,7 +26,7 @@ fprintf('\tPreparing for LOWESS fitting : GC_ratio vs CNV data.\n');
 
 %% Perform LOWESS fitting.
 fprintf('\tLOWESS fitting to reference data.\n');
-[newX2, newY2] = optimize_mylowess(X_data,Y_data,10);
+[newX2, newY2] = optimize_mylowess(X_data,Y_data,10, 0);
 fprintf('\tLOWESS fitting to reference data complete.\n');
 
 Y_target          = 1;

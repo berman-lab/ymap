@@ -23,6 +23,18 @@ FASTA_string = strtrim(fileread(Reference));
 
 
 %%=========================================================================
+% Load restriction enzyme pair string from 'restrictionEnzymes.txt' file for project.
+%--------------------------------------------------------------------------
+restrictionEnzyme_file   = [main_dir 'users/' user '/projects/' project '/restrictionEnzymes.txt'];
+restrictionEnzyme_string = strtrim(fileread(restrictionEnzyme_file));
+
+if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+	fit_length = 10000;
+else
+	fit_length = 1000;
+end;
+
+%%=========================================================================
 % Control variables.
 %--------------------------------------------------------------------------
 projectDir = [main_dir 'users/' user       '/projects/' project '/'];
@@ -383,7 +395,7 @@ if (performLengthbiasCorrection)
 	fprintf('Subplot 1/11 : [EXPERIMENT] (Ave read depth) vs. (Fragment length).\n');
 	sh(1) = subplot(5,4,[1 2]);
 	fprintf('\tLOWESS fitting to trimmed project data.\n');
-	[newX1_project, newY1_project]      = optimize_mylowess(X_length_trimmed,Y_reads_project_trimmed,10);
+	[newX1_project, newY1_project]      = optimize_mylowess(X_length_trimmed,Y_reads_project_trimmed,10, fit_length);
 	fprintf('\tLOWESS fitting to project data complete.\n');
 	% Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
 	Y_target                    = 1;
@@ -423,7 +435,7 @@ if (performLengthbiasCorrection)
 		fprintf('Subplot 2/11 : [REFERENCE] (Ave read count) vs. (Fragment length).\n');
 		sh(2) = subplot(5,4,[3 4]);
 		fprintf('\tLOWESS fitting to reference data.\n');
-		[newX1_parent, newY1_parent] = optimize_mylowess(X_length_trimmed,Y_reads_parent_trimmed,10);
+		[newX1_parent, newY1_parent] = optimize_mylowess(X_length_trimmed,Y_reads_parent_trimmed,10, fit_length);
 		fprintf('\tLOWESS fitting to referemce data complete.\n');
 		% Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
 		Y_target                   = 1;
@@ -596,7 +608,7 @@ if (performGCbiasCorrection)
 	% Perform LOWESS fitting.
 	fprintf('\tLOWESS fitting to project data.\n');
 	if (length(X_GCbias_project_trimmed) > 0)
-		[newX2_project, newY2_project] = optimize_mylowess_CNV(X_GCbias_project_trimmed,Y_reads_project_trimmed);
+		[newX2_project, newY2_project] = optimize_mylowess(X_GCbias_project_trimmed,Y_reads_project_trimmed,10, 0);
 	else
 		newX2_project = [];
 		newY2_project = [];
@@ -636,7 +648,7 @@ if (performGCbiasCorrection)
 		%-------------------------------------------------------------------------------------------------
 		% Perform LOWESS fitting.
 		fprintf('\tLOWESS fitting to parent data.\n');
-		[newX2_parent, newY2_parent] = optimize_mylowess_CNV(X_GCbias_parent_trimmed,Y_reads_parent_trimmed);
+		[newX2_parent, newY2_parent] = optimize_mylowess(X_GCbias_parent_trimmed,Y_reads_parent_trimmed,10, 0);
 		fprintf('\tLOWESS fitting to parent data complete.\n');
 		% Calculate GC_bias_corrected length_bia_corrected ave_read_count data for plotting and later analysis.
 		Y_target                   = 1;

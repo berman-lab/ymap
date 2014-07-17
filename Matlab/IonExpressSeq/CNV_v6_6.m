@@ -21,6 +21,19 @@ FASTA_string = strtrim(fileread(Reference));
 
 
 %%=========================================================================
+% Load restriction enzyme pair string from 'restrictionEnzymes.txt' file for project.
+%--------------------------------------------------------------------------
+restrictionEnzyme_file   = [main_dir 'users/' user '/projects/' project '/restrictionEnzymes.txt'];
+restrictionEnzyme_string = strtrim(fileread(restrictionEnzyme_file));
+
+if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+	fit_length = 10000;
+else
+	fit_length = 1000;
+end;
+
+
+%%=========================================================================
 % Control variables.
 %--------------------------------------------------------------------------
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
@@ -316,11 +329,11 @@ if (performEndbiasCorrection)
     chr_EndDistanceData_clean(CGHdata_clean     == 0   ) = [];
     GCratioData_clean(        CGHdata_clean     == 0   ) = [];
     CGHdata_clean(            CGHdata_clean     == 0   ) = [];
-    % Perform LOWESS fitting : GC_bias.
+    % Perform LOWESS fitting : chrEnd_bias.
     rawData_X1     = chr_EndDistanceData_clean;
     rawData_Y1     = CGHdata_clean;
     fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
-    [fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1, 10);
+    [fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1, 10, 0);
     % Correct data using normalization to LOWESS fitting
     Y_target = 1;
     for chr = 1:num_chrs
@@ -366,7 +379,7 @@ if (performGCbiasCorrection)
 	rawData_X2     = GCratioData_clean;
 	rawData_Y2     = CGHdata_clean;
 	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
-	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2, 10);
+	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2, 10, 0);
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
 	for chr = 1:num_chrs
@@ -416,7 +429,7 @@ if (performRepetbiasCorrection)
 	rawData_X3     = repetitivenessData_clean;
 	rawData_Y3     = CGHdata_clean;
 	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X3,1)) ',' num2str(size(rawData_X3,2)) ']:[' num2str(size(rawData_Y3,1)) ',' num2str(size(rawData_Y3,2)) ']\n']);
-	[fitX3, fitY3] = optimize_mylowess(rawData_X3,rawData_Y3, 10);
+	[fitX3, fitY3] = optimize_mylowess(rawData_X3,rawData_Y3, 10, 0);
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
 	for chr = 1:num_chrs

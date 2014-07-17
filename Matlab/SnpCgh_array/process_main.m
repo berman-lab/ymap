@@ -375,7 +375,7 @@ if (performGCbiasCorrection)
 	rawData_X1        = GCratioData_all;
 	rawData_Y1        = CGHdata_all;
 	numFits           = 10;
-	[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits);
+	[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0);
 
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
