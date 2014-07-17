@@ -14,6 +14,7 @@ main_dir=$3;
 
 #user="default";
 #genome="Candida_albicans_SC5314__A21-s02-m08-r09";
+##genome="Candida_glabrata_CBS138__s02-m01-r23";
 #main_dir="/heap/hapmap/bermanlab/";
 
 reflocation=$main_dir"users/"$user"/genomes/"$genome"/";				# Directory where FASTA file is kept.
@@ -153,6 +154,11 @@ else
 	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 	matlab -nosplash -r "run "$outputName";";
 	sed 's/^/\t\t\t|/;' $reflocation"matlab.simulated_digest_of_reference.log" >> $logName;
+
+	## Reformat digested FASTA file to have single-line entries for each sequence fragment.
+	echo "Reformatting digested genome fragments FASTA file." >> $condensedLog;
+	echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
+	sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$ddRADseq_FASTA1;
 fi
 
 if [ -e $reflocation$ddRADseq_FASTA2 ]
@@ -176,15 +182,14 @@ else
 	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 	matlab -nosplash -r "run "$outputName";";
 	sed 's/^/\t\t\t|/;' $reflocation"matlab.simulated_digest_of_reference.log" >> $logName;
+
+	## Reformat digested FASTA file to have single-line entries for each sequence fragment.
+	echo "Reformatting digested genome fragments FASTA file." >> $condensedLog;
+	echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
+	sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$ddRADseq_FASTA2;
 fi
 
 echo "\t---------------------------------------------------------------------------------------------- 7" >> $logName;
-
-## Reformat digested FASTA file to have single-line entries for each sequence fragment.
-echo "Reformatting digested genome fragments FASTA file." >> $condensedLog;
-echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$ddRADseq_FASTA1;
-sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$ddRADseq_FASTA2;
 
 outputFile=$reflocation$FASTAname".GC_ratios.MfeI_MboI.txt";
 if [ -e $outputFile ]
@@ -266,13 +271,13 @@ else
 	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
     matlab -nosplash -r "run "$outputName";";
 	sed 's/^/\t\t\t|/;' $reflocation"matlab.standard_fragmentation_of_reference.log" >> $logName;
-fi
 
-echo "\t---------------------------------------------------------------------------------------------- 9" >> $logName;
+	echo "\t---------------------------------------------------------------------------------------------- 9" >> $logName;
 
 	## Reformat standard-bin fragmented FASTA file to have single-line entries for each sequence fragment.
 	echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
 	sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$standard_bin_FASTA;
+fi
 
 outputFile=$reflocation$FASTAname".GC_ratios.standard_bins.txt";
 if [ -e $outputFile ]

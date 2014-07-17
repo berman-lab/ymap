@@ -116,7 +116,7 @@
 						Restriction enzymes :
 						<select id="selectRestrictionEnzymes" name="selectRestrictionEnzymes" onchange="UpdateParent();">
 						<option value="MfeI_MboI">MfeI & MboI</option>
-						<option value="BamHI_BclI">BamHI & BclI</option>
+						<option value="BamHI_BclI">BamHI & BclI (testing)</option>
 						</select>
 					</div>
 				</td><td valign="top">

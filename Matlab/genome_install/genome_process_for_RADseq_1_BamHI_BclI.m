@@ -141,6 +141,10 @@ if (exist([workingDir FastaName '.BamHI_BclI.fasta'],'file') == 0)
 			   ((strcmp(test4,'GATCA') == 1) && (strcmp(test5,'G') == 1) && (strcmp(test6,'GATCC') == 1))
 				NewSequenceData(fragment).Header = [NewSequenceData(fragment).Header ' [*]'];
 				fragment_test(fragment) = 1;
+			else
+				% testing all fragments per MZAnderson protocol.
+				NewSequenceData(fragment).Header = [NewSequenceData(fragment).Header ' [*]'];
+				fragment_test(fragment) = 1;
 			end;
 		end;
 	end;
