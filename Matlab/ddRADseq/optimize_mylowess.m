@@ -1,4 +1,4 @@
-function [newX, newY] = optimize_mylowess(rawData_X,rawData_Y, numFits)
+function [newX, newY] = optimize_mylowess(rawData_X,rawData_Y, numFits, maxX)
 
 numDat        = length(rawData_X);
 spans         = linspace(0.01,0.99, numFits);
@@ -7,6 +7,12 @@ cp            = cvpartition(numDat,'k',10);
 X             = rawData_X';
 Y             = rawData_Y';
 final_length  = 250;     % length of resulting fitted lowess vector.
+if (maxX == 0)
+	maxX = max(X);
+	minX = min(X);
+else
+	minX = 0;
+end;
 
 LOWESS_method = 3;
 
@@ -67,7 +73,7 @@ elseif (LOWESS_method == 3)
 		fprintf(':');
 		LSerrorSum  = 0;
 		fittingY = cell(10,1);
-		fittingX = linspace(0,1000,final_length);
+		fittingX = linspace(minX,maxX,final_length);
 		for partitionIndex = 1:10
 			OtherX = [];
 			OtherY = [];
@@ -82,10 +88,10 @@ elseif (LOWESS_method == 3)
 			arrayDim = size(OtherX);
 			if (arrayDim(1) > arrayDim(2))
 				ThisYs                   = mylowess([OtherX, OtherY],ThisX,spans(j));
-				fittingY{partitionIndex} = mylowess([OtherX, OtherY],fittingX,spans(j));
+				fittingY{partitionIndex} = mylowess([ThisX,  ThisY ],fittingX,spans(j));
 			else
 				ThisYs                   = mylowess([OtherX', OtherY'],ThisX,spans(j));
-				fittingY{partitionIndex} = mylowess([OtherX', OtherY'],fittingX,spans(j));
+				fittingY{partitionIndex} = mylowess([ThisX',  ThisY' ],fittingX,spans(j));
 			end;
 			% determine cumulative error between LOWESS fit and dataset.
 			for i = 1:length(ThisX)
@@ -108,7 +114,7 @@ end;
 % Find the smoothing value which produces the least error between the LOWESS fit and the raw data.
 [minsse,minj] = min(sse);
 span          = spans(minj);
-X_range       = linspace(0,1000,final_length);
+X_range       = linspace(minX,maxX,final_length);
 
 newX = X_range;
 if ((LOWESS_method == 1) || (LOWESS_method == 2))
