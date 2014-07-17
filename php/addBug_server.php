@@ -16,6 +16,7 @@
 
 		// Processes \r\n's first so they aren't converted twice.
 		$description = str_replace($order, $replace, $description);
+		$description = str_replace("|", ":", $description);
 
 		$bugtrackFile = $GLOBALS['directory'].$GLOBALS['bugtrackDir'].$GLOBALS['bugtrackFile'];
 
