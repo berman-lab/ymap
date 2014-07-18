@@ -74,14 +74,14 @@
 <!---------------------------------------------------------------------------!>
 		<table width="100%" height="210px" cellspacing="0">
 		<tr>
-			<td valign="bottom" style="height:15px; width:80px;" align="center" id="tab_user"     ><div onclick="tabWindow_user();"     >User</div></td>
-			<td valign="bottom" style="height:15px; width:80px;" align="center" id="tab_project"  ><div onclick="tabWindow_project();"  >Project</div></td>
-			<td valign="bottom" style="height:15px; width:80px;" align="center" id="tab_genome"   ><div onclick="tabWindow_genome();"   >Genome</div></td>
-			<td valign="bottom" style="height:15px; width:80px;" align="center" id="tab_hapmap"   ><div onclick="tabWindow_hapmap();"   >Hapmap</div></td>
-			<td valign="bottom" style="height:15px; width:80px;" align="center" id="tab_system"   ><div onclick="tabWindow_system();"   >System</div></td>
-			<td valign="bottom" style="height:15px; width:80px;" align="center" id="tab_about"    ><div onclick="tabWindow_about();"    >About</div></td>
-			<td valign="bottom" style="height:15px; width:160px;" align="center" id="tab_examples" ><div onclick="tabWindow_examples();" >Example Datasets</div></td>
-			<td valign="bottom" id="tab_blank">&nbsp;</td>
+			<td valign="middle" style="height:15px; width:80px;" align="center" id="tab_user"     ><div onclick="tabWindow_user();"     >User</div></td>
+			<td valign="middle" style="height:15px; width:80px;" align="center" id="tab_project"  ><div onclick="tabWindow_project();"  >Project Data</div></td>
+			<td valign="middle" style="height:15px; width:80px;" align="center" id="tab_genome"   ><div onclick="tabWindow_genome();"   >Reference Genome</div></td>
+			<td valign="middle" style="height:15px; width:80px;" align="center" id="tab_hapmap"   ><div onclick="tabWindow_hapmap();"   >Hapmap</div></td>
+			<td valign="middle" style="height:15px; width:80px;" align="center" id="tab_system"   ><div onclick="tabWindow_system();"   >System</div></td>
+			<td valign="middle" style="height:15px; width:80px;" align="center" id="tab_about"    ><div onclick="tabWindow_about();"    >About</div></td>
+			<td valign="middle" style="height:15px; width:80px;" align="center" id="tab_examples" ><div onclick="tabWindow_examples();" >Example Datasets</div></td>
+			<td valign="middle" id="tab_blank">&nbsp;</td>
 		</tr><tr>
 			<td colspan="8" valign="top" id="tab_content">
 <!---------------------------------------------------------------------------!>
