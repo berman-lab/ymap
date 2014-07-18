@@ -334,7 +334,7 @@
 						echo "        // 1:0 = WGseq : single-end [FASTQ/ZIP/GZ]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read WGseq data...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read WGseq data (FASTQ/ZIP/GZ)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_WGseq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -344,8 +344,8 @@
 						echo "        // 1:1 = WGseq : paired-end [FASTQ/ZIP/GZ]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:76px\" src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read WGseq data (1/2)...\";\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read WGseq data (2/2)...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read WGseq data (1/2; FASTQ/ZIP/GZ)...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read WGseq data (2/2; FASTQ/ZIP/GZ)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.paired_WGseq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -355,7 +355,7 @@
 						echo "        // 1:2 or 1:3 = WGseq : [SAM/BAM/TXT]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : WGseq data...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : WGseq data (SAM/BAM/TXT)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_WGseq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -366,7 +366,7 @@
 						echo "        // 2:0 = ddRADseq : single-end [FASTQ/ZIP/GZ]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read ddRADseq data...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read ddRADseq data (FASTQ/ZIP/GZ)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_ddRADseq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -376,8 +376,8 @@
 						echo "        // 2:1 = ddRADseq : paired-end [FASTQ/ZIP/GZ]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:76px\" src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read ddRADseq data (1/2)...\";\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read ddRADseq data (2/2)...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.paired_ddRADseq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -387,7 +387,7 @@
 						echo "        // 2:2 or 2:3 = ddRADseq : [SAM/BAM/TXT]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : ddRADseq data...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : ddRADseq data (SAM/BAM/TXT)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_ddRADseq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -398,7 +398,7 @@
                         echo "        // 3:0 = RNAseq : single-end [FASTQ/ZIP/GZ]\n\t\t";
                         echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
                         echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read RNAseq data...\";\n\t\t";
+                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read RNAseq data (FASTQ/ZIP/GZ)...\";\n\t\t";
                         echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
                         echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_RNAseq.install_1.php\";\n\t\t";
                         echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -408,18 +408,18 @@
                         echo "        // 3:1 = RNAseq : paired-end [FASTQ/ZIP/GZ]\n\t\t";
                         echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:76px\" src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
                         echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read RNAseq data (1/2)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read RNAseq data (2/2)...\";\n\t\t";
+                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read RNAseq data (1/2; FASTQ/ZIP/GZ)...\";\n\t\t";
+                        echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read RNAseq data (2/2; FASTQ/ZIP/GZ)...\";\n\t\t";
                         echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
                         echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.paired_RNAseq.install_1.php\";\n\t\t";
                         echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
                         echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
                         echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
                     } else if (($dataType == '3:2') || ($dataType == '3:3')) {
-                        echo "        // 3:2 or 3:3 = RNAseq : [SAM/BAM]\n\t\t";
+                        echo "        // 3:2 or 3:3 = RNAseq : [SAM/BAM/TXT]\n\t\t";
                         echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
                         echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : RNAseq data...\";\n\t\t";
+                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : RNAseq data (SAM/BAM/TXT)...\";\n\t\t";
                         echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
                         echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_RNAseq.install_1.php\";\n\t\t";
                         echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -430,7 +430,7 @@
 						echo "        // 4:0 = IonExpressSeq : single-end [FASTQ/ZIP/GZ]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read IonExpress data...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read IonExpress data (FASTQ/ZIP/GZ)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_IonExpressSeq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -440,8 +440,8 @@
 						echo "        // 4:1 = IonExpressSeq : paired-end [FASTQ/ZIP/GZ]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:76px\" src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read IonExpress data (1/2)...\";\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read IonExpress data (2/2)...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read IonExpress data (1/2; FASTQ/ZIP/GZ)...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read IonExpress data (2/2; FASTQ/ZIP/GZ)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.paired_IonExpressSeq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
@@ -451,7 +451,7 @@
 						echo "        // 4:2 or 4:3 = IonExpressSeq : [SAM/BAM/TXT]\n\t\t";
 						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 						echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : IonExpress data...\";\n\t\t";
+						echo "        top.frames['p_".$key."'].display_string[0] = \"Add : IonExpress data (SAM/BAM/TXT)...\";\n\t\t";
 						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
 						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_IonExpressSeq.install_1.php\";\n\t\t";
 						echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
