@@ -276,7 +276,7 @@ end;
 if (useHapmap)
 	if (exist([projectDir 'SNP_' SNP_verString '.all3.mat'],'file') == 0)
 		fprintf('\nAllelic fraction MAT file 3 not found, generating.\n');
-		process_2dataset_hapmap_allelicRatios(projectDir, parentDir, hapmapDir, chr_size, chr_name, chr_in_use, SNP_verString);
+		process_2dataset_hapmap_allelicRatios(projectDir, projectDir, hapmapDir, chr_size, chr_name, chr_in_use, SNP_verString);
 	else
 		fprintf('\nAllelic fraction MAT file 1 found, loading.\n');
 	end;

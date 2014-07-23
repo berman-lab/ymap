@@ -382,10 +382,8 @@ else
 	else							performEndbiasCorrection    = false;
 	end;
 end;
-test0 = performLengthbiasCorrection
-test1 = performGCbiasCorrection
-test2 = performRepetbiasCorrection
-test3 = performEndbiasCorrection
+fprintf(['Length_flag = ' num2str(performLengthbiasCorrection) '; GC_flag = ' num2str(performGCbiasCorrection) '; Repet_flag = ' num2str(performRepetbiasCorrection) '; End_flag = ' num2str(performEndbiasCorrection) '.\n']);
+
 
 %-------------------------------------------------------------------------------------------------
 % LOWESS fitting project 1 : correcting fragment_length bias.
