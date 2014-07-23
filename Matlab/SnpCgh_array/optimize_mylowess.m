@@ -102,6 +102,9 @@ elseif (LOWESS_method == 3)
 		fittingY_average = zeros(1,final_length);
 		for partitionIndex = 1:10
 			fittingY_average = fittingY_average + fittingY{partitionIndex};
+%			for i = 1:length(fittingY{partitionIndex})
+%			end;
+%			fprintf(['\ntest_' num2str(partitionIndex-1) ' = [' num2str(fittingY{partitionIndex}) ']\n']);
 		end;
 		fitCurves{j} = fittingY_average/10;
 
