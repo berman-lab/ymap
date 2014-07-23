@@ -21,19 +21,6 @@ FASTA_string = strtrim(fileread(Reference));
 
 
 %%=========================================================================
-% Load restriction enzyme pair string from 'restrictionEnzymes.txt' file for project.
-%--------------------------------------------------------------------------
-restrictionEnzyme_file   = [main_dir 'users/' user '/projects/' project '/restrictionEnzymes.txt'];
-restrictionEnzyme_string = strtrim(fileread(restrictionEnzyme_file));
-
-if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-	fit_length = 10000;
-else
-	fit_length = 1000;
-end;
-
-
-%%=========================================================================
 % Control variables.
 %--------------------------------------------------------------------------
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
@@ -268,7 +255,7 @@ if (performRepetbiasCorrection)
 	    dataLine = fgetl(standard_bins_repetitiveness_fid);
 	    if (length(dataLine) > 0)
 	        if (dataLine(1) ~= '#')
-	            % The number of valid lines found so far...  the number of usable restriction fragments with data so far.
+	            % The number of valid lines found so far...  the number of usable standard fragments with data so far.
 	            chr            = str2num(sscanf(dataLine, '%s',1));
 	            fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
 	            fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);

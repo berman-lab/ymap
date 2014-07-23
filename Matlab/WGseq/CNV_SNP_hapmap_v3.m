@@ -178,6 +178,8 @@ for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
 
+		test = chrCopyNum{chr}
+
 			%% Clear any segments with a copy number of zero.
 			% add break representing left end of chromosome.
 			breakCount_new         = 0;
@@ -196,9 +198,11 @@ for chr = 1:num_chrs
 			end;
 			% If the last segment has a zero copy number, trim off the last added edge.
 			if (round(chrCopyNum{chr}(length(chrCopyNum{chr}))) <= 0)
-				chr_breaks_new{chr}(breakCount_new+1) = [];
-				chrCopyNum_new{chr}(breakCount_new  ) = [];
-				breakCount_new = breakCount_new-1;
+				if (breakCount_new > 0)
+					chr_breaks_new{chr}(breakCount_new+1) = [];
+					chrCopyNum_new{chr}(breakCount_new  ) = [];
+					breakCount_new = breakCount_new-1;
+				end;
 			end;
 			% add break representing right end of chromosome.
 			breakCount_new = breakCount_new+1;
@@ -1571,6 +1575,8 @@ for chr = 1:num_chrs
 						chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
 					end;
 				end;
+			else
+				chr_string = '#';
 			end;
 			text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24);
 		end;
