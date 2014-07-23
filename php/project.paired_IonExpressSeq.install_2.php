@@ -26,6 +26,7 @@
 </HEAD>
 <?php
     require_once 'constants.php';
+	include_once 'process_input_files.php';
 
 // Deal with passed variables.
 	$fileName         = $argv[1];
@@ -68,72 +69,11 @@
 		fwrite($logOutput, "\t\tFilename   : '$filename.'.\n");
 		fwrite($logOutput, "\t\tExtension  : '$ext'.\n");
 		fwrite($logOutput, "\t\tPath       : '$projectPath'.\n");
-		// Standardize name of uploaded file.
-		$oldName     = $name;
-		$newName     = "datafile_".$key.".".$ext;   $currentDir  = getcwd();
-		chdir($projectPath);
-		rename($oldName, $newName);
-		chdir($currentDir);
-		unlink($projectPath.$oldName);
-		$name        = $newName;
-
-		if (strcmp($ext,"zip") == 0) {
-			fwrite($condensedLogOutput, "Decompressing ZIP file : ".$name."\n");
-			fwrite($logOutput, "\t\tThis is a ZIP file.\n");
-			$currentDir = getcwd(); 							// get script's path.
-			chdir($projectPath);								// move to projectDirectory.
-			$null = shell_exec("unzip -j ".$projectPath.$name);	// unzip archive.
-			chdir($currentDir);									// move back to script's path.
-			// figure out filename contained in zip archive.
-			$null               = shell_exec("unzip -l ".$projectPath.$name." > ".$projectPath."zipTemp.txt");   // generate txt file containing archive contents.
-			$zipTempLines       = file($projectPath."zipTemp.txt");
-			$zipTempArchiveLine = trim($zipTempLines[3]);
-			$columns            = preg_split('/\s+/', $zipTempArchiveLine);
-			$oldName            = $columns[3];
-			$newName            = "datafile_".$key.".fastq";
-			chdir($projectPath);
-			rename($oldName, $newName);
-			chdir($currentDir);
-			fwrite($logOutput, "\t\tArchive of : '$newName'.\n");
-			// delete original archive.
-			unlink($projectPath.$name);
-			fwrite($logOutput, "\t\tFile unzipped, original deleted.\n");
-			// add file name to 'datafiles.txt'.
-			fwrite($output, $newName."\n");
-		} else if (strcmp($ext,"gz") == 0) {
-			fwrite($condensedLogOutput, "Decompressing GZ file : ".$name."\n");
-			fwrite($logOutput, "\t\tThis is a GZ file.\n");
-			$currentDir = getcwd(); 							// get script's path.
-			chdir($projectPath);								// move to projectDirectory.
-			$null = shell_exec("gzip -d ".$projectPath.$name);	// decompress archive.
-			chdir($currentDir);									// move back to script's path.
-			$oldName = str_replace(".gz","",$name);
-			$newName = "datafile_".$key.".fastq";
-			chdir($projectPath);
-			rename($oldName,$newName);
-			chdir($currentDir);
-			fwrite($logOutput, "\t\tFile uncompressed, original deleted.\n");
-			// add file name to 'datafiles.txt'.
-			fwrite($output, $newName."\n");
-		} else if ((strcmp($ext,"fastq") == 0) || (strcmp($ext,"fq") == 0)) {
-			fwrite($logOutput, "\t\tThis is an uncompressed FASTQ file, no further pre-processing is needed.\n");
-			fwrite($output, $name."\n");
-		} else if ((strcmp($ext,"fasta") == 0) || (strcmp($ext,"fa") == 0)) {
-			fwrite($logOutput, "\tThis is a FASTA file.\n");
-
-			$errorFile = fopen($directory."users/".$user."/projects/".$project."/error.txt", 'w');
-			fwrite($errorFile, "Error : FASTA file uploaded as input. Upload FASTQ, or ZIP or GZ archives.");
-			fclose($errorFile);
-			chmod($errorFileName,0755);
-			exit;
-		} else {
-			fwrite($logOutput, "\tThis is an unknown file type.\n");
-
-			$errorFile = fopen($directory."users/".$user."/projects/".$project."/error.txt", 'w');
-			fwrite($errorFile, "Error : Uknown file type as input. Upload FASTQ, or ZIP or GZ archives.");
-			fclose($errorFile);
-			chmod($errorFileName,0755);
-			exit;
+		// Process the uploaded file.
+		$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$directory,$output, $condensedLogOutput,$logOutput);
+		// formatting.
+		if ($key < count(fileNames)-1) {
+			fwrite($output,"\n");
 		}
 	}
 	fclose($output);

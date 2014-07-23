@@ -132,7 +132,7 @@ else
 	echo "[[=- Align with Bowtie -=]]" >> $logName;
 	echo "Aligning reads with Bowtie2 => SAM file." >> $condensedLog;
 
-	threads=8;
+	threads=4;
 
 	if [ -f $projectDirectory"data.bam" ]
 	then
