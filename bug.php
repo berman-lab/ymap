@@ -42,13 +42,18 @@
 			<input type="hidden" id="submitter" name="submitter" value="<?php echo $user?>"><br>
 			Describe your bug or feature request below.<br>
 			If you are having a problem with a specific project, make sure to include the project name in your comment.<br>
-			Your comments will only be visible to you and site administrators.
+			If you are responding to a previous comment, make sure to include the comment number from the first collumn.<br>
+			Once an admin has responded, the comment entries will be colored <font style='background-color: #AAFFAA'>green to
+			indicate a resolved issue</font>, <font style='background-color: #FFFFAA'>yellow to indicate an ongoing issue</font>,
+			or <font style='background-color: #FFAAAA'>red to indicate the need for more information/discussion</font>.<br>
+			Your comments will only be visible to you and site administrators.<br>
 			<textarea id="description" rows="5" cols="150">Comment here.</textarea><br />
 			<button type="button" onclick="submitBug()">Submit Bug or Feature!</button><br /><br />
 		</div>
 		<div id="bugList">
 			<table id="bugTable" border="1">
 				<tr bgcolor="#DDDDDD">
+					<th>#</th>
 					<th>Submitter</th>
 					<th colspan=80>Description</th>
 					<th>Type</th>
@@ -58,23 +63,39 @@
 					$bugtrackFile = $GLOBALS['directory'].$GLOBALS['bugtrackDir'].$GLOBALS['bugtrackFile'];
 					if (file_exists($bugtrackFile)) {
 						$bugFileHandle = fopen($bugtrackFile, 'r');
+						$comment_count = 0;
 						while (($buffer = fgets($bugFileHandle, 4096)) !== false) {
+							if (strcmp($buffer,"") <> 1) {
+								$comment_count = $comment_count + 1;
+							}
 							list ($submitter, $description, $type, $notes, $status) = explode("|", $buffer);
 							$super_user_flag_file = $GLOBALS['directory']."users/".$user."/super.txt";
 							if ($status == 1) {
-								echo "<tr bgcolor='FFDDDD'>";
+								echo "<tr bgcolor='FFAAAA'>";
 							} else if ($status == 2) {
-								echo "<tr bgcolor='DDFFDD'>";
+								echo "<tr bgcolor='FFFFAA'>";
+							} else if ($status == 3) {
+								echo "<tr bgcolor='AAFFAA'>";
 							} else {
 								echo "<tr>";
 							}
 							if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+								if (strcmp($buffer,"") == 1) {
+									echo "<td align='center'></td>";
+								} else {
+									echo "<td align='center'>".$comment_count."</td>";
+								}
 								echo "<td align='center'>".$submitter."</td>
 									  <td colspan=80>".$description."</td>
 									  <td align='center'>".$type."</td>
 									  <td colspan=80>".$notes."</td>";
 							} else {
 								if (($submitter == $user) || ($submitter == 'admin')) {
+									if (strcmp($buffer,"") == 1) {
+										echo "<td align='center'></td>";
+									} else {
+										echo "<td align='center'>".$comment_count."</td>";
+									}
 									echo "<td align='center'>".$submitter."</td>
 										  <td colspan=80>".$description."</td>
 										  <td align='center'>".$type."</td>
