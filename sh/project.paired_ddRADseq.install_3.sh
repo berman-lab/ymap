@@ -9,7 +9,7 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$3;
+main_dir=$(pwd)"/../";
 
 #user='darren'
 #project='ddRADseq_parent'
@@ -30,8 +30,8 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 chmod 0755 $logName;
 echo "#.............................................................................." >> $logName;
-echo "Running 'sh/project.paired_WGseq.install_3.sh'" >> $logName;
-echo "Variables passed via command-line from 'php/project.paired_WGseq.install_2.php' :" >> $logName;
+echo "Running 'sh/project.paired_ddRADseq.install_3.sh'" >> $logName;
+echo "Variables passed via command-line from 'php/project.paired_ddRADseq.install_2.php' :" >> $logName;
 echo "\tuser     = '"$user"'" >> $logName;
 echo "\tproject  = '"$project"'" >> $logName;
 echo "\tmain_dir = '"$main_dir"'" >> $logName;
@@ -141,11 +141,11 @@ else
 
 
 	##==============================================================================
-	## Initial processing of paired-WGseq dataset.
+	## Initial processing of paired-ddRADseq dataset.
 	##------------------------------------------------------------------------------
-	echo "#=================================================#" >> $logName;
-	echo "# Initial processing of paired-end WGseq dataset. #" >> $logName;
-	echo "#=================================================#" >> $logName;
+	echo "#====================================================#" >> $logName;
+	echo "# Initial processing of paired-end ddRADseq dataset. #" >> $logName;
+	echo "#====================================================#" >> $logName;
 
 	# Align fastq against genome.
 	echo "[[=- Align with Bowtie -=]]" >> $logName;

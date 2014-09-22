@@ -34,12 +34,20 @@ end;
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 
 if (exist([[main_dir 'users/default/hapmaps/' hapmap '/']],'dir') == 7)
-	hapmapDir = [main_dir 'users/default/hapmaps/' hapmap '/'];
+    hapmapDir  = [main_dir 'users/default/hapmaps/' hapmap '/'];
+    hapmapUser = 'default';
+    useHapmap  = true;
 elseif (exist([[main_dir 'users/' user '/hapmaps/' hapmap '/']],'dir') == 7)
-	hapmapDir = [main_dir 'users/' user '/hapmaps/' hapmap '/'];
+    hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];
+    hapmapUser = user;
+    useHapmap  = true;
 else
-	hapmapDir = [main_dir 'users/' user '/projects/' project '/'];
+    hapmapDir  = [main_dir 'users/' user '/projects/' project '/'];
+    parentFile = [main_dir 'users/' user '/projects/' project '/parent.txt'];
+    parent     = strtrim(fileread(parentFile));
+    useHapmap  = false;
 end;
+
 
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
 
@@ -130,6 +138,102 @@ cen_tel_Xindent  = 5;
 cen_tel_Yindent  = maxY/5;
 
 %define colors for colorBars plot
+colorNoData     = [1.0   1.0   1.0  ]; %used when no data is available for the bin.
+colorInit       = [0.5   0.5   0.5  ]; %external; used in blending at ends of chr.
+
+if (useHapmap == true)
+    %% Load color names defined for hapmap;
+    colorsFile = [hapmapDir 'colors.txt'];
+    if (exist(colorsFile,'file') == 2)
+        colors_fid = fopen([main_dir 'users/' hapmapUser '/hapmaps/' hapmap '/colors.txt'], 'r');
+        % The swapped colors are to correct for a polarity mistake in the python preprocessing steps.
+        %    correcting the error there would require reprocessing all current datasets.
+        colorB_string = fgetl(colors_fid);
+        colorA_string = fgetl(colors_fid);
+        fclose(colors_fid);
+    else
+        colorB_string = 'red';
+        colorA_string = 'red';
+    end;
+    fprintf(['\nHapmap colors:\n\tcolorA = ' colorA_string '\n\tcolorB = ' colorB_string '\n\n']);
+    switch colorA_string
+        case 'deep pink'
+            homolog_a_color = [1.0 0.0 0.5];
+        case 'magenta'
+            homolog_a_color = [1.0 0.0 1.0];
+        case 'electric indigo'
+            homolog_a_color = [0.5 0.0 1.0];
+        case 'blue'
+            homolog_a_color = [0.0 0.0 1.0];
+        case 'dodger blue'
+            homolog_a_color = [0.0 0.5 1.0];
+        case 'cyan'
+            homolog_a_color = [0.0 1.0 1.0];
+        case 'spring green'
+            homolog_a_color = [0.0 1.0 0.5];
+        case 'green'
+            homolog_a_color = [0.0 1.0 0.0];
+        case 'chartreuse'
+            homolog_a_color = [0.5 1.0 0.0];
+        case 'yellow'
+            homolog_a_color = [1.0 1.0 0.0];
+        case 'dark orange'
+            homolog_a_color = [1.0 0.5 0.0];
+        case 'red'
+            homolog_a_color = [1.0 0.0 0.0];
+    end;
+	switch colorB_string
+        case 'deep pink'
+            homolog_b_color = [1.0 0.0 0.5];
+        case 'magenta'
+            homolog_b_color = [1.0 0.0 1.0];
+        case 'electric indigo'
+            homolog_b_color = [0.5 0.0 1.0];
+        case 'blue'
+            homolog_b_color = [0.0 0.0 1.0];
+        case 'dodger blue'
+            homolog_b_color = [0.0 0.5 1.0];
+        case 'cyan'
+            homolog_b_color = [0.0 1.0 1.0];
+        case 'spring green'
+            homolog_b_color = [0.0 1.0 0.5];
+        case 'green'
+            homolog_b_color = [0.0 1.0 0.0];
+        case 'chartreuse'
+            homolog_b_color = [0.5 1.0 0.0];
+        case 'yellow'
+            homolog_b_color = [1.0 1.0 0.0];
+        case 'dark orange'
+            homolog_b_color = [1.0 0.5 0.0];
+        case 'red'
+            homolog_b_color = [1.0 0.0 0.0];
+    end;
+    het_color             = [0.66667 0.66667 0.66667]; % heterozygous.
+    hom_unphased_color    = [1.0     0.0     0.0    ]; % completely homozygous.
+    het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
+    oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+else
+    % Haplotype map is not in use.
+	if (strcmp(project,hapmap) == 1)
+        % The 'project' is the same as the 'hapmap'/'parent'.
+        homolog_a_color       = [0.66667 0.66667 0.66667];
+        homolog_b_color       = [0.66667 0.66667 0.66667];
+        het_color             = [0.66667 0.66667 0.66667]; % heterozygous.
+        hom_unphased_color    = [0.66667 0.66667 0.66667]; % homozygous, unphased.
+        het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
+        oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+    else
+        % The 'project' is different than the 'hapmap'/'parent'.
+        homolog_a_color       = [1.0 0.0 0.0];
+        homolog_b_color       = [1.0 0.0 0.0];
+        het_color             = [0.66667 0.66667 0.66667]; % heterozygous.
+        hom_unphased_color    = [1.0     0.0     0.0    ]; % homozygous, unphased.
+        het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
+        oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+    end;
+end;
+
+%define colors for colorBars plot
 colorNoData = [1.0   1.0   1.0  ];   % used when no data is available for the bin.
 colorInit   = [0.5   0.5   0.5  ];   % external; used in blending at ends of chr.
 colorHET    = [0.0   0.0   0.0  ];   % near 1:1 ratio SNPs
@@ -137,20 +241,116 @@ colorOddHET = [0.0   1.0   0.0  ];   % Het, but not near 1:1 ratio SNPs.
 colorHOM    = [1.0   0.0   0.0  ];   % Hom SNPs;
 
 colorAB     = [0.667 0.667 0.667];   % heterozygous.
-colorA      = [1.0   0.0   1.0  ];   % homozygous a:magenta.
-colorB      = [0.0   1.0   1.0  ];   % homozygous b:cyan.
-%colorAAB    = [0.667 0.333 1.0  ];  % heterozygous trisomy, aab.
-%colorABB    = [0.333 0.667 1.0  ];  % heterozygous trisomy, abb.
-%colorAAAB   = [0.75   0.25   1.0];  % heterozygous tetrasomy, aaab.
-%colorABBB   = [0.25   0.75   1.0];  % heterozygous tetrasomy, abbb.
-%colorAAAAB  = [0.8    0.2    1.0];  % heterozygous pentasomy, aaaab.
-%colorAAABB  = [0.6    0.4    1.0];  % heterozygous pentasomy, aaabb.
-%colorAABBB  = [0.4    0.6    1.0];  % heterozygous pentasomy, aabbb.
-%colorABBBB  = [0.2    0.8    1.0];  % heterozygous pentasomy, abbbb.
-%colorAAAAAB = [0.8333 0.1667 1.0];  % heterozygous hexasomy, aaaaab.
-%colorABBBBB = [0.1667 0.8333 1.0];  % heterozygous hexasomy, abbbbb.
-%colorPeak   = [0.5   0.5   0.5  ];  % peak locations.
-%colorCutoff = [1.0   0.0   0.0  ];  % cutoff locations.
+colorA      = homolog_a_color;
+colorB      = homolog_b_color;
+colorHET    = colorAB;
+
+% phased data colors.
+    % haploid colors.
+    colorA          = homolog_a_color;
+    colorB          = homolog_b_color;
+    % diploid colors.
+    colorAA         = homolog_a_color;
+    colorAB         = het_color;
+    colorBB         = homolog_b_color;
+    % triploid colors.
+    colorAAA        = homolog_a_color;
+    colorAAB        = homolog_a_color*2/3 + homolog_b_color*1/3;
+    colorABB        = homolog_a_color*1/3 + homolog_b_color*2/3;
+    colorBBB        = homolog_b_color;
+    % tetraploid colors.
+    colorAAAA       = homolog_a_color;
+    colorAAAB       = homolog_a_color*3/4 + homolog_b_color*1/4;
+    colorAABB       = het_color;
+    colorABBB       = homolog_a_color*1/4 + homolog_b_color*3/4;
+    colorBBBB       = homolog_b_color;
+    % pentaploid colors.
+    colorAAAAA      = homolog_a_color;
+    colorAAAAB      = homolog_a_color*4/5 + homolog_b_color*1/5;
+    colorAAABB      = homolog_a_color*3/5 + homolog_b_color*2/5;
+    colorAABBB      = homolog_a_color*2/5 + homolog_b_color*3/5;
+    colorABBBB      = homolog_a_color*1/5 + homolog_b_color*4/5;
+    colorBBBBB      = homolog_b_color;
+    % hexaploid colors.
+    colorAAAAAA     = homolog_a_color;
+    colorAAAAAB     = homolog_a_color*5/6 + homolog_b_color*1/6;
+    colorAAAABB     = homolog_a_color*4/6 + homolog_b_color*2/6;
+    colorAAABBB     = het_color;
+    colorAABBBB     = homolog_a_color*2/6 + homolog_b_color*4/6;
+    colorABBBBB     = homolog_a_color*1/6 + homolog_b_color*5/6;
+    colorBBBBBB     = homolog_b_color;
+    % heptaploid colors.
+	colorAAAAAAA    = homolog_a_color;
+    colorAAAAAAB    = homolog_a_color*6/7 + homolog_b_color*1/7;
+    colorAAAAABB    = homolog_a_color*5/7 + homolog_b_color*2/7;
+    colorAAAABBB    = homolog_a_color*4/7 + homolog_b_color*3/7;
+    colorAAABBBB    = homolog_a_color*3/7 + homolog_b_color*4/7;
+    colorAABBBBB    = homolog_a_color*2/7 + homolog_b_color*5/7;
+    colorABBBBBB    = homolog_a_color*1/7 + homolog_b_color*6/7;
+    colorBBBBBBB    = homolog_b_color;
+    % octaploid colors.
+    colorAAAAAAAA   = homolog_a_color;
+    colorAAAAAAAB   = homolog_a_color*7/8 + homolog_b_color*1/8;
+    colorAAAAAABB   = homolog_a_color*6/8 + homolog_b_color*2/8;
+    colorAAAAABBB   = homolog_a_color*5/8 + homolog_b_color*3/8;
+    colorAAAABBBB   = het_color;
+    colorAAABBBBB   = homolog_a_color*3/8 + homolog_b_color*5/8;
+    colorAABBBBBB   = homolog_a_color*2/8 + homolog_b_color*6/8;
+    colorABBBBBBB   = homolog_a_color*1/8 + homolog_b_color*7/8;
+    colorBBBBBBBB   = homolog_b_color;
+    % nonaploid colors.
+    colorAAAAAAAAA  = homolog_a_color;
+    colorAAAAAAAAB  = homolog_a_color*8/9 + homolog_b_color*1/9;
+    colorAAAAAAABB  = homolog_a_color*7/9 + homolog_b_color*2/9;
+    colorAAAAAABBB  = homolog_a_color*6/9 + homolog_b_color*3/9;
+    colorAAAAABBBB  = homolog_a_color*5/9 + homolog_b_color*4/9;
+    colorAAAABBBBB  = homolog_a_color*4/9 + homolog_b_color*5/9;
+    colorAAABBBBBB  = homolog_a_color*3/9 + homolog_b_color*6/9;
+    colorAABBBBBBB  = homolog_a_color*2/9 + homolog_b_color*7/9;
+    colorABBBBBBBB  = homolog_a_color*1/9 + homolog_b_color*8/9;
+    colorBBBBBBBBB  = homolog_b_color;
+
+% unphased colors.
+    % haploid colors.
+    unphased_color_1of1 = hom_unphased_color;
+    % diploid colors.
+    unphased_color_2of2 = hom_unphased_color;
+    unphased_color_1of2 = het_unphased_color;
+    % triploid colors.
+    unphased_color_3of3 = hom_unphased_color;
+    unphased_color_2of3 = hom_unphased_color*2/3 + het_unphased_color*1/3;
+    % tetraploid colors.
+    unphased_color_4of4 = hom_unphased_color;
+    unphased_color_3of4 = hom_unphased_color*3/4 + het_unphased_color*1/4;
+    unphased_color_2of4 = het_unphased_color;
+    % pentaploid colors.
+    unphased_color_5of5 = hom_unphased_color;
+    unphased_color_4of5 = hom_unphased_color*4/5 + het_unphased_color*1/5;
+    unphased_color_3of5 = hom_unphased_color*3/5 + het_unphased_color*2/5;
+    % hexaploid colors.
+    unphased_color_6of6 = hom_unphased_color;
+    unphased_color_5of6 = hom_unphased_color*5/6 + het_unphased_color*1/6;
+    unphased_color_4of6 = hom_unphased_color*4/6 + het_unphased_color*2/6;
+    unphased_color_3of6 = het_unphased_color;
+    % heptaploid colors.
+	unphased_color_7of7 = hom_unphased_color;
+    unphased_color_6of7 = hom_unphased_color*6/7 + het_unphased_color*1/7;
+    unphased_color_5of7 = hom_unphased_color*5/7 + het_unphased_color*2/7;
+    unphased_color_4of7 = hom_unphased_color*4/7 + het_unphased_color*3/7;
+    % octaploid colors.
+    unphased_color_8of8 = hom_unphased_color;
+    unphased_color_7of8 = hom_unphased_color*7/8 + het_unphased_color*1/8;
+    unphased_color_6of8 = hom_unphased_color*6/8 + het_unphased_color*2/8;
+    unphased_color_5of8 = hom_unphased_color*5/8 + het_unphased_color*3/8;
+    unphased_color_4of8 = het_unphased_color;
+    % nonaploid colors.
+    unphased_color_9of9 = hom_unphased_color;
+    unphased_color_8of9 = hom_unphased_color*8/9 + het_unphased_color*1/9;
+    unphased_color_7of9 = hom_unphased_color*7/9 + het_unphased_color*2/9;
+    unphased_color_6of9 = hom_unphased_color*6/9 + het_unphased_color*3/9;
+    unphased_color_5of9 = hom_unphased_color*5/9 + het_unphased_color*4/9;
+
+
 
 fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
 
@@ -369,8 +569,8 @@ fprintf(['GCratioData_all => ' num2str(length(GCratioData_all)) '\n']);
 %% Clean up data by:
 %%    deleting GC ratio data near zero.
 %%    deleting CGH data beyond 3* the median value.  (rDNA, etc.)
-SNPdata_clean                                            = SNPdata_all;
-GCratioData_clean                                        = GCratioData_all;
+SNPdata_clean                                            = SNPdata_all
+GCratioData_clean                                        = GCratioData_all
 SNPdata_clean(     GCratioData_clean < 0.01            ) = [];
 GCratioData_clean( GCratioData_clean < 0.01            ) = [];
 GCratioData_clean( SNPdata_clean > max(medianRawY*3,3) ) = [];
@@ -379,8 +579,8 @@ GCratioData_clean( SNPdata_clean == 0                  ) = [];
 SNPdata_clean(     SNPdata_clean == 0                  ) = [];
 
 % Perform LOWESS fitting.
-rawData_X1     = GCratioData_clean;
-rawData_Y1     = SNPdata_clean;
+rawData_X1     = GCratioData_clean
+rawData_Y1     = SNPdata_clean
 fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 [fitX1, fitY1] = optimize_mylowess_SNP(rawData_X1,rawData_Y1);
 
@@ -491,7 +691,6 @@ saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
 % threshold for full color saturation in SNP/LOH figure.
 % synced to bases_per_bin as below, or defaulted to 50.
 full_data_threshold = floor(bases_per_bin/100);
-
 fig = figure(1);
 set(gcf, 'Position', [0 70 1024 600]);
 data_mode = 1;
@@ -500,24 +699,34 @@ for chr = 1:num_chrs
 		if (data_mode == 1)
 			for chr_bin = 1:length(chr_SNPdata{chr,1})
 				% Regenerate chr plot data if the save file does not exist.
-				SNPs_count{chr}(chr_bin)                                     = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});   % the number of data points in this bin.
-				SNPs_to_fullData_ratio{chr}(chr_bin)                         = SNPs_count{chr}(chr_bin)/full_data_threshold;                                % divide by the threshold for full color saturation in SNP/LOH figure.
-				SNPs_to_fullData_ratio{chr}(SNPs_to_fullData_ratio{chr} > 1) = 1;                                                                           % any bins with more data than the threshold for full color saturation around limited to full saturation.
 
-				% darren
-				%fprintf(['chr' num2str(chr) ':chr_bin' num2str(chr_bin) ' => copyNum' num2str(round()) '; data = (' num2str(chr_SNPdata{chr,1}{chr_bin}) '):(' num2str(chr_SNPdata{chr,2}{chr_bin}) ')\n']);
+				% the number of heterozygous data points in this bin.
+				SNPs_count{chr}(chr_bin)                                     = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});
 
-				HETplot{chr}(chr_bin)                  = length(chr_SNPdata{chr,2}{chr_bin});         % unphased data.
-				HETplot2{chr}(chr_bin)                 = HETplot{chr}(chr_bin)/full_data_threshold;   %
-				HETplot2{chr}(HETplot2{chr} > 1)       = 1;                                           %
+				% divide by the threshold for full color saturation in SNP/LOH figure.
+				SNPs_to_fullData_ratio{chr}(chr_bin)                         = SNPs_count{chr}(chr_bin)/full_data_threshold;
 
-				ODDHETplot{chr}(chr_bin)               = length(chr_SNPdata{chr,2}{chr_bin});         % unphased data.
-				ODDHETplot2{chr}(chr_bin)              = HETplot{chr}(chr_bin)/full_data_threshold;   %
-				ODDHETplot2{chr}(HETplot2{chr} > 1)    = 1;                                           %
+				% any bins with more data than the threshold for full color saturation around limited to full saturation.
+				SNPs_to_fullData_ratio{chr}(SNPs_to_fullData_ratio{chr} > 1) = 1;
 
-				HOMplot{chr}(chr_bin)                  = length(chr_SNPdata{chr,1}{chr_bin});         % phased data.
-				HOMplot2{chr}(chr_bin)                 = HOMplot{chr}(chr_bin)/full_data_threshold;   %
-				HOMplot2{chr}(HOMplot2{chr} > 1)       = 1;                                           %
+				% fprintf(['chr' num2str(chr) ':chr_bin' num2str(chr_bin) ' => copyNum' num2str(round()) '; data = (' num2str(chr_SNPdata{chr,1}{chr_bin}) '):(' num2str(chr_SNPdata{chr,2}{chr_bin}) ')\n']);
+				%
+				% HETplot{chr}(chr_bin)                        = length(chr_SNPdata{chr,2}{chr_bin});         % unphased data.
+				% HETplot2{chr}(chr_bin)                       = HETplot{chr}(chr_bin)/full_data_threshold;   %
+				% HETplot2{chr}(HETplot2{chr} > 1)             = 1;                                           %
+				% ODDHETplot{chr}(chr_bin)                     = length(chr_SNPdata{chr,2}{chr_bin});         % unphased data.
+				% ODDHETplot2{chr}(chr_bin)                    = HETplot{chr}(chr_bin)/full_data_threshold;   %
+				% ODDHETplot2{chr}(HETplot2{chr} > 1)          = 1;                                           %
+				% HOMplot{chr}(chr_bin)                        = length(chr_SNPdata{chr,1}{chr_bin});         % phased data.
+				% HOMplot2{chr}(chr_bin)                       = HOMplot{chr}(chr_bin)/full_data_threshold;   %
+				% HOMplot2{chr}(HOMplot2{chr} > 1)             = 1;                                           %
+
+				phased_plot{chr}(chr_bin)                    = length(chr_SNPdata{chr,1}{chr_bin});             % phased data.
+				phased_plot2{chr}(chr_bin)                   = phased_plot{chr}(chr_bin)/full_data_threshold;   %
+				phased_plot2{chr}(phased_plot2{chr} > 1)     = 1;                                               %
+				unphased_plot{chr}(chr_bin)                  = length(chr_SNPdata{chr,2}{chr_bin});             % unphased data.
+				unphased_plot2{chr}(chr_bin)                 = unphased_plot{chr}(chr_bin)/full_data_threshold; %
+				unphased_plot2{chr}(unphased_plot2{chr} > 1) = 1;                                               %
 			end;
 		end;
 	end;
@@ -552,50 +761,115 @@ for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 	    figure(fig);
 	    % make standard chr cartoons.
-	    left   = chr_posX(chr);
-	    bottom = chr_posY(chr);
-	    width  = chr_width(chr);
-	    height = chr_height(chr);
-	    subplot('Position',[left bottom width height]);
+	    left          = chr_posX(chr);
+	    bottom        = chr_posY(chr);
+	    width         = chr_width(chr);
+	    height        = chr_height(chr);
+	    subPlotHandle = subplot('Position',[left bottom width height]);
 	    fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 	    hold on;
 
 	    c_prev = colorInit;
 	    c_post = colorInit;
 	    c_     = c_prev;
-	    infill = zeros(1,length(HETplot2{chr}));
+	    infill = zeros(1,length(phased_plot2{chr}));
 	    colors = [];
     
-	    % determines the color of each bin.
-	    for i = 1:length(SNPs_to_fullData_ratio{chr})+1;
-	        if (i-1 < length(SNPs_to_fullData_ratio{chr}))
-	            c_tot_post = SNPs_to_fullData_ratio{chr}(i)+SNPs_to_fullData_ratio{chr}(i);
+%       % Load Gaussian fitting-based ratio cutoffs from earlier calculations.
+%       peaks               = chrSegment_peaks{chr,segment};
+%       mostLikelyGaussians = chrSegment_mostLikelyGaussians{chr,segment};
+%       actual_cutoffs      = chrSegment_actual_cutoffs{chr,segment};
+% darrenabbey
+% Attempt to move color calls to Gaussian fit based cutoffs, rather than predefined edges, will require better ChARM finding of edges.
+
+	    % standard : determines the color of each bin.
+	    for chr_bin = 1:length(SNPs_to_fullData_ratio{chr})+1;
+	        if (chr_bin-1 < length(SNPs_to_fullData_ratio{chr}))
+	            c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
 	            if (c_tot_post == 0)
 	                c_post = colorNoData;
+					fprintf('.');
+                    if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
 	            else
+					% Define colorMix using localized copy number estimate to define SNP cutoff thresholds,
+                    %     then the ratio of SNP data in each SNP ratio bin.
+                    % For testing, consider all loci haploid, so only two ratio bins.
+                    ratioData_phased    = chr_SNPdata{chr,1}{chr_bin};
+                    ratioData_unphased  = chr_SNPdata{chr,2}{chr_bin};
+                    coordinate_phased   = chr_SNPdata{chr,3}{chr_bin};
+                    coordinate_unphased = chr_SNPdata{chr,4}{chr_bin};
+                    colors_phased       = cell(1,length(coordinate_phased));
+                    colors_unphased     = cell(1,length(coordinate_unphased));
+
 					% darren
-					%colorMix =   colorHET    *   HETplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i) + ...
+					%colorMix =   colorHET    *   phased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin) + ...
 					%             colorOddHET *   dddd
-					%             colorHOM    *   HOMplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i);
-					colorMix = colorHET    *   HETplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i) + ...
-					           colorHOM    *   HOMplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i);
-					c_post =     colorMix    *   min(1,SNPs_to_fullData_ratio{chr}(i)) + ...
-					             colorNoData *(1-min(1,SNPs_to_fullData_ratio{chr}(i)));
+					%             colorHOM    *   unphased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin);
+
+					%	%
+					%	% Older color determining code: relies on previous het-vs-hom determination.
+					%	%
+					%	colorMix = colorHET   *   phased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin) + ...
+					%	           colorHOM   *   unphased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin);
+
+					%
+					% Newer color determining code: 
+					%
+					binCounts_phased   = zeros(1,3);
+					binCounts_unphased = zeros(1,2);
+					if (length(ratioData_phased) > 0)
+						for i = 1:length(ratioData_phased)
+							if (ratioData_phased(i) < 1/4);
+								binCounts_phased(1) = binCounts_phased(1)+1;
+								colors_phased{i}    = colorAA;
+							elseif (ratioData_phased(i) > 3/4);
+								binCounts_phased(3) = binCounts_phased(3)+1;
+								colors_phased{i}    = colorBB;
+							else
+								binCounts_phased(2) = binCounts_phased(2)+1;
+								colors_phased{i}    = colorAB;
+							end;
+						end;
+					end;
+					if (length(ratioData_unphased) > 0)
+						for i = 1:length(ratioData_unphased)
+							if (ratioData_unphased(i) < 1/4);
+								binCounts_unphased(1) = binCounts_unphased(1)+1;
+								colors_unphased{i}    = unphased_color_2of2;
+							elseif (ratioData_unphased(i) > 3/4);
+								binCounts_unphased(1) = binCounts_unphased(1)+1;
+								colors_unphased{i}    = unphased_color_2of2;
+							else
+								binCounts_unphased(2) = binCounts_unphased(2)+1;
+								colors_unphased{i}    = unphased_color_1of2;
+							end;
+						end;
+					end;
+					colorMix = colorAA             * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
+					           colorAB             * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
+					           colorBB             * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
+					           unphased_color_2of2 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
+					           unphased_color_1of2 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased));
+
+
+					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + ...
+					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
 	            end;
 	        else
 	            c_post = colorInit;
 	        end;
-	        colors(i,1) = c_post(1);
-	        colors(i,2) = c_post(2);
-	        colors(i,3) = c_post(3);
+	        colors(chr_bin,1) = c_post(1);
+	        colors(chr_bin,2) = c_post(2);
+	        colors(chr_bin,3) = c_post(3);
 	    end;
-	    % draw colorbars.
-	    for i = 1:length(HETplot2{chr})+1;
-	        x_ = [i i i-1 i-1];
+
+	    % standard : draw colorbars.
+	    for chr_bin = 1:length(phased_plot2{chr})+1;
+	        x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 	        y_ = [0 maxY maxY 0];
-	        c_post(1) = colors(i,1);
-	        c_post(2) = colors(i,2);
-	        c_post(3) = colors(i,3);
+	        c_post(1) = colors(chr_bin,1);
+	        c_post(2) = colors(chr_bin,2);
+	        c_post(3) = colors(chr_bin,3);
 	        % makes a colorBar for each bin, using local smoothing
 	        if (c_(1) > 1); c_(1) = 1; end;
 	        if (c_(2) > 1); c_(2) = 1; end;
@@ -693,19 +967,19 @@ for chr = 1:num_chrs
 	        plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 	        hold on;
 	        annotation_location = (annotation_start+annotation_end)./2;
-	        for i = 1:length(annotation_location)
-	            if (annotation_chr(i) == chr)
-	                annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                if (strcmp(annotation_type{i},'dot') == 1)
-	                    plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-	                                                          'MarkerFaceColor',annotation_fillcolor{i}, ...
-	                                                          'MarkerSize',     annotation_size(i));
-	                elseif (strcmp(annotation_type{i},'block') == 1)
+	        for chr_bin = 1:length(annotation_location)
+	            if (annotation_chr(chr_bin) == chr)
+	                annotationloc = annotation_location(chr_bin)/bases_per_bin-0.5*(5000/bases_per_bin);
+	                annotationStart = annotation_start(chr_bin)/bases_per_bin-0.5*(5000/bases_per_bin);
+	                annotationEnd   = annotation_end(chr_bin)/bases_per_bin-0.5*(5000/bases_per_bin);
+	                if (strcmp(annotation_type{chr_bin},'dot') == 1)
+	                    plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{chr_bin}, ...
+	                                                          'MarkerFaceColor',annotation_fillcolor{chr_bin}, ...
+	                                                          'MarkerSize',     annotation_size(chr_bin));
+	                elseif (strcmp(annotation_type{chr_bin},'block') == 1)
 	                    fill([annotationStart annotationStart annotationEnd annotationEnd], ...
 	                         [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-	                         annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+	                         annotation_fillcolor{chr_bin},'EdgeColor',annotation_edgecolor{chr_bin});
 	                end;
 	            end;
 	        end;
@@ -723,7 +997,7 @@ for chr = 1:num_chrs
 	        title(chr_label{chr},'Interpreter','none','FontSize',20);
 
 	        % draw colorbars.
-	        for i = 1:length(HETplot2{chr})+1;
+	        for i = 1:length(phased_plot2{chr})+1;
 	            x_ = [i i i-1 i-1];
 	            y_ = [0 maxY maxY 0];
 	            c_post(1) = colors(i,1);
@@ -746,7 +1020,7 @@ for chr = 1:num_chrs
 	        %show segmental anueploidy breakpoints.
 	        if (displayBREAKS == true)
 	            for segment = 2:length(chr_breaks{chr})-1
-	                bP = chr_breaks{chr}(segment)*length(HETplot2{chr});
+	                bP = chr_breaks{chr}(segment)*length(phased_plot2{chr});
 	                c_ = [0 0 1];
 	                x_ = [bP bP bP-1 bP-1];
 	                y_ = [0 maxY maxY 0];
@@ -810,19 +1084,19 @@ for chr = 1:num_chrs
 	            plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 	            hold on;
 	            annotation_location = (annotation_start+annotation_end)./2;
-	            for i = 1:length(annotation_location)
-	                if (annotation_chr(i) == chr)
-	                    annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                    annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                    annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                    if (strcmp(annotation_type{i},'dot') == 1)
-	                        plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-	                                                              'MarkerFaceColor',annotation_fillcolor{i}, ...
-	                                                              'MarkerSize',     annotation_size(i));
-	                    elseif (strcmp(annotation_type{i},'block') == 1)
+	            for chr_bin = 1:length(annotation_location)
+	                if (annotation_chr(chr_bin) == chr)
+	                    annotationloc = annotation_location(chr_bin)/bases_per_bin-0.5*(5000/bases_per_bin);
+	                    annotationStart = annotation_start(chr_bin)/bases_per_bin-0.5*(5000/bases_per_bin);
+	                    annotationEnd   = annotation_end(chr_bin)/bases_per_bin-0.5*(5000/bases_per_bin);
+	                    if (strcmp(annotation_type{chr_bin},'dot') == 1)
+	                        plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{chr_bin}, ...
+	                                                              'MarkerFaceColor',annotation_fillcolor{chr_bin}, ...
+	                                                              'MarkerSize',     annotation_size(chr_bin));
+	                    elseif (strcmp(annotation_type{chr_bin},'block') == 1)
 	                        fill([annotationStart annotationStart annotationEnd annotationEnd], ...
 	                             [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-	                             annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+	                             annotation_fillcolor{chr_bin},'EdgeColor',annotation_edgecolor{chr_bin});
 	                    end;
 	                end;
 	            end;

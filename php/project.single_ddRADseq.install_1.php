@@ -36,7 +36,7 @@
 //$key      = "p_0";
 
 // Initialize log file.
-	$logOutputName = $directory."users/".$user."/projects/".$project."/process_log.txt";
+	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
 	fwrite($logOutput, "#..............................................................................\n");
@@ -48,14 +48,14 @@
 	fwrite($logOutput, "\tkey      = '".$key."'\n");
 	fwrite($logOutput, "#============================================================================== 1\n");
 
-	$condensedLogOutputName = $directory."users/".$user."/projects/".$project."/condensed_log.txt";
+	$condensedLogOutputName = "../users/".$user."/projects/".$project."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
-	chmod($outputName,0755);
+	chmod($condensedLogOutputName,0755);
 
 // Generate 'working.txt' file to let pipeline know processing is started.
-	$outputName      = $directory."users/".$user."/projects/".$project."/working.txt";
+	$outputName      = "../users/".$user."/projects/".$project."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
@@ -65,7 +65,7 @@
 
 // Installation continues with next php script... strings recieved as POST are forwarded to next script.
 	fwrite($logOutput, "Passing control to : 'php/project.single_ddRADseq.install_2.php'\n");
- 	$system_call_string = "php project.single_ddRADseq.install_2.php ".$fileName." ".$user." ".$project." ".$directory." > /dev/null &";
+ 	$system_call_string = "php project.single_ddRADseq.install_2.php ".$fileName." ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 
 	fwrite($logOutput, "Loading 'project.working_server.2.php' into iframe.\n");

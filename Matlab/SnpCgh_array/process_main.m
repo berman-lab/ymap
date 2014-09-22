@@ -6,8 +6,6 @@ function [result_image_location, archive_data_location] = ...
 % This version does not load calibration data and generate a hapmap...   see 'calibration_setup.m' for relevant script.
 %
 
-% scriptDir = '/heap/hapmap/bermanlab/Matlab/SnpCgh_array/';
-
 %%% Let the processing pipeline know that the analysis has started.
 %new_fid = fopen([workingDir 'working.txt'],'a');
 %fprintf(new_fid,'working');
@@ -32,6 +30,10 @@ fprintf(['    12 : image format         : ' image_format       '\n']);
 fprintf(['    13 : experiment name      : ' experiment_name    '\n']);
 fprintf(['    14 : working directory    : ' workingDir         '\n']);
 fprintf(['    15 : show MRS annotations : ' show_MRS_string    '\n']);
+
+fprintf(['[process_main.m] : current folder.\n']);
+	currentDir = pwd;
+    fprintf(['    ' currentDir '\n']);
 
 % calibration_file = ['designs/' microarray_design '/' phasing_dataset '.mat'];
 % designs/
@@ -375,7 +377,7 @@ if (performGCbiasCorrection)
 	rawData_X1        = GCratioData_all;
 	rawData_Y1        = CGHdata_all;
 	numFits           = 10;
-	[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0);
+	[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0, 3);
 
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
@@ -556,7 +558,7 @@ end;
 % Initialize CGD annotation output file.
 %----------------------------------------------------------------------
 if (Output_CGD_annotations == true)
-	CGDid = fopen([workingDir 'CGD_annotations.' experiment_name '.txt'], 'w');
+	CGDid = fopen([workingDir 'CGD_annotations.SNP.txt'], 'w');
 	fprintf(CGDid,['track name=' experiment_name ' description="SNP/CGH microarray annotation of SNPs" useScore=0 itemRGB=On\n']);
 end;
 
@@ -1599,9 +1601,9 @@ archive_data_location = {	[workingDir microarray_design '.' strrep(experiment_na
 							[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.datasetDetails.mat']};
 
 %% Let the processing pipeline know that the analysis has completed.
-new_fid        = fopen([workingDir 'complete.txt'],'w');
-completionTime = datestr(clock, 0)
-fprintf(new_fid,completionTime);
-fclose(new_fid);
+% new_fid        = fopen([workingDir 'complete.txt'],'w');
+% completionTime = datestr(clock, 0)
+% fprintf(new_fid,completionTime);
+% fclose(new_fid);
 
 end

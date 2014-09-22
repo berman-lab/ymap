@@ -55,7 +55,7 @@
 	$annotation_sizes      = array();
 
 // Open 'process_log.txt' file.
-    $logOutputName = $directory."users/".$user."/genomes/".$genome."/process_log.txt";
+    $logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
     $logOutput     = fopen($logOutputName, 'a');
     fwrite($logOutput, "Running 'php/genome.install_3.php'.\n");
 
@@ -83,7 +83,7 @@
 
 	// Generate 'annotations.txt' :
 	fwrite($logOutput, "\tGenerating 'annotations.txt' file.\n");
-    $outputName       = $directory."users/".$user."/genomes/".$genome."/annotations.txt";
+    $outputName       = "../users/".$user."/genomes/".$genome."/annotations.txt";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
@@ -105,7 +105,11 @@
 //	print_r($GLOBALS);
 
 	if ($expression_regions == "on") {
-		echo "<BODY>\n";
+		//
+		// Chromosome features file available, so request user input about file format.
+		//
+		echo "<BODY onload = \"parent.parent.resize_genome('".$key."', 155);\">\n";
+		echo "    <div style='margin-left:1cm'>";
 		echo "    <font color='red' size='2'>Enter ORF description file details:</font>\n";
 		echo "    <form name='processing_form' id='processing_form' action='genome.install_4.php' method='post'>\n";
 		echo "    <font size='2'>\n";
@@ -117,9 +121,13 @@
 		echo "    <input type='submit' id='form_submit' name='form_submit' value='Save genome feature description details...'>\n";
 		echo "    <input type='hidden' id='key' name='key' value='".$key."'>\n";
 		echo "    </form>\n";
+		echo "    </div>";
 		echo "</BODY>\n";
 	} else {
-		echo "<BODY onload = \"parent.resize_iframe('".$key."', 100); document.processing_form.submit();\">\n";
+		//
+		// Chromosome features file is not available, so go directly to "genome.install_5.php".
+		//
+		echo "<BODY onload = \"parent.parent.resize_genome('".$key."', 100); document.processing_form.submit();\">\n";
 		echo "    <form name='processing_form' id='processing_form' action='genome.install_5.php' method='post'>\n";
 		echo "    <input type='submit' id='form_submit' name='form_submit' value='Continue to processing...' style='visibility:hidden' disabled>\n";
 		echo "    <input type='hidden' id='key'      name='key'      value='".$key."'>\n";

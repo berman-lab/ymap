@@ -395,7 +395,7 @@ if (performLengthbiasCorrection)
 	fprintf('Subplot 1/11 : [EXPERIMENT] (Ave read depth) vs. (Fragment length).\n');
 	sh(1) = subplot(5,4,[1 2]);
 	fprintf('\tLOWESS fitting to trimmed project data.\n');
-	[newX1_project, newY1_project]      = optimize_mylowess(X_length_trimmed,Y_reads_project_trimmed,10, fit_length);
+	[newX1_project, newY1_project]      = optimize_mylowess(X_length_trimmed,Y_reads_project_trimmed,10, fit_length, 1);
 	fprintf('\tLOWESS fitting to project data complete.\n');
 	% Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
 	Y_target                    = 1;
@@ -435,7 +435,7 @@ if (performLengthbiasCorrection)
 		fprintf('Subplot 2/11 : [REFERENCE] (Ave read count) vs. (Fragment length).\n');
 		sh(2) = subplot(5,4,[3 4]);
 		fprintf('\tLOWESS fitting to reference data.\n');
-		[newX1_parent, newY1_parent] = optimize_mylowess(X_length_trimmed,Y_reads_parent_trimmed,10, fit_length);
+		[newX1_parent, newY1_parent] = optimize_mylowess(X_length_trimmed,Y_reads_parent_trimmed,10, fit_length, 1);
 		fprintf('\tLOWESS fitting to referemce data complete.\n');
 		% Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
 		Y_target                   = 1;
@@ -608,7 +608,7 @@ if (performGCbiasCorrection)
 	% Perform LOWESS fitting.
 	fprintf('\tLOWESS fitting to project data.\n');
 	if (length(X_GCbias_project_trimmed) > 0)
-		[newX2_project, newY2_project] = optimize_mylowess(X_GCbias_project_trimmed,Y_reads_project_trimmed,10, 0);
+		[newX2_project, newY2_project] = optimize_mylowess(X_GCbias_project_trimmed,Y_reads_project_trimmed,10, 0, 3);
 	else
 		newX2_project = [];
 		newY2_project = [];
@@ -648,7 +648,7 @@ if (performGCbiasCorrection)
 		%-------------------------------------------------------------------------------------------------
 		% Perform LOWESS fitting.
 		fprintf('\tLOWESS fitting to parent data.\n');
-		[newX2_parent, newY2_parent] = optimize_mylowess(X_GCbias_parent_trimmed,Y_reads_parent_trimmed,10, 0);
+		[newX2_parent, newY2_parent] = optimize_mylowess(X_GCbias_parent_trimmed,Y_reads_parent_trimmed,10, 0, 3);
 		fprintf('\tLOWESS fitting to parent data complete.\n');
 		% Calculate GC_bias_corrected length_bia_corrected ave_read_count data for plotting and later analysis.
 		Y_target                   = 1;

@@ -1,0 +1,1 @@
+C_albicans_SC5314_version_A21-s02-m03-r03_chromosomes.fasta

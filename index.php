@@ -1,977 +1,195 @@
-`<?php
+<?php
 	session_start();
 	require_once 'php/constants.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
-	<head>
-		<style type="text/css">
-			body {
-				font-family: arial;
-			}
-			.upload {
-				width:          100%;
-				border:         0;
-				height:         0px;
-				vertical-align: middle;
-				align:          left;
-			}
-			.tab {
-				margin-left:    1cm;
-			}
-		</style>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<title>Y-MAP</title>
+<head>
+	<style type="text/css">
+		html * {
+			font-family: arial !important;
+		}
+		.upload {
+			width:          100%;
+			border:         0;
+			height:         0px;
+			vertical-align: middle;
+			align:          left;
+		}
+		.tab {
+			margin-left:    1cm;
+		}
+		.select {
+			cursor: pointer;
+		}
+	</style>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Y-MAP</title>
 <!-- Used by secondary pages to update page on completion of processing. --!>
-		<script type="text/javascript">
-		function resize_iframe(iframe_key, pixels) {
-			document.getElementById(iframe_key).style.height = pixels+"px";
+	<script type="text/javascript">
+// Project/Dataset interface functions.
+	function showColors(colorName,targetToChange,contentString) {
+		if (document.getElementById(targetToChange)) {
+			var select       = document.getElementById(targetToChange);
+			select.innerHTML = '';
+			fillerString     = '<div style=\"width:35px; height:20px; overflow:hidden; display:inline-block; background-color:';
+			if        (colorName == "deep pink")       { fillerString = fillerString + 'rgb(255,0  ,127)';
+			} else if (colorName == "magenta")         { fillerString = fillerString + 'rgb(255,0  ,255)';
+			} else if (colorName == "electric indigo") { fillerString = fillerString + 'rgb(127,0  ,255)';
+			} else if (colorName == "blue")            { fillerString = fillerString + 'rgb(0  ,0  ,255)';
+			} else if (colorName == "dodger blue")     { fillerString = fillerString + 'rgb(0  ,127,255)';
+			} else if (colorName == "cyan")            { fillerString = fillerString + 'rgb(0  ,255,255)';
+			} else if (colorName == "spring green")    { fillerString = fillerString + 'rgb(0  ,255,127)';
+			} else if (colorName == "green")           { fillerString = fillerString + 'rgb(0  ,255,0  )';
+			} else if (colorName == "chartreuse")      { fillerString = fillerString + 'rgb(127,255,0  )';
+			} else if (colorName == "yellow")          { fillerString = fillerString + 'rgb(255,255,0  )';
+			} else if (colorName == "dark orange")     { fillerString = fillerString + 'rgb(255,127,0  )';
+			} else if (colorName == "red")             { fillerString = fillerString + 'rgb(255,0  ,0  )';
+			} else { fillerString = fillerString + 'rgb(127,127,127)';
+			}
+			fillerString     = fillerString + '\"><center><b>' + contentString + '</b></center></div>';
+			select.innerHTML = fillerString;
 		}
-		function update_project_remove_iframe(project_key) {
-			project_key                          = project_key.replace('p_','');
-			var show_button_element              = document.getElementById('show_'+project_key);
-            show_button_element.style.visibility = 'visible';
-			var project_iframe                   = document.getElementById('frameContainer.p2_'+project_key);
-			project_iframe.innerHTML             = '';
-			document.getElementById("p_".project_key).style.height = "0px";
-		}
-		function update_project_label_color(project_key,label_color) {
-			project_key               = project_key.replace('p_','');
-			var project_label         = document.getElementById('project_label_'+project_key);
-			project_label.style.color = label_color;
-		}
-		function update_hapmap_label_color(hapmap_key,label_color) {
-			hapmap_key               = hapmap_key.replace('h_','');
-			var hapmap_label         = document.getElementById('hapmap_label_'+hapmap_key);
-			hapmap_label.style.color = label_color;
-		}
-		function update_genome_label_color(genome_key,label_color) {
-			genome_key               = genome_key.replace('g_','');
-			var genome_label         = document.getElementById('genome_label_'+genome_key);
-			genome_label.style.color = label_color;
-		}
-		function resize_project(project_key, pixels) {
-			document.getElementById("p_".project_key).style.height = pixels+"px";
-		}
-		function resize_hapmap(hapmap_key, pixels) {
-			document.getElementById("h_".project_key).style.height = pixels+"px";
-		}
-		function resize_genome(genome_key, pixels) {
-			document.getElementById("g_".project_key).style.height = pixels+"px";
-		}
-		var user = "<?php echo $_SESSION['user']?>";
-		</script>
-	</head>
-	<body>
+	}
+	function update_project_remove_iframe(project_key) {
+		project_key                          = project_key.replace('p_','');
+		var show_button_element              = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('show_'+project_key);
+		show_button_element.style.visibility = 'visible';
+		var project_iframe                   = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key);
+		project_iframe.innerHTML             = '';
+		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById("p_".project_key).style.height = "0px";
+	}
+	function update_project_label_color(project_key,label_color) {
+		project_key                = project_key.replace('p_','');
+		var project_label1         = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
+		var project_label2         = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
+		project_label1.style.color = label_color;
+		project_label2.style.color = label_color;
+	}
+	function resize_project(project_key, pixels) {
+		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key).style.height = pixels+"px";
+	}
+
+// Hapmap interface functions.
+	function update_hapmap_label_color(hapmap_key,label_color) {
+		hapmap_key               = hapmap_key.replace('h_','');
+		var hapmap_label         = document.getElementById('panel_hapmap_iframe').contentDocument.getElementById('h_label_'+hapmap_key);
+		hapmap_label.style.color = label_color;
+	}
+	function resize_hapmap(hapmap_key, pixels) {
+		document.getElementById('panel_hapmap_iframe').contentDocument.getElementById(hapmap_key).style.height = pixels+"px";
+	}
+
+// Genome interface functions.
+	function update_genome_remove_iframe(genome_key) {
+		console.log("$$ genome_key = '"+genome_key+"'");
+		genome_key                           = genome_key.replace('g_','');
+		var show_button_element              = document.getElementById('panel_genome_iframe').contentDocument.getElementById('show_'+genome_key);
+		show_button_element.style.visibility = 'visible';
+		var genome_iframe                    = document.getElementById('panel_genome_iframe').contentDocument.getElementById('frameContainer.g1_'+genome_key);
+		genome_iframe.innerHTML              = '';
+		document.getElementById("g_".genome_key).style.height = "0px";
+	}
+	function update_genome_label_color(genome_key,label_color) {
+		genome_key               = genome_key.replace('g_','');
+		var genome_label         = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_label_'+genome_key);
+		genome_label.style.color = label_color;
+	}
+	function resize_genome(genome_key, pixels) {
+		document.getElementById('panel_genome_iframe').contentDocument.getElementById(genome_key).style.height = pixels+"px";
+	}
+
+	if ('<?php isset($_SESSION['logged_on']) ?>' == '') {
+		var user = "default";
+	} else {
+		var user = "<?php echo $_SESSION['user']; ?>";
+	}
+	</script>
+</head>
+<body>
 <table width="100%"><tr>
 	<td width="25%" align="center" style="max-height:100%">
-		<img src="images/Logo_title.2.png" alt="Y-MAP; Yeast Mapping Analysis Pipeline">
+		<table width="100%" height="300px"><tr valign="top"><td>
+		<img src="images/Logo_title.2.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
+		</td></tr><tr valign="bottom"><td align="middle">
 
+		<button id="clear_fig_button" onclick="panel_visualizeDataset_iframe.contentWindow.Close_all_figures(); combined_fig_options.style.display = 'none'; combined_fig_options_2.style.display = 'none';">Clear all figures.</button><br>
 
+		<button id="combined_fig_button" onclick="Generate_combined_figure(); combined_fig_options.style.display = 'inline';">Combine viewed figures.</button><br>
+		<?php
+			if (isset($_SESSION['logged_on'])) {
+				$user = $_SESSION['user'];
+			} else {
+				$user = "default";
+			}
+			$cfig_CNV_SNP = "users/".$user."/combined_figure.1.png";
+			$cfig_CNV     = "users/".$user."/combined_figure.2.png";
+			$cfig_SNP     = "users/".$user."/combined_figure.3.png";
+		?>
+		<font size='2'>
+			<div id='combined_fig_options' style='display:none;'>
+				<div id='combined_fig_options_2' style='display:none;'>
+					CNV-SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV_SNP; ?>")'>
+					CNV <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV; ?>")'>
+					SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_SNP; ?>")'>
+				</div>
+			</div>
+		</font>
+
+		</td></tr></table>
 
 <!--                                                 --!>
 <!-- BEGIN : Construct tabbed menu and content pane. --!>
 <!--                                                 --!>
-	</td><td width="75%" align="right" valign="top">
-		<table width="100%" height="210px" cellspacing="0">
-		<tr>
-			<td valign="middle" style="height:20px; width:80px;" align="center" id="tab_user"             onclick="tabWindow('user');"            >User</td>
-			<td valign="middle" style="height:20px; width:80px;" align="center" id="tab_manageDataset"    onclick="tabWindow('manageDataset');"   >Manage Datasets</td>
-			<td valign="middle" style="height:20px; width:80px;" align="center" id="tab_visualizeDataset" onclick="tabWindow('visualizeDataset');">Visualize Datasets</td>
-			<td valign="middle" style="height:20px; width:80px;" align="center" id="tab_genome"           onclick="tabWindow('genome');"          >Reference Genome</td>
-			<td valign="middle" style="height:20px; width:80px;" align="center" id="tab_hapmap"           onclick="tabWindow('hapmap');"          >Hapmap</td>
-			<td valign="middle" style="height:20px; width:80px;" align="center" id="tab_bugs"             onclick="tabWindow('bugs');"            >Bug Reporting</td>
-			<td valign="middle" style="height:20px; width:80px;" align="center" id="tab_help"             onclick="tabWindow('help');"            >Help</td>
-			<td valign="middle" style="height:20px; width:80px;" align="center" id="tab_examples"         onclick="tabWindow('examples');"        >Example Datasets</td>
-			<td valign="middle" id="tab_blank">&nbsp;</td>
-		</tr><tr>
-			<!--- Colspan in the next line should be the number of tabs+1. --!>
-			<td colspan="9" valign="top" id="tab_content">
-<!---------------------------------------------------------------------------!>
-			<div id="panel_user" name="panel_user">
-				<?php
-				if (isset($_SESSION['logged_on'])) {
-					echo "User '<b>".$_SESSION['user']."</b>' logged in. ";
-					// provide logout button.
-					$user = $_SESSION['user'];
-					echo "<button type='button' onclick=\"update_projectsShown_after_logout(); window.location.href='php/logout_server.php'\">Logout</button>\n\t\t\t\t";
-					// provide delete-user button.
-					echo "<span id='u_".$user."_delete'></span>\n\t\t\t\t";
-					echo "<span id='deleteUser'><button type='button' onclick=\"deleteUserConfirmation('".$user."','deleteUser')\">Delete User</button></span>\n\t\t\t\t";
-					echo "<br><br>\n\t\t\t";
-					echo "<font size='2'>";
-					echo "You can navigate through the above menu and show/close projects while new datafiles are uploading.<br>";
-					echo "A page reload or project/genome/hapmap creation/deletion, however, will interrupt file transfer.<br><br>";
-					echo "Depending on system load, tasks may take an hour or more to complete after data upload is complete.<br><br>";
-					echo "Reload page and select 'projects' tab to check for newly completed projects.";
-					echo "</font>";
-				} else {
-					echo "<script type=\"text/javascript\">\n\t\t\t\t\tupdate_projectsShown_after_logout();\n\t\t\t\t</script>\n\t\t\t\t";
-					echo "<form action='php/login_server.php' method='post'>\n\t\t\t\t\t";
-					echo "<label for='user'>Username: </label><input type='text' id='user' name='user'><br>\n\t\t\t\t\t";
-					echo "<label for='pw'>Password: </label><input type='password' id='pw' name='pw'><br>\n\t\t\t\t\t";
-					echo "<button type='submit' onclick=\"update_projectsShown_after_logout();\">Login</button>\n\t\t\t\t";
-					echo "</form><br>\n\t\t\t\t";
-					echo "<font size='2'>";
-					echo "If you don't have a user account, you may make one by clicking below.<br>\n\t\t\t\t\t";
-					echo "<button type='button' onclick=\"update_projectsShown_after_logout(); window.location.href='register.php'\">Register new user.</button>\n\t\t\t\t";
-					echo "</font>\n\t\t\t";
-				}
-			?></div>
-<!---------------------------------------------------------------------------!>
-			<div id="panel_manageDataset" name="panel_manageDataset">
-				<table width="100%" cellpadding="0"><tr><td width="25%" valign="top">
-				<?php
-				// .------------------.
-				// | Make new project |
-				// '------------------'
-				echo "";
-				echo "<button type='button' onclick=\"update_projectsShown_after_new_project(); window.location.href='project.create.php';\">Install New Dataset</button>";
-				?></td><td width="75%"><?php
-
-				// .---------------.
-                // | User projects |
-                // '---------------'
-				$userProjectCount = 0;
-				if (isset($_SESSION['logged_on'])) {
-					$projectsDir    = $directory."users/".$user."/projects/";
-					$projectFolders = array_diff(glob($projectsDir."*"), array('..', '.'));
-					// Sort directories by date, newest first.
-					array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
-					// Trim path from each folder string.
-					foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
-
-					// Split project list into ready/working/starting lists for sequential display.
-					$projectFolders_complete = array();
-					$projectFolders_working  = array();
-					$projectFolders_starting = array();
-					foreach($projectFolders as $key=>$project) {
-						if (file_exists($directory."users/".$user."/projects/".$project."/complete.txt")) {
-							array_push($projectFolders_complete,$project);
-						} else if (file_exists($directory."users/".$user."/projects/".$project."/working.txt")) {
-							array_push($projectFolders_working, $project);
-						} else {
-							array_push($projectFolders_starting,$project);
-						}
-					}
-
-					$userProjectCount_starting = count($projectFolders_starting);
-					$userProjectCount_working  = count($projectFolders_working);
-					$userProjectCount_complete = count($projectFolders_complete);
-
-					// Sort complete and working projects alphabetically.
-					array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
-					array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
-
-					// Build new 'projectFolders' array;
-					$projectFolders   = array();
-					$projectFolders   = array_merge($projectFolders_starting, $projectFolders_working, $projectFolders_complete);
-					$userProjectCount = count($projectFolders);
-
-
-					echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
-					echo "<br>\n\t\t\t\t";
-					echo "<div class='tab' style='height:141px; overflow-y:scroll;'>\n\t\t\t\t";
-					foreach($projectFolders_starting as $key_=>$project) {
-						// Load colors for project.
-						$colorFile        = $GLOBALS['directory']."users/".$user."/projects/".$project."/colors.txt";
-						if (file_exists($colorFile)) {
-							$handle       = fopen($colorFile,'r');
-							$colorString1 = trim(fgets($handle));
-							$colorString2 = trim(fgets($handle));
-							fclose($handle);
-						} else {
-							$colorString1 = 'null';
-							$colorString2 = 'null';
-						}
-						$parentFile   = $GLOBALS['directory']."users/".$user."/projects/".$project."/parent.txt";
-						$handle       = fopen($parentFile,'r');
-						$parentString = trim(fgets($handle));
-						fclose($handle);
-						$key = $key_;
-						echo "<span id='project_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
-						echo "<font size='2'>".($key+1).".";
-						echo "<button id='delete_".$key."' type='button' onclick=\"deleteProjectConfirmation('".$project."','p1_".$key."_delete')\">Delete</button>";
-						echo "<input  id='show_".$key."' type='checkbox' onclick=\"openProject('".$user."','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."')\">";
-						echo $project."</font></span>\n\t\t\t\t";
-						echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t\t\t";
-						echo "<br>\n\t\t\t\t";
-						echo "<div id='frameContainer.p3_".$key."'></div>";
-					}
-
-					foreach($projectFolders_working as $key_=>$project) {
-                        // Load colors for project.
-                        $colorFile        = $GLOBALS['directory']."users/".$user."/projects/".$project."/colors.txt";
-                        if (file_exists($colorFile)) {
-                            $handle       = fopen($colorFile,'r');
-                            $colorString1 = trim(fgets($handle));
-                            $colorString2 = trim(fgets($handle));
-                            fclose($handle);
-                        } else {
-                            $colorString1 = 'null';
-                            $colorString2 = 'null';
-                        }
-                        $parentFile   = $GLOBALS['directory']."users/".$user."/projects/".$project."/parent.txt";
-                        $handle       = fopen($parentFile,'r');
-                        $parentString = trim(fgets($handle));
-                        fclose($handle);
-                        $key = $key_ + $userProjectCount_starting;
-						echo "<span id='project_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
-						echo "<font size='2'>".($key+1).".";
-						echo "<button id='delete_".$key."' type='button' onclick=\"deleteProjectConfirmation('".$project."','p1_".$key."_delete')\">Delete</button>";
-						echo "<input  id='show_".$key."' type='checkbox' onclick=\"openProject('".$user."','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."')\">";
-						echo $project."</font></span>\n\t\t\t\t";
-                        echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t\t\t";
-                        echo "<br>\n\t\t\t\t";
-                        echo "<div id='frameContainer.p2_".$key."'></div>";
-                    }
-
-					foreach($projectFolders_complete as $key_=>$project) {
-						// Load colors for project.
-						$colorFile        = $GLOBALS['directory']."users/".$user."/projects/".$project."/colors.txt";
-						if (file_exists($colorFile)) {
-							$handle       = fopen($colorFile,'r');
-							$colorString1 = trim(fgets($handle));
-							$colorString2 = trim(fgets($handle));
-							fclose($handle);
-						} else {
-							$colorString1 = 'null';
-							$colorString2 = 'null';
-						}
-						$parentFile   = $GLOBALS['directory']."users/".$user."/projects/".$project."/parent.txt";
-						$handle       = fopen($parentFile,'r');
-						$parentString = trim(fgets($handle));
-						fclose($handle);
-
-						$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
-
-						echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
-						echo "<font size='2'>".($key+1).". ";
-						echo "<button id='delete_".$key."' type='button' onclick=\"deleteProjectConfirmation('".$project."','p1_".$key."_delete')\">Delete</button>";
-						echo $project."</font></span>\n\t\t\t\t";
-
-						echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t\t\t";
-						echo "<br>\n\t\t\t\t";
-						echo "<div id='frameContainer.p1_".$key."'></div>";
-					}
-				}?></div></td></tr></table>
-
-			</div>
-<!---------------------------------------------------------------------------!>
-			<div id="panel_visualizeDataset" name="panel_visualizeDataset">
-				<table width="100%" cellpadding="0"><tr><td width="65%">
-				<?php
-				//.---------------.
-				//| User projects |
-				//'---------------'
-				if (isset($_SESSION['logged_on'])) {
-                    echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
-                    echo "<br>\n\t\t\t\t";
-                    echo "<div class='tab' style='height:141px; overflow-y:scroll;'>\n\t\t\t\t";
-					foreach($projectFolders_working as $key_=>$project) {
-						// Load colors for project.
-						$colorFile        = $GLOBALS['directory']."users/".$user."/projects/".$project."/colors.txt";
-						if (file_exists($colorFile)) {
-							$handle       = fopen($colorFile,'r');
-							$colorString1 = trim(fgets($handle));
-							$colorString2 = trim(fgets($handle));
-							fclose($handle);
-						} else {
-							$colorString1 = 'null';
-							$colorString2 = 'null';
-						}
-						$parentFile   = $GLOBALS['directory']."users/".$user."/projects/".$project."/parent.txt";
-						$handle       = fopen($parentFile,'r');
-						$parentString = trim(fgets($handle));
-						fclose($handle);
-						$key = $key_ + $userProjectCount_starting;
-						echo "<span id='project_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
-						echo "<font size='2'>".($key+1).".";
-					//	echo " &nbsp; &nbsp; &nbsp;";
-						echo "<input  id='show_".$key."' type='checkbox' onclick=\"openProject('".$user."','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."')\">";
-						echo "\n\t\t\t\t".$project."</font></span>\n\t\t\t\t";
-						echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t\t\t";
-						echo "<br>\n\t\t\t\t";
-						echo "<div id='frameContainer.p2_".$key."'></div>";
-					}
-					foreach($projectFolders_complete as $key_=>$project) {
-						// Load colors for project.
-						$colorFile        = $GLOBALS['directory']."users/".$user."/projects/".$project."/colors.txt";
-						if (file_exists($colorFile)) {
-							$handle       = fopen($colorFile,'r');
-							$colorString1 = trim(fgets($handle));
-							$colorString2 = trim(fgets($handle));
-							fclose($handle);
-						} else {
-							$colorString1 = 'null';
-							$colorString2 = 'null';
-						}
-						$parentFile   = $GLOBALS['directory']."users/".$user."/projects/".$project."/parent.txt";
-						$handle       = fopen($parentFile,'r');
-						$parentString = trim(fgets($handle));
-						fclose($handle);
-						$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
-						echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
-						echo "<font size='2'>".($key+1).".";
-						echo "<input  id='show_".$key."' type='checkbox' onclick=\"openProject('".$user."','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."')\">";
-						echo "\n\t\t\t\t".$project."</font></span>\n\t\t\t\t";
-						echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t\t\t";
-						echo "<br>\n\t\t\t\t";
-						echo "<div id='frameContainer.p1_".$key."'></div>";
-					}
-                }?></div></td><td width="35%"><br><?php
-                //.-----------------.
-                //| System projects |
-                //'-----------------'
-                $projectsDir          = $directory."users/default/projects/";
-                $systemProjectFolders = array_diff(glob($projectsDir."*"), array('..', '.'));
-                // Sort directories by date, newest first.
-                array_multisort(array_map('filemtime', $systemProjectFolders), SORT_DESC, $systemProjectFolders);
-                // Trim path from each folder string.
-                foreach($systemProjectFolders as $key=>$folder) {   $systemProjectFolders[$key] = str_replace($projectsDir,"",$folder);   }
-				$systemProjectCount = count($systemProjectFolders);
-                echo "<b><font size='2'>Sample datasets:</font></b>\n\t\t\t\t";
-                echo "<br>\n\t\t\t\t";
-                echo "<div class='tab' style='height:141px; overflow-y:scroll;'>\n\t\t\t\t";
-				foreach ($systemProjectFolders as $key_=>$project) {
-					// Load colors for project.
-					$colorFile        = $GLOBALS['directory']."users/default/projects/".$project."/colors.txt";
-					if (file_exists($colorFile)) {
-						$handle       = fopen($colorFile,'r');
-						$colorString1 = trim(fgets($handle));
-						$colorString2 = trim(fgets($handle));
-						fclose($handle);
-					} else {
-						$colorString1 = 'null';
-						$colorString2 = 'null';
-					}
-					$parentFile   = $GLOBALS['directory']."users/default/projects/".$project."/parent.txt";
-					$handle       = fopen($parentFile,'r');
-					$parentString = trim(fgets($handle));
-					fclose($handle);
-
-					$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
-					echo "<font size='2'>".($key+1).".";
-					echo "<input  id='show_".$key."' type='checkbox' onclick=\"openProject('default','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."')\">";
-					echo $project."</font>";
-					echo "<br>\n\t\t\t\t";
-				}
-                ?></td></tr></table>
-
-				<script type="text/javascript">
-                // Javascript which needs to be run.
-                var userProjectCount   = "<?php echo $userProjectCount; ?>";
-                var systemProjectCount = "<?php echo $systemProjectCount; ?>";
-                // Keep projects tab looking consitent during navigation.
-                for (var key=1; key<(systemProjectCount+userProjectCount); key++) {
-                    if(document.getElementById("figure_"+key)){
-                        var show_button_element = document.getElementById("show_"+key);
-                        show_button_element.style.visibility='hidden';
-                    }
-                }
-                // build iframes for data loading and processing.
-                <?php
-                for ($key=0; $key<$userProjectCount; $key++) {
-                    $project  = $projectFolders[$key];
-                    $handle   = fopen($directory."users/".$user."/projects/".$project."/dataType.txt", "r");
-                    $dataType = fgets($handle);
-                    fclose($handle);
-
-                    // Generate entries for projects which are being processed.
-                    echo "    if (document.getElementById('frameContainer.p2_".$key."')) {\n\t\t";   // processing file.
-                    echo "        var show_button_element = document.getElementById('show_".$key."');\n\t\t";
-                    echo "            show_button_element.style.visibility='hidden';\n\t\t";
-                    echo "        var el_p_".$key." = document.getElementById('frameContainer.p2_".$key."');\n\t\t";
-					echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:20px\" src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                    echo "        top.frames['p_".$key."'].user    = \"".$user."\";\n\t\t";
-                    echo "        top.frames['p_".$key."'].project = \"".$project."\";\n\t\t";
-                    echo "        top.frames['p_".$key."'].key     = \"p_".$key."\";\n\t";
-					echo "    }\n\t\t";
-
-                    // Generate entries for projects which need data files loaded.
-                    echo "    if (document.getElementById('frameContainer.p3_".$key."')) {\n\t\t";   // starting... waiting for file upload
-                    echo "        var show_button_element = document.getElementById('show_".$key."');\n\t\t";
-                    echo "            show_button_element.style.visibility='hidden';\n\t\t";
-                    echo "        var el_p_".$key." = document.getElementById('frameContainer.p3_".$key."');\n\t\t";
-                    if ($dataType == '0') {
-                        echo "        // 0   = SnpCgh microarray.\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : SnpCgh array data...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.SnpCgh.install.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-
-                    } else if ($dataType == '1:0') {
-                        echo "        // 1:0 = WGseq : single-end [FASTQ/ZIP/GZ]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read WGseq data (FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_WGseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-					} else if ($dataType == '1:1') {
-                        echo "        // 1:1 = WGseq : paired-end [FASTQ/ZIP/GZ]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:76px\" src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read WGseq data (1/2; FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read WGseq data (2/2; FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.paired_WGseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-                    } else if (($dataType == '1:2') || ($dataType == '1:3')) {
-                        echo "        // 1:2 or 1:3 = WGseq : [SAM/BAM/TXT]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : WGseq data (SAM/BAM/TXT)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_WGseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-
-                    } else if ($dataType == '2:0') {
-                        echo "        // 2:0 = ddRADseq : single-end [FASTQ/ZIP/GZ]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read ddRADseq data (FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-						echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_ddRADseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-                    } else if ($dataType == '2:1') {
-                        echo "        // 2:1 = ddRADseq : paired-end [FASTQ/ZIP/GZ]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:76px\" src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.paired_ddRADseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-                    } else if (($dataType == '2:2') || ($dataType == '2:3')) {
-                        echo "        // 2:2 or 2:3 = ddRADseq : [SAM/BAM/TXT]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : ddRADseq data (SAM/BAM/TXT)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_ddRADseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-
-                    } else if ($dataType == '3:0') {
-                        echo "        // 3:0 = RNAseq : single-end [FASTQ/ZIP/GZ]\n\t\t";
-						echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read RNAseq data (FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_RNAseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-                    } else if ($dataType == '3:1') {
-                        echo "        // 3:1 = RNAseq : paired-end [FASTQ/ZIP/GZ]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:76px\" src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read RNAseq data (1/2; FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read RNAseq data (2/2; FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.paired_RNAseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-                    } else if (($dataType == '3:2') || ($dataType == '3:3')) {
-                        echo "        // 3:2 or 3:3 = RNAseq : [SAM/BAM/TXT]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : RNAseq data (SAM/BAM/TXT)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_RNAseq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-						echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-
-                    } else if ($dataType == '4:0') {
-                        echo "        // 4:0 = IonExpressSeq : single-end [FASTQ/ZIP/GZ]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Single-end-read IonExpress data (FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_IonExpressSeq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-                    } else if ($dataType == '4:1') {
-                        echo "        // 4:1 = IonExpressSeq : paired-end [FASTQ/ZIP/GZ]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:76px\" src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : Paired-end-read IonExpress data (1/2; FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[1] = \"Add : Paired-end-read IonExpress data (2/2; FASTQ/ZIP/GZ)...\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.paired_IonExpressSeq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-                    } else if (($dataType == '4:2') || ($dataType == '4:3')) {
-                        echo "        // 4:2 or 4:3 = IonExpressSeq : [SAM/BAM/TXT]\n\t\t";
-                        echo "        el_p_".$key.".innerHTML='<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string = new Array();\n\t\t";
-                        echo "        top.frames['p_".$key."'].display_string[0] = \"Add : IonExpress data (SAM/BAM/TXT)...\";\n\t\t";
-						echo "        top.frames['p_".$key."'].target_dir        = \"".$directory."users/".$user."/projects/".$project."/\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].conclusion_script = \"".$url."php/project.single_IonExpressSeq.install_1.php\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].user              = \"".$user."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].project           = \"".$project."\";\n\t\t";
-                        echo "        top.frames['p_".$key."'].key               = \"p_".$key."\";\n\t";
-
-                    } else {
-                        // dataTypes not dealt with yet:
-                        //     4:0 = IonTorrent : single-end [FASTQ/ZIP/GZ]
-                        //     4:1 = IonTorrent : paired-end [FASTQ/ZIP/GZ]
-                        //     4:2 = IonTorrent : [SAM/BAM]
-                        //     other = unknown.
-                    }
-                    echo "} else {\n\t\t";   // complete.
-                    echo "}\n\t\t";
-                }?></script>
-			</div>
-<!---------------------------------------------------------------------------!>
-			<div id="panel_genome" name="panel_genome">
-				<table width="100%" cellpadding="0"><tr><td width="50%">
-				<?php
-				$userGenomeCount = 0;
-				if (isset($_SESSION['logged_on'])) {
-					$genomesDir    = $directory."users/".$user."/genomes/";
-					$genomeFolders = array_diff(glob($genomesDir."*"), array('..', '.'));
-					// Sort directories by date, newest first.
-					array_multisort(array_map('filemtime', $genomeFolders), SORT_DESC, $genomeFolders);
-					// Trim path from each folder string.
-					foreach($genomeFolders as $key=>$folder) {   $genomeFolders[$key] = str_replace($genomesDir,"",$folder);   }
-					$userGenomeCount = count($genomeFolders);
-					echo "<button type='button' onclick=\"window.location.href='genome.create.php'\">Install New Genome</button><br>\n\t\t\t\t";
-					echo "<b><font size='2'>User installed genomes:</font></b><br>\n\t\t\t\t";
-					echo "<div class='tab' style='height:141px; overflow-y:scroll;'>\n\t\t\t\t";
-					foreach($genomeFolders as $key=>$genome) {
-						$genomeNameString = file_get_contents($directory."users/".$user."/genomes/".$genome."/name.txt");
-						$genomeNameString = trim($genomeNameString);
-						if (file_exists($directory."users/".$user."/genomes/".$genome."/complete.txt")) {
-							echo "<span id='genome_label_".$key."' style='color:#00AA00;'>";
-						} else if (file_exists($directory."users/".$user."/genomes/".$genome."/working.txt")) {
-							echo "<span id='genome_label_".$key."' style='color:#BB9900;'>";
-						} else {
-							echo "<span id='genome_label_".$key."' style='color:#CC0000;'>";
-						}
-						echo "<font size='2'>".$genomeNameString."</font>\n\t\t\t\t";
-						echo "<span id='g1_".$key."_delete'><button type='button' onclick=\"deleteGenomeConfirmation('".$genome."','g1_".$key."_delete')\"><font size='2'>Delete</font></button></span>\n\t\t\t\t";
-						echo "<span id='g2_".$genome."_delete'></span><span id='g_".$genome."_type'></span><br></span>\n\t\t\t\t";
-						if ((file_exists($directory."users/".$user."/genomes/".$genome."/complete.txt")) || (file_exists($directory."users/".$user."/genomes/".$genome."/working.txt"))) {
-							echo "<div id='frameContainer.g1_".$key."'></div>\n\t\t\t\t";
-						} else {
-							echo "<div id='frameContainer.g2_".$key."'></div>\n\t\t\t\t";
-						}
-					}
-				}
-				?></div></td><td width="50%"><br><?php
-				$genomesDir          = $directory."users/default/genomes/";
-				$systemGenomeFolders = array_diff(glob($genomesDir."*"), array('..', '.'));
-				// Sort directories by date, newest first.
-				array_multisort(array_map('filemtime', $systemGenomeFolders), SORT_DESC, $systemGenomeFolders);
-				// Trim path from each folder string.
-				foreach($systemGenomeFolders as $key=>$folder) {   $systemGenomeFolders[$key] = str_replace($genomesDir,"",$folder);   }
-				$systemGenomeCount = count($systemGenomeFolders);
-				echo "<b><font size='2'>System genomes:</font></b><br>\n";
-				echo "\t\t\t<div class='tab' style='height:141px; overflow-y:scroll;'>\n";
-				foreach ($systemGenomeFolders as $key=>$genome) {
-					$genomeNameString = file_get_contents($directory."users/default/genomes/".$genome."/name.txt");
-					$genomeNameString = trim($genomeNameString);
-					echo "\t\t\t\t<font size='2'>".$genomeNameString."</font><br>\n";
-				}
-				?>
-				</div></td></tr></table>
-
-				<script type="text/javascript">
-				// Javascript which needs to be run.
-				var userGenomeCount   = "<?php echo $userGenomeCount; ?>";
-				var systemGenomeCount = "<?php echo $systemGenomeCount; ?>";
-				<?php
-				for ($key=0; $key<$userGenomeCount; $key++) {
-					$genome = $genomeFolders[$key];
-					echo "if (document.getElementById('frameContainer.g2_".$key."')) {\n\t\t";   // waiting for file upload.
-					echo "    var el_g_".$key." = document.getElementById('frameContainer.g2_".$key."');\n\t\t";
-					echo "    el_g_".$key.".innerHTML='<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:38px\" src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-					echo "    top.frames['g_".$key."'].display_string    = new Array();\n\t\t";
-					echo "    top.frames['g_".$key."'].display_string[0] = \"Add : Genome reference FASTA file...\";\n\t\t";
-					echo "    top.frames['g_".$key."'].target_dir        = \"".$directory."users/".$user."/genomes/".$genome."/\";\n\t\t";
-					echo "    top.frames['g_".$key."'].conclusion_script = \"".$url."php/genome.install_1.php\";\n\t\t";
-					echo "} else {\n\t\t";   // working or complete.
-					echo "    var el_g_".$key." = document.getElementById(\"frameContainer.g1_".$key."\");\n\t\t";
-					echo "    el_g_".$key.".innerHTML='<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" src=\"genome.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-					echo "}\n\t\t";
-					echo "top.frames['g_".$key."'].user              = \"".$user."\";\n\t\t";
-					echo "top.frames['g_".$key."'].genome            = \"".$genome."\";\n\t\t";
-					echo "top.frames['g_".$key."'].key               = \"g_".$key."\";\n\t";
-				}
-				?></script>
-			</div>
-<!---------------------------------------------------------------------------!>
-			<div id="panel_hapmap" name="panel_hapmap">
-				<script type="text/javascript">
-				function showColors(colorName,targetToChange,contentString) {
-					if(document.getElementById(targetToChange)){
-						var select       = document.getElementById(targetToChange);
-						select.innerHTML = '';
-						fillerString     = '<div style=\"width:35px; height:20px; overflow:hidden; display:inline-block; background-color:';
-						if        (colorName == "deep pink")       { fillerString = fillerString + 'rgb(255,0  ,127)';
-						} else if (colorName == "magenta")         { fillerString = fillerString + 'rgb(255,0  ,255)';
-						} else if (colorName == "electric indigo") { fillerString = fillerString + 'rgb(127,0  ,255)';
-						} else if (colorName == "blue")            { fillerString = fillerString + 'rgb(0  ,0  ,255)';
-						} else if (colorName == "dodger blue")     { fillerString = fillerString + 'rgb(0  ,127,255)';
-						} else if (colorName == "cyan")            { fillerString = fillerString + 'rgb(0  ,255,255)';
-						} else if (colorName == "spring green")    { fillerString = fillerString + 'rgb(0  ,255,127)';
-						} else if (colorName == "green")           { fillerString = fillerString + 'rgb(0  ,255,0  )';
-						} else if (colorName == "chartreuse")      { fillerString = fillerString + 'rgb(127,255,0  )';
-						} else if (colorName == "yellow")          { fillerString = fillerString + 'rgb(255,255,0  )';
-						} else if (colorName == "dark orange")     { fillerString = fillerString + 'rgb(255,127,0  )';
-						} else if (colorName == "red")             { fillerString = fillerString + 'rgb(255,0  ,0  )';
-						} else { fillerString = fillerString + 'rgb(127,127,127)';
-						}
-						fillerString     = fillerString + '\"><center><b>' + contentString + '</b></center></div>';
-						select.innerHTML = fillerString;
-					}
-				}
-				</script>
-				<table width="100%" cellpadding="0"><tr valign="top"><td width="50%">
-				<?php
-				if (isset($_SESSION['user']) != 0) {
-					$hapmapsDir    = $directory."users/".$user."/hapmaps/";
-					$hapmapFolders = array_diff(glob($hapmapsDir."*"), array('..', '.'));
-					// Sort directories by date, newest first.
-					array_multisort(array_map('filemtime', $hapmapFolders), SORT_DESC, $hapmapFolders);
-					// Trim path from each folder string.
-					foreach($hapmapFolders as $key=>$folder) {   $hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
-					echo "<div class='hapmap'><b><font size='2'>User generated hapmaps:</font></b><br>\n\t\t\t\t";
-					echo "<button class='tab' type='button' onclick=\"window.location.href='hapmap.create.php'\">Generate New Hapmap</button>\n\t\t\t\t";
-					foreach($hapmapFolders as $key=>$hapmap) {
-						echo "<div class='tab'><table><tr><td>\n\t\t\t\t";
-						if (file_exists($directory."users/".$user."/hapmaps/".$hapmap."/complete.txt")) {
-							echo "<span id='hapmap_label_".$key."' style='color:#00AA00;'>";
-						} else if (file_exists($directory."users/".$user."/hapmaps/".$hapmap."/working.txt")) {
-							echo "<span id='hapmap_label_".$key."' style='color:#BB9900;'>";
-						} else {
-							echo "<span id='hapmap_label_".$key."' style='color:#CC0000;'>";
-						}
-						echo "<font size='2'>".$hapmap."</font></span></td><td>\n\t\t\t\t";
-						echo "<span id='h1_".$key."_delete'><button type='button' onclick=\"deleteHapmapConfirmation('".$hapmap."','h1_".$key."_delete')\">Delete</button></span>\n\t\t\t\t";
-						echo "<span id='h2_".$hapmap."_delete'></span></td>\n\t\t\t\t";
-						echo "<td><div id='userHapmapA_".$key."'  >filler</div></td>\n\t\t\t\t";
-						echo "<td><div id='userHapmapHET_".$key."'>filler</div></td>\n\t\t\t\t";
-						echo "<td><div id='userHapmapB_".$key."'  >filler</div></td>\n\t\t\t\t";
-						echo "<td><div id='userHapmapHOM_".$key."'>filler</div></td></tr></table>\n\t\t\t\t";
-						echo "<div id='frameContainer.h_".$key."'></div></div>\n\t\t\t\t";
-
-						echo "<script type='text/javascript'>\n\t\t\t\t";
-						echo "var el_h_".$key." = document.getElementById('frameContainer.h_".$key."');\n\t\t\t\t";
-						echo "function hapmap_UI_refresh_1_".$key."() {\n\t\t\t\t";
-						echo "    var frameString3 = '<iframe id=\"h_".$key."\" name=\"h_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.addTo.php\"';\n\t\t\t\t";
-						echo "    var frameString4 = ' marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t\t\t";
-						echo "    var frameString5 = '<iframe id=\"h2_".$key."\" name=\"h2_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.finalize.php\"';\n\t\t\t\t";
-						echo "    var frameString6 = '  marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t\t\t";
-						echo "    el_h_".$key.".innerHTML = frameString3.concat(frameString4,frameString5,frameString6);\n\t\t\t\t";
-						echo "    top.frames['h_".$key."'].hapmap            = '".$hapmap."';\n\t\t\t\t";
-						echo "    top.frames['h_".$key."'].user              = '".$user."';\n\t\t\t\t";
-						echo "    top.frames['h_".$key."'].key               = 'h_".$key."';\n\t\t\t\t";
-						echo "    top.frames['h2_".$key."'].hapmap           = '".$hapmap."';\n\t\t\t\t";
-						echo "    top.frames['h2_".$key."'].user             = '".$user."';\n\t\t\t\t";
-						echo "    top.frames['h2_".$key."'].key              = 'h2_".$key."';\n\t\t\t\t";
-						echo "}\n\t\t\t\t";
-						echo "function hapmap_UI_refresh_2_".$key."() {\n\t\t\t\t";
-						echo "    var frameString1 = '<iframe id=\"h_".$key."\" name=\"h_".$key."\" class=\"upload\" src=\"hapmap.working.php\" ';\n\t\t\t\t";
-						echo "    var frameString2 = 'marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t\t\t";
-						echo "    el_h_".$key.".innerHTML = frameString1.concat(frameString2);\n\t\t\t\t";
-						echo "    top.frames['h_".$key."'].hapmap            = '".$hapmap."';\n\t\t\t\t";
-						echo "    top.frames['h_".$key."'].user              = '".$user."';\n\t\t\t\t";
-						echo "    top.frames['h_".$key."'].key               = 'h_".$key."';\n\t\t\t\t";
-						echo "}\n\t\t\t\t";
-
-						if (file_exists($directory."/users/".$user."/hapmaps/".$hapmap."/complete.txt")) {
-							// No user interface required.
-						} elseif (file_exists($directory."/users/".$user."/hapmaps/".$hapmap."/working.txt")) {
-							// The hapmap is being processed.
-							// Load 'hapmap.working.php' into an internal frame 'h_$key'.
-							echo "hapmap_UI_refresh_2_".$key."();\n\t\t\t\t";
-						} else {
-							echo "hapmap_UI_refresh_1_".$key."();\n\t\t\t\t";
-						}
-						echo "</script>\n\t\t\t\t";
-					}
-				}
-				if (file_exists($directory."/users/".$user."/hapmaps/".$hapmap."/complete.txt")) {
-					// No user interface required.
-				} elseif (file_exists($directory."/users/".$user."/hapmaps/".$hapmap."/working.txt")) {
-					// The hapmap is being processed.
-				} else {
-					// hapmap addto function needed.
-				}?></div></td><td width="50%"><br>
-				<?php
-				$hapmapsDir          = $directory."users/default/hapmaps/";
-				$systemHapmapFolders = array_diff(glob($hapmapsDir."*"), array('..', '.'));
-				// Sort directories by date, newest first.
-				array_multisort(array_map('filemtime', $systemHapmapFolders), SORT_DESC, $systemHapmapFolders);
-				// Trim path from each folder string.
-				foreach($systemHapmapFolders as $key=>$folder) {   $systemHapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
-				echo "<div class='hapmap'><b><font size='2'>System hapmaps:</font></b>\n\t\t\t\t";
-				foreach ($systemHapmapFolders as $key=>$hapmap) {
-					echo "<div class='tab'><table><tr><td><font size='2'>".$hapmap."</font></td>\n\t\t\t\t";
-					echo "<td><div id='defaultHapmapA_".$key."'  >filler</div></td>\n\t\t\t\t";
-					echo "<td><div id='defaultHapmapHET_".$key."'>filler</div></td>\n\t\t\t\t";
-					echo "<td><div id='defaultHapmapB_".$key."'  >filler</div></td>\n\t\t\t\t";
-					echo "<td><div id='defaultHapmapHOM_".$key."'>filler</div></td></tr></table>\n\t\t\t\t";
-					echo "</div>\n\t\t\t\t";
-				}
-				?></td></tr></table>
-
-				<script type="text/javascript">
-				// javascript which needs to run for the hapmap panel.
-				<?php
-				if (isset($_SESSION['user']) != 0) {
-					$hapmapsDir    = $directory."users/".$user."/hapmaps/";
-					$hapmapFolders = array_diff(glob($hapmapsDir."*"), array('..', '.'));
-					// Sort directories by date, newest first.
-					array_multisort(array_map('filemtime', $hapmapFolders), SORT_DESC, $hapmapFolders);
-					// Trim path from each folder string.
-					foreach($hapmapFolders as $key=>$folder) {   $hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
-					foreach($hapmapFolders as $key=>$hapmap) {
-						$handle       = fopen($directory."users/".$user."/hapmaps/".$hapmap."/colors.txt",'r');
-						$colorString1 = trim(fgets($handle));
-						$colorString2 = trim(fgets($handle));
-						fclose($handle);
-						echo "\t\t\t\t\tshowColors('".$colorString1."','userHapmapA_".$key."','a');\n";
-						echo "\t\t\t\t\tshowColors('".$colorString2."','userHapmapB_".$key."','b');\n";
-						echo "\t\t\t\t\tshowColors('red','userHapmapHOM_".$key."','hom');\n";
-						echo "\t\t\t\t\tshowColors('grey','userHapmapHET_".$key."','ab');\n";
-					}
-				}
-				$hapmapsDir          = $directory."users/default/hapmaps/";
-				$systemHapmapFolders = array_diff(glob($hapmapsDir."*"), array('..', '.'));
-				// Sort directories by date, newest first.
-				array_multisort(array_map('filemtime', $systemHapmapFolders), SORT_DESC, $systemHapmapFolders);
-				// Trim path from each folder string.
-				foreach($systemHapmapFolders as $key=>$folder) {   $systemHapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
-				foreach ($systemHapmapFolders as $key=>$hapmap) {
-					$handle       = fopen($directory."users/default/hapmaps/".$hapmap."/colors.txt",'r');
-					$colorString1 = trim(fgets($handle));
-					$colorString2 = trim(fgets($handle));
-					fclose($handle);
-					echo "\t\t\t\t\tshowColors('".$colorString1."','defaultHapmapA_".$key."','a');\n";
-					echo "\t\t\t\t\tshowColors('".$colorString2."','defaultHapmapB_".$key."','b');\n";
-					echo "\t\t\t\t\tshowColors('red','defaultHapmapHOM_".$key."','hom');\n";
-					echo "\t\t\t\t\tshowColors('grey','defaultHapmapHET_".$key."','ab');\n";
-				}?>
-				</script>
-			</div>
-<!---------------------------------------------------------------------------!>
-			<div id="panel_bugs" name="panel_bugs">
-				<b>Interact with an admin:</b><br>
-				<div class="tab">
-				<?php
-				if (isset($_SESSION['user']) != 0) {
-					echo "Report a bug! Request a feature!<br>";
-					echo "Or just as the admin a question about how to use a certain feature.<br>";
-					echo "<button type='button' onclick=\"window.location.href='bug.php'\">Click here...</button>";
-				} else {
-					echo "Log in using the 'User' tab to gain access to the admin.";
-				}?>
-				</div><br>
-				<b>System status:</b><br><div id="frameContainer.status"></div>
-				<script type="text/javascript">
-				var el_status = document.getElementById("frameContainer.status");
-				<?php
-					// Load last line from "status_log.txt" file.
-					$statusLogLines = explode("\n", trim(file_get_contents($directory."status_log.txt")));
-					$statusLog      = str_replace("\n","<br>",trim(file_get_contents($directory."status_log.txt")));
-					if (count($statusLogLines) > 1) {
-						$statusLogEntry = $statusLog;
-					} else if (count($statusLogLines) == 1) {
-						if ($statusLog[count($statusLog)-1] == "") {
-							$statusLogEntry = "No system status notes.";
-						} else {
-							$statusLogEntry = $statusLog;
-						}
-					} else {
-						$statusLogEntry = "No system status notes.";
-					}
-				?>el_status.innerHTML = '<div class="tab"><font size="2"><?php echo $statusLogEntry; ?></font></div>';
-				</script>
-			</div>
-<!---------------------------------------------------------------------------!>
-			<div id="panel_help" name="panel_help">
-			<div class='tab' style='height:185px; overflow-y:scroll;'>
-				<font size="2">
-				<p>The Yeast Mapping Analysis Pipeline (YMAP) is intended to simplify the processing of whole genome array and sequence
-				datasets from yeast (or other small genome organisms) into simple to interpret figures illustrating large-scale genomic
-				alterations.</p>
-				<p>The current version (v1.0) of the pipeline is designed to process the following types of data:
-				<ol>
-					<li>SnpCgh Microarray.</li>
-					<li>Whole genome next-generation-seq (WGseq).</li>
-					<li>Double digest restriction site associated sequencing (ddRADseq).</li>
-				</ol>
-				</p>
-				<hr width="50%">
-				<p>The input file format options for each data type are as follows :</p>
-				<p><b>1. SnpCgh microarray</b>
-					<ul>
-						<li>Tab-delimited text with the following format :
-						<table width="600px" class="tab"><tr><td>
-							1.&nbsp;Data starts in the 47th row.<br>
-							2.&nbsp;1st column holds probe ID/name.<br>
-							3.&nbsp;4th column holds probe channel 1 data.<br>
-							4.&nbsp;5th column holds probe channel 2 data.<br>
-							5.&nbsp;6th column holds probe channel ratio data.<br>
-							6.&nbsp;7th column holds probe channel log2ratio data.
-						</td></tr></table>
-						</li>
-					</ul>
-				</p>
-				<p><b>2. WGseq</b> and <b>3. ddRADseq</b>
-					<ul>
-						<li>Single-end reads as one file in raw FASTQ (*.fastq; *.fq) or compressed (*.zip; *.gz) format.</li>
-						<li>Paired-end reads as two files in raw FASTQ (*.fastq; *.fq) or compressed (*.zip; *.gz) format.</li>
-						<li>Sequence Alignment/Map file in raw (*.sam) or compressed (*.bam) format.</li>
-						<li>For examination of custom-filtered data, tab-delimited text with the following format can be used :
-						<table width="600px" class="tab"><tr><td>
-							1.&nbsp;Chromosome name (must match reference).<br>
-							2.&nbsp;Chromosome bp coordinate.<br>
-							3.&nbsp;1' base-call.<br>
-							4.&nbsp;Count of 1' base-call.<br>
-							5.&nbsp;<i>2' base-call.</i>
-						</td><td>
-							6.&nbsp;<i>Count of 2' base-call.</i><br>
-							7.&nbsp;<i>3' base-call.</i><br>
-							8.&nbsp;<i>Count of 3' base-call.</i><br>
-							9.&nbsp;<i>4' base-call.</i><br>
-							10.&nbsp;<i>Count of 4' base-call.</i>
-						</td></tr></table>
-						</li>
-					</ul>
-				</p>
-				<hr width="50%">
-				<p>Projects are listed with those needing data file upload first, followed by those which are in-process, and then those that are complete. As projects transition from
-				one category to the next, the color of their line will be updated. After a page refresh, position in the list will be updated.</p>
-				<p>Genomes can be installed by the user. The tool has been designed for the analysis of relatively small (~2Gbase) fungal genomes, but others can be used.</p>
-				<p>Haplotype maps can be constructed starting from one heterozygous parent or two homozygous parent datasets. When starting from a single heterozygous parent, additional
-				child datasets with large-scale homozygoses are needed to construct the final map.</p>
-			</font>
-			</div>
-			</div>
-<!---------------------------------------------------------------------------!>
-			<div id="panel_examples" name="panel_examples">
-			<div class='tab' style='height:185px; overflow-y:scroll;'>
-			<font size="2">
-				<br>
-				Datasets collected in association with the paper are linked below in the format of "<b>file:[file type]</b>".<br>
-				You can read about file format requirements for Ymap by selecting the "Help" tab above.<br><br>
-
-				Some datasets were retrieved from external databases and are linked below in the format of "<b>url:[database name, accession]</b>".<br>
-				To download datasets from the NCBI-SRA database in FASTQ format, enter the experiment number for the sample into <a href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=search_seq_name">[this page]</a>, then select the accession number of interest.<br><br>
-
-				<b>Figure 2 : WGseq, chr-end bias.</b><br>
-					<ul>
-					<li>YQ2, url:<a href="http://www.ebi.ac.uk/biosamples/sample/SAMEA1879786">[EMBL-EBI BiosSamples, SAMEA1879786]</a>
-						  or url:<a href="http://www.ncbi.nlm.nih.gov/sra/ERX238051">[NCBI-SRA, ERX238051]</a></li>
-					</ul>
-				<b>Figure 3 : WGseq, GC-content bias.</b><br>
-					<ul>
-					<li>FH6, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig3.FH6_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig3.FH6_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					</ul>
-				<b>Figure 4 : ddRADseq.</b><br>
-					<ul>
-					<li>SC5314, file:<a   href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig4.SC5314.txt">[TXT]</a></li>
-					<li>YJB11461, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig4.YJB11461.txt">[TXT]</a></li>
-					<li>YJB9442, file:<a  href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig4.YJB9442.txt">[TXT]</a></li>
-					</ul>
-				<b>Figure 5 : WGseq</b><br>
-					<ul>
-					<li>SC5314, url:<a    href="http://www.ncbi.nlm.nih.gov/sra/?term=SRR868699">[NCBI-SRA, SRR868699]</a></li>
-					<li>FH5, file:<a      href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig5.FH5_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a      href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig5.FH5_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>YJB12746, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig5.YJB12746_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-							  and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig5.YJB12746_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					</ul>
-				<b>Figure 6 : ddRADseq</b><br>
-					<ul>
-					<li>SC5314, file:<a                 href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig6.SC5314.txt">[TXT]</a></li>
-					<li>YJB12712 derivative #1, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig6.YJB12712_derivative_1.txt">[TXT]</a></li>
-					<li>YJB12712 derivative #2, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig6.YJB12712_derivative_2.txt">[TXT]</a></li>
-					<li>YJB12712 derivative #9, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig6.YJB12712_derivative_9.txt">[TXT]</a></li>
-					</ul>
-				<b>Figure 8 : comparisons between array and sequence datasets</b><br>
-					<ul>
-					<li>YJB10490 array, file:<a    href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig8.YJB10490_array.xls">[XLS]</a></li>
-					<li>YJB10490 WGseq, file:<a    href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig8.YJB10490_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-									and file:<a    href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig8.YJB10490_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>YJB12229 array, file:<a    href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig8.YJB12229_array.xls">[XLS]</a></li>
-					<li>YJB12229 ddRADseq, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig8.YJB12229.txt">[TXT]</a></li>
-					<li>Ss2 array, file:<a         href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig8.Ss2_array.xls">[XLS]</a></li>
-					<li>YJB12353 WGseq, file:<a    href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig8.YJB12353_forward.fastq.zip">[ZIP compressed FASTQ</a>
-									and file:<a    href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig8.YJB12353_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					</ul>
-				<b>Figure 9 : LOH in clinical isolates</b><br>
-					<ul>
-					<li>SC5314, url:<a     href="http://www.ebi.ac.uk/biosamples/sample/SAMN02141741">[EMBL-EBI BioSamples, SAMN02141741]</a></li>
-					<li>SC5314, file:<a    href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig9.SC5314_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-							and file:<a    href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig9.SC5314_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>SC5314, url:<a     href="http://www.ncbi.nlm.nih.gov/sra/?term=SRR868699">[NCBI-SRA, SRR868699]</a></li>
-					<li>FH1, file:<a       href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig9.FH1_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a       href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig9.FH1_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>ATCC200955, url:<a href="http://www.ncbi.nlm.nih.gov/sra/?term=SAMN02140345">[NCBI-SRA, SAMN02140345]</a></li>
-					<li>ATCC10231, url:<a  href="http://www.ncbi.nlm.nih.gov/sra/?term=SAMN02140347">[NCBI-SRA, SAMN02140347]</a></li>
-					<li>YL1, url:<a        href="http://www.ebi.ac.uk/biosamples/sample/SAMEA1879767">[EMBL-EBI BioSamples, SAMEA1879767]</a></li>
-					<li>YQ2, url:<a        href="http://www.ebi.ac.uk/biosamples/sample/SAMEA1879786">[EMBL-EBI BiosSamples, SAMEA1879786]</a>
-						  or url:<a        href="http://www.ncbi.nlm.nih.gov/sra/ERX238051">[NCBI-SRA, ERX238051]</a></li>
-					</ul>
-				<b>Figure 10 : FH series</b>
-					<ul>
-					<li>FH1, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH1_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH1_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>FH2, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH2_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH2_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>FH3, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH3_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH3_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>FH4, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH4_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH4_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>FH5, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH5_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH5_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>FH6, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH6_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH6_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>FH7, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH7_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH7_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>FH8, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH8_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH8_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					<li>FH9, file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH9_forward.fastq.zip">[ZIP compressed FASTQ]</a>
-						 and file:<a href="http://lovelace.cs.umn.edu/Ymap/example_datasets/Fig10.FH9_reverse.fastq.zip">[ZIP compressed FASTQ]</a></li>
-					</ul>
-			</font>
-			</div>
-			</div>
-<!---------------------------------------------------------------------------!>
-			</td>
-		</tr></table>
+</td><td width="75%" align="right" valign="top">
+<table width="100%" height="<?php echo $ui_tabArea_height; ?>px" cellspacing="0">
+<tr>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_user"             onclick="tabWindow('user');"            >User</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_manageDataset"    onclick="tabWindow('manageDataset');"   >Manage Datasets</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_visualizeDataset" onclick="tabWindow('visualizeDataset');">Visualize Datasets</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_genome"           onclick="tabWindow('genome');"          >Reference Genome</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_hapmap"           onclick="tabWindow('hapmap');"          >Hapmap</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_bugs"             onclick="tabWindow('bugs');"            >Bug Reporting</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_help"             onclick="tabWindow('help');"            >Help</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_examples"         onclick="tabWindow('examples');"        >Example Datasets</td>
+<td class="select" valign="middle" id="tab_blank">&nbsp;</td>
+</tr>
+<tr>
+	<!--- Colspan in the next line should be the number of tabs+1. --!>
+	<td colspan="9" valign="top" id="tab_content">
+	<div id="panel_user"             name="panel_user"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_manageDataset"    name="panel_manageDataset"    style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_visualizeDataset" name="panel_visualizeDataset" style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_genome"           name="panel_genome"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_hapmap"           name="panel_hapmap"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_bugs"             name="panel_bugs"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_help"             name="panel_help"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_examples"         name="panel_examples"         style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	</td>
+</tr></table>
 <!--                                               --!>
 <!-- END : Construct tabbed menu and content pane. --!>
 <!--                                               --!>
-	</td></tr></table>
+</td></tr></table>
 
 <script type="text/javascript">
+p_user                       = document.getElementById('panel_user');
+p_manageDataset              = document.getElementById('panel_manageDataset');
+p_visualizeDataset           = document.getElementById('panel_visualizeDataset');
+p_genome                     = document.getElementById('panel_genome');
+p_hapmap                     = document.getElementById('panel_hapmap');
+p_bugs                       = document.getElementById('panel_bugs');
+p_help                       = document.getElementById('panel_help');
+p_examples                   = document.getElementById('panel_examples');
+p_user.innerHTML             = '<iframe id="panel_user_iframe"             src="panel.user.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_manageDataset.innerHTML    = '<iframe id="panel_manageDataset_iframe"    src="panel.manageDataset.php"    style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_visualizeDataset.innerHTML = '<iframe id="panel_visualizeDataset_iframe" src="panel.visualizeDataset.php" style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_genome.innerHTML           = '<iframe id="panel_genome_iframe"           src="panel.genome.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_hapmap.innerHTML           = '<iframe id="panel_hapmap_iframe"           src="panel.hapmap.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_bugs.innerHTML             = '<iframe id="panel_bugs_iframe"             src="panel.bugs.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_help.innerHTML             = '<iframe id="panel_help_iframe"             src="panel.help.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_examples.innerHTML         = '<iframe id="panel_examples_iframe"         src="panel.examples.php"         style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+
 function deselect_tab(name) {
 	//console.log( '\tdeselect_tab("'+name+'")' );
 	var current_tab = document.getElementById("tab_"+name);
@@ -1019,6 +237,7 @@ function blank_and_content_tab() {
 	    current_tab.style.borderTop="none";
 }
 
+
 <!-- --!>
 <!-- Project display section --!>
 <!-- --!>
@@ -1048,45 +267,67 @@ function blank_and_content_tab() {
 	function loadExternal(imageUrl) {
 		window.open(imageUrl);
 	}
+	function showImg(imgSrc, H, W, Caption) {
+		var newImg = window.open("","myImg",config="height="+H+",width="+W+"")
+		newImg.document.write("<title>"+ Caption +"</title>")
+		newImg.document.write("<img src='"+ imgSrc +"' height='"+ H +"' width='"+ W +"' onclick='window.close()' style='position:absolute;left:0;top:0'>")
+		newImg.document.write("<script type='text/javascript'> document.oncontextmenu = new Function('return false') </script>")
+		newImg.document.close();
+	}
 	function openProject(user,project,key,color1,color2,parent) {
-		var show_button_element = document.getElementById("show_"+key);
+		user    = user.replace(" ","_");
+		project = project.replace(" ","_");
+		key     = key.replace(" ","_");
+		color1  = color1.replace(" ","_");
+		color2  = color2.replace(" ","_");
+		parent  - parent.replace(" ","_");
+		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
+		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		if (show_button_element.checked == false) {
 			closeProject(user,project,key,color1,color2,parent);
 		} else {
-			var url_base                         = "<?php echo $url; ?>";
-			var fig_linear_CNV_SNP               = url_base+"users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.2.";
-			var fig_standard_CNV_SNP             = url_base+"users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.1.";
-			var fig_linear_CNV                   = url_base+"users/"+user+"/projects/"+project+"/fig.CNV-map.2.";
-			var fig_standard_CNV                 = url_base+"users/"+user+"/projects/"+project+"/fig.CNV-map.1.";
-			var fig_linear_SNP                   = url_base+"users/"+user+"/projects/"+project+"/fig.SNP-map.2.";
-			var fig_standard_SNP                 = url_base+"users/"+user+"/projects/"+project+"/fig.SNP-map.1.";
-			var fig_linear_manual                = url_base+"users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.2.";
-			var fig_standard_manual              = url_base+"users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.1.";
-			var CGD_annotations_SNP              = url_base+"users/"+user+"/projects/"+project+"/CGD_annotations."+project+".txt";
-			var CNV_bias_WGseq_1                 = url_base+"users/"+user+"/projects/"+project+"/fig.examine_bias.png";
-			var CNV_bias_WGseq_2                 = url_base+"users/"+user+"/projects/"+project+"/fig.GCratio_vs_CGH.png";
-			var CNV_bias_ddRADseq_1              = url_base+"users/"+user+"/projects/"+project+"/fig.examine_bias.1.png";
-			var CNV_bias_ddRADseq_2              = url_base+"users/"+user+"/projects/"+project+"/fig.examine_bias.2.png";
-			var CNV_bias_ddRADseq_3              = url_base+"users/"+user+"/projects/"+project+"/fig.examine_bias.3.png";
-			var CNV_bias_ddRADseq_4              = url_base+"users/"+user+"/projects/"+project+"/fig.examine_bias.T.png";
-			var fig_a_linear_SNPratio_ddRADseq   = url_base+"users/"+user+"/projects/"+project+"/fig.allelic_fraction_histogram.png";
-			var fig_b_linear_SNPratio_ddRADseq   = url_base+"users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.b2.png";
-			var fig_b_standard_SNPratio_ddRADseq = url_base+"users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.b1.png";
-			var fig_c_linear_SNPratio_ddRADseq   = url_base+"users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.png";
-			var fig_c_standard_SNPratio_ddRADseq = url_base+"users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c1.png";
-			var fig_d_linear_SNPratio_ddRADseq   = url_base+"users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.d2.png";
-			var fig_d_standard_SNPratio_ddRADseq = url_base+"users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.d1.png";
-			var visible_list         = document.getElementById("visible_list");
+			var fig_linear_CNV_SNP               = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.2.";
+			var fig_linear_CNV_SNP_old           = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.old2.";
+			var fig_standard_CNV_SNP             = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.1.";
+			var fig_standard_CNV_SNP_old         = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.old1.";
+			var fig_linear_CNV                   = "users/"+user+"/projects/"+project+"/fig.CNV-map.2.";
+			var fig_standard_CNV                 = "users/"+user+"/projects/"+project+"/fig.CNV-map.1.";
+			if (isFile("users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.png")) {
+				// ddRADseq.
+				var fig_linear_SNP               = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.";
+				var fig_standard_SNP             = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c1.";
+			} else {
+				// other.
+				var fig_linear_SNP               = "users/"+user+"/projects/"+project+"/fig.SNP-map.2.";
+				var fig_standard_SNP             = "users/"+user+"/projects/"+project+"/fig.SNP-map.1.";
+			}
+			var fig_linear_manual                = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.2.";
+			var fig_standard_manual              = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.1.";
+			var CGD_annotations_SNP              = "users/"+user+"/projects/"+project+"/CGD_annotations.SNP.txt";
+			var CNV_bias_WGseq_1                 = "users/"+user+"/projects/"+project+"/fig.bias_chr_end.png";
+			var CNV_bias_WGseq_2                 = "users/"+user+"/projects/"+project+"/fig.bias_GC_content.png";
+			var CNV_bias_ddRADseq_1              = "users/"+user+"/projects/"+project+"/fig.examine_bias.1.png";
+			var CNV_bias_ddRADseq_2              = "users/"+user+"/projects/"+project+"/fig.examine_bias.2.png";
+			var CNV_bias_ddRADseq_3              = "users/"+user+"/projects/"+project+"/fig.examine_bias.3.png";
+			var CNV_bias_ddRADseq_4              = "users/"+user+"/projects/"+project+"/fig.examine_bias.T.png";
+			var fig_a_linear_SNPratio_ddRADseq   = "users/"+user+"/projects/"+project+"/fig.allelic_fraction_histogram.png";
+			var fig_b_linear_SNPratio_ddRADseq   = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.b2.png";
+			var fig_b_standard_SNPratio_ddRADseq = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.b1.png";
+			var fig_c_linear_SNPratio_ddRADseq   = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.png";
+			var fig_c_standard_SNPratio_ddRADseq = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c1.png";
+			var fig_d_linear_SNPratio_ddRADseq   = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.d2.png";
+			var fig_d_standard_SNPratio_ddRADseq = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.d1.png";
+			var visible_list                     = document.getElementById("visible_list");
 			var string1 = "<div id='figure_"+key+"'><table border='0' align='center' width='100%'><tr><td width='35%' align='left'>";
-			string1 = string1 + "<table><tr><td valign='top'>";
-			string1 = string1 + project+" ";
-			string1 = string1 + "</td><td valign='bottom'>";
-			string1 = string1 + "<div id='userProjectA_"+key+"'   style='display:inline'></div>";
-			string1 = string1 + "<div id='userProjectHET_"+key+"' style='display:inline'></div>";
-			string1 = string1 + "<div id='userProjectB_"+key+"'   style='display:inline'></div>";
-			string1 = string1 + "<div id='userProjectHOM_"+key+"' style='display:inline'></div>";
-			string1 = string1 + "</td></tr></table>";
-			string1 = string1 + "</td><td width='60%' align='left'><font size='-1'>";
+			string1     = string1 + "<table><tr><td valign='top'>";
+			string1     = string1 + project+" ";
+			string1     = string1 + "</td><td valign='bottom'>";
+			string1     = string1 + "<div id='userProjectA_"+key+"'   style='display:inline'></div>";
+			string1     = string1 + "<div id='userProjectHET_"+key+"' style='display:inline'></div>";
+			string1     = string1 + "<div id='userProjectB_"+key+"'   style='display:inline'></div>";
+			string1     = string1 + "<div id='userProjectHOM_"+key+"' style='display:inline'></div>";
+			string1     = string1 + "</td></tr></table>";
+			string1     = string1 + "</td><td width='60%' align='left'><font size='-1'>";
 			if (isFile(fig_linear_CNV_SNP+"png")) {
 				mainFigure1 = fig_linear_CNV_SNP;
 			} else if (isFile(fig_linear_CNV+"png")) {
@@ -1108,6 +349,13 @@ function blank_and_content_tab() {
 					string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_manual+"eps\")'>";
 				}
 				string1 = string1 + ")";
+
+				// GBrowse annotation file
+				if (isFile(fig_linear_CNV_SNP_old+"png")) {
+					string1 = string1 + ", Alternate color scheme";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_old+"png"+"\",\"100\")'>Odd ratios = green.</button>";
+				}
+
 				if ((isFile(fig_linear_CNV+"png")) || (isFile(fig_linear_SNP+"png"))) {
 					string1 = string1 + "; ";
 				}
@@ -1139,37 +387,32 @@ function blank_and_content_tab() {
 				string1 = string1 + " : GBrowse-SNP ";
 				string1 = string1 + "<button onclick=\"loadExternal('"+CGD_annotations_SNP+"');\">GBrowse</button>";
 			}
-			if (isFile(url_base+"users/"+user+"/super.txt")) {  // Super-user privilidges.
-				// Show CNV bias figure for WGseq and ddRADseq.
-				if ((isFile(CNV_bias_WGseq_1)) || (isFile(CNV_bias_WGseq_2))) {
-					string1 = string1 + " : CNV biases ";
-					if (isFile(CNV_bias_WGseq_1)) {
-						string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_1+"\",\"100\")'>1</button>";
-					} else if (isFile(CNV_bias_WGseq_2)) {
-						string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_2+"\",\"100\")'>2</button>";
-					}
-				} else if ((isFile(CNV_bias_ddRADseq_1)) || (isFile(CNV_bias_ddRADseq_2)) || (isFile(CNV_bias_ddRADseq_3)) || (isFile(CNV_bias_ddRADseq_4))) {
-					string1 = string1 + " : CNV biases ";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>1</button>";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>2</button>";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>3</button>";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_4+"\",\"100\")'>T</button>";
+
+			// Show CNV bias figure for WGseq and ddRADseq.
+			if ((isFile(CNV_bias_WGseq_1)) || (isFile(CNV_bias_WGseq_2))) {
+				string1 = string1 + " : CNV biases ";
+				if (isFile(CNV_bias_WGseq_1)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_1+"\",\"100\")'>chr end</button>";
+				}
+				if (isFile(CNV_bias_WGseq_2)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_2+"\",\"100\")'>GC content</button>";
+				}
+			} else if ((isFile(CNV_bias_ddRADseq_1)) || (isFile(CNV_bias_ddRADseq_2)) || (isFile(CNV_bias_ddRADseq_3))) {
+				string1 = string1 + " : CNV biases ";
+				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>length</button>";
+				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>GC content</button>";
+				if (isFile(CNV_bias_ddRADseq_3)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";
 				}
 			}
 			// Show allelic ratio plot version for ddRADseq.
 			if ((isFile(fig_a_linear_SNPratio_ddRADseq)) || (isFile(fig_b_linear_SNPratio_ddRADseq)) || (isFile(fig_c_linear_SNPratio_ddRADseq)) || (isFile(fig_d_linear_SNPratio_ddRADseq))) {
 				string1 = string1 + " : SNP ratios ";
 				if (isFile(fig_a_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_a_linear_SNPratio_ddRADseq+"\",\"100\")'>1</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_a_linear_SNPratio_ddRADseq+"\",\"100\")'>histogram</button>";
 				}
 				if (isFile(fig_b_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_b_linear_SNPratio_ddRADseq+"\",\"100\")'>2</button>";
-				}
-				if (isFile(fig_c_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_c_linear_SNPratio_ddRADseq+"\",\"100\")'>3</button>";
-				}
-				if (isFile(fig_d_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_d_linear_SNPratio_ddRADseq+"\",\"100\")'>4</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_b_linear_SNPratio_ddRADseq+"\",\"100\")'>fire plot</button>";
 				}
 			}
 
@@ -1194,7 +437,11 @@ function blank_and_content_tab() {
 				}
 			}
 			var projectsShown = localStorage.getItem("projectsShown");
-			projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+color1+":"+color2+":"+parent,"");
+			if (projectsShown != null) {
+				projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+color1+":"+color2+":"+parent,"");
+			} else {
+				projectsShown = projectsShown.replace("null ","");
+			}
 			projectsShown = projectsShown+" "+user+":"+project+":"+key+":"+color1+":"+color2+":"+parent;
 			projectsShown = projectsShown.replace("  "," ");   // remove duplicate " " characters.
 			while (projectsShown.charAt(0) == " ")
@@ -1202,10 +449,22 @@ function blank_and_content_tab() {
 			localStorage.setItem("projectsShown", projectsShown);
 			console.log('# add to projectsShown : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
 			console.log('# projectsShown = "'+projectsShown+'"');
+
+			combined_fig_options.style.display   = 'none';
+			combined_fig_button.style.display    = 'inline';
+			combined_fig_options_2.style.display = 'inline';
+			clear_fig_button.style.display       = 'inline';
 		}
 	}
 	function closeProject(user,project,key,color1,color2,parent) {
-		var show_button_element = document.getElementById("show_"+key);
+		user    = user.replace(" ","_");
+		project = project.replace(" ","_");
+		key     = key.replace(" ","_");
+		color1  = color1.replace(" ","_");
+		color2  = color2.replace(" ","_");
+		parent  - parent.replace(" ","_");
+		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
+        var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		if (show_button_element) {
 			show_button_element.checked = false;
 		}
@@ -1221,16 +480,111 @@ function blank_and_content_tab() {
 		localStorage.setItem("projectsShown", projectsShown);
 		console.log('# remove from projectsShown : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
 		console.log('# projectsShown = "'+projectsShown+'"');
+
+		combined_fig_options.style.display = 'none';
 	}
 	</script>
 <hr>
 <div id="visible_list" name="visible_list"></div>
 
+
+<!=====================================================================!>
+<DIV id="Hidden_InstallNewDataset" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
+	<table width="100%"><tr>
+	<td width="95%" align="left">Install New Dataset</td>
+	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_InstallNewDataset').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
+	</tr></table>
+	<br>
+	<iframe id="Hidden_InstallNewDataset_Frame" src="project.create_window.php"></iframe>
+</DIV>
+<DIV id="Hidden_InstallNewGenome" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
+	<table width="100%"><tr>
+	<td width="95%" align="left">Install New Genome</td>
+	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_InstallNewGenome').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
+	</tr></table>
+	<br>
+	<iframe id="Hidden_InstallNewGenome_Frame" src="genome.create_window.php"></iframe>
+</DIV>
+<DIV id="Hidden_GenerateNewHapmap" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
+	<table width="100%"><tr>
+	<td width="95%" align="left">Generate New Hapmap</td>
+	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_GenerateNewHapmap').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
+	</tr></table>
+	<br>
+	<iframe id="Hidden_GenerateNewHapmap_Frame" src="hapmap.create_window.php"></iframe>
+</DIV>
+<DIV id="Hidden_BugTracker" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
+	<table width="100%"><tr>
+	<td width="95%" align="left">Bug Reports</td>
+	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_BugTracker').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
+	</tr></table>
+	<br>
+	<iframe id="Hidden_BugTracker_Frame" src="bug_window.php"></iframe>
+</DIV>
+
 <script type="text/javascript">
-function update_projectsShown_after_logout() {
+function show_hidden(hidden_panel) {
+	var el,x,y,w,h, Fel,Fx,Fy,Fw,Fh;
+	el = document.getElementById(hidden_panel);
+	x  = 50;
+	y  = 50;
+	w  = window.innerWidth-100;
+	h  = window.innerHeight-100;
+	el.style.left            = x + "px";
+	el.style.top             = y + "px";
+	el.style.display         = "block";
+	el.style.width           = w + "px";
+	el.style.height          = h + "px";
+	el.style.backgroundColor = "rgb(200,200,200)";
+	Fel = document.getElementById(hidden_panel+"_Frame");
+	Fx  = 25;
+	Fy  = 25;
+	Fw  = w-50;
+	Fh  = h-50;
+	Fel.style.left            = Fx + "px";
+	Fel.style.top             = Fy + "px";
+	Fel.style.width           = Fw + "px";
+	Fel.style.height          = Fh + "px";
+	Fel.style.position        = "absolute";
+	Fel.style.border          = "0 px";
+	Fel.style.backgroundColor = "rgb(255,255,255)";
+}
+function reload_hidden(hidden_panel,source) {
+	Fel     = document.getElementById(hidden_panel+"_Frame");
+	Fel.src = source;
+}
+
+// =====================================================================
+
+function update_interface_after_login() {
+	document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
+	document.getElementById('panel_visualizeDataset_iframe').contentWindow.location.reload();
+	document.getElementById('panel_genome_iframe'          ).contentWindow.location.reload();
+	document.getElementById('panel_hapmap_iframe'          ).contentWindow.location.reload();
+	document.getElementById('panel_bugs_iframe'            ).contentWindow.location.reload();
+	document.getElementById('panel_help_iframe'            ).contentWindow.location.reload();
+	document.getElementById('panel_examples_iframe'        ).contentWindow.location.reload();
+}
+function update_interface_after_logout() {
 	localStorage.removeItem('projectsShown');
+	var ff1 = parent.document.getElementById('panel_manageDataset_iframe');
+	var ff2 = parent.document.getElementById('panel_visualizeDataset_iframe');
+	var ff3 = parent.document.getElementById('panel_genome_iframe');
+	var ff4 = parent.document.getElementById('panel_hapmap_iframe');
+	var ff5 = parent.document.getElementById('panel_bugs_iframe');
+	var ff6 = parent.document.getElementById('panel_help_iframe');
+	var ff7 = parent.document.getElementById('panel_examples_iframe');
+	ff1.src = ff1.src;  // reload panel.
+	ff2.src = ff2.src;
+	ff3.src = ff3.src;
+	ff4.src = ff4.src;
+	ff5.src = ff5.src;
+	ff6.src = ff6.src;
+	ff7.src = ff7.src;
 }
 function update_projectsShown_after_new_project() {
+	projectsShown = localStorage.getItem("projectsShown");
+	console.log('## before projectsShown = "'+projectsShown+'"');
 	var projectsShown_entries = projectsShown.split(' ');
 	var new_projectsShown = "";
 	localStorage.setItem("projectsShown","");
@@ -1240,18 +594,22 @@ function update_projectsShown_after_new_project() {
 			var entry_parts    = currentProject.split(':');
 			projID = parseInt(entry_parts[2])+1;
 			projID.toString();
-			new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
+			new_project = entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5];
+			console.log('## old_project = "'+currentProject+'"');
+			console.log('## new_project = "'+new_project+'"');
+			projectsShown = projectsShown.replace(currentProject, new_project);
 		}
 	}
-	new_projectsShown = new_projectsShown.slice(0, -1);
-	localStorage.setItem("projectsShown",new_projectsShown);
+	console.log('## after projectsShown = "'+projectsShown+'"');
+	localStorage.setItem("projectsShown",projectsShown);
 }
 function update_projectsShown_after_project_delete(deletedProjectKey) {
+	projectsShown = localStorage.getItem("projectsShown");
 	// Clean up 'deletedProjectID' to projectID.   'p1_[number]_delete' => [number]
 	var deletedProjectID = deletedProjectKey;
-	deletedProjectID = deletedProjectID.replace("p1_","");
-	deletedProjectID = deletedProjectID.replace("_delete","");
-	deletedProjectID = Number(deletedProjectID);
+	    deletedProjectID = deletedProjectID.replace("p1_","");
+	    deletedProjectID = deletedProjectID.replace("_delete","");
+	    deletedProjectID = Number(deletedProjectID);
 	// adjust projectsShown string to reflect new positions of projects.
 	var projectsShown_entries = projectsShown.split(' ');
 	var new_projectsShown = "";
@@ -1264,7 +622,11 @@ function update_projectsShown_after_project_delete(deletedProjectKey) {
 			if (projID < deletedProjectID) {
 				projID.toString();
 				new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
-			} else if (projID > deletedProjectID) {
+			} else if (projID == deletedProjectID) {
+				Deleted_entry_parts = entry_parts;
+				// Remove deleted entry from active area.
+				closeProject(Deleted_entry_parts[0],Deleted_entry_parts[1],Deleted_entry_parts[2],Deleted_entry_parts[3],Deleted_entry_parts[4],Deleted_entry_parts[5]);
+			} else {  // if (projID > deletedProjectID) {
 				projID = projID-1;
 				projID.toString();
 				new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
@@ -1274,6 +636,8 @@ function update_projectsShown_after_project_delete(deletedProjectKey) {
 	new_projectsShown = new_projectsShown.slice(0, -1);
 	localStorage.setItem("projectsShown",new_projectsShown);
 }
+
+
 // upon page reload.
 if(localStorage.getItem("tabInUse")){
 	var tabInUse      = localStorage.getItem("tabInUse");
@@ -1282,31 +646,8 @@ if(localStorage.getItem("tabInUse")){
 }
 if(localStorage.getItem("projectsShown")){
 	var projectsShown = localStorage.getItem("projectsShown");
-}
-if (!projectsShown) {
-	<?php
-	$projectsShown = "";
-	foreach ($systemProjectFolders as $key=>$project) {
-	// Load colors for project.
-		$colorFile        = $GLOBALS['directory']."users/default/projects/".$project."/colors.txt";
-		if (file_exists($colorFile)) {
-			$handle       = fopen($colorFile,'r');
-			$colorString1 = trim(fgets($handle));
-			$colorString2 = trim(fgets($handle));
-			fclose($handle);
-		} else {
-			$colorString1 = 'null';
-			$colorString2 = 'null';
-		}
-		$parentFile   = $GLOBALS['directory']."users/default/projects/".$project."/parent.txt";
-		$handle       = fopen($parentFile,'r');
-		$parentString = trim(fgets($handle));
-		fclose($handle);
-		$projectsShown = $projectsShown."default:".$project.":".($key+$userProjectCount).":null:null:".$parentString." ";
-	}
-	$projectsShown = trim($projectsShown);
-	echo "var projectsShown = '".$projectsShown."';\n";
-	?>
+} else {
+	var projectsShown = "";
 }
 
 // Reload previously viewed tab after page reload.
@@ -1316,45 +657,49 @@ tabWindow(tabInUse);
 
 // Reload previously viewed project datasets after page reload.
 console.log('#: projectsShown = "'+projectsShown+'"');
-if (projectsShown) {
-	var projectsShown_entries = projectsShown.split(' ');
-	localStorage.setItem("projectsShown","");
-	for (var i=0;i<projectsShown_entries.length; i++) {
-		var currentProject = projectsShown_entries[i];
-		if (currentProject != '') {
-			var entry_parts    = currentProject.split(':');
+function restore_shown_figures() {
+	if (projectsShown) {
+		var projectsShown_entries = projectsShown.split(' ');
+		localStorage.setItem("projectsShown","");
+		for (var i=0;i<projectsShown_entries.length; i++) {
+			var currentProject = projectsShown_entries[i];
+			if (currentProject != '') {
+				var entry_parts    = currentProject.split(':');
 
-			// select checkBoxes for previously viewed datasets.
-			key = entry_parts[2];
-			var currentProject_checkBox = document.getElementById("show_"+key);
-			currentProject_checkBox.checked = true;
+				// select checkBoxes for previously viewed datasets.
+				key = entry_parts[2];
+				var display_panel_iframe        = document.getElementById('panel_visualizeDataset_iframe');
+				var currentProject_checkBox     = display_panel_iframe.contentDocument.getElementById("show_"+key);
+				currentProject_checkBox.checked = true;
 
-			// Open projects previously shown.
-			console.log('# entry to show = "'+currentProject+'"');
-			var entry_parts    = currentProject.split(':');
-			openProject(entry_parts[0], entry_parts[1], entry_parts[2], entry_parts[3], entry_parts[4], entry_parts[5]);
+				// Open projects previously shown.
+				console.log('# entry to show = "'+currentProject+'"');
+				var entry_parts    = currentProject.split(':');
+				openProject(entry_parts[0], entry_parts[1], entry_parts[2], entry_parts[3], entry_parts[4], entry_parts[5]);
+			}
 		}
 	}
 }
+// ====== Page reload when logged out =================================
 
-<!---------------- Page reload when logged out --------------!>
 function reload_page() {
 	var go = false;
 	// trigger reload if reload_page is called and user is found to be logged off.
 	<?php
-	if (!isset($_SESSION['logged_on'])) {
-		echo "\t// User is not logged in.\n";
-		//location.reload();
-	} else {
-		echo "// User is still logged in.\n";
-	}
+//	if (!isset($_SESSION['logged_on'])) {
+//		echo "\t// User is not logged in.\n";
+//		//location.reload();
+//	} else {
+//		echo "// User is still logged in.\n";
+//	}
 	?>
 }
+
 <?php
-if (isset($_SESSION['logged_on'])) {
-	echo "\n// Initiate recurrent call to reload_page function, which depends upon project status.\n";
-	echo "var intervalID = window.setInterval(reload_page, 3000);\n";
-}
+//if (isset($_SESSION['logged_on'])) {
+//	echo "\n// Initiate recurrent call to reload_page function, which depends upon project status.\n";
+//	echo "var intervalID = window.setInterval(reload_page, 3000);\n";
+//}
 ?>
 </script>
 <!-- Manage interfaces for deleting objects.--!>
@@ -1365,6 +710,31 @@ if (isset($_SESSION['logged_on'])) {
 <!-- Needed for deletion functions.--!>
 	<script type="text/javascript" src="js/jquery-1.7.2.js"></script>
 	<script type="text/javascript" src="js/jquery.form.js"></script>
+
+
+<!-- Setup for Generating combined figures. --!>
+<style>
+	.hide { position:absolute; top:-1px; left:-1px; width:1px; height:1px; }
+</style>
+<iframe name="hiddenFrame" class="hide"></iframe>
+<script type="text/javascript">
+function Generate_combined_figure() {
+	var user           = '<?php echo $user; ?>';
+	var projectsShown  = localStorage.getItem("projectsShown");
+	var autoSubmitForm = document.createElement("form");
+	    autoSubmitForm.setAttribute("method","post");
+	    autoSubmitForm.setAttribute("action","images.combine.php");
+	    autoSubmitForm.setAttribute("target","hiddenFrame");
+	var input2         = document.createElement("input");
+	    input2.setAttribute("type","hidden");
+	    input2.setAttribute("name","projectsShown");
+	    input2.setAttribute("value",projectsShown);
+	    autoSubmitForm.appendChild(input2);
+	autoSubmitForm.submit();
+}
+</script>
+
+
 
 </body>
 </html>

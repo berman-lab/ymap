@@ -642,7 +642,7 @@ end;
 % Initialize CGD annotation output file.
 %----------------------------------------------------------------------
 if (Output_CGD_annotations == true)
-	CGDid = fopen([projectDir 'CGD_annotations.' project  '.txt'], 'w');
+	CGDid = fopen([projectDir 'CGD_annotations.SNP.txt'], 'w');
 	fprintf(CGDid,['track name=' project ' description="WGseq annotation of SNPs" useScore=0 itemRGB=On\n']);
 end;
 
@@ -1242,21 +1242,23 @@ for chr = 1:num_chrs
 					end;
 
 					% output CGD GBrowse annotation lines for this chromosome bin.
-					allele1 = '*';
-					allele2 = '*';
-					if (length(colors_phased) > 0)
-						for i = 1:length(colors_phased)
-							coordinate = coordinate_phased(i);
-							colorPoint = colors_phased{i};
-							outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
+					if (Output_CGD_annotations == true)
+						allele1 = '*';
+						allele2 = '*';
+						if (length(colors_phased) > 0)
+							for i = 1:length(colors_phased)
+								coordinate = coordinate_phased(i);
+								colorPoint = colors_phased{i};
+								outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
+							end;
 						end;
-					end;
-					if (length(colors_unphased) > 0)
-						for i = 1:length(colors_unphased)
-							coordinate = coordinate_unphased(i);
-	                        colorPoint = colors_unphased{i}; 
-	                        outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
-	                    end;
+						if (length(colors_unphased) > 0)
+							for i = 1:length(colors_unphased)
+								coordinate = coordinate_unphased(i);
+		                        colorPoint = colors_unphased{i}; 
+		                        outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
+		                    end;
+						end;
 					end;
 
 					% If the strain is only being compared to itself, only grey color should be produced.
@@ -1264,6 +1266,7 @@ for chr = 1:num_chrs
 					if (strcmp(project,hapmap))
 						colorMix = colorAB;
 					end;
+
 
 					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + ...
 					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
@@ -1277,7 +1280,7 @@ for chr = 1:num_chrs
 	    end;
 		
 	    % standard : draw colorbars.
-	    for chr_bin = 1:length(unphased_plot2{chr})+1;
+	    for chr_bin = 1:length(phased_plot2{chr})+1;
 	        x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 	        y_ = [0 maxY maxY 0];
 	        c_post(1) = colors(chr_bin,1);

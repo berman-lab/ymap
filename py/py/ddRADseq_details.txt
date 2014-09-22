@@ -1,0 +1,97 @@
+CNV analysis of ddRADseq datasets:
+----------------------------------
+
+Simulated digest of reference genome
+    The Candida albicans reference SC5314 genome assembly (ver. A21-s02-m08-r09) was computational digested by the target sites
+    for the restriction enzymes used in the library preparation (MfeI, [C:AATTG]; MboI, [:GATC]).   The resulting genome fragments
+    which were edged by cut sites for both restriction enzymes were considered usable.   The length and GC-bias of all usable
+	fragments was calculated.
+
+Processing raw sequencing data
+	Reads for the reference control and experimental datasets were aligned to the Candida albicans SC5314 reference genome
+	(A21-s02-m08-r09[***ask Gareth***]) using BWA/Bowtie2[**ask Gareth***] using standard settings [***ask Gareth***].   A pileup
+	file containing the number of reads at every genome coordinate was generated using Samtools.   The average read depth was
+	calculated for each usable simulated restriction fragment.
+
+Correction of dataset-specific biases
+	A LOWESS fitting of average read depth vs. length of usable simulated restriction fragments was performed separately for the
+	control and experimental datasets.   The average read depths were normalized by dividing by the resulting fit curve.   Any
+	fragments where the LOWESS fit curve fell below one were considered unusable because of the reduced dynamic range.  Any
+	fragments shorter than 50 bp or longer than 1000 bp were discarded because of the increased variation in average read depth for
+	those fragments.   This corrected for dataset-specific biases introduced by the length-dependent degradation of restriction
+	fragments.
+
+	A LOWESS fitting of corrected read depth vs. GC-bias of remaining usable simulated restriction fragments was performed separately
+	for the control and experimental datasets.   The corrected read depths were normalized again by dividing by the resulting fit
+	curve.   This corrected for dataset-specific GC-biases introduced during PCR amplification.
+
+Correction for coordinate-specific biases
+	The corrected read depth for the experimental dataset for each usable simulated restriction fragment was divided by the corrected
+	read depth for the control dataset.   This corrected for uncharacterized location-specific biases.
+
+Display of final CNV estimates
+	A final histogram of CNV estimates was made by calculating the weighted average of the corrected read depths for each usable
+	restriction fragment found to cover a portion of each histogram bin.   These CNV estimates were multiplied by the whole genome
+	estimate determined via flow cytometry and then plotted on a linear scale, with black bars extending from the expected euploid
+	copy number to the determined copy number for each genomic region.
+	
+
+===================================================================================================================================
+
+from :http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3725063/
+
+Molecular karyotyping by RAD-seq coverage
+-----------------------------------------
+
+	Processing raw sequencing data
+
+For each lane of sequencing, the raw reads were separated into bins based on their 4-base strain- specific barcode (5’ end of each read).
+Within each strain-specific bin the barcodes were removed and reads were then aligned to the S288c reference genome sequence
+(SGD R64-1-1_20110203) using BWA (v0.5.8) (5) with up to 6 mismatches allowed. The 5’ start positions of all reads with a Phred-scaled
+mapping alignment quality of at least 20 were counted, resulting in a set of marker positions for each strain along with the number of
+reads aligning to each of those positions.
+
+	Marker selection
+
+Next, a series of filtering steps were performed to select an optimal set of markers to represent the DNA copy number across the genome.
+First, markers with a median of 0 or 1 counts over all strains sequenced for this study (~400) were removed. We believe that the majority
+of these markers represent sequencing or DNA fragmentation errors. Second, the consistency of the markers was compared to the expected
+length of the MfeI-MboI DNA fragment, based on the S288c reference sequence, i.e. each marker should represent a set of reads directed to
+the MfeI end of a unique MfeI-MboI restriction fragment.
+
+	For each marker within each strain, the proportion of all reads aligning to that marker was then calculated, as follows:
+
+[Figure 1]
+
+The consistency of each marker was then expressed as the Coefficient of Variance (CV) of those proportions across all strains and plotted
+against the predicted marker fragment length (Fig. S10).
+
+As can be seen from the figure, the CV of markers arising from fragments well within the expected gel-selected size range (~75-425 bp) is
+low, but rises rapidly outside this range. In addition, a small number of markers within the selected size range still have inconsistent
+behavior (high CV). We therefore decided to set 2 filters, 125bp <= Marker fragment length <= 400bp, and Marker CV <= 0.6, to select for
+markers that we believe should behave in a reliable manner.
+
+[Figure 2]
+
+This reduces the markers available for the subsequent analysis by about 30%, but still leaves more than 3000 markers spanning the genome.
+
+	Individual strain calculations relative to the euploid reference panel
+
+To normalize marker-specific coverage effects, a reference euploid panel (R.E.P.) of 13 sequenced strains was selected. For each marker in
+each query strain the read coverage (proportion) was normalized using the mean read coverage (proportion) from this panel. Assessment of
+the copy number of each chromosome in each query strain was then carried out as follows. First, for each marker in the length and CV filtered
+set, the proportion of all reads aligning to the marker was calculated and then normalized by dividing by the mean marker proportion from
+the reference euploid panel:
+
+[Figure 3]
+
+As this ratio will vary slightly depending on ploidy (aneuploids versus euploids or other aneuploids), it was then normalized to set the
+median marker ratio to 1:
+
+[Figure 4]
+
+The resulting normalized marker ratios were then plotted on a log2 scale against the marker number, ordered according to the genomic position,
+using the R statistical software environment (http://www.r-project.org/). Each point represents a marker, and chromosomes are given alternating
+colors. To keep a constant scale, the y-axis was limited from the values of -1 to 2. The ratios of an extremely small number of markers lie
+outside this range, but do not affect the interpretation of the figures. These plots, in conjunction with flow cytometry analysis, were then
+used to assess the number of copies of each chromosome in each strain. 

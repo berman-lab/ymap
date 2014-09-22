@@ -24,13 +24,13 @@
 	}
 
 // Initialize 'process_log.txt' file.
-	$logOutputName = $directory."users/".$user."/genomes/".$genome."/process_log.txt";
+	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized\n");
 	fwrite($logOutput, "Running 'php/genome.install_1.php'.\n");
 
 // Initialize 'condensed_log.txt' file.
-	$condensedLogOutputName = $directory."users/".$user."/genomes/".$genome."/condensed_log.txt";
+	$condensedLogOutputName = "../users/".$user."/genomes/".$genome."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
@@ -40,7 +40,7 @@
 	// Generate 'reference.txt' file containing:
 	//      one line; file name of reference FASTA file.
 	fwrite($logOutput, "\tGenerating 'reference.txt' file.\n");
-	$outputName       = $directory."users/".$user."/genomes/".$genome."/reference.txt";
+	$outputName       = "../users/".$user."/genomes/".$genome."/reference.txt";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
@@ -57,7 +57,7 @@
 	// Generate 'name.txt' file containing:
 	//		one line; name of genome.
 	fwrite($logOutput, "\tGenerating 'name.txt' file.\n");
-	$outputName       = $directory."users/".$user."/genomes/".$genome."/name.txt";
+	$outputName       = "../users/".$user."/genomes/".$genome."/name.txt";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
@@ -74,14 +74,17 @@
 	// Reformat FASTA file from multiple lines per text block to single line.
 	fwrite($logOutput, "\tReformatting genome FASTA to single-line entries.\n");
 	$currentdir  = getcwd();
-	chdir($directory."users/".$user."/genomes/".$genome."/");
-	$system_call_string = "sh ".$directory."sh/FASTA_reformat_1.sh ".$fileName;
+	chdir("../users/".$user."/genomes/".$genome."/");
+	$system_call_string = "sh ../sh/FASTA_reformat_1.sh ".$fileName;
 	exec($system_call_string, $result);
 	chdir($currentDir);
 
 	// Process FASTA file for chromosome count, names, and lengths.
 	fwrite($logOutput, "\tReading chromosome count, names, and lengths from FASTA.\n");
-	$file_path   = $directory."users/".$user."/genomes/".$genome."/".$fileName;
+	fwrite($logOutput, $fileName."\n");
+
+
+	$file_path   = "../../../../users/".$user."/genomes/".$genome."/".$fileName;
 	$file_lines  = file($file_path);
 	$num_lines   = sizeof($file_lines);
 	$chr_count   = 0;
@@ -109,8 +112,8 @@
 	// Reformat FASTA file from multiple lines per text block to single line.
 	fwrite($logOutput, "\tReformatting genome FASTA to multi-line entries.\n");
 	$currentdir  = getcwd();
-	chdir($directory."users/".$user."/genomes/".$genome."/");
-	$system_call_string = "sh ".$directory."sh/FASTA_reformat_2.sh ".$file_path;
+	chdir("../users/".$user."/genomes/".$genome."/");
+	$system_call_string = "sh ../sh/FASTA_reformat_2.sh ".$file_path;
 	exec($system_call_string,$result);
 	chdir($currentDir);
 
@@ -129,7 +132,7 @@
 	// The following section defines a form for collecting the information needed to build the last of the genome setup files.
 	fwrite($logOutput, "\tGenerating form to request centromere location and other genome specific data from the user.\n");
 ?>
-<BODY onload = "parent.resize_iframe('<?php echo $key; ?>', 150);" >
+<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', <?php echo 200+28*$chr_count; ?>);" >
 <font color="red" size="2">Fill in genome details:</font>
 	<form action="genome.install_2.php" method="post">
 		<table border="0">

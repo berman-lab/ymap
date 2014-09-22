@@ -38,7 +38,7 @@
 //$project  = "test_Cg";
 
 // Initialize log file.
-	$logOutputName = $directory."users/".$user."/projects/".$project."/process_log.txt";
+	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "#..............................................................................\n");
 	fwrite($logOutput, "Running 'php/project.paired_WGseq.install_2.php'.\n");
@@ -49,18 +49,18 @@
 	fwrite($logOutput, "#============================================================================== 3\n");
 
 // Manage condensed log file.
-	$condensedLogOutputName = $directory."users/".$user."/projects/".$project."/condensed_log.txt";
+	$condensedLogOutputName = "../users/".$user."/projects/".$project."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'a');
 //	fclose($condensedLogOutput);
 
 // Generate 'datafiles.txt' file containing: name of all data files.
 // Identify format of uploaded file and decompress as needed (*.ZIP; *.GZ).
-	$outputName = $directory."users/".$user."/projects/".$project."/datafiles.txt";
+	$outputName = "../users/".$user."/projects/".$project."/datafiles.txt";
 	$output     = fopen($outputName, 'w');
 	$fileNames = explode(",", $fileName);
 	fwrite($logOutput, "\tGenerate 'datafiles.txt' and decompress uploaded archives.\n");
 	foreach ($fileNames as $key=>$name) {
-		$projectPath = $directory."users/".$user."/projects/".$project."/";
+		$projectPath = "../users/".$user."/projects/".$project."/";
 		$name        = str_replace("\\", ",", $name);
 		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
@@ -70,9 +70,9 @@
 		fwrite($logOutput, "\t\tExtension  : '$ext'.\n");
 		fwrite($logOutput, "\t\tPath       : '$projectPath'.\n");
 		// Process the uploaded file.
-		$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$directory,$output, $condensedLogOutput,$logOutput);
+		$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput);
 		// formatting.
-		if ($key < count(fileNames)-1) {
+		if ($key < count($fileNames)-1) {
 			fwrite($output,"\n");
 		}
 	}
@@ -88,7 +88,7 @@
 	// Final install functions are in shell script.
 	fwrite($logOutput, "Passing control to : 'sh/project.paired_WGseq.install_3.sh'\n");
 	fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-	$system_call_string = "sh ".$directory."sh/project.paired_WGseq.install_3.sh ".$user." ".$project." ".$directory." > /dev/null &";
+	$system_call_string = "sh ../sh/project.paired_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 	fclose($condensedLogOutput);
 	fclose($logOutput);
