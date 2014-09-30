@@ -60,11 +60,22 @@
 		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById("p_".project_key).style.height = "0px";
 	}
 	function update_project_label_color(project_key,label_color) {
-		project_key                = project_key.replace('p_','');
-		var project_label1         = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
-		var project_label2         = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
-		project_label1.style.color = label_color;
-		project_label2.style.color = label_color;
+		project_key                 = project_key.replace('p_','');
+		var project_label1          = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
+		var project_label2          = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
+		project_label1.style.color  = label_color;
+		project_label2.style.color  = label_color;
+	}
+	function update_project_file_size(project_key,sizeString_1,sizeString_2) {
+		project_key                  = project_key.replace('p_','');
+		var project_size1_span       = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_size1_'+project_key);
+		var project_size2_span       = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_size2_'+project_key);
+		if (sizeString_1 != "") {
+			project_size1_span.innerHTML = " <font color='black' size='1'>("+sizeString_1+" bytes)</font>";
+		}
+		if (sizeString_2 != "") {
+			project_size2_span.innerHTML = " <font color='black' size='1'>("+sizeString_2+" bytes)</font>";
+		}
 	}
 	function resize_project(project_key, pixels) {
 		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key).style.height = pixels+"px";
@@ -94,6 +105,13 @@
 		genome_key               = genome_key.replace('g_','');
 		var genome_label         = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_label_'+genome_key);
 		genome_label.style.color = label_color;
+	}
+	function update_genome_file_size(genome_key,sizeString_1) {
+		genome_key                  = genome_key.replace('g_','');
+		var genome_size1_span       = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_size1_'+genome_key);
+		if (sizeString_1 != "") {
+			genome_size1_span.innerHTML = " <font color='black' size='1'>("+sizeString_1+" bytes)</font>";
+		}
 	}
 	function resize_genome(genome_key, pixels) {
 		document.getElementById('panel_genome_iframe').contentDocument.getElementById(genome_key).style.height = pixels+"px";

@@ -30,6 +30,16 @@
     $logOutput     = fopen($logOutputName, 'a');
     fwrite($logOutput, "Running 'php/genome.install_2.php'.\n");
 
+	$sizeFile_1   = "../users/".$user."/genomes/".$genome."/upload_size_1.txt";
+	$handle       = fopen($sizeFile_1,'r');
+	$sizeString_1 = trim(fgets($handle));
+	fclose($handle);
+	if ($sizeString_1 !== "") {
+		echo "\n<script type='text/javascript'>\n";
+		echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
+		echo "\n</script>\n";
+	}
+
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing genome specific information.\n");
 	$rDNA_start         = filter_input(INPUT_POST, "rDNAstart",          FILTER_SANITIZE_STRING);

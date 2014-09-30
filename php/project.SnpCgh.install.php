@@ -48,6 +48,15 @@
 	chmod($outputName,0644);
 	fwrite($outputLog, "'working.txt' file generated.\n");
 
+// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
+	$outputName      = "../users/".$user."/projects/".$project."/upload_size_1.txt";
+	$output          = fopen($outputName, 'w');
+	$fileSizeString  = filesize("../users/".$user."/projects/".$project."/".$fileName);
+	fwrite($output, $fileSizeString);
+	fclose($output);
+	chmod($outputName,0644);
+	fwrite($outputLog, "\tGenerated 'upload_size_1.txt' file.\n");
+
 // Generate 'datafile1.txt' file containing: name of first data file.
 	$outputName = "../users/".$user."/projects/".$project."/datafile1.txt";
 	$output     = fopen($outputName, 'w');

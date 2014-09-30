@@ -60,11 +60,22 @@
 		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById("p_".project_key).style.height = "0px";
 	}
 	function update_project_label_color(project_key,label_color) {
-		project_key                = project_key.replace('p_','');
-		var project_label1         = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
-		var project_label2         = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
-		project_label1.style.color = label_color;
-		project_label2.style.color = label_color;
+		project_key                 = project_key.replace('p_','');
+		var project_label1          = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
+		var project_label2          = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
+		project_label1.style.color  = label_color;
+		project_label2.style.color  = label_color;
+	}
+	function update_project_file_size(project_key,sizeString_1,sizeString_2) {
+		project_key                  = project_key.replace('p_','');
+		var project_size1_span       = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_size1_'+project_key);
+		var project_size2_span       = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_size2_'+project_key);
+		if (sizeString_1 != "") {
+			project_size1_span.innerHTML = " <font color='black' size='1'>("+sizeString_1+" bytes)</font>";
+		}
+		if (sizeString_2 != "") {
+			project_size2_span.innerHTML = " <font color='black' size='1'>("+sizeString_2+" bytes)</font>";
+		}
 	}
 	function resize_project(project_key, pixels) {
 		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key).style.height = pixels+"px";
@@ -95,6 +106,13 @@
 		var genome_label         = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_label_'+genome_key);
 		genome_label.style.color = label_color;
 	}
+	function update_genome_file_size(genome_key,sizeString_1) {
+		genome_key                  = genome_key.replace('g_','');
+		var genome_size1_span       = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_size1_'+genome_key);
+		if (sizeString_1 != "") {
+			genome_size1_span.innerHTML = " <font color='black' size='1'>("+sizeString_1+" bytes)</font>";
+		}
+	}
 	function resize_genome(genome_key, pixels) {
 		document.getElementById('panel_genome_iframe').contentDocument.getElementById(genome_key).style.height = pixels+"px";
 	}
@@ -112,30 +130,24 @@
 		<table width="100%" height="300px"><tr valign="top"><td>
 		<img src="images/Logo_title.2.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
 		</td></tr><tr valign="bottom"><td align="middle">
-
-		<button id="clear_fig_button" onclick="panel_visualizeDataset_iframe.contentWindow.Close_all_figures(); combined_fig_options.style.display = 'none'; combined_fig_options_2.style.display = 'none';">Clear all figures.</button><br>
-
-		<button id="combined_fig_button" onclick="Generate_combined_figure(); combined_fig_options.style.display = 'inline';">Combine viewed figures.</button><br>
-		<?php
-			if (isset($_SESSION['logged_on'])) {
-				$user = $_SESSION['user'];
-			} else {
-				$user = "default";
-			}
-			$cfig_CNV_SNP = "users/".$user."/combined_figure.1.png";
-			$cfig_CNV     = "users/".$user."/combined_figure.2.png";
-			$cfig_SNP     = "users/".$user."/combined_figure.3.png";
-		?>
-		<font size='2'>
-			<div id='combined_fig_options' style='display:none;'>
-				<div id='combined_fig_options_2' style='display:none;'>
-					CNV-SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV_SNP; ?>")'>
-					CNV <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV; ?>")'>
-					SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_SNP; ?>")'>
-				</div>
-			</div>
-		</font>
-
+<font size='2'>
+	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
+<?php
+	if (isset($_SESSION['logged_on'])) {
+		$user = $_SESSION['user'];
+	} else {
+		$user = "default";
+	}
+	$cfig_CNV_SNP = "users/".$user."/combined_figure.1.png";
+	$cfig_CNV     = "users/".$user."/combined_figure.2.png";
+	$cfig_SNP     = "users/".$user."/combined_figure.3.png";
+?>
+	<div id='combined_fig_options' style='display:none;'>
+		CNV-SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV_SNP; ?>")'>
+		CNV <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV; ?>")'>
+		SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_SNP; ?>")'>
+	</div>
+</font>
 		</td></tr></table>
 
 <!--                                                 --!>
@@ -275,21 +287,16 @@ function blank_and_content_tab() {
 		newImg.document.close();
 	}
 	function openProject(user,project,key,color1,color2,parent) {
-		user    = user.replace(" ","_");
-		project = project.replace(" ","_");
-		key     = key.replace(" ","_");
-		color1  = color1.replace(" ","_");
-		color2  = color2.replace(" ","_");
-		parent  - parent.replace(" ","_");
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
 		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+
+		console.log('# parent.openProject : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
+		console.log(show_button_element);
 		if (show_button_element.checked == false) {
 			closeProject(user,project,key,color1,color2,parent);
 		} else {
 			var fig_linear_CNV_SNP               = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.2.";
-			var fig_linear_CNV_SNP_old           = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.old2.";
 			var fig_standard_CNV_SNP             = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.1.";
-			var fig_standard_CNV_SNP_old         = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.old1.";
 			var fig_linear_CNV                   = "users/"+user+"/projects/"+project+"/fig.CNV-map.2.";
 			var fig_standard_CNV                 = "users/"+user+"/projects/"+project+"/fig.CNV-map.1.";
 			if (isFile("users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.png")) {
@@ -303,9 +310,9 @@ function blank_and_content_tab() {
 			}
 			var fig_linear_manual                = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.2.";
 			var fig_standard_manual              = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.1.";
-			var CGD_annotations_SNP              = "users/"+user+"/projects/"+project+"/CGD_annotations.SNP.txt";
-			var CNV_bias_WGseq_1                 = "users/"+user+"/projects/"+project+"/fig.bias_chr_end.png";
-			var CNV_bias_WGseq_2                 = "users/"+user+"/projects/"+project+"/fig.bias_GC_content.png";
+			var CGD_annotations_SNP              = "users/"+user+"/projects/"+project+"/CGD_annotations."+project+".txt";
+			var CNV_bias_WGseq_1                 = "users/"+user+"/projects/"+project+"/fig.examine_bias.png";
+			var CNV_bias_WGseq_2                 = "users/"+user+"/projects/"+project+"/fig.GCratio_vs_CGH.png";
 			var CNV_bias_ddRADseq_1              = "users/"+user+"/projects/"+project+"/fig.examine_bias.1.png";
 			var CNV_bias_ddRADseq_2              = "users/"+user+"/projects/"+project+"/fig.examine_bias.2.png";
 			var CNV_bias_ddRADseq_3              = "users/"+user+"/projects/"+project+"/fig.examine_bias.3.png";
@@ -349,13 +356,6 @@ function blank_and_content_tab() {
 					string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_manual+"eps\")'>";
 				}
 				string1 = string1 + ")";
-
-				// GBrowse annotation file
-				if (isFile(fig_linear_CNV_SNP_old+"png")) {
-					string1 = string1 + ", Alternate color scheme";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_old+"png"+"\",\"100\")'>Odd ratios = green.</button>";
-				}
-
 				if ((isFile(fig_linear_CNV+"png")) || (isFile(fig_linear_SNP+"png"))) {
 					string1 = string1 + "; ";
 				}
@@ -387,32 +387,37 @@ function blank_and_content_tab() {
 				string1 = string1 + " : GBrowse-SNP ";
 				string1 = string1 + "<button onclick=\"loadExternal('"+CGD_annotations_SNP+"');\">GBrowse</button>";
 			}
-
-			// Show CNV bias figure for WGseq and ddRADseq.
-			if ((isFile(CNV_bias_WGseq_1)) || (isFile(CNV_bias_WGseq_2))) {
-				string1 = string1 + " : CNV biases ";
-				if (isFile(CNV_bias_WGseq_1)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_1+"\",\"100\")'>chr end</button>";
-				}
-				if (isFile(CNV_bias_WGseq_2)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_2+"\",\"100\")'>GC content</button>";
-				}
-			} else if ((isFile(CNV_bias_ddRADseq_1)) || (isFile(CNV_bias_ddRADseq_2)) || (isFile(CNV_bias_ddRADseq_3))) {
-				string1 = string1 + " : CNV biases ";
-				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>length</button>";
-				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>GC content</button>";
-				if (isFile(CNV_bias_ddRADseq_3)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";
+			if (isFile("users/"+user+"/super.txt")) {  // Super-user privilidges.
+				// Show CNV bias figure for WGseq and ddRADseq.
+				if ((isFile(CNV_bias_WGseq_1)) || (isFile(CNV_bias_WGseq_2))) {
+					string1 = string1 + " : CNV biases ";
+					if (isFile(CNV_bias_WGseq_1)) {
+						string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_1+"\",\"100\")'>1</button>";
+					} else if (isFile(CNV_bias_WGseq_2)) {
+						string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_2+"\",\"100\")'>2</button>";
+					}
+				} else if ((isFile(CNV_bias_ddRADseq_1)) || (isFile(CNV_bias_ddRADseq_2)) || (isFile(CNV_bias_ddRADseq_3)) || (isFile(CNV_bias_ddRADseq_4))) {
+					string1 = string1 + " : CNV biases ";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>1</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>2</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>3</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_4+"\",\"100\")'>T</button>";
 				}
 			}
 			// Show allelic ratio plot version for ddRADseq.
 			if ((isFile(fig_a_linear_SNPratio_ddRADseq)) || (isFile(fig_b_linear_SNPratio_ddRADseq)) || (isFile(fig_c_linear_SNPratio_ddRADseq)) || (isFile(fig_d_linear_SNPratio_ddRADseq))) {
 				string1 = string1 + " : SNP ratios ";
 				if (isFile(fig_a_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_a_linear_SNPratio_ddRADseq+"\",\"100\")'>histogram</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_a_linear_SNPratio_ddRADseq+"\",\"100\")'>1</button>";
 				}
 				if (isFile(fig_b_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_b_linear_SNPratio_ddRADseq+"\",\"100\")'>fire plot</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_b_linear_SNPratio_ddRADseq+"\",\"100\")'>2</button>";
+				}
+				if (isFile(fig_c_linear_SNPratio_ddRADseq)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_c_linear_SNPratio_ddRADseq+"\",\"100\")'>3</button>";
+				}
+				if (isFile(fig_d_linear_SNPratio_ddRADseq)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_d_linear_SNPratio_ddRADseq+"\",\"100\")'>4</button>";
 				}
 			}
 
@@ -437,10 +442,11 @@ function blank_and_content_tab() {
 				}
 			}
 			var projectsShown = localStorage.getItem("projectsShown");
+			console.log("'"+projectsShown+"'");
 			if (projectsShown != null) {
 				projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+color1+":"+color2+":"+parent,"");
 			} else {
-				projectsShown = projectsShown.replace("null ","");
+				projectsShown - projectsShown.replace("null ","");
 			}
 			projectsShown = projectsShown+" "+user+":"+project+":"+key+":"+color1+":"+color2+":"+parent;
 			projectsShown = projectsShown.replace("  "," ");   // remove duplicate " " characters.
@@ -449,20 +455,9 @@ function blank_and_content_tab() {
 			localStorage.setItem("projectsShown", projectsShown);
 			console.log('# add to projectsShown : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
 			console.log('# projectsShown = "'+projectsShown+'"');
-
-			combined_fig_options.style.display   = 'none';
-			combined_fig_button.style.display    = 'inline';
-			combined_fig_options_2.style.display = 'inline';
-			clear_fig_button.style.display       = 'inline';
 		}
 	}
 	function closeProject(user,project,key,color1,color2,parent) {
-		user    = user.replace(" ","_");
-		project = project.replace(" ","_");
-		key     = key.replace(" ","_");
-		color1  = color1.replace(" ","_");
-		color2  = color2.replace(" ","_");
-		parent  - parent.replace(" ","_");
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
         var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		if (show_button_element) {
@@ -480,8 +475,10 @@ function blank_and_content_tab() {
 		localStorage.setItem("projectsShown", projectsShown);
 		console.log('# remove from projectsShown : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
 		console.log('# projectsShown = "'+projectsShown+'"');
-
-		combined_fig_options.style.display = 'none';
+	}
+	function CloseAllProjects(user) {
+		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
+		
 	}
 	</script>
 <hr>
@@ -646,8 +643,6 @@ if(localStorage.getItem("tabInUse")){
 }
 if(localStorage.getItem("projectsShown")){
 	var projectsShown = localStorage.getItem("projectsShown");
-} else {
-	var projectsShown = "";
 }
 
 // Reload previously viewed tab after page reload.
@@ -680,26 +675,27 @@ function restore_shown_figures() {
 		}
 	}
 }
+
 // ====== Page reload when logged out =================================
 
 function reload_page() {
 	var go = false;
 	// trigger reload if reload_page is called and user is found to be logged off.
 	<?php
-//	if (!isset($_SESSION['logged_on'])) {
-//		echo "\t// User is not logged in.\n";
-//		//location.reload();
-//	} else {
-//		echo "// User is still logged in.\n";
-//	}
+	if (!isset($_SESSION['logged_on'])) {
+		echo "\t// User is not logged in.\n";
+		//location.reload();
+	} else {
+		echo "// User is still logged in.\n";
+	}
 	?>
 }
 
 <?php
-//if (isset($_SESSION['logged_on'])) {
-//	echo "\n// Initiate recurrent call to reload_page function, which depends upon project status.\n";
-//	echo "var intervalID = window.setInterval(reload_page, 3000);\n";
-//}
+if (isset($_SESSION['logged_on'])) {
+	echo "\n// Initiate recurrent call to reload_page function, which depends upon project status.\n";
+	echo "var intervalID = window.setInterval(reload_page, 3000);\n";
+}
 ?>
 </script>
 <!-- Manage interfaces for deleting objects.--!>

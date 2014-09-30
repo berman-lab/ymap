@@ -40,6 +40,16 @@
 	} else {                     $clock = "[ * ]";
 	}
 
+	$sizeFile_1   = "../users/".$user."/genomes/".$genome."/upload_size_1.txt";
+	$handle       = fopen($sizeFile_1,'r');
+	$sizeString_1 = trim(fgets($handle));
+	fclose($handle);
+	if ($sizeString_1 !== "") {
+		echo "\n<script type='text/javascript'>\n";
+		echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
+		echo "\n</script>\n";
+	}
+
 	if (file_exists("../users/".$user."/genomes/".$genome."/complete.txt")) {
 		?>
 		<html>

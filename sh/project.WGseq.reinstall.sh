@@ -12,10 +12,12 @@ project=$2;
 main_dir=$(pwd)"/../";
 
 user="darren1";
-project="Fig_09F_YQ2-ERR263538";
+project="testing";
+main_dir="/heap/hapmap/bermanlab/";
 
 #user="morlurie";
 #project="BG2";
+#main_dir="/heap/hapmap/bermanlab/";
 
 
 ##==============================================================================

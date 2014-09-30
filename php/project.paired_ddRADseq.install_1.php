@@ -30,10 +30,6 @@
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
-//$fileName = "FH6-YJB9544_S1_L001_R1_001.fastq.zip";
-//$user     = "darren";
-//$project  = "test";
-//$key      = "p_0";
 
 // Initialize log file.
 	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";
@@ -52,7 +48,7 @@
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
-	chmod($condensedLogOutputName,0755);
+	chmod($outputName,0755);
 
 // Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = "../users/".$user."/projects/".$project."/working.txt";

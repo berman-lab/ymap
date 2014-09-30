@@ -77,7 +77,7 @@
 				</td><td>
 					<div id="hiddenFormSection2" style="display:none">
 						Single-end or paired-end reads in FASTQ format can be compressed into ZIP or GZ archives or in SAM/BAM alignment files.<br>
-						Tab-delimted TXT column format is described in 'About' tab of main page.
+						Tab-delimted TXT column format is described in 'Help' tab of main page.
 					</div>
 				</td></tr><tr bgcolor="#CCFFCC"><td>
 					<?php

@@ -30,11 +30,6 @@
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
-//$fileName = "paired_WGseq.12353_r1.zip,paired_WGseq.12353_r2.zip";
-//$user     = "darren";
-//$project  = "test_Ca_haploid";
-//$key      = "p_1";
-
 
 // Initialize log file.
 	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";
@@ -53,7 +48,7 @@
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
-	chmod($condensedLogOutputName,0755);
+	chmod($outputName,0755);
 
 // Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = "../users/".$user."/projects/".$project."/working.txt";

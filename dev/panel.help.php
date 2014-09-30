@@ -10,7 +10,13 @@
 		margin-left:    1cm;
 	}
 </style>
-<font size='3'>Descriptions of datatypes and input file format requirements.</font><br><br>
+<font size='3'><b>User Manual</b></font><br>
+<font size="2">
+<br>
+<a href="YMAP_User_Manual.docx">A detailed description of the user interface and tools available in YMAP.</a><br>
+</font>
+<br><br>
+<font size='3'><b>Descriptions of datatypes and input file format requirements.</b></font><br>
 <font size="2">
 <p>
 	The Yeast Mapping Analysis Pipeline (YMAP) is intended to simplify the processing of whole genome array and sequence

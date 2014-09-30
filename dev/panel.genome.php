@@ -69,8 +69,17 @@
 			$key = $key_;
 			echo "<span id='g_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
-			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('panel_genome','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString."</font></span>\n\t\t\t\t";
+			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
+			echo $genomeNameString;
+
+			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
+
+			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='g_delete_".$key."'></span>\n\t\t";
 			echo "\n\t\t\t\t";
 			echo "<div id='frameContainer.g3_".$key."'></div>";
@@ -81,8 +90,17 @@
 			$key = $key_ + $userGenomeCount_starting;
 			echo "<span id='g_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
-			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('panel_genome','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString."</font></span>\n\t\t\t\t";
+			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
+			echo $genomeNameString;
+
+			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
+
+			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='g_delete_".$key."'></span>\n\t\t";
 			echo "\n\t\t\t\t";
 			echo "<div id='frameContainer.g2_".$key."'></div>";
@@ -93,8 +111,17 @@
 			$key = $key_ + $userGenomeCount_starting + $userGenomeCount_working;
 			echo "<span id='g_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).". ";
-			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('panel_genome','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString."</font></span>\n\t\t\t\t";
+			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
+			echo $genomeNameString;
+
+			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
+
+			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='g_delete_".$key."'></span>\n\t\t";
 			echo "\n\t\t\t\t";
 			echo "<div id='frameContainer.g1_".$key."'></div>";

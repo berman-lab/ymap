@@ -70,7 +70,16 @@
 			echo "<span id='g_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString."</font></span>\n\t\t\t\t";
+			echo $genomeNameString;
+
+			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
+
+			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='g_delete_".$key."'></span>\n\t\t";
 			echo "\n\t\t\t\t";
 			echo "<div id='frameContainer.g3_".$key."'></div>";
@@ -82,7 +91,16 @@
 			echo "<span id='g_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString."</font></span>\n\t\t\t\t";
+			echo $genomeNameString;
+
+			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
+
+			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='g_delete_".$key."'></span>\n\t\t";
 			echo "\n\t\t\t\t";
 			echo "<div id='frameContainer.g2_".$key."'></div>";
@@ -94,7 +112,16 @@
 			echo "<span id='g_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).". ";
 			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString."</font></span>\n\t\t\t\t";
+			echo $genomeNameString;
+
+			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
+
+			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='g_delete_".$key."'></span>\n\t\t";
 			echo "\n\t\t\t\t";
 			echo "<div id='frameContainer.g1_".$key."'></div>";
@@ -133,7 +160,7 @@ if (isset($_SESSION['logged_on'])) {
 		$genome   = $genomeFolders[$key];
 		echo "\n\t// javascript for genome #".$key.", '".$genome."'\n\t";
 		echo "var el_g               = document.getElementById('frameContainer.g3_".$key."');\n\t";
-		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:80px\" ";
+		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:28px\" ";
 		echo     "src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
 		echo "var g_iframe           = document.getElementById('g_".$key."');\n\t";
 	    echo "var g_js               = g_iframe.contentWindow;\n\t";

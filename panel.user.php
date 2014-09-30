@@ -7,6 +7,19 @@ html * {
 	font-family: arial !important;
 }
 </style>
+<span id="firefox_error_span"></span>
+<script type="text/javascript">
+if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+	// Do Firefox-related activities
+	var FFerror       = document.getElementById("firefox_error_span");
+	ErrorString       = '<font color="red"><b>';
+	ErrorString      += 'Some features of this website require a web-browser based on the Blink (Chrome, Opera, etc.) or WebKit (Safari, etc.) rendering engines.<br><br>';
+	ErrorString      += 'Firefox is based on the Gecko rendering engine. YMAP has an error when rendered with this engine, resulting in datasets not processing after data upload.';
+	ErrorString      += '</b></font><br><br>';
+	FFerror.innerHTML = ErrorString;
+}
+</script>
+
 <font size='3'>Log into a preexisting user account or create a new user account.</font><br><br>
 <?php
 if (isset($_SESSION['logged_on'])) {

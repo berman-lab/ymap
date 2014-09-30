@@ -57,7 +57,7 @@
 			$key = $key_;
 			echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
 			echo "<font size='2'>".($key+1).".";
-			echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','null','null','".$parentString."');\" style=\"visibility:hidden;\">";
+			echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
 			echo "\n\t\t".$project."</font></span>\n\t\t";
 			echo "<span id='p_".$project."_type'></span>\n\t\t";
 			echo "<br>\n\t\t";
@@ -127,7 +127,7 @@
 	$projectsDir          = "users/default/projects/";
 	$systemProjectFolders = array_diff(glob($projectsDir."*"), array('..', '.'));
 	// Sort directories by date, newest first.
-	array_multisort($systemProjectFolders, SORT_ASC, $systemProjectFolders);
+	array_multisort(array_map('filemtime', $systemProjectFolders), SORT_DESC, $systemProjectFolders);
 	// Trim path from each folder string.
 	foreach($systemProjectFolders as $key=>$folder) {   $systemProjectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 	$systemProjectCount = count($systemProjectFolders);
@@ -164,73 +164,18 @@ if(localStorage.getItem("projectsShown")){
 	var projectsShown = localStorage.getItem("projectsShown");
 }
 
-// Display sample figures if not logged in.
 function Display_sample_figures() {
 	localStorage.setItem("projectsShown","");
 <?php
 	if (!isset($_SESSION['logged_on'])) {
 		foreach ($systemProjectFolders as $key=>$project) {
-			if (strpos($project,'Fig.05') !== false) {
-				echo "\tvar show_button_element = document.getElementById('show_".$key."');\n";
-				echo "\tshow_button_element.checked = true;\n";
-				echo "\tparent.openProject('default','".$project."','".$key."','null','null','null');\n";
-			}
+			echo "\tvar show_button_element = document.getElementById('show_".$key."');\n";
+			echo "\tshow_button_element.checked = true;\n";
+			echo "\tparent.openProject('default','".$project."','".$key."','null','null','null');\n";
 		}
 	}
 	?>
 }
 Display_sample_figures();
-
-// Close all figures on request.
-function Close_all_figures() {
-<?php
-	foreach ($projectFolders as $key_=>$project) {
-		$key = $key_;
-		$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
-		if (file_exists($colorFile)) {
-			$handle       = fopen($colorFile,'r');
-			$colorString1 = trim(fgets($handle));
-			$colorString2 = trim(fgets($handle));
-			fclose($handle);
-		} else {
-			$colorString1 = 'null';
-			$colorString2 = 'null';
-		}
-		$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
-		$handle       = fopen($parentFile,'r');
-		$parentString = trim(fgets($handle));
-		fclose($handle);
-		echo "\tvar show_button_element = document.getElementById('show_".$key."');\n";
-		echo "\tshow_button_element.checked = false;\n";
-		echo "\tparent.closeProject('".$user."','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\n";
-	}
-	foreach ($systemProjectFolders as $key_=>$project) {
-		$key = $key_ + $userProjectCount;
-		$colorFile        = "users/default/projects/".$project."/colors.txt";
-		if (file_exists($colorFile)) {
-			$handle       = fopen($colorFile,'r');
-			$colorString1 = trim(fgets($handle));
-			$colorString2 = trim(fgets($handle));
-			fclose($handle);
-		} else {
-			$colorString1 = 'null';
-			$colorString2 = 'null';
-		}
-		$parentFile   = "users/default/projects/".$project."/parent.txt";
-		$handle       = fopen($parentFile,'r');
-		$parentString = trim(fgets($handle));
-		fclose($handle);
-		echo "\tvar show_button_element = document.getElementById('show_".$key."');\n";
-		echo "\tshow_button_element.checked = false;\n";
-		echo "\tparent.closeProject('default','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\n";
-	}
-	?>
-	parent.combined_fig_options.style.display = 'none';
-	localStorage.setItem("projectsShown","");
-	projectsShown = localStorage.getItem("projectsShown");
-}
-
-// Restore visualized figures upon page reload.
-parent.restore_shown_figures();
 
 </script>

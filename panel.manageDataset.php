@@ -21,8 +21,8 @@
 		?>
 		<b><font size='2'>Datasets Pending</font></b><br>
 		<div class='tab' style='color:#CC0000; font-size:10pt;' id='newly_installed_list' name='newly_installed_list'></div><br>
-		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:center;' id='pending_comment' name='pending_comment'>(Reload page after current uploads have completed to prepare these
-		for upload.)</div>
+		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:left;' id='pending_comment' name='pending_comment'>Reload page after any current uploads have completed to prepare pending datasets
+		for upload.<br><br>Additional datasets can be defined with the 'Install New Dataset' button while files upload.</div>
 		<?php
 	}
 	?>
@@ -82,12 +82,28 @@
 			$handle       = fopen($parentFile,'r');
 			$parentString = trim(fgets($handle));
 			fclose($handle);
+
 			$key = $key_;
 			echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
 			echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			echo $project."</font></span>\n\t\t\t\t";
+			echo $project;
+
+			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
+			$handle       = fopen($sizeFile_2,'r');
+			$sizeString_2 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
+			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
+			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
+
+			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p3_".$key."'></div>\n";
 		}
@@ -107,16 +123,38 @@
 			$handle       = fopen($parentFile,'r');
 			$parentString = trim(fgets($handle));
 			fclose($handle);
+
 			$key = $key_ + $userProjectCount_starting;
 			echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
 			echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
-
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			echo $project."</font></span>\n\t\t\t\t";
+			echo $project;
+
+			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
+			$handle       = fopen($sizeFile_2,'r');
+			$sizeString_2 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
+			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
+			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
+
+			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p2_".$key."'></div>\n";
 		}
+?>
+<script type='text/javascript'>
+	function loadExternal(imageUrl) {
+		window.open(imageUrl);
+	}
+</script>
+<?php
 		foreach($projectFolders_complete as $key_=>$project) {
 			// Load colors for project.
 			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
@@ -133,12 +171,30 @@
 			$handle       = fopen($parentFile,'r');
 			$parentString = trim(fgets($handle));
 			fclose($handle);
+
 			$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
 			echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
 			echo "<span id='p_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).". ";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			echo $project."</font></span>\n\t\t\t\t";
+			echo $project."</font>";
+
+			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
+			$handle       = fopen($sizeFile_1,'r');
+			$sizeString_1 = trim(fgets($handle));
+			fclose($handle);
+			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
+			$handle       = fopen($sizeFile_2,'r');
+			$sizeString_2 = trim(fgets($handle));
+			fclose($handle);
+			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
+			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
+			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
+
+			echo "</span> : ";
+			echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></span> ";
+			echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p1_".$key."'></div>\n";
 		}

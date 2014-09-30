@@ -34,20 +34,12 @@ end;
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 
 if (exist([[main_dir 'users/default/hapmaps/' hapmap '/']],'dir') == 7)
-    hapmapDir  = [main_dir 'users/default/hapmaps/' hapmap '/'];
-    hapmapUser = 'default';
-    useHapmap  = true;
+	hapmapDir = [main_dir 'users/default/hapmaps/' hapmap '/'];
 elseif (exist([[main_dir 'users/' user '/hapmaps/' hapmap '/']],'dir') == 7)
-    hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];
-    hapmapUser = user;
-    useHapmap  = true;
+	hapmapDir = [main_dir 'users/' user '/hapmaps/' hapmap '/'];
 else
-    hapmapDir  = [main_dir 'users/' user '/projects/' project '/'];
-    parentFile = [main_dir 'users/' user '/projects/' project '/parent.txt'];
-    parent     = strtrim(fileread(parentFile));
-    useHapmap  = false;
+	hapmapDir = [main_dir 'users/' user '/projects/' project '/'];
 end;
-
 
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
 
@@ -232,18 +224,6 @@ else
         oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
     end;
 end;
-
-%define colors for colorBars plot
-colorNoData = [1.0   1.0   1.0  ];   % used when no data is available for the bin.
-colorInit   = [0.5   0.5   0.5  ];   % external; used in blending at ends of chr.
-colorHET    = [0.0   0.0   0.0  ];   % near 1:1 ratio SNPs
-colorOddHET = [0.0   1.0   0.0  ];   % Het, but not near 1:1 ratio SNPs.
-colorHOM    = [1.0   0.0   0.0  ];   % Hom SNPs;
-
-colorAB     = [0.667 0.667 0.667];   % heterozygous.
-colorA      = homolog_a_color;
-colorB      = homolog_b_color;
-colorHET    = colorAB;
 
 % phased data colors.
     % haploid colors.
@@ -805,53 +785,8 @@ for chr = 1:num_chrs
 					%colorMix =   colorHET    *   phased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin) + ...
 					%             colorOddHET *   dddd
 					%             colorHOM    *   unphased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin);
-
-					%	%
-					%	% Older color determining code: relies on previous het-vs-hom determination.
-					%	%
-					%	colorMix = colorHET   *   phased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin) + ...
-					%	           colorHOM   *   unphased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin);
-
-					%
-					% Newer color determining code: 
-					%
-					binCounts_phased   = zeros(1,3);
-					binCounts_unphased = zeros(1,2);
-					if (length(ratioData_phased) > 0)
-						for i = 1:length(ratioData_phased)
-							if (ratioData_phased(i) < 1/4);
-								binCounts_phased(1) = binCounts_phased(1)+1;
-								colors_phased{i}    = colorAA;
-							elseif (ratioData_phased(i) > 3/4);
-								binCounts_phased(3) = binCounts_phased(3)+1;
-								colors_phased{i}    = colorBB;
-							else
-								binCounts_phased(2) = binCounts_phased(2)+1;
-								colors_phased{i}    = colorAB;
-							end;
-						end;
-					end;
-					if (length(ratioData_unphased) > 0)
-						for i = 1:length(ratioData_unphased)
-							if (ratioData_unphased(i) < 1/4);
-								binCounts_unphased(1) = binCounts_unphased(1)+1;
-								colors_unphased{i}    = unphased_color_2of2;
-							elseif (ratioData_unphased(i) > 3/4);
-								binCounts_unphased(1) = binCounts_unphased(1)+1;
-								colors_unphased{i}    = unphased_color_2of2;
-							else
-								binCounts_unphased(2) = binCounts_unphased(2)+1;
-								colors_unphased{i}    = unphased_color_1of2;
-							end;
-						end;
-					end;
-					colorMix = colorAA             * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-					           colorAB             * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-					           colorBB             * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-					           unphased_color_2of2 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-					           unphased_color_1of2 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased));
-
-
+					colorMix = colorHET   *   phased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin) + ...
+					           colorHOM   *   unphased_plot2{chr}(chr_bin)/SNPs_to_fullData_ratio{chr}(chr_bin);
 					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + ...
 					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
 	            end;

@@ -322,7 +322,7 @@ if (performEndbiasCorrection)
     rawData_X1     = chr_EndDistanceData_clean;
     rawData_Y1     = CGHdata_clean;
     fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
-    [fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1,10, 0, 3);
+    [fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1,10, 0);
     % Correct data using normalization to LOWESS fitting
     Y_target = 1;
     for chr = 1:num_chrs
@@ -368,7 +368,7 @@ if (performGCbiasCorrection)
 	rawData_X2     = GCratioData_clean;
 	rawData_Y2     = CGHdata_clean;
 	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
-	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0, 3);
+	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
 	for chr = 1:num_chrs
@@ -418,7 +418,7 @@ if (performRepetbiasCorrection)
 	rawData_X3     = repetitivenessData_clean;
 	rawData_Y3     = CGHdata_clean;
 	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X3,1)) ',' num2str(size(rawData_X3,2)) ']:[' num2str(size(rawData_Y3,1)) ',' num2str(size(rawData_Y3,2)) ']\n']);
-	[fitX3, fitY3] = optimize_mylowess(rawData_X3,rawData_Y3,10, 0, 3);
+	[fitX3, fitY3] = optimize_mylowess(rawData_X3,rawData_Y3,10, 0);
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
 	for chr = 1:num_chrs
@@ -448,9 +448,9 @@ end;
 
 
 %% Generate figure showing subplots of LOWESS fittings.
-biasFig1 = figure();
+GCfig = figure();
 if (performEndbiasCorrection)
-	subplot(1,2,1);
+	subplot(3,2,1);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -465,7 +465,7 @@ if (performEndbiasCorrection)
 		ylim([0 4]);
 		axis square;
 		title('Reads vs. NearestEnd');
-	subplot(1,2,2);
+	subplot(3,2,2);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -481,9 +481,8 @@ if (performEndbiasCorrection)
 		axis square;
 		title('NearestEnd Corrected');
 end;
-biasFig2 = figure();
 if (performGCbiasCorrection)
-	subplot(1,2,1);
+	subplot(3,2,3);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -498,7 +497,7 @@ if (performGCbiasCorrection)
 		ylim([0 4]);
 	    axis square;
 		title('Reads vs. GC bias');
-	subplot(1,2,2);
+	subplot(3,2,4);
 	    hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -514,9 +513,8 @@ if (performGCbiasCorrection)
 	    axis square;
 		title('GC bias Corrected');
 end;
-biasFig3 = figure();
 if (performRepetbiasCorrection)
-	subplot(1,2,1);
+	subplot(3,2,5);
 	 	hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -531,7 +529,7 @@ if (performRepetbiasCorrection)
 		ylim([0 4]);
 		axis square;
 		title('Reads vs. Repetitiveness');
-	subplot(1,2,2);
+	subplot(3,2,6);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -547,18 +545,8 @@ if (performRepetbiasCorrection)
 		axis square;
 		title('Repetitiveness Corrected');
 end;
-if (performEndbiasCorrection)
-	set(biasFig1,'PaperPosition',[0 0 6 8/3]*2);
-	saveas(biasFig1, [projectDir 'fig.bias_chr_end.png'], 'png');
-end;
-if (performGCbiasCorrection)
-	set(biasFig2,'PaperPosition',[0 0 6 8/3]*2);
-	saveas(biasFig2, [projectDir 'fig.bias_GC_content.png'], 'png');
-end;
-if (performRepetbiasCorrection)
-	set(biasFig3,'PaperPosition',[0 0 6 8/3]*2);
-	saveas(biasFig3, [projectDir 'fig.bias_repetitiveness.png'], 'png');
-end;
+set(GCfig,'PaperPosition',[0 0 6 8]*2);
+saveas(GCfig, [projectDir 'fig.GCratio_vs_CGH.png'], 'png');
 
 
 %% ====================================================================

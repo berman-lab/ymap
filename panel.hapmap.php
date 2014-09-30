@@ -60,7 +60,8 @@ function showColors(colorName,targetToChange,contentString) {
 			}
 			echo "<button id='hapmap_delete_".$key."' type='button' onclick=\"parent.deleteHapmapConfirmation('".$user."','".$hapmap."','".$key."')\">Delete</button>\n\t\t";
 			echo "<font size='2'>".$hapmap."</font></span></td><td>\n\t\t\t\t";
-			echo "<span id='h_delete_".$key."'></span>\n\t\t\t\t";
+			echo "<span id='h_delete_".$key."' style='></span>\n\t\t";
+
 			echo "<td><div id='userHapmapA_".$key."'  >filler</div></td>\n\t\t\t\t";
 			echo "<td><div id='userHapmapHET_".$key."'>filler</div></td>\n\t\t\t\t";
 			echo "<td><div id='userHapmapB_".$key."'  >filler</div></td>\n\t\t\t\t";

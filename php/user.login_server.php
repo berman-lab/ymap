@@ -119,12 +119,5 @@
 	}
 ?>
 <script type="text/javascript">
-	<?php
-	if ($user == "") {
-		echo "var user = 'default';\n";
-	} else {
-		echo "var user = '".$user."';\n";
-	}
-	?>
 	parent.location.reload();
 </script>

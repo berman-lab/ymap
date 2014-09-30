@@ -30,10 +30,6 @@
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
-//$fileName = "ca21_TWTC1_ACACGATC.indelRealigned.bam";
-//$user     = "darren";
-//$project  = "CFord_1";
-//$key      = "p_0";
 
 // Initialize log file.
 	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";

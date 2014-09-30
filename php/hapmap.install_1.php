@@ -9,8 +9,6 @@
 	$bad_chars       = array(".", ",", "\\", "/", " ", "'", '"', "(", ")", "[", "]");
 	$hapmap          = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
 	$user            = $_SESSION['user'];
-//	$hapmap = "testing";
-//	$user   = "darren1";
 
 	$dir1            = "../users/".$user."/hapmaps";
 	$dir2            = "../users/".$user."/hapmaps/".$hapmap;

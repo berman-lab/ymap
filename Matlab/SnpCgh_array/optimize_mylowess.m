@@ -1,4 +1,4 @@
-function [newX, newY] = optimize_mylowess(rawData_X,rawData_Y, numFits, maxX, minSpanKey)
+function [newX, newY] = optimize_mylowess(rawData_X,rawData_Y, numFits, maxX)
 
 numDat        = length(rawData_X);
 spans         = linspace(0.01,0.99, numFits);
@@ -116,9 +116,6 @@ end;
 
 % Find the smoothing value which produces the least error between the LOWESS fit and the raw data.
 [minsse,minj] = min(sse);
-if (minj < minSpanKey)
-	minj = minSpanKey;
-end;
 span          = spans(minj);
 X_range       = linspace(minX,maxX,final_length);
 

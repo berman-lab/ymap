@@ -37,8 +37,6 @@
 	<b>Figure 5 : WGseq</b><br>
 	<ul>
 		<li>SC5314, url:<a                  href="http://www.ncbi.nlm.nih.gov/sra/?term=SRR868699"    >[NCBI-SRA, SRR868699]</a></li>
-		<li>FH1, file:<a                    href="example_datasets/Fig5.FH1_forward.fastq.zip"        >[ZIP compressed FASTQ]</a>
-			and file:<a                     href="example_datasets/Fig5.FH1_reverse.fastq.zip"        >[ZIP compressed FASTQ]</a></li>
 		<li>FH5, file:<a                    href="example_datasets/Fig5.FH5_forward.fastq.zip"        >[ZIP compressed FASTQ]</a>
 		    and file:<a                     href="example_datasets/Fig5.FH5_reverse.fastq.zip"        >[ZIP compressed FASTQ]</a></li>
 		<li>YJB12746, file:<a               href="example_datasets/Fig5.YJB12746_forward.fastq.zip"   >[ZIP compressed FASTQ]</a>

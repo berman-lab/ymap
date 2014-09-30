@@ -13,7 +13,7 @@
 		rrmdir($dir);
 		echo "COMPLETE";
 	} else {
-		echo "ERROR";
+		echo "ERROR:".$user;
 	}
 
 	function rrmdir($dir) {

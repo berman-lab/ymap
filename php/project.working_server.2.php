@@ -23,12 +23,6 @@ body {font-family: arial;}
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
 	$status   = filter_input(INPUT_POST, "status",   FILTER_SANITIZE_STRING);
 
-// print_r($key);
-//	$user    = "darren";
-//	$project = "";
-//	$key     = "";
-//	$status  = "";
-
 	// increment clock animation...
 	$status   = ($status + 1) % 12;
 	if ($status == 0) {          $clock = "<img src=\"../images/12.png\" alt-text=\"12\" class=\"clock\" >";
@@ -60,6 +54,21 @@ body {font-family: arial;}
 
 	echo "\n<!--\tuser    = ".$user;
 	echo "\n\tproject = ".$project." --!>";
+
+
+	$sizeFile_1   = "../users/".$user."/projects/".$project."/upload_size_1.txt";
+	$handle       = fopen($sizeFile_1,'r');
+	$sizeString_1 = trim(fgets($handle));
+	fclose($handle);
+	$sizeFile_2   = "../users/".$user."/projects/".$project."/upload_size_2.txt";
+	$handle       = fopen($sizeFile_2,'r');
+	$sizeString_2 = trim(fgets($handle));
+	fclose($handle);
+	if (($sizeString_1 !== "") || ($sizeString_2 !== "")) {
+		echo "\n<script type='text/javascript'>\n";
+		echo "parent.parent.update_project_file_size('".$key."','".$sizeString_1."','".$sizeString_2."');";
+		echo "\n</script>\n";
+	}
 
 	if (file_exists($dirFigureBase."complete.txt")) {
 		echo "\n<!-- complete file found.\n--!>";

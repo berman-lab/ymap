@@ -377,7 +377,7 @@ if (performGCbiasCorrection)
 	rawData_X1        = GCratioData_all;
 	rawData_Y1        = CGHdata_all;
 	numFits           = 10;
-	[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0, 3);
+	[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0);
 
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
@@ -558,7 +558,7 @@ end;
 % Initialize CGD annotation output file.
 %----------------------------------------------------------------------
 if (Output_CGD_annotations == true)
-	CGDid = fopen([workingDir 'CGD_annotations.SNP.txt'], 'w');
+	CGDid = fopen([workingDir 'CGD_annotations.' experiment_name '.txt'], 'w');
 	fprintf(CGDid,['track name=' experiment_name ' description="SNP/CGH microarray annotation of SNPs" useScore=0 itemRGB=On\n']);
 end;
 

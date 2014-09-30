@@ -108,8 +108,7 @@
 		//
 		// Chromosome features file available, so request user input about file format.
 		//
-		echo "<BODY onload = \"parent.parent.resize_genome('".$key."', 155);\">\n";
-		echo "    <div style='margin-left:1cm'>";
+		echo "<BODY>\n";
 		echo "    <font color='red' size='2'>Enter ORF description file details:</font>\n";
 		echo "    <form name='processing_form' id='processing_form' action='genome.install_4.php' method='post'>\n";
 		echo "    <font size='2'>\n";
@@ -121,7 +120,6 @@
 		echo "    <input type='submit' id='form_submit' name='form_submit' value='Save genome feature description details...'>\n";
 		echo "    <input type='hidden' id='key' name='key' value='".$key."'>\n";
 		echo "    </form>\n";
-		echo "    </div>";
 		echo "</BODY>\n";
 	} else {
 		//

@@ -642,7 +642,7 @@ end;
 % Initialize CGD annotation output file.
 %----------------------------------------------------------------------
 if (Output_CGD_annotations == true)
-	CGDid = fopen([projectDir 'CGD_annotations.SNP.txt'], 'w');
+	CGDid = fopen([projectDir 'CGD_annotations.' project  '.txt'], 'w');
 	fprintf(CGDid,['track name=' project ' description="WGseq annotation of SNPs" useScore=0 itemRGB=On\n']);
 end;
 
@@ -1242,23 +1242,21 @@ for chr = 1:num_chrs
 					end;
 
 					% output CGD GBrowse annotation lines for this chromosome bin.
-					if (Output_CGD_annotations == true)
-						allele1 = '*';
-						allele2 = '*';
-						if (length(colors_phased) > 0)
-							for i = 1:length(colors_phased)
-								coordinate = coordinate_phased(i);
-								colorPoint = colors_phased{i};
-								outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
-							end;
+					allele1 = '*';
+					allele2 = '*';
+					if (length(colors_phased) > 0)
+						for i = 1:length(colors_phased)
+							coordinate = coordinate_phased(i);
+							colorPoint = colors_phased{i};
+							outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
 						end;
-						if (length(colors_unphased) > 0)
-							for i = 1:length(colors_unphased)
-								coordinate = coordinate_unphased(i);
-		                        colorPoint = colors_unphased{i}; 
-		                        outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
-		                    end;
-						end;
+					end;
+					if (length(colors_unphased) > 0)
+						for i = 1:length(colors_unphased)
+							coordinate = coordinate_unphased(i);
+	                        colorPoint = colors_unphased{i}; 
+	                        outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
+	                    end;
 					end;
 
 					% If the strain is only being compared to itself, only grey color should be produced.

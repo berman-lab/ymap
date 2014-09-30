@@ -639,7 +639,7 @@ end;
 % Initialize CGD annotation output file.
 %----------------------------------------------------------------------
 if (Output_CGD_annotations == true)
-	CGDid = fopen([projectDir 'CGD_annotations.SNP.txt'], 'w');
+	CGDid = fopen([projectDir 'CGD_annotations.' project  '.txt'], 'w');
 	fprintf(CGDid,['track name=' project ' description="WGseq annotation of SNPs" useScore=0 itemRGB=On\n']);
 end;
 

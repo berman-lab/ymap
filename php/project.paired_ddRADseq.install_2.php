@@ -67,10 +67,21 @@
 		fwrite($logOutput, "\t\tFilename  : '$filename.'.\n");
 		fwrite($logOutput, "\t\tExtension : '$ext'.\n");
 		fwrite($logOutput, "\t\tPath      : '$projectPath'.\n");
+
+		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
+		$fileNumber = $key+1;
+		$outputName      = $projectPath."upload_size_".$fileNumber.".txt";
+		$output          = fopen($outputName, 'w');
+		$fileSizeString  = filesize($projectPath.$name);
+		fwrite($output, $fileSizeString);
+		fclose($output);
+		chmod($outputName,0755);
+		fwrite($logOutput, "\tGenerated 'upload_size".$fileNumber.".txt' file.\n");
+
 		// Process the uploaded file.
 		$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput);
 		// formatting.
-		if ($key < count($fileNames)-1) {
+		if ($key < count(fileNames)-1) {
 			fwrite($output,"\n");
 		}
 	}

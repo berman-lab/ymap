@@ -1,9 +1,9 @@
 function deleteGenomeConfirmation(user,genome,key){
-	console.log("$ user    = '"+user+"'");
-	console.log("$ project = '"+genome+"'");
-	console.log("$ key     = '"+key+"'");
-	panel_iframe           = document.getElementById('panel_genome_iframe');
-	dom_object             = panel_iframe.contentDocument.getElementById('g_delete_'+key);
+	console.log("$ user      = '"+user+"'");
+	console.log("$ project   = '"+genome+"'");
+	console.log("$ key       = '"+key+"'");
+	panel_iframe             = document.getElementById('panel_genome_iframe');
+	dom_object               = panel_iframe.contentDocument.getElementById('g_delete_'+key);
 
 	dom_object.innerHTML     = "<b><font color=\"red\">[Are you sure?]</font><button type='button' onclick='parent.deleteGenome_yes(\""+user+"\",\""+genome+"\",\""+key+"\")'>Yes, delete.</button>";
     dom_object.innerHTML    += "<button type='button' onclick='parent.deleteGenome_no(\""+user+"\",\""+genome+"\",\""+key+"\")'>No, cancel</button></b>";
@@ -31,9 +31,9 @@ function deleteGenome_yes(user,genome,key){
 
 
 function deleteGenome_no(user,genome,key){
-	panel_iframe         = document.getElementById('panel_genome_iframe');
-	dom_object           = panel_iframe.contentDocument.getElementById('g_delete_'+key)
-	dom_object.innerHTML = "";
+	panel_iframe             = document.getElementById('panel_genome_iframe');
+	dom_object               = panel_iframe.contentDocument.getElementById('g_delete_'+key)
+	dom_object.innerHTML     = "";
 
 	dom_button               = panel_iframe.contentDocument.getElementById('genome_delete_'+key);
 	dom_button.style.display = 'inline';

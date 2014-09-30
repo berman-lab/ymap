@@ -109,8 +109,8 @@
 			$imageUrl = "../users/".$user."/projects/".$project2."/fig.CNV-SNP-map.2.png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
-		$CGD_annotations_url = "../users/".$user."/projects/".$project2."/CGD_annotations.txt";
-		if (file_exists("../users/".$user."/projects/".$project2."/CGD_annotations.txt")) {
+		$CGD_annotations_url = "../users/".$user."/projects/".$project2."/CGD_annotations.".$project2.".txt";
+		if (file_exists("../users/".$user."/projects/".$project2."/CGD_annotations.".$project2.".txt")) {
 			if ($referencePloidy == 2) {
 				echo "<br><div class='tab'>Examine <button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse annotation track</button> to determine precise breakpoints.</div><br>";
 			}
@@ -122,8 +122,8 @@
 			$imageUrl = "../users/default/projects/".$project2."/fig.CNV-SNP-map.2.png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
-		$CGD_annotations_url = "../users/default/projects/".$project2."/CGD_annotations.txt";
-		if (file_exists("../users/default/projects/".$project2."/CGD_annotations.txt")) {
+		$CGD_annotations_url = "../users/default/projects/".$project2."/CGD_annotations.".$project2.".txt";
+		if (file_exists("../users/default/projects/".$project2."/CGD_annotations.".$project2.".txt")) {
 			if ($referencePloidy == 2) {
 				echo "<button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse</button><br>";
 			}

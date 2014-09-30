@@ -58,7 +58,7 @@ function showColors(colorName,targetToChange,contentString) {
 			} else {
 				echo "<span id='h_label_".$key."' style='color:#CC0000;'>";
 			}
-			echo "<button id='hapmap_delete_".$key."' type='button' onclick=\"parent.deleteHapmapConfirmation('panel_hapmap','".$hapmap."','".$key."')\">Delete</button>\n\t\t";
+			echo "<button id='hapmap_delete_".$key."' type='button' onclick=\"parent.deleteHapmapConfirmation('".$user."','".$hapmap."','".$key."')\">Delete</button>\n\t\t";
 			echo "<font size='2'>".$hapmap."</font></span></td><td>\n\t\t\t\t";
 			echo "<span id='h_delete_".$key."' style='></span>\n\t\t";
 

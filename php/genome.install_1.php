@@ -71,6 +71,16 @@
 	unset($outputName);
 	unset($output);
 
+	// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
+	$genomePath      = "../users/".$user."/genomes/".$genome."/";
+	$outputName      = $genomePath."upload_size_1.txt";
+	$output          = fopen($outputName, 'w');
+	$fileSizeString  = filesize($genomePath.$fileName);
+	fwrite($output, $fileSizeString);
+	fclose($output);
+	chmod($outputName,0755);
+	fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
+
 	// Reformat FASTA file from multiple lines per text block to single line.
 	fwrite($logOutput, "\tReformatting genome FASTA to single-line entries.\n");
 	$currentdir  = getcwd();
@@ -132,7 +142,25 @@
 	// The following section defines a form for collecting the information needed to build the last of the genome setup files.
 	fwrite($logOutput, "\tGenerating form to request centromere location and other genome specific data from the user.\n");
 ?>
-<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', <?php echo 200+28*$chr_count; ?>);" >
+
+<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 150); <?php
+//	$genomePath      = "../users/".$user."/genomes/".$genome."/";
+//	$outputName      = $genomePath."upload_size_1.txt";
+//	$output          = fopen($outputName, 'w');
+//	$fileSizeString  = filesize($genomePath.$fileName);
+
+	$sizeFile_1   = "upload_size_1.txt";
+	$handle       = fopen($sizeFile_1,'r');
+	$sizeString_1 = trim(fgets($handle));
+	fclose($handle);
+	if ($sizeString_1 !== "") {
+//		echo "<script type='text/javascript'>\n";
+		echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
+//		echo "\n</script>\n";
+	}
+?>
+" >
+
 <font color="red" size="2">Fill in genome details:</font>
 	<form action="genome.install_2.php" method="post">
 		<table border="0">

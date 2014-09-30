@@ -1,0 +1,10 @@
+cp *.php ..;
+cp -r css/* ../css/;
+cp -r images/* ../images/;
+cp -r js/* ../js/;
+cp -r Matlab/* ../Matlab/;
+cp -r php/* ../php/;
+cp -r py/* ../py/;
+cp -r sh/* ../sh/;
+cp -r example_datasets/* ../example_datasets/;
+cp -r backup/* ../backup/;

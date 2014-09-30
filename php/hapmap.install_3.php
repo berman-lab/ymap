@@ -19,16 +19,6 @@
 		$hapmap_description = filter_input(INPUT_POST, "hapmap_description", FILTER_SANITIZE_STRING);
 	}
 
-//	$hapmap             = "testing";
-//	$user               = "darren1";
-//	$genome             = "C_albicans_SC5314_vA21-s02-m09-r07";
-//	$referencePloidy    = "2";
-//	$project1           = "SC5314_A21-s02-m09-r07";
-//	$project2           = "12353_A21-s02-m09-r07";
-//	$colorA             = "cyan";
-//	$colorB             = "magenta";
-//	$hapmap_description = "2(a[1:3188549]); 3(b[1:2232036]); 4(a[1:1799407]); 5(b[1:1603444]); 6(a[1:1190929]); 7(b[1:1033531]); 8(a[1:949617]); 9(b[1:2286390]);";
-
 	$dir1      = "../users/".$user."/hapmaps";
 	$dir2      = "../users/".$user."/hapmaps/".$hapmap;
 	$dir3      = "../users/default/hapmaps/".$hapmap;
