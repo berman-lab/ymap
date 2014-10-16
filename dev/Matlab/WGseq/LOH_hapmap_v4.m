@@ -33,12 +33,20 @@ end;
 %--------------------------------------------------------------------------
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 
+
 if (exist([[main_dir 'users/default/hapmaps/' hapmap '/']],'dir') == 7)
-	hapmapDir = [main_dir 'users/default/hapmaps/' hapmap '/'];
+    hapmapDir  = [main_dir 'users/default/hapmaps/' hapmap '/'];
+    hapmapUser = 'default';
+    useHapmap  = true;
 elseif (exist([[main_dir 'users/' user '/hapmaps/' hapmap '/']],'dir') == 7)
-	hapmapDir = [main_dir 'users/' user '/hapmaps/' hapmap '/'];
+    hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];
+    hapmapUser = user;
+    useHapmap  = true;
 else
-	hapmapDir = [main_dir 'users/' user '/projects/' project '/'];
+    hapmapDir  = [main_dir 'users/' user '/projects/' project '/'];
+    parentFile = [main_dir 'users/' user '/projects/' project '/parent.txt'];
+    parent     = strtrim(fileread(parentFile));
+    useHapmap  = false;
 end;
 
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
@@ -115,6 +123,9 @@ end;
 %%=========================================================================
 %%= No further control variables below. ===================================
 %%=========================================================================
+
+colorHET    = [0.0   0.0   0.0  ]; % near 1:1 ratio SNPs
+colorHOM    = [1.0   0.0   0.0  ]; % Hom SNPs;
 
 % Sanitize user input of euploid state.
 ploidyBase = round(str2num(ploidyBaseString));
@@ -468,8 +479,8 @@ end;
 %% -----------------------------------------------------------------------------------------
 % Setup for figure generation.
 %-------------------------------------------------------------------------------------------
-fig = figure(1);
-set(gcf, 'Position', [0 70 1024 600]);
+% fig = figure(1);
+% set(gcf, 'Position', [0 70 1024 600]);
 
 % calculate SNP bin values.
 for chr = 1:num_chrs
@@ -549,8 +560,8 @@ fprintf(['GCratioData_all => ' num2str(length(GCratioData_all)) '\n']);
 %% Clean up data by:
 %%    deleting GC ratio data near zero.
 %%    deleting CGH data beyond 3* the median value.  (rDNA, etc.)
-SNPdata_clean                                            = SNPdata_all
-GCratioData_clean                                        = GCratioData_all
+SNPdata_clean                                            = SNPdata_all;
+GCratioData_clean                                        = GCratioData_all;
 SNPdata_clean(     GCratioData_clean < 0.01            ) = [];
 GCratioData_clean( GCratioData_clean < 0.01            ) = [];
 GCratioData_clean( SNPdata_clean > max(medianRawY*3,3) ) = [];
@@ -559,8 +570,8 @@ GCratioData_clean( SNPdata_clean == 0                  ) = [];
 SNPdata_clean(     SNPdata_clean == 0                  ) = [];
 
 % Perform LOWESS fitting.
-rawData_X1     = GCratioData_clean
-rawData_Y1     = SNPdata_clean
+rawData_X1     = GCratioData_clean;
+rawData_Y1     = SNPdata_clean;
 fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 [fitX1, fitY1] = optimize_mylowess_SNP(rawData_X1,rawData_Y1);
 
@@ -645,7 +656,6 @@ subplot(2,3,3);
 	hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
 	xlabel('GC ratio');   ylabel('SNP data');
 	xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
-
 subplot(2,3,4);
 	plot(GCratioData_all,cSNPdata_all,'k.','markersize',1);
 	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);   hold off;
@@ -661,9 +671,9 @@ subplot(2,3,6);
 	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
 	xlabel('GC ratio');   ylabel('corrected SNP data');
 	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
-
 saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
-
+saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.eps'], 'epsc');
+delete(GCfig);
 
 %% -----------------------------------------------------------------------------------------
 % Setup for main figure generation.
@@ -722,7 +732,7 @@ if (Linear_display == true)
 	Linear_genome_size   = sum(chr_size);
 
 	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-	Linear_left_start    = 0.01;               % left margin (also right margin).
+	Linear_left_start    = 0.02;               % left margin (also right margin).  (formerly 0.01)
 	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
 
 	Linear_height        = 0.6;
@@ -730,7 +740,13 @@ if (Linear_display == true)
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
 	Linear_left          = Linear_left_start;
+
+	axisLabelPosition_horiz = -50000/bases_per_bin;
+	axisLabelPosition_horiz = 0.01125;
 end;
+
+axisLabelPosition_vert = -50000/bases_per_bin;
+axisLabelPosition_vert = 0.01125;
 
 
 %% -----------------------------------------------------------------------------------------
@@ -831,15 +847,18 @@ for chr = 1:num_chrs
 	    end;
 	    set(gca,'YTick',[]);
 	    set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-	    ylabel(chr_label{chr}, 'Rotation', 90, 'HorizontalAlign', 'center', 'VerticalAlign', 'bottom');
+
+		% ylabel(chr_label{chr}, 'Rotation', 90, 'HorizontalAlign', 'center', 'VerticalAlign', 'bottom');
+		text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+
 	    set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 	    set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 	    set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
 	    set(gca,'YTickLabel',{'','','','',''});
-	    text(-50000/bases_per_bin, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-	    text(-50000/bases_per_bin, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-	    text(-50000/bases_per_bin, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-	    text(-50000/bases_per_bin, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+	    text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
+	    text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
+	    text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
+	    text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
 
 	    set(gca,'FontSize',12);
 	    if (chr == find(chr_posY == max(chr_posY)))
@@ -1054,10 +1073,10 @@ for chr = 1:num_chrs
 				ylabel({project;'vs. (hapmap)';hapmap}, 'Rotation', 0, 'HorizontalAlign', 'right', 'VerticalAlign', 'bottom','Interpreter','none','FontSize',10);
 	            set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
 	            set(gca,'YTickLabel',{'','','','',''});
-		    text(-50000/bases_per_bin, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-		    text(-50000/bases_per_bin, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-		    text(-50000/bases_per_bin, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-		    text(-50000/bases_per_bin, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+		    text(axisLabelPosition_horiz, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
+		    text(axisLabelPosition_horiz, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
+		    text(axisLabelPosition_horiz, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
+		    text(axisLabelPosition_horiz, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
 	        else
 	            set(gca,'YTick',[]);
 	            set(gca,'YTickLabel',[]);
@@ -1072,18 +1091,6 @@ for chr = 1:num_chrs
 	    end;
 	end;
 end;
-
-%   % Main figure colors key.
-%   subplot('Position',[0.65 0.2 0.2 0.4]);
-%   axis off square;
-%   xlim([-0.1,1]);
-%   ylim([-0.1,1.6]);
-%   set(gca,'XTick',[]);
-%   set(gca,'YTick',[]);
-%   patch([0 0.2 0.2 0], [1.4 1.4 1.5 1.5], colorNoData);   text(0.3,1.45,'Low SNP density');
-%   patch([0 0.2 0.2 0], [1.2 1.2 1.3 1.3], colorHET);      text(0.3,1.25,'Heterozygous SNP density');
-%   patch([0 0.2 0.2 0], [1.0 1.0 1.1 1.1], colorOddHET);   text(0.3,1.05,'non-1:1 ratio Heterozygous SNP density');
-%   patch([0 0.2 0.2 0], [0.8 0.8 0.9 0.9], colorHOM);      text(0.3,0.85,'Homozygous SNP density');
 
 %% Save figures.
 set(fig,'PaperPosition',[0 0 8 6]*2);

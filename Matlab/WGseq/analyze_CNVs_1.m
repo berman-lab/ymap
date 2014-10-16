@@ -42,12 +42,13 @@ referenceCHR           = 1;
 % CNV_v6_5(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
 %          CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
 
-% Repetitiveness bias correction.
-% Chromosome end bias correction.
+% CNV_v6_6         : Repetitiveness bias correction and Chromosome end bias correction added.
+% CNV_v6_6_highTop : re-renders output from CNV_v6_6.m, with a higher max 3x the height of the chromosome.
+% CNV_v6_7         : not used, includes repetitiveness correction.
 CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
          CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
-
-
+CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
+                 CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
 
 %% rDNA copy estimation.
 %if (strcmp(genome,'Ca_a') == 1)

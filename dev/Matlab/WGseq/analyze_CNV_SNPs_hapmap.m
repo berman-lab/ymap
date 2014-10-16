@@ -29,12 +29,20 @@ fprintf('\n');
 %                   SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 % Adds CGD GBrowse output for SNP data.
-% Second script draws SNP data with red/green color scheme to visualize LOH vs. ratio shift.
-% Third script draws CNV plot with manualLOH annotations, if available.
-CNV_SNP_hapmap_v3(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
-                  SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+% CNV_SNP_hapmap_v3          : old version.
+% CNV_SNP_hapmap_v4          : When no hapmap is available, draws SNP ratios as shades of red (with red meaning homozygous).
+% CNV_SNP_hapmap_v4_RedGreen : When no hapmap is available, Draws SNP ratios as red:homozygou, grey:heterozygouss and green:non-het/non-hom/unusual-ratios.
+% CNV_manualLOH_v1           : Draws CNV plot with manual LOH annotations, if available.
+
+% CNV_SNP_hapmap_v3(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
+%                   SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+
 CNV_SNP_hapmap_v4(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                   SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+
+CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
+                           SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+
 CNV_manualLOH_v1( main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                   SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 

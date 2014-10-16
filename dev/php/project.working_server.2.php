@@ -102,7 +102,7 @@ body {font-family: arial;}
 		if (strcmp($dataType,"0") == 0) {
 			$timeLimit  = 60*15;   // 15 minutes
 		} else {
-			$timeLimit  = 60*60*4; // 4 hours
+			$timeLimit  = 60*60*6; // 6 hours
 		}
 		if ($intervalTime > $timeLimit) { // likely error.
 			?>

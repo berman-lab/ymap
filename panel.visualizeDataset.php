@@ -37,6 +37,7 @@
 		$userProjectCount_starting = count($projectFolders_starting);
 		$userProjectCount_working  = count($projectFolders_working);
 		$userProjectCount_complete = count($projectFolders_complete);
+
 		// Sort complete and working projects alphabetically.
 		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
 		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
@@ -127,7 +128,8 @@
 	$projectsDir          = "users/default/projects/";
 	$systemProjectFolders = array_diff(glob($projectsDir."*"), array('..', '.'));
 	// Sort directories by date, newest first.
-	array_multisort(array_map('filemtime', $systemProjectFolders), SORT_DESC, $systemProjectFolders);
+	array_multisort($systemProjectFolders, SORT_ASC, $systemProjectFolders);
+	// array_multisort(array_map('filemtime', $systemProjectFolders), SORT_DESC, $systemProjectFolders);
 	// Trim path from each folder string.
 	foreach($systemProjectFolders as $key=>$folder) {   $systemProjectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 	$systemProjectCount = count($systemProjectFolders);
@@ -152,7 +154,7 @@
 
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
 		echo "<font size='2'>".($key+1).".";
-		echo "<input  id='show_".$key."' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\">";
+		echo "<input  id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$colorString1."','".$colorString2."','".$parentString."');\">";
 		echo $project."</font>";
 		echo "<br>\n\t\t";
 	}
@@ -169,9 +171,12 @@ function Display_sample_figures() {
 <?php
 	if (!isset($_SESSION['logged_on'])) {
 		foreach ($systemProjectFolders as $key=>$project) {
-			echo "\tvar show_button_element = document.getElementById('show_".$key."');\n";
-			echo "\tshow_button_element.checked = true;\n";
-			echo "\tparent.openProject('default','".$project."','".$key."','null','null','null');\n";
+			if ($key < 2) {
+				$new_key = $key+$userProjectCount; // offset example datasets by number of user projects.
+				echo "\tvar show_button_element = document.getElementById('show_".$key."_sys');\n";
+				echo "\tshow_button_element.checked = true;\n";
+				echo "\tparent.openProject('default','".$project."','".$new_key."_sys','null','null','null');\n";
+			}
 		}
 	}
 	?>

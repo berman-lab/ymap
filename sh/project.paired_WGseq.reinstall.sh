@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# project.paired_ddRADseq.install_3.sh
+# project.paired_WGseq.install_3.sh
 #
 set -e;
 ## All created files will have permission 760
@@ -11,9 +11,9 @@ user=$1;
 project=$2;
 main_dir=$(pwd)"/../";
 
-user='darren'
-project='MHickman_SC5314_4'
-main_dir='/heap/hapmap/bermanlab/'
+user="default";
+project="Fig_03B.FH6_corrected";
+
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -28,7 +28,7 @@ projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 # Setup process_log.txt file.
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
-chmod 0755 $logName;
+#chmod 0755 $logName;
 echo "#.............................................................................." >> $logName;
 echo "Running 'sh/project.paired_WGseq.install_3.sh'" >> $logName;
 echo "Variables passed via command-line from 'php/project.paired_WGseq.install_2.php' :" >> $logName;
@@ -98,25 +98,6 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 # Get parent name from "parent.txt" in project directory.
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
-
-# Determine location of parent being used.
-if [ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]
-then
-	projectParentDirectory=$main_dir"users/"$user"/genomes/"$projectParent"/";
-	projectParentUser=$user;
-elif [ -d $main_dir"users/default/projects/"$projectParent"/" ]
-then
-	projectParentDirectory=$main_dir"users/default/genomes/"$projectParent"/";
-	projectParentUser="default";
-fi
-
-
-reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
-FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.
-FASTAname=$(echo $FASTA | sed 's/.fasta//g');                                  # name of genome file, without file type.
-RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   # Name of FASTA file.
-ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        # Name of digested reference for ddRADseq analysis, using chosen restriction enzymes.
-
 
 echo "#============================================================================== 2" >> $logName;
 
@@ -190,7 +171,7 @@ else
 		echo "\nRunning samtools:index.\n";
 		samtools index $projectDirectory"data_sorted.bam";
 		echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
-	fi
+	fi;
 
 	if [ -f $projectDirectory"data.pileup" ]
 	then
@@ -299,7 +280,7 @@ else
 		echo "\nRunning samtools:mpileup.\n";
 		samtools mpileup -f $genomeDirectory$genomeFASTA $usedFile | awk '{print $1 " " $2 " " $3 " " $4 " " $5}' > $projectDirectory"data.pileup";
 		echo "\tSamtools : Pileup generated." >> $logName;
-	fi
+	fi;
 
 	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
@@ -321,26 +302,17 @@ else
 
 	wait;
 fi
-if [ -f $projectDirectory"trimmed_SNPs_v4.parent.txt" ]
-then
-	echo "\tDone: processing child and parent pileup for SNP coordinate data." >> $logName;
-else
-	echo "\tPython : Processing child pileup for parent putatitve_SNP loci." >> $logName;
-	python $main_dir"py/putative_SNPs_from_parent_in_child.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
-	python $main_dir"py/putative_SNPs_from_parent.py"          $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
-	echo "\tPython : Child pileup processed." >> $logName;
-fi
 
 echo "Pileup processing is complete." >> $condensedLog;
 echo "\nPileup processing complete.\n" >> $logName;
 
 if [ $hapmapInUse = 0 ]
 then
-	echo "\nPassing processing on to 'project.ddRADseq.install_4.sh' for final analysis.\n" >> $logName;
-	echo   "============================================================================\n" >> $logName;
-	sh $main_dir"sh/project.ddRADseq.install_4.sh" $user $project $main_dir;
+	echo "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
+	echo   "=========================================================================\n" >> $logName;
+	sh $main_dir"sh/project.WGseq.install_4.sh" $user $project $main_dir;
 else
-	echo "\nPassing processing on to 'project.ddRADseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
-	echo   "===================================================================================\n" >> $logName;
-	sh $main_dir"sh/project.ddRADseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	echo "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
+	echo   "================================================================================\n" >> $logName;
+	sh $main_dir"sh/project.WGseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
 fi

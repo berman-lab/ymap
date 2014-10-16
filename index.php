@@ -290,14 +290,18 @@ function blank_and_content_tab() {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
 		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 
+		closeProject_viewOnly(key);
+
 		console.log('# parent.openProject : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
 		console.log(show_button_element);
 		if (show_button_element.checked == false) {
 			closeProject(user,project,key,color1,color2,parent);
 		} else {
 			var fig_linear_CNV_SNP               = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.2.";
+			var fig_linear_CNV_SNP_RedGreen      = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.RedGreen.2.";
 			var fig_standard_CNV_SNP             = "users/"+user+"/projects/"+project+"/fig.CNV-SNP-map.1.";
 			var fig_linear_CNV                   = "users/"+user+"/projects/"+project+"/fig.CNV-map.2.";
+			var fig_linear_CNV_highTop           = "users/"+user+"/projects/"+project+"/fig.CNV-map.highTop.2.";
 			var fig_standard_CNV                 = "users/"+user+"/projects/"+project+"/fig.CNV-map.1.";
 			if (isFile("users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.png")) {
 				// ddRADseq.
@@ -311,19 +315,16 @@ function blank_and_content_tab() {
 			var fig_linear_manual                = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.2.";
 			var fig_standard_manual              = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.1.";
 			var CGD_annotations_SNP              = "users/"+user+"/projects/"+project+"/CGD_annotations."+project+".txt";
-			var CNV_bias_WGseq_1                 = "users/"+user+"/projects/"+project+"/fig.examine_bias.png";
-			var CNV_bias_WGseq_2                 = "users/"+user+"/projects/"+project+"/fig.GCratio_vs_CGH.png";
+
+			var CNV_bias_WGseq_end               = "users/"+user+"/projects/"+project+"/fig.bias_chr_end.png";
+			var CNV_bias_WGseq_GCcontent         = "users/"+user+"/projects/"+project+"/fig.bias_GC_content.png";
+
 			var CNV_bias_ddRADseq_1              = "users/"+user+"/projects/"+project+"/fig.examine_bias.1.png";
 			var CNV_bias_ddRADseq_2              = "users/"+user+"/projects/"+project+"/fig.examine_bias.2.png";
 			var CNV_bias_ddRADseq_3              = "users/"+user+"/projects/"+project+"/fig.examine_bias.3.png";
-			var CNV_bias_ddRADseq_4              = "users/"+user+"/projects/"+project+"/fig.examine_bias.T.png";
-			var fig_a_linear_SNPratio_ddRADseq   = "users/"+user+"/projects/"+project+"/fig.allelic_fraction_histogram.png";
-			var fig_b_linear_SNPratio_ddRADseq   = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.b2.png";
-			var fig_b_standard_SNPratio_ddRADseq = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.b1.png";
-			var fig_c_linear_SNPratio_ddRADseq   = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.png";
-			var fig_c_standard_SNPratio_ddRADseq = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c1.png";
-			var fig_d_linear_SNPratio_ddRADseq   = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.d2.png";
-			var fig_d_standard_SNPratio_ddRADseq = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.d1.png";
+
+			var fig_linear_SNPratio_histogram    = "users/"+user+"/projects/"+project+"/fig.allelic_fraction_histogram.png";
+			var fig_linear_SNPratio_fireplot     = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.b2.png";
 			var visible_list                     = document.getElementById("visible_list");
 			var string1 = "<div id='figure_"+key+"'><table border='0' align='center' width='100%'><tr><td width='35%' align='left'>";
 			string1     = string1 + "<table><tr><td valign='top'>";
@@ -347,6 +348,12 @@ function blank_and_content_tab() {
 				string1 = string1 + "<b>CNV and SNP/LOH</b> (linear ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP+"png\",\"100\")'> ";
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV_SNP+"eps\")'>";
+				if (isFile(fig_linear_CNV_SNP_RedGreen+"png")) {
+					string1 = string1 + " or alternate colors ";
+					string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_RedGreen+"png\",\"100\")'> ";
+					string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV_SNP_RedGreen+"eps\")'>";
+				}
+
 				string1 = string1 + " or standard ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP+"png\",\"50\")'> ";
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_CNV_SNP+"eps\")'>";
@@ -361,7 +368,7 @@ function blank_and_content_tab() {
 				}
 			}
 			if (isFile(fig_linear_CNV+"png")) {
-				string1 = string1 + "<b>CNV only</b> (lin. ";
+				string1 = string1 + "<br><b>CNV only</b> (lin. ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV+"png\",\"100\")'> ";
 	            string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV+"eps\")'>";
 	            string1 = string1 + " or sta. ";
@@ -372,8 +379,28 @@ function blank_and_content_tab() {
 					string1 = string1 + "; ";
 				}
 			}
+			// Show CNV bias figure for WGseq and ddRADseq.
+			if ((isFile(CNV_bias_WGseq_end)) || (isFile(CNV_bias_WGseq_GCcontent))) {
+				string1 = string1 + " : CNV biases ";
+				if (isFile(CNV_bias_WGseq_end)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_end+"\",\"100\")'>chr end</button>";
+				}
+				if (isFile(CNV_bias_WGseq_GCcontent)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_GCcontent+"\",\"100\")'>%GC</button>";
+				}
+			}
+			if (isFile(fig_linear_CNV_highTop+"png")) {
+				string1 = string1 + " : CNV ";
+				string1 = string1 +  "<button onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_highTop+"png\",\"100\")'>high top</button>";
+			}
+			if ((isFile(CNV_bias_ddRADseq_1)) || (isFile(CNV_bias_ddRADseq_2)) || (isFile(CNV_bias_ddRADseq_3))) {
+				string1 = string1 + " : CNV biases ";
+				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>fragment length</button>";
+				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>%GC</button>";
+				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";
+			}
 			if (isFile(fig_linear_SNP+"png")) {
-				string1 = string1 + "<b>SNP/LOH only</b> (lin. ";
+				string1 = string1 + "<br><b>SNP/LOH only</b> (lin. ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_SNP+"png\",\"100\")'> ";
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_SNP+"eps\")'>";
 				string1 = string1 + " or sta. ";
@@ -387,38 +414,15 @@ function blank_and_content_tab() {
 				string1 = string1 + " : GBrowse-SNP ";
 				string1 = string1 + "<button onclick=\"loadExternal('"+CGD_annotations_SNP+"');\">GBrowse</button>";
 			}
-			if (isFile("users/"+user+"/super.txt")) {  // Super-user privilidges.
-				// Show CNV bias figure for WGseq and ddRADseq.
-				if ((isFile(CNV_bias_WGseq_1)) || (isFile(CNV_bias_WGseq_2))) {
-					string1 = string1 + " : CNV biases ";
-					if (isFile(CNV_bias_WGseq_1)) {
-						string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_1+"\",\"100\")'>1</button>";
-					} else if (isFile(CNV_bias_WGseq_2)) {
-						string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_2+"\",\"100\")'>2</button>";
-					}
-				} else if ((isFile(CNV_bias_ddRADseq_1)) || (isFile(CNV_bias_ddRADseq_2)) || (isFile(CNV_bias_ddRADseq_3)) || (isFile(CNV_bias_ddRADseq_4))) {
-					string1 = string1 + " : CNV biases ";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>1</button>";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>2</button>";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>3</button>";
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_4+"\",\"100\")'>T</button>";
-				}
-			}
-			// Show allelic ratio plot version for ddRADseq.
-			if ((isFile(fig_a_linear_SNPratio_ddRADseq)) || (isFile(fig_b_linear_SNPratio_ddRADseq)) || (isFile(fig_c_linear_SNPratio_ddRADseq)) || (isFile(fig_d_linear_SNPratio_ddRADseq))) {
+			// Show allelic ratio plot version for ddRADseq and WGseq.
+			if ((isFile(fig_linear_SNPratio_histogram)) || (isFile(fig_linear_SNPratio_fireplot))) {
 				string1 = string1 + " : SNP ratios ";
-				if (isFile(fig_a_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_a_linear_SNPratio_ddRADseq+"\",\"100\")'>1</button>";
-				}
-				if (isFile(fig_b_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_b_linear_SNPratio_ddRADseq+"\",\"100\")'>2</button>";
-				}
-				if (isFile(fig_c_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_c_linear_SNPratio_ddRADseq+"\",\"100\")'>3</button>";
-				}
-				if (isFile(fig_d_linear_SNPratio_ddRADseq)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_d_linear_SNPratio_ddRADseq+"\",\"100\")'>4</button>";
-				}
+			}
+			if (isFile(fig_linear_SNPratio_histogram)) {
+				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_histogram+"\",\"100\")'>histogram</button>";
+			}
+			if (isFile(fig_linear_SNPratio_fireplot)) {
+				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"\",\"100\")'>fire plot</button>";
 			}
 
 			string1 = string1 + "</font>";
@@ -444,16 +448,16 @@ function blank_and_content_tab() {
 			var projectsShown = localStorage.getItem("projectsShown");
 			console.log("'"+projectsShown+"'");
 			if (projectsShown != null) {
-				projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+color1+":"+color2+":"+parent,"");
+				projectsShown = projectsShown.replace(user+":"+project+":"+key+":null:null:null");
 			} else {
 				projectsShown - projectsShown.replace("null ","");
 			}
-			projectsShown = projectsShown+" "+user+":"+project+":"+key+":"+color1+":"+color2+":"+parent;
+			projectsShown = projectsShown+" "+user+":"+project+":"+key+":null:null:null";
 			projectsShown = projectsShown.replace("  "," ");   // remove duplicate " " characters.
 			while (projectsShown.charAt(0) == " ")
 				projectsShown = projectsShown.slice( 1 );      // remove leading " " character.
 			localStorage.setItem("projectsShown", projectsShown);
-			console.log('# add to projectsShown : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
+			console.log('# add to projectsShown : "'+user+':'+project+':'+key+':null:null:null"');
 			console.log('# projectsShown = "'+projectsShown+'"');
 		}
 	}
@@ -468,17 +472,23 @@ function blank_and_content_tab() {
 			figure_element.remove();
 		}
 		var projectsShown = localStorage.getItem("projectsShown");
-		projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+color1+":"+color2+":"+parent,"");
+		projectsShown = projectsShown.replace(user+":"+project+":"+key+":null:null:null","");
 		projectsShown = projectsShown.replace("  "," ");  // remove duplicate " " characters.
 		while (projectsShown.charAt(0) == " ")
 			projectsShown = projectsShown.slice( 1 );     // remove leading " " characater.
 		localStorage.setItem("projectsShown", projectsShown);
-		console.log('# remove from projectsShown : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
+		console.log('# remove from projectsShown : "'+user+':'+project+':'+key+':null:null:null"');
 		console.log('# projectsShown = "'+projectsShown+'"');
+	}
+	function closeProject_viewOnly(key) {
+		var figure_element = document.getElementById("figure_"+key);
+		if (figure_element) {
+			figure_element.remove();
+		}
 	}
 	function CloseAllProjects(user) {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
-		
+		// Function not implementd.
 	}
 	</script>
 <hr>
@@ -646,31 +656,40 @@ if(localStorage.getItem("projectsShown")){
 }
 
 // Reload previously viewed tab after page reload.
-<?php if (!isset($_SESSION['logged_on'])) { ?> tabInUse = 'user';<?php } ?>
+<?php
+	if (!isset($_SESSION['logged_on'])) {
+		echo "tabInUse = 'user';\n";
+		echo "key_offset = '';\n";
+	}
+?>
 console.log('#: tabInUse = "'+tabInUse+'"');
 tabWindow(tabInUse);
 
 // Reload previously viewed project datasets after page reload.
 console.log('#: projectsShown = "'+projectsShown+'"');
 function restore_shown_figures() {
+	// function is called at the end of page loading.
 	if (projectsShown) {
 		var projectsShown_entries = projectsShown.split(' ');
 		localStorage.setItem("projectsShown","");
 		for (var i=0;i<projectsShown_entries.length; i++) {
 			var currentProject = projectsShown_entries[i];
+			console.log('#:3 currentProject = '+currentProject);
 			if (currentProject != '') {
 				var entry_parts    = currentProject.split(':');
 
 				// select checkBoxes for previously viewed datasets.
 				key = entry_parts[2];
-				var display_panel_iframe        = document.getElementById('panel_visualizeDataset_iframe');
-				var currentProject_checkBox     = display_panel_iframe.contentDocument.getElementById("show_"+key);
-				currentProject_checkBox.checked = true;
+				var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
+				console.log('#:4 elementID = show_'+key);
+
+				var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+				show_button_element.checked = true;
 
 				// Open projects previously shown.
-				console.log('# entry to show = "'+currentProject+'"');
+				console.log('#:5 entry to show = "'+currentProject+'"');
 				var entry_parts    = currentProject.split(':');
-				openProject(entry_parts[0], entry_parts[1], entry_parts[2], entry_parts[3], entry_parts[4], entry_parts[5]);
+				openProject(entry_parts[0], entry_parts[1], entry_parts[2], 'null', 'null', 'null');
 			}
 		}
 	}
@@ -728,6 +747,7 @@ function Generate_combined_figure() {
 	    autoSubmitForm.appendChild(input2);
 	autoSubmitForm.submit();
 }
+restore_shown_figures();
 </script>
 
 

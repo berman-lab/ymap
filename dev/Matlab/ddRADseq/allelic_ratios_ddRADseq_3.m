@@ -298,84 +298,12 @@ end;
 dataReductionMethod = 1;
 if (useHapmap)
 	for chr = 1:num_chrs
-		if (dataReductionMethod == 1)
-			% experiment : data reduction by determining colors for each coordinate.
-			test_C_chr_count = C_chr_count{chr}
-			for i = 1:length(C_chr_count{chr})
-				pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-				chr_SNPdata{chr,2}(pos) = C_chr_SNP_data_ratios{ chr}(i);
-				baseCall                = C_chr_baseCall{        chr}{i};
-				homologA                = C_chr_SNP_homologA{    chr}{i};
-				homologB                = C_chr_SNP_homologB{    chr}{i};
-				flipper                 = C_chr_SNP_flipHomologs{chr}(i);
-				if (flipper)
-					temp     = homologA;
-					homologA = homologB;
-					homologB = temp;
-				end;
-				allelicFraction = C_chr_SNP_data_ratios{chr}(i);
-				percentHom      = (allelicFraction-0.5)*2;
-				percentHet      = 1-percentHom;
-				if (baseCall == homologA)
-					colorList = homolog_a_color*percentHom + het_color*percentHet;
-				elseif (baseCall == homologB)
-					colorList = homolog_b_color*percentHom + het_color*percentHet;
-				else
-					colorList = [2/3 2/3 2/3]; % [1.0 1.0 1.0];
-				end;
-				chr_SNPdata_colorsC{chr,1}(pos) = colorList(1);
-				chr_SNPdata_colorsC{chr,2}(pos) = colorList(2);
-				chr_SNPdata_colorsC{chr,3}(pos) = colorList(3);
-				chr_SNPdata_countC{ chr,1}(pos) = chr_SNPdata_countC{chr,1}(pos)+1;
-			end;
-			for i = 1:length(C_chr_count{chr})
-				if (chr_SNPdata_countC{chr,1}(pos) > 0)
-					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr,1}(pos);
-					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr,1}(pos);
-					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr,1}(pos);
-				end;
-			end;
-
-			% reference : data reduction by averaging colors within each bin.
-			for i = 1:length(C_chr_count{chr})
-				pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-				chr_SNPdata{chr,4}(pos) = P_chr_SNP_data_ratios{ chr}(i);
-				baseCall                = P_chr_baseCall{        chr}{i};
-				homologA                = P_chr_SNP_homologA{    chr}{i};
-				homologB                = P_chr_SNP_homologB{    chr}{i};
-				flipper                 = P_chr_SNP_flipHomologs{chr}(i);
-				if (flipper)
-					temp     = homologA;
-					homologA = homologB;
-					homologB = temp;
-				end;
-				allelicFraction = P_chr_SNP_data_ratios{chr}(i);
-				percentHom      = (allelicFraction-0.5)*2;
-				percentHet      = 1-percentHom;
-				if (baseCall == homologA)
-					colorList = homolog_a_color*percentHom + het_color*percentHet;
-				elseif (baseCall == homologB)
-					colorList = homolog_b_color*percentHom + het_color*percentHet;
-				else
-					colorList = [2/3 2/3 2/3]; % [1.0 1.0 1.0];
-				end;
-				chr_SNPdata_colorsP{chr,1}(pos) = colorList(1);
-				chr_SNPdata_colorsP{chr,2}(pos) = colorList(2);
-				chr_SNPdata_colorsP{chr,3}(pos) = colorList(3);
-				chr_SNPdata_countP{ chr,1}(pos) = chr_SNPdata_countP{chr,1}(pos)+1;
-			end;
-			for i = 1:length(C_chr_count{chr})
-				if (chr_SNPdata_countP{chr,1}(pos) > 0)
-					chr_SNPdata_colorsP{chr,1}(pos) = chr_SNPdata_colorsP{chr,1}(pos)/chr_SNPdata_countP{chr,1}(pos);
-					chr_SNPdata_colorsP{chr,2}(pos) = chr_SNPdata_colorsP{chr,2}(pos)/chr_SNPdata_countP{chr,1}(pos);
-					chr_SNPdata_colorsP{chr,3}(pos) = chr_SNPdata_colorsP{chr,3}(pos)/chr_SNPdata_countP{chr,1}(pos);
-				end;
-			end;
-		elseif (dataReductionMethod == 2)
-			% experiment : data reduction by only looking at closest to 1:1 data per bin.
-			for i = 1:length(C_chr_count{chr})
-				pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-				if (C_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,2}(pos))
+		if (chr_in_use(chr) == 1)
+			if (dataReductionMethod == 1)
+				% experiment : data reduction by determining colors for each coordinate.
+				test_C_chr_count = C_chr_count{chr}
+				for i = 1:length(C_chr_count{chr})
+					pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
 					chr_SNPdata{chr,2}(pos) = C_chr_SNP_data_ratios{ chr}(i);
 					baseCall                = C_chr_baseCall{        chr}{i};
 					homologA                = C_chr_SNP_homologA{    chr}{i};
@@ -399,13 +327,19 @@ if (useHapmap)
 					chr_SNPdata_colorsC{chr,1}(pos) = colorList(1);
 					chr_SNPdata_colorsC{chr,2}(pos) = colorList(2);
 					chr_SNPdata_colorsC{chr,3}(pos) = colorList(3);
+					chr_SNPdata_countC{ chr,1}(pos) = chr_SNPdata_countC{chr,1}(pos)+1;
 				end;
-			end;
+				for i = 1:length(C_chr_count{chr})
+					if (chr_SNPdata_countC{chr,1}(pos) > 0)
+						chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr,1}(pos);
+						chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr,1}(pos);
+						chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr,1}(pos);
+					end;
+				end;
 
-			% experiment : data reduction by only looking at closest to 1:1 data per bin.
-			for i = 1:length(C_chr_count{chr})
-				pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-				if (P_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,4}(pos))
+				% reference : data reduction by averaging colors within each bin.
+				for i = 1:length(C_chr_count{chr})
+					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
 					chr_SNPdata{chr,4}(pos) = P_chr_SNP_data_ratios{ chr}(i);
 					baseCall                = P_chr_baseCall{        chr}{i};
 					homologA                = P_chr_SNP_homologA{    chr}{i};
@@ -429,31 +363,105 @@ if (useHapmap)
 					chr_SNPdata_colorsP{chr,1}(pos) = colorList(1);
 					chr_SNPdata_colorsP{chr,2}(pos) = colorList(2);
 					chr_SNPdata_colorsP{chr,3}(pos) = colorList(3);
+					chr_SNPdata_countP{ chr,1}(pos) = chr_SNPdata_countP{chr,1}(pos)+1;
 				end;
-			end;
+				for i = 1:length(C_chr_count{chr})
+					if (chr_SNPdata_countP{chr,1}(pos) > 0)
+						chr_SNPdata_colorsP{chr,1}(pos) = chr_SNPdata_colorsP{chr,1}(pos)/chr_SNPdata_countP{chr,1}(pos);
+						chr_SNPdata_colorsP{chr,2}(pos) = chr_SNPdata_colorsP{chr,2}(pos)/chr_SNPdata_countP{chr,1}(pos);
+						chr_SNPdata_colorsP{chr,3}(pos) = chr_SNPdata_colorsP{chr,3}(pos)/chr_SNPdata_countP{chr,1}(pos);
+					end;
+				end;
+			elseif (dataReductionMethod == 2)
+				% experiment : data reduction by only looking at closest to 1:1 data per bin.
+				for i = 1:length(C_chr_count{chr})
+					pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					if (C_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,2}(pos))
+						chr_SNPdata{chr,2}(pos) = C_chr_SNP_data_ratios{ chr}(i);
+						baseCall                = C_chr_baseCall{        chr}{i};
+						homologA                = C_chr_SNP_homologA{    chr}{i};
+						homologB                = C_chr_SNP_homologB{    chr}{i};
+						flipper                 = C_chr_SNP_flipHomologs{chr}(i);
+						if (flipper)
+							temp     = homologA;
+							homologA = homologB;
+							homologB = temp;
+						end;
+						allelicFraction = C_chr_SNP_data_ratios{chr}(i);
+						percentHom      = (allelicFraction-0.5)*2;
+						percentHet      = 1-percentHom;
+						if (baseCall == homologA)
+							colorList = homolog_a_color*percentHom + het_color*percentHet;
+						elseif (baseCall == homologB)
+							colorList = homolog_b_color*percentHom + het_color*percentHet;
+						else
+							colorList = [2/3 2/3 2/3]; % [1.0 1.0 1.0];
+						end;
+						chr_SNPdata_colorsC{chr,1}(pos) = colorList(1);
+						chr_SNPdata_colorsC{chr,2}(pos) = colorList(2);
+						chr_SNPdata_colorsC{chr,3}(pos) = colorList(3);
+					end;
+				end;
 
+				% experiment : data reduction by only looking at closest to 1:1 data per bin.
+				for i = 1:length(C_chr_count{chr})
+					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					if (P_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,4}(pos))
+						chr_SNPdata{chr,4}(pos) = P_chr_SNP_data_ratios{ chr}(i);
+						baseCall                = P_chr_baseCall{        chr}{i};
+						homologA                = P_chr_SNP_homologA{    chr}{i};
+						homologB                = P_chr_SNP_homologB{    chr}{i};
+						flipper                 = P_chr_SNP_flipHomologs{chr}(i);
+						if (flipper)
+							temp     = homologA;
+							homologA = homologB;
+							homologB = temp;
+						end;
+						allelicFraction = P_chr_SNP_data_ratios{chr}(i);
+						percentHom      = (allelicFraction-0.5)*2;
+						percentHet      = 1-percentHom;
+						if (baseCall == homologA)
+							colorList = homolog_a_color*percentHom + het_color*percentHet;
+						elseif (baseCall == homologB)
+							colorList = homolog_b_color*percentHom + het_color*percentHet;
+						else
+							colorList = [2/3 2/3 2/3]; % [1.0 1.0 1.0];
+						end;
+						chr_SNPdata_colorsP{chr,1}(pos) = colorList(1);
+						chr_SNPdata_colorsP{chr,2}(pos) = colorList(2);
+						chr_SNPdata_colorsP{chr,3}(pos) = colorList(3);
+					end;
+				end;
+
+			end;
 		end;
 	end;
 else
 	for chr = 1:num_chrs
-		for i = 1:length(C_chr_count{chr})
-			pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-			if (C_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,2}(pos))
-				chr_SNPdata{chr,2}(pos)      = C_chr_SNP_data_ratios{chr}(i);
-				colorList                    = [1.0 1.0 1.0];
-				chr_SNPdata_colorsC{chr,1}(i) = colorList(1);
-				chr_SNPdata_colorsC{chr,2}(i) = colorList(2);
-				chr_SNPdata_colorsC{chr,3}(i) = colorList(3);
+		if (chr_in_use(chr) == 1)
+			if (length(C_chr_count{chr}) > 1)
+				for i = 1:length(C_chr_count{chr})
+					pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					if (C_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,2}(pos))
+						chr_SNPdata{chr,2}(pos)      = C_chr_SNP_data_ratios{chr}(i);
+						colorList                    = [1.0 1.0 1.0];
+						chr_SNPdata_colorsC{chr,1}(i) = colorList(1);
+						chr_SNPdata_colorsC{chr,2}(i) = colorList(2);
+						chr_SNPdata_colorsC{chr,3}(i) = colorList(3);
+					end;
+				end;
 			end;
-		end;
-		for i = 1:length(C_chr_count{chr})
-			pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-			if (P_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,4}(pos))
-				chr_SNPdata{chr,4}(pos)      = P_chr_SNP_data_ratios{chr}(i);
-				colorList                    = [1.0 1.0 1.0];
-				chr_SNPdata_colorsP{chr,1}(i) = colorList(1);
-				chr_SNPdata_colorsP{chr,2}(i) = colorList(2);
-				chr_SNPdata_colorsP{chr,3}(i) = colorList(3);
+			if (length(P_chr_count{chr}) > 1)
+				for i = 1:length(P_chr_count{chr})
+					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					if (P_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,4}(pos))
+						chr_SNPdata{chr,4}(pos)      = P_chr_SNP_data_ratios{chr}(i);
+						colorList                    = [1.0 1.0 1.0];
+						chr_SNPdata_colorsP{chr,1}(i) = colorList(1);
+						chr_SNPdata_colorsP{chr,2}(i) = colorList(2);
+						chr_SNPdata_colorsP{chr,3}(i) = colorList(3);
+					end;
+				end;
 			end;
 		end;
 	end;
@@ -471,32 +479,44 @@ histogram_fig = figure();
 %	% chr_SNPdata_colorsC
 %else
 	for chr = 1:num_chrs
-		data_C = [];
-		data_P = [];
-		for i = 1:length(chr_SNPdata{chr,2})
-			data_C = [data_C chr_SNPdata{chr,2}(i)];
+		if (chr_in_use(chr) == 1)
+			data_C = [];
+			data_P = [];
+			for i = 1:length(chr_SNPdata{chr,2})
+				data_C = [data_C chr_SNPdata{chr,2}(i)];
+			end;
+			for i = 1:length(chr_SNPdata{chr,4})
+				data_P = [data_P chr_SNPdata{chr,4}(i)];
+			end;
+			histogram_C = hist(data_C,100);	
+			histogram_P = hist(data_P,100);
+			final_histogram_C = [fliplr(histogram_C) histogram_C];
+			final_histogram_P = [fliplr(histogram_P) histogram_P];
+
+			subplot(2,num_chrs,chr);
+			hold on;
+			plot(1:200, log(final_histogram_C+1),'Color',[1.0 0.0 0.0]);
+			plot(1:200, log(final_histogram_P+1),'Color',[1/3 1/3 1/3]);
+			ylim([0 6]);
+			title([chr_label{chr}]);
+			set(gca,'XTick',[0 50 100 150 200]);
+			set(gca,'XTickLabel',{'0','1/4','1/2','3/4','1'});
+			ylabel('log(data count)');
+			xlabel('allelic ratio');
+			hold off;
+
+			subplot(2,num_chrs,chr+num_chrs);
+			hold on;
+			plot(1:200, final_histogram_C,'Color',[1.0 0.0 0.0]);
+			plot(1:200, final_histogram_P,'Color',[1/3 1/3 1/3]);
+			ylim([0 200]);
+			title([chr_label{chr}]);
+			set(gca,'XTick',[0 50 100 150 200]);
+			set(gca,'XTickLabel',{'0','1/4','1/2','3/4','1'});
+			ylabel('data count');
+			xlabel('allelic ratio');
+			hold off;
 		end;
-		for i = 1:length(chr_SNPdata{chr,4})
-			data_P = [data_P chr_SNPdata{chr,4}(i)];
-		end;
-		histogram_C = hist(data_C,100);	
-		histogram_P = hist(data_P,100);
-		final_histogram_C = [fliplr(histogram_C) histogram_C];
-		final_histogram_P = [fliplr(histogram_P) histogram_P];
-		subplot(2,num_chrs,chr);
-		hold on;
-		plot(1:200, log(final_histogram_C+1),'Color',[1.0 0.0 0.0]);
-		plot(1:200, log(final_histogram_P+1),'Color',[1/3 1/3 1/3]);
-		ylim([0 6]);
-		title([chr_label{chr} ' : log(allelic ratio)']);
-		hold off;
-		subplot(2,num_chrs,chr+num_chrs);
-		hold on;
-		plot(1:200, final_histogram_C,'Color',[1.0 0.0 0.0]);
-		plot(1:200, final_histogram_P,'Color',[1/3 1/3 1/3]);
-		ylim([0 200]);
-		title([chr_label{chr} ' : allelic ratio']);
-		hold off;
 	end;
 %end;
 set(histogram_fig,'PaperPosition',[0 0 8 1.5]*4);
@@ -520,7 +540,7 @@ if (Linear_display == true)
 	Linear_genome_size   = sum(chr_size);
 
 	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-	Linear_left_start    = 0.01;               % left margin (also right margin).
+	Linear_left_start    = 0.02;               % left margin (also right margin).
 	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
 
 	Linear_height        = 0.6;
@@ -528,7 +548,13 @@ if (Linear_display == true)
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = 1; % ploidyBase*2;
 	Linear_left          = Linear_left_start;
+
+	axisLabelPosition_horiz = -50000/bases_per_bin;
+	axisLabelPosition_horiz = 0.01125;
 end;
+
+axisLabelPosition_vert = -50000/bases_per_bin;
+axisLabelPosition_vert = 0.01125;
 
 
 %%================================================================================================
@@ -569,59 +595,27 @@ for chr = 1:num_chrs
 			case 1
 				set(gca,'YTick',[0 maxY/2 maxY]);
 				set(gca,'YTickLabel',{'','',''});
-				text(axisLabelPosition, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
 			case 2
 				set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
 				set(gca,'YTickLabel',{'','','','',''});
-				text(axisLabelPosition, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
 			case 3
 				set(gca,'YTick',[0 maxY/6 maxY/3 maxY/2 maxY/3*2 maxY/6*5 maxY]);
 				set(gca,'YTickLabel',{'','','','','','',''});
-				text(axisLabelPosition, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
 			case 4
 				set(gca,'YTick',[0 maxY/8 maxY/4 maxY/8*3 maxY/2 maxY/8*5 maxY/4*3 maxY/8*7 maxY]);
 				set(gca,'YTickLabel',{'','','','','','','','',''});
-				text(axisLabelPosition, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
-			case 5
-				set(gca,'YTick',[0 maxY/10 maxY/10*2 maxY/10*3 maxY/10*4 maxY/10*5 maxY/10*6 maxY/10*7 ...
-				                 maxY/10*8 maxY/10*9 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','','','',''});
-				text(axisLabelPosition, maxY/10*2,  '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/10*5,  '5','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/10*7,  '7','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,       '10','HorizontalAlignment','right','Fontsize',10);
-			case 6
-				set(gca,'YTick',[0 maxY/12 maxY/12*2 maxY/12*3 maxY/12*4 maxY/12*5 maxY/12*6 maxY/12*7 ...
-				                 maxY/12*8 maxY/12*9 maxY/12*10 maxY/12*11 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','',''});
-				text(axisLabelPosition, maxY/12*2,  '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/12*6,  '6','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/12*10, '10','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,       '12','HorizontalAlignment','right','Fontsize',10);
-			case 7
-				set(gca,'YTick',[0 maxY/14 maxY/14*2 maxY/14*3 maxY/14*4 maxY/14*5 maxY/14*6 maxY/14*7 ...
-				                 maxY/14*8 maxY/14*9 maxY/14*10 maxY/14*11 maxY/14*12 maxY/14*13 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','','','',''});
-				text(axisLabelPosition, maxY/14*4,  '4','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/14*7,  '7','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/14*11, '11','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,       '14','HorizontalAlignment','right','Fontsize',10);
-			case 8
-				set(gca,'YTick',[0 maxY/16 maxY/16*2 maxY/16*3 maxY/16*4 maxY/16*5 maxY/16*6 maxY/16*7 ...
-				                 maxY/16*8 maxY/16*9 maxY/16*10 maxY/16*11 maxY/16*12 maxY/16*13 maxY/16*14 maxY/16*15 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','','','','','',''});
-				text(axisLabelPosition, maxY/16*4,  '4' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/16*8,  '8' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/16*12, '12','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,       '16','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
 		end;
 		set(gca,'FontSize',12);
 		if (chr == find(chr_posY == max(chr_posY)))
@@ -877,64 +871,31 @@ for chr = 1:num_chrs
 	        set(gca,'XTickLabel',[]);
 	        if (first_chr == true)
 				% This section sets the Y-axis labelling.
-				axisLabelPosition = -50000/bases_per_bin;
 				switch ploidyBase
 					case 1
 						set(gca,'YTick',[0 maxY/2 maxY]);
 						set(gca,'YTickLabel',{'','',''});
-						text(axisLabelPosition, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
 					case 2
 						set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
 						set(gca,'YTickLabel',{'','','','',''});
-						text(axisLabelPosition, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
 					case 3
 						set(gca,'YTick',[0 maxY/6 maxY/3 maxY/2 maxY/3*2 maxY/6*5 maxY]);
 						set(gca,'YTickLabel',{'','','','','','',''});
-						text(axisLabelPosition, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
 					case 4
 						set(gca,'YTick',[0 maxY/8 maxY/4 maxY/8*3 maxY/2 maxY/8*5 maxY/4*3 maxY/8*7 maxY]);
 						set(gca,'YTickLabel',{'','','','','','','','',''});
-						text(axisLabelPosition, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
-					case 5
-						set(gca,'YTick',[0 maxY/10 maxY/10*2 maxY/10*3 maxY/10*4 maxY/10*5 maxY/10*6 maxY/10*7 ...
-						                 maxY/10*8 maxY/10*9 maxY]);
-						set(gca,'YTickLabel',{'','','','','','','','','','',''});
-						text(axisLabelPosition, maxY/10*2,  '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/10*5,  '5','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/10*7,  '7','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY,       '10','HorizontalAlignment','right','Fontsize',10);
-					case 6
-						set(gca,'YTick',[0 maxY/12 maxY/12*2 maxY/12*3 maxY/12*4 maxY/12*5 maxY/12*6 maxY/12*7 ...
-						                 maxY/12*8 maxY/12*9 maxY/12*10 maxY/12*11 maxY]);
-						set(gca,'YTickLabel',{'','','','','','','','','','','','',''});
-						text(axisLabelPosition, maxY/12*2,  '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/12*6,  '6','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/12*10, '10','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY,       '12','HorizontalAlignment','right','Fontsize',10);
-					case 7
-						set(gca,'YTick',[0 maxY/14 maxY/14*2 maxY/14*3 maxY/14*4 maxY/14*5 maxY/14*6 maxY/14*7 ...
-						                 maxY/14*8 maxY/14*9 maxY/14*10 maxY/14*11 maxY/14*12 maxY/14*13 maxY]);
-						set(gca,'YTickLabel',{'','','','','','','','','','','','','','',''});
-						text(axisLabelPosition, maxY/14*4,  '4','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/14*7,  '7','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/14*11, '11','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY,       '14','HorizontalAlignment','right','Fontsize',10);
-					case 8
-						set(gca,'YTick',[0 maxY/16 maxY/16*2 maxY/16*3 maxY/16*4 maxY/16*5 maxY/16*6 maxY/16*7 ...
-						                 maxY/16*8 maxY/16*9 maxY/16*10 maxY/16*11 maxY/16*12 maxY/16*13 maxY/16*14 maxY/16*15 maxY]);
-						set(gca,'YTickLabel',{'','','','','','','','','','','','','','','','',''});
-						text(axisLabelPosition, maxY/16*4,  '4' ,'HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/16*8,  '8' ,'HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY/16*12, '12','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition, maxY,       '16','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
 				end;
 			else
 				set(gca,'YTick',[]);

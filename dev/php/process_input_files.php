@@ -80,7 +80,7 @@ fwrite($logOutput, "\t| projectPath = ".$projectPath."\n");
 		// Convert BAM to SAM file, if needed.
 		if (strcmp($ext_new,"bam") == 0) {
 			fwrite($condensedLogOutput, "Decompressing BAM file to SAM.\n");
-			$null = shell_exec("sh sh/bam2sam.sh ".$user." ".$project." ".$name_new);
+			$null = shell_exec("sh ../sh/bam2sam.sh ".$user." ".$project." ".$name_new);
 			unlink($projectPath.$name_new);
 			unlink($projectPath.$name_new.".bai");
 			$name_new = "data.sam";
@@ -88,9 +88,7 @@ fwrite($logOutput, "\t| projectPath = ".$projectPath."\n");
 		// Convert SAM file to FASTQ files.
 		fwrite($condensedLogOutput, "Decompressing SAM file to FASTQ.\n");
 		$currentDir = getcwd();
-		chdir($projectPath);
-		$null       = shell_exec("sh sh/sam2fastq.sh ".$user." ".$project." ".$name_new);
-		chdir($currentDir);
+		$null       = shell_exec("sh ../sh/sam2fastq.sh ".$user." ".$project." ".$name_new);
 		// sam2fastq.sh user project main_dir inputFile;
 		fwrite($output, "data_r1.fastq\n");
 		fwrite($output, "data_r2.fastq\n");
@@ -101,9 +99,7 @@ fwrite($logOutput, "\t| projectPath = ".$projectPath."\n");
 	} else if (strcmp($ext_new,"txt") == 0) {
 		fwrite($logOutput, "\tThis is a txt file.\n");
 		$currentDir = getcwd();
-		chdir($projectPath);
-		$null       = shell_exec("sh sh/Gareth2pileups.sh ".$user." ".$project." ".$name_new);
-		chdir($currentDir);
+		$null       = shell_exec("sh ../sh/Gareth2pileups.sh ".$user." ".$project." ".$name_new);
 		// sam2fastq.sh user project main_dir inputFile;
 		fwrite($output, "null1\n");
 		fwrite($output, "null2\n");

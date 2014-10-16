@@ -40,9 +40,14 @@ fclose(data);
 % LOH_hapmap_v3(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
 %               SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
-% Adds processing of preprocessed_SNPs file columns for data coordinates.
+% LOH_hapmap_v4        : Adds processing of preprocessed_SNPs file columns for data coordinates.
+% allelic_ratios_WGseq : generate SNP ratio fire map.
 LOH_hapmap_v4(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
               SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
-fprintf('*--- End of ''analyze_SNPs.m'' was reached ---*\n');
+fprintf('*--- Fireplot generation. ---*\n');
+allelic_ratios_WGseq(main_dir,user,genomeUser,project,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
+                     SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+
+fprintf('*--- End of ''analyze_SNPs.m'' was reached. ---*\n');
 end

@@ -459,6 +459,8 @@ if (useParent)
 		xlim([0 1000]);
 	end;
 end;
+
+
 if (performLengthbiasCorrection)
 	%-------------------------------------------------------------------------------------------------
 	% Plotting length-bias corrected read depth vs. fragment length for project.
@@ -807,48 +809,49 @@ else
 		end;
     end;
 end;
-
-
 %-------------------------------------------------------------------------------------------------
 % Saving bias correction figure 1.
 %-------------------------------------------------------------------------------------------------
-fprintf('Saving bias figure 1.\n');
-set(fig1,'PaperPosition',[0 0 8 5]*4);
-saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.eps'], 'epsc');
-saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.png'], 'png');
-delete(fig1);
+if (performLengthbiasCorrection) || (performRepetbiasCorrection)
+	fprintf('Saving bias figure 1.\n');
+	set(fig1,'PaperPosition',[0 0 8 5]*4);
+	saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.eps'], 'epsc');
+	saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.png'], 'png');
+	delete(fig1);
+end;
 
-figTest = figure(99);
-X_GCbias_project = zeros(1,numFragments);
-Y_repet_project  = zeros(1,numFragments);
-for fragID = 1:numFragments
-	X_GCbias_project(fragID) = fragment_data(fragID).GC_bias;
-	Y_repet_project(fragID)  = fragment_data(fragID).repet;
-	usable_project(fragID)   = fragment_data(fragID).usable;
-end;
-hold on;
-for fragID = 1:numFragments
-	if (fragment_data(fragID).usable == 1)
-		plot(fragment_data(fragID).GC_bias,fragment_data(fragID).repet,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',4);
-	end;
-end;
-hold off;
-axis normal;
-h = title('[Repetitiveness] vs. [GC content] in genome.');   set(h, 'FontSize', 10);
-h = ylabel('Repetitiveness');  set(h, 'FontSize', 10);
-h = xlabel('GC content');      set(h, 'FontSize', 10);
-set(gca,'FontSize',10);
-xlim([0 1]);
-ylim([0 20000]);
-fprintf('Saving bias figure test.\n');
-set(figTest,'PaperPosition',[0 0 4 4]*2);
-saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.eps'], 'epsc');
-saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.png'], 'png');
-delete(figTest);
+
+%% Generate figure showing correlation between GC content and repetitiveness.
+%	figTest = figure(99);
+%	X_GCbias_project = zeros(1,numFragments);
+%	Y_repet_project  = zeros(1,numFragments);
+%	for fragID = 1:numFragments
+%		X_GCbias_project(fragID) = fragment_data(fragID).GC_bias;
+%		Y_repet_project(fragID)  = fragment_data(fragID).repet;
+%		usable_project(fragID)   = fragment_data(fragID).usable;
+%	end;
+%	hold on;
+%	for fragID = 1:numFragments
+%		if (fragment_data(fragID).usable == 1)
+%			plot(fragment_data(fragID).GC_bias,fragment_data(fragID).repet,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',4);
+%		end;
+%	end;
+%	hold off;
+%	axis normal;
+%	h = title('[Repetitiveness] vs. [GC content] in genome.');   set(h, 'FontSize', 10);
+%	h = ylabel('Repetitiveness');  set(h, 'FontSize', 10);
+%	h = xlabel('GC content');      set(h, 'FontSize', 10);
+%	set(gca,'FontSize',10);
+%	xlim([0 1]);
+%	ylim([0 20000]);
+%	fprintf('Saving bias figure test.\n');
+%	set(figTest,'PaperPosition',[0 0 4 4]*2);
+%	saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.eps'], 'epsc');
+%	saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.png'], 'png');
+%	delete(figTest);
+
 
 figure(fig2);
-
-
 %%================================================================================================
 % Prepare for LOWESS fitting 3 : correcting GC_bias.
 %-------------------------------------------------------------------------------------------------
@@ -1261,11 +1264,13 @@ end;
 %-------------------------------------------------------------------------------------------------
 % Saving bias correction figure 2.
 %-------------------------------------------------------------------------------------------------
-fprintf('Saving bias figure 2.\n');
-set(fig2,'PaperPosition',[0 0 8 5]*4);
-saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.eps'], 'epsc');
-saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.png'], 'png');
-delete(fig2);
+if (performGCbiasCorrection)
+	fprintf('Saving bias figure 2.\n');
+	set(fig2,'PaperPosition',[0 0 8 5]*4);
+	saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.eps'], 'epsc');
+	saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.png'], 'png');
+	delete(fig2);
+end;
 
 %
 %%
@@ -1551,6 +1556,7 @@ if (Smooth_place == 2)
 	end;
 end;
 
+
 %%================================================================================================
 % Correct chromosome end bias.
 %-------------------------------------------------------------------------------------------------
@@ -1653,15 +1659,16 @@ if (performEndbiasCorrection)
 		end;
 	end;
 end;
-
 %-------------------------------------------------------------------------------------------------
 % Saving bias correction figure 3.
 %-------------------------------------------------------------------------------------------------
-fprintf('Saving figure 3.\n');
-set(GCfig,'PaperPosition',[0 0 8 2]*4);
-saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.eps'], 'epsc');
-saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.png'], 'png');
-delete(GCfig);
+if (performEndbiasCorrection)
+	fprintf('Saving figure 3.\n');
+	set(GCfig,'PaperPosition',[0 0 8 2]*4);
+	saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.eps'], 'epsc');
+	saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.png'], 'png');
+	delete(GCfig);
+end;
 
 
 % Save presented CNV data in a file format common across data types being processed.
@@ -1684,7 +1691,7 @@ if (Linear_display == true)
 	Linear_genome_size   = sum(chr_size);
 
 	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-	Linear_left_start    = 0.01;               % left margin (also right margin).
+	Linear_left_start    = 0.02;               % left margin (also right margin).
 	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
 
 	Linear_height        = 0.6;
@@ -1692,7 +1699,13 @@ if (Linear_display == true)
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
 	Linear_left          = Linear_left_start;
+
+	axisLabelPosition_horiz = -50000/bases_per_bin;
+	axisLabelPosition_horiz = 0.01125;
 end;
+
+axisLabelPosition_vert = -50000/bases_per_bin;
+axisLabelPosition_vert = 0.01125;
 
 
 %% -----------------------------------------------------------------------------------------
@@ -1839,64 +1852,31 @@ for chr = 1:num_chrs
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
         
 		% This section sets the Y-axis labelling.
-		axisLabelPosition = -50000/bases_per_bin;
 		switch ploidyBase
 			case 1
 				set(gca,'YTick',[0 maxY/2 maxY]);
 				set(gca,'YTickLabel',{'','',''});
-				text(axisLabelPosition, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
 			case 2
 				set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
 				set(gca,'YTickLabel',{'','','','',''});
-				text(axisLabelPosition, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
 			case 3
 				set(gca,'YTick',[0 maxY/6 maxY/3 maxY/2 maxY/3*2 maxY/6*5 maxY]);
 				set(gca,'YTickLabel',{'','','','','','',''});
-				text(axisLabelPosition, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
 			case 4
 				set(gca,'YTick',[0 maxY/8 maxY/4 maxY/8*3 maxY/2 maxY/8*5 maxY/4*3 maxY/8*7 maxY]);
 				set(gca,'YTickLabel',{'','','','','','','','',''});
-				text(axisLabelPosition, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
-			case 5
-				set(gca,'YTick',[0 maxY/10 maxY/10*2 maxY/10*3 maxY/10*4 maxY/10*5 maxY/10*6 maxY/10*7 ...
-				                 maxY/10*8 maxY/10*9 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','','','',''});
-				text(axisLabelPosition, maxY/10*2,  '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/10*5,  '5','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/10*7,  '7','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,       '10','HorizontalAlignment','right','Fontsize',10);
-			case 6
-				set(gca,'YTick',[0 maxY/12 maxY/12*2 maxY/12*3 maxY/12*4 maxY/12*5 maxY/12*6 maxY/12*7 ...
-				                 maxY/12*8 maxY/12*9 maxY/12*10 maxY/12*11 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','',''});
-				text(axisLabelPosition, maxY/12*2,  '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/12*6,  '6','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/12*10, '10','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,       '12','HorizontalAlignment','right','Fontsize',10);
-			case 7
-				set(gca,'YTick',[0 maxY/14 maxY/14*2 maxY/14*3 maxY/14*4 maxY/14*5 maxY/14*6 maxY/14*7 ...
-				                 maxY/14*8 maxY/14*9 maxY/14*10 maxY/14*11 maxY/14*12 maxY/14*13 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','','','',''});
-				text(axisLabelPosition, maxY/14*4,  '4','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/14*7,  '7','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/14*11, '11','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,       '14','HorizontalAlignment','right','Fontsize',10);
-			case 8
-				set(gca,'YTick',[0 maxY/16 maxY/16*2 maxY/16*3 maxY/16*4 maxY/16*5 maxY/16*6 maxY/16*7 ...
-				                 maxY/16*8 maxY/16*9 maxY/16*10 maxY/16*11 maxY/16*12 maxY/16*13 maxY/16*14 maxY/16*15 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','','','','','',''});
-				text(axisLabelPosition, maxY/16*4,  '4' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/16*8,  '8' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY/16*12, '12','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition, maxY,       '16','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
 		end;
 
 		set(gca,'FontSize',12);
@@ -2220,64 +2200,31 @@ for chr = 1:num_chrs
 			set(gca,'XTickLabel',[]);
 			if (first_chr)
 				% This section sets the Y-axis labelling.
-				axisLabelposition = -50000/bases_per_bin;
 				switch ploidyBase
 					case 1
 						set(gca,'YTick',[0 maxY/2 maxY]);
 						set(gca,'YTickLabel',{'','',''});
-						text(axisLabelposition, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
 					case 2
 						set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
 						set(gca,'YTickLabel',{'','','','',''});
-						text(axisLabelposition, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
 					case 3
 						set(gca,'YTick',[0 maxY/6 maxY/3 maxY/2 maxY/3*2 maxY/6*5 maxY]);
 						set(gca,'YTickLabel',{'','','','','','',''});
-						text(axisLabelposition, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
 					case 4
 						set(gca,'YTick',[0 maxY/8 maxY/4 maxY/8*3 maxY/2 maxY/8*5 maxY/4*3 maxY/8*7 maxY]);
 						set(gca,'YTickLabel',{'','','','','','','','',''});
-						text(axisLabelposition, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
-					case 5
-						set(gca,'YTick',[0 maxY/10 maxY/10*2 maxY/10*3 maxY/10*4 maxY/10*5 maxY/10*6 maxY/10*7 ...
-						                 maxY/10*8 maxY/10*9 maxY]);
-						set(gca,'YTickLabel',{'','','','','','','','','','',''});
-						text(axisLabelposition, maxY/10*2,  '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/10*5,  '5','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/10*7,  '7','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY,       '10','HorizontalAlignment','right','Fontsize',10);
-					case 6
-						set(gca,'YTick',[0 maxY/12 maxY/12*2 maxY/12*3 maxY/12*4 maxY/12*5 maxY/12*6 maxY/12*7 ...
-						                 maxY/12*8 maxY/12*9 maxY/12*10 maxY/12*11 maxY]);
-						set(gca,'YTickLabel',{'','','','','','','','','','','','',''});
-						text(axisLabelposition, maxY/12*2,  '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/12*6,  '6','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/12*10, '10','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY,       '12','HorizontalAlignment','right','Fontsize',10);
-					case 7
-						set(gca,'YTick',[0 maxY/14 maxY/14*2 maxY/14*3 maxY/14*4 maxY/14*5 maxY/14*6 maxY/14*7 ...
-						                 maxY/14*8 maxY/14*9 maxY/14*10 maxY/14*11 maxY/14*12 maxY/14*13 maxY]);
-						set(gca,'YTickLabel',{'','','','','','','','','','','','','','',''});
-						text(axisLabelposition, maxY/14*4,  '4','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/14*7,  '7','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/14*11, '11','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY,       '14','HorizontalAlignment','right','Fontsize',10);
-					case 8
-						set(gca,'YTick',[0 maxY/16 maxY/16*2 maxY/16*3 maxY/16*4 maxY/16*5 maxY/16*6 maxY/16*7 ...
-						                 maxY/16*8 maxY/16*9 maxY/16*10 maxY/16*11 maxY/16*12 maxY/16*13 maxY/16*14 maxY/16*15 maxY]);
-						set(gca,'YTickLabel',{'','','','','','','','','','','','','','','','',''});
-						text(axisLabelposition, maxY/16*4,  '4' ,'HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/16*8,  '8' ,'HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY/16*12, '12','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelposition, maxY,       '16','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
 				end;
 			else
 				set(gca,'YTick',[]);

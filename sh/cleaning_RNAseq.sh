@@ -268,16 +268,21 @@ fi
 
 ## Generate "complete.txt" to indicate processing has completed normally.
 timesLogFile=$main_dir"completion_times.log";
-completeFile=$projectDirectory"complete.txt";
-echo -n $user"("$project")[RNAseq " >> $timesLogFile;
-cat $projectDirectory"dataType.txt" >> $timesLogFile;
-echo -n "]\t" >> $timesLogFile;
-cat $projectDirectory"working.txt" >> $timesLogFile;
 timestamp=$(date +%T);
-echo $timestamp >> $completeFile;
-echo " -> "$timestamp >> $timesLogFile;
+if [ -f $timesLogFile ]
+then
+	echo -n $user"("$project")[RNAseq " >> $timesLogFile;
+	cat $projectDirectory"dataType.txt" >> $timesLogFile;
+	echo -n "]\t" >> $timesLogFile;
+	cat $projectDirectory"working.txt" >> $timesLogFile;
+	echo " -> "$timestamp >> $timesLogFile;
+fi
+
+completeFile=$projectDirectory"complete.txt";
+echo "complete" > $completeFile;
 echo "\tGenerated 'complete.txt' file." >> $logName;
 chmod 0755 $completeFile;
+
 if [ -f $projectDirectory"working.txt" ]
 then
 	mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
