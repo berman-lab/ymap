@@ -383,10 +383,10 @@ function blank_and_content_tab() {
 			if ((isFile(CNV_bias_WGseq_end)) || (isFile(CNV_bias_WGseq_GCcontent))) {
 				string1 = string1 + " : CNV biases ";
 				if (isFile(CNV_bias_WGseq_end)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_end+"\",\"100\")'>chr end</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_end+"\",\"50\")'>chr end</button>";
 				}
 				if (isFile(CNV_bias_WGseq_GCcontent)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_GCcontent+"\",\"100\")'>%GC</button>";
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_GCcontent+"\",\"50\")'>%GC</button>";
 				}
 			}
 			if (isFile(fig_linear_CNV_highTop+"png")) {

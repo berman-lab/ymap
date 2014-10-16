@@ -138,10 +138,10 @@ end;
 % Find the smoothing value which produces the least error between the LOWESS fit and the raw data.
 [minsse,minj] = min(sse);
 span          = spans(minj);
-if (span < 0.3)
-	span = spans(3);
-	minj = 3;
-end;
+%	if (span < 0.3)
+%		span = spans(3);
+%		minj = 3;
+%	end;
 
 X_range       = linspace(minX,maxX,final_length);
 
