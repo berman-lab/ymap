@@ -12,8 +12,8 @@ project=$2;
 hapmap=$3
 main_dir=$(pwd)"/../";
 
-user="darren1";
-project="Fig_08A_YJB10490-WGseq";
+user="default";
+project="Fig_08A.YJB10490-WGseq";
 hapmap="C_albicans_SC5314_A21-s02-m09-r07";
 
 echo "";

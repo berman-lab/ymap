@@ -28,9 +28,9 @@ referenceCHR    = 1;
 %% 8->9: repet before GC correction.
 CNV_v6_fragmentLengthCorrected_9(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
                                  CNV_verString,displayBREAKS);
-%% version showing CNV data as black dots instead of bars.
-CNV_v6_fragmentLengthCorrected_9_MH(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
-                                    CNV_verString,displayBREAKS);
+% %% version showing CNV data as black dots instead of bars.
+% CNV_v6_fragmentLengthCorrected_9_MH(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
+%                                     CNV_verString,displayBREAKS);
 
 
 fprintf('*--- End of ''analyze_CNVs_RADseq_1.m'' was reached ---*\n');

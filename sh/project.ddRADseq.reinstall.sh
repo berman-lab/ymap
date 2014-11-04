@@ -11,12 +11,9 @@ user=$1;
 project=$2;
 main_dir=$(pwd)"/../";
 
-user='darren1'
-project='Fig_06A.YJB12712-d1'   # no-hapmap
-#project='Fig_06B.YJB12712-d1'
-#project='Fig_06C.YJB12712-d2'
-#project='Fig_06C.YJB12712-d9'
-#project='Fig_08B.YJB12229-ddRADseq'
+user='default'
+project='Fig_04.SC5314';
+#project='Fig_06A.YJB12712-d1';
 
 
 

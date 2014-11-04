@@ -1,0 +1,93 @@
+HAPMAP construction using WGseq datasets:
+	1) Accept user input for hapmap regions.
+		* save as : 'hapmap/hapmap.dataset_definition_{$num}.txt'
+		* data file includes:
+			+ chromosome number
+			+ string of homolog identity and bp coordinates; ex. 'a[1:1001]'
+	2) Assume reference is heterozygous and determine het SNP loci in reference dataset.
+		* loci with allelic ratio on range [0.25 ... 0.75], including two majority base calls.
+		* save as : 'hapmap/hapmap.parent_data.txt'
+	3) Identify copy number regions in child dataset using ChARM algorithm.
+		* output a pileup file describing fragments.
+		* example : chr_number   base_start   base_end   copyNumberEstimate.
+		* save as : 'project/charm_regions.txt' & 'hapmap/hapmap.charm_regions_{$num}.txt'
+	4) Load:
+		+ 'hapmap/hapmap.parent_data.txt'
+		+ 'hapmap/hapmap.charm_regions_{$num}.txt'
+		+ 'project/SNP_CNV_v1.txt'
+		+ 'hapmap/hapmap.dataset_definition_{$num}.txt'
+	5) per each data point in 'hapmap/hapmap.parent_data.txt':
+		+ Identify which child CNV fragment it is in -> provides CNV estimate for region.
+			- Round CNV estimate to whole number.
+		+ Identify which child dataset definition region it is in -> provides expected homolog identity.
+		+ Calculate allelic ratio of child locus.
+			- CNV estimates define SNP ratio call cutoffs.
+		+ Identify alleleic cutoff region of child locus:
+			- depends on CNV.
+		+ If child locus is not in defined hapmap region : phasing = 2. ('unknown')
+		+ If child locus is in defined hapmap region     : phasing = 0. ('no change')
+			CNV = 1 : ['a','b']
+				['a'] if in 'b' region : phasing = 1. ('change')
+				['b'] if in 'a' region : phasing = 1.
+			CNV = 2 : ['aa','ab','bb']
+				['aa'] if in 'b' region : phasing = 1.
+				['ab'] phasing = 2.
+				['bb'] if in 'a' region : phasing = 1.
+			CNV = 3 : ['aaa','aab','abb','bbb']
+				['aaa'] if in 'b' region : phasing = 1.
+				['aab'] if in 'b' region : phasing = 1.
+				['abb'] if in 'a' region : phasing = 1.
+				['bbb'] if in 'a' region : phasing = 1.
+			CNV = 4 : ['aaaa','aaab','aabb','abbb','bbbb']
+				['aaaa'] if in 'b' region : phasing = 1.
+				['aaab'] if in 'b' region : phasing = 1.
+				['aabb'] phasing = 2.
+				['abbb'] if in 'a' region : phasing = 1.
+				['bbbb'] if in 'a' region : phasing = 1.
+			CNV = 5 : ['aaaaa','aaaab','aaabb','aabbb','abbbb','bbbbb']
+				['aaaaa'] if in 'b' region : phasing = 1.
+				['aaaab'] if in 'b' region : phasing = 1.
+				['aaabb'] if in 'b' region : phasing = 1.
+				['aabbb'] if in 'a' region : phasing = 1.
+				['abbbb'] if in 'a' region : phasing = 1.
+				['bbbbb'] if in 'a' region : phasing = 1.
+			CNV = 6 : ['aaaaaa','aaaaab','aaaabb','aaabbb','aabbbb','abbbbb','bbbbbb']
+				['aaaaaa'] if in 'b' region : phasing = 1.
+				['aaaaab'] if in 'b' region : phasing = 1.
+				['aaaabb'] if in 'b' region : phasing = 1.
+				['aaabbb'] phasing = 2.
+				['aabbbb'] if in 'a' region : phasing = 1.
+				['abbbbb'] if in 'a' region : phasing = 1.
+				['bbbbbb'] if in 'a' region : phasing = 1.
+			CNV = 7 : ['aaaaaaa','aaaaaab','aaaaabb','aaaabbb','aaabbbb','aabbbbb','abbbbbb','bbbbbbb']
+				['aaaaaaa'] if in 'b' region : phasing = 1.
+				['aaaaaab'] if in 'b' region : phasing = 1.
+				['aaaaabb'] if in 'b' region : phasing = 1.
+				['aaaabbb'] if in 'b' region : phasing = 1.
+				['aaabbbb'] if in 'a' region : phasing = 1.
+				['aabbbbb'] if in 'a' region : phasing = 1.
+				['abbbbbb'] if in 'a' region : phasing = 1.
+				['bbbbbbb'] if in 'a' region : phasing = 1.
+			CNV = 8 : ['aaaaaaaa','aaaaaaab','aaaaaabb','aaaaabbb','aaaabbbb','aaabbbbb','aabbbbbb','abbbbbbb','bbbbbbb']
+				['aaaaaaaa'] if in 'b' region : phasing = 1.
+				['aaaaaaab'] if in 'b' region : phasing = 1.
+				['aaaaaabb'] if in 'b' region : phasing = 1.
+				['aaaaabbb'] if in 'b' region : phasing = 1.
+				['aaaabbbb'] phasing = 2.
+				['aaabbbbb'] if in 'a' region : phasing = 1.
+				['aabbbbbb'] if in 'a' region : phasing = 1.
+				['abbbbbbb'] if in 'a' region : phasing = 1.
+				['bbbbbbbb'] if in 'a' region : phasing = 1.
+	6) Save data as pileup-type file : 'hapmap/hapmap.dataset_{$num}.txt'
+
+================================================================================================================================
+
+LOH analysis using hapmap applied to WGseq and ddRADseq datasets:
+	1) Identify copy number regions in child dataset using ChARM algorithm.
+		* output a pileup file describing fragments.
+		* example : chr_number   base_start   base_end   copyNumberEstimate.
+		* save as : 'project/charm_regions.txt'
+	2) Load:
+		* 'project/charm_regions_{$num}.txt'
+		* 'project/SNP_CNV_v1.txt'
+		* 'hapmap/hapmap.dataset_definition_{$num}.txt'

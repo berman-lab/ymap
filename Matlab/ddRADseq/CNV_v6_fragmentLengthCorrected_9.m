@@ -35,6 +35,7 @@ else
 	fit_length = 1000;
 end;
 
+
 %%=========================================================================
 % Control variables.
 %--------------------------------------------------------------------------
@@ -102,6 +103,7 @@ num_chrs      = length(chr_size);
 %%=========================================================================
 %%= No further control variables below. ===================================
 %%=========================================================================
+
 
 % Sanitize user input of euploid state.
 ploidyBase = round(str2num(ploidyBase));
@@ -264,17 +266,17 @@ for fragID = 1:numFragments
 	fragment_data(fragID).ave_reads_parent = parent_fragments_CNV(fragID).ave_reads;
 
 	% Add GCratio data to common data structure.
-	fragment_data(fragID).GC_bias    = GCratioData(fragID);
+	fragment_data(fragID).GC_bias          = GCratioData(fragID);
 
 	% Add repetitiveness data to common data structure.
-	fragment_data(fragID).repet      = repetitivenessData(fragID);
+	fragment_data(fragID).repet            = repetitivenessData(fragID);
 
 	% Add nearest end distance data to common data structure.
-	fragment_data(fragID).nearestEnd = chrEndDistanceData(fragID);
+	fragment_data(fragID).nearestEnd       = chrEndDistanceData(fragID);
 
 	% Initialize all data as being usable.
-	fragment_data(fragID).usable = 1;
-	fragment_data(fragID).usable_parent = 1;
+	fragment_data(fragID).usable           = 1;
+	fragment_data(fragID).usable_parent    = 1;
 end;
 
 
@@ -283,8 +285,10 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('Gathering [fragment length], [CNV], & [GC bias] data for plotting bias and correction.\n');
 for fragID = 1:numFragments
-	if ((fragment_data(fragID).length == 0) || (fragment_data(fragID).ave_reads == 0) || (fragment_data(fragID).ave_reads_parent == 0))
-		fragment_data(fragID).usable = 0;
+% maybe here is an error.
+%	if ((fragment_data(fragID).length == 0) || (fragment_data(fragID).ave_reads == 0) || (fragment_data(fragID).ave_reads_parent == 0))
+	if (fragment_data(fragID).length == 0)
+		fragment_data(fragID).usable        = 0;
 		fragment_data(fragID).usable_parent = 0;
 	end;
 end;
@@ -335,10 +339,10 @@ Y_reads_parent_trimmed      = Y_reads_parent;
 		X_length_trimmed(        X_length_trimmed > 1000)       = [];
 	end;
 %------------------------------------------------------------*
-	% Remove fragments with zero average reads in project.
-	Y_reads_parent_trimmed(  Y_reads_project_trimmed == 0)  = [];
-	X_length_trimmed(        Y_reads_project_trimmed == 0)  = [];
-	Y_reads_project_trimmed( Y_reads_project_trimmed == 0)  = [];
+%	% Remove fragments with zero average reads in project.
+%	Y_reads_parent_trimmed(  Y_reads_project_trimmed == 0)  = [];
+%	X_length_trimmed(        Y_reads_project_trimmed == 0)  = [];
+%	Y_reads_project_trimmed( Y_reads_project_trimmed == 0)  = [];
 %------------------------------------------------------------*
 %	% Remove fragments with less than 1.5 average reads in project.
 %	Y_reads_parent_trimmed(  Y_reads_project_trimmed < 1.5) = [];
@@ -393,7 +397,7 @@ figure(fig1);
 fprintf('Subplot 1/15 : [EXPERIMENT] (Ave read depth) vs. (Fragment length).\n');
 sh(1) = subplot(3,4,[1 2]);
 fprintf('\tLOWESS fitting to trimmed project data.\n');
-[newX1_project, newY1_project] = optimize_mylowess(X_length_trimmed,Y_reads_project_trimmed,10, fit_length);
+[newX1_project, newY1_project] = optimize_mylowess(X_length_trimmed,Y_reads_project_trimmed,60, fit_length);   % divides span range from 0.01 to 0.99 then examines first 5.
 fprintf('\tLOWESS fitting to project data complete.\n');
 % Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
 Y_target                    = 1;
@@ -432,7 +436,7 @@ if (useParent)
 	fprintf('Subplot 2/15 : [REFERENCE] (Ave read count) vs. (Fragment length).\n');
 	sh(2) = subplot(3,4,[3 4]);
 	fprintf('\tLOWESS fitting to reference data.\n');
-	[newX1_parent, newY1_parent] = optimize_mylowess(X_length_trimmed,Y_reads_parent_trimmed,10, fit_length);
+	[newX1_parent, newY1_parent] = optimize_mylowess(X_length_trimmed,Y_reads_parent_trimmed,60, fit_length);
 	fprintf('\tLOWESS fitting to referemce data complete.\n');
 	% Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
 	Y_target                   = 1;

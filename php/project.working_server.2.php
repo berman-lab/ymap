@@ -100,7 +100,7 @@ body {font-family: arial;}
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
 		if (strcmp($dataType,"0") == 0) {
-			$timeLimit  = 60*15;   // 15 minutes
+			$timeLimit  = 60*30;   // 30 minutes for array analysis.
 		} else {
 			$timeLimit  = 60*60*6; // 6 hours
 		}

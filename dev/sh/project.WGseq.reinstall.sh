@@ -12,14 +12,8 @@ project=$2;
 main_dir=$(pwd)"/../";
 
 user="darren1";
-#project="D11-5493__Bb224";  #
-#project="D11-5494__Bd128";  #
-project="D11-5496__Bf224";  
-
-#project="D11-5495__Be256";  #
-
-#user="morlurie";
-#project="BG2";
+project="Cg_FY1204_test";
+#project="FH6_test";
 
 
 ##==============================================================================

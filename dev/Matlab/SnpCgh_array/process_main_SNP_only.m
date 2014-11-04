@@ -1608,4 +1608,6 @@ completionTime = datestr(clock, 0)
 fprintf(new_fid,completionTime);
 fclose(new_fid);
 
+delete([workingDir 'working.txt'],'w');
+
 end

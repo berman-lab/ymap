@@ -12,13 +12,10 @@ project=$2;
 hapmap=$3;
 main_dir=$(pwd)"/../";
 
-user='darren1'
-hapmap='C_albicans_SC5314_A21-s02-m09-r07'
-#project='Fig_06A.YJB12712-d1'   # no hapmap.
-#project='Fig_06B.YJB12712-d1'
-project='Fig_06C.YJB12712-d2'
-#project='Fig_06C.YJB12712-d9'
-#project='Fig_08B.YJB12229-ddRADseq'
+user='default';
+hapmap='C_albicans_SC5314_A21-s02-m09-r07';
+
+project='Fig_06C.YJB12712-d2';
 
 
 

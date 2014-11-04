@@ -395,9 +395,15 @@ function blank_and_content_tab() {
 			}
 			if ((isFile(CNV_bias_ddRADseq_1)) || (isFile(CNV_bias_ddRADseq_2)) || (isFile(CNV_bias_ddRADseq_3))) {
 				string1 = string1 + " : CNV biases ";
-				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>fragment length</button>";
-				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>%GC</button>";
-				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";
+				if (isFile(CNV_bias_ddRADseq_1)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>fragment length</button>";
+				}
+				if (isFile(CNV_bias_ddRADseq_2)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>%GC</button>";
+				}
+				if (isFile(CNV_bias_ddRADseq_3)) {
+					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";
+				}
 			}
 			if (isFile(fig_linear_SNP+"png")) {
 				string1 = string1 + "<br><b>SNP/LOH only</b> (lin. ";

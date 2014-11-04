@@ -111,12 +111,12 @@ else
 	echo "# Trimming of unbalanced FASTQ entries.           #" >> $logName;
 	echo "#=================================================#" >> $logName;
 	echo "Resolving FASTQ file errors." >> $condensedLog;
+
 	currdir=$(pwd);
 	cd $projectDirectory;
 	sh $main_dir"sh/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
 	cd $currdir;
 	echo "\tFASTQ files trimmed using : 'FASTQ_trimming.sh'" >> $logName;
-
 
 	##==============================================================================
 	## Initial processing of single-WGseq dataset.
