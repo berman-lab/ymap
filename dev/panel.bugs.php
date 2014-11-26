@@ -13,7 +13,8 @@
 	<?php
 	if (isset($_SESSION['user']) != 0) {
 		echo "Report a bug! Request a feature!<br>";
-		echo "Or just as the admin a question about how to use a certain feature.<br>";
+		echo "Or just as the admin a question about how to use a certain feature.<br><br>";
+		echo "<b><font color='red'>Site administrator has been occupied with thesis writing and related issues.<br>Response times may vary, but are expected to improve.</font></b><br>";
 		echo '<input name="button_BigTracker" type="button" value="Click Here..." onclick="parent.show_hidden(\'Hidden_BugTracker\')">';
 	} else {
 		echo "Log in using the 'User' tab to gain access to the admin.";
