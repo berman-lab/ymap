@@ -18,7 +18,7 @@
 	// User and Password both validated as correct
 	if($user && $pw){
 		createNewUser($user, $pw);
-	//	createSecondaryInformationFile($user, $primaryInvestigatorName, $primaryInvestigatorEmail, $researchInstitution, $secondaryName, $secondaryEmail);
+		createSecondaryInformationFile($user, $primaryInvestigatorName, $primaryInvestigatorEmail, $researchInstitution, $secondaryName, $secondaryEmail);
 	}
 
 //=========================================================
