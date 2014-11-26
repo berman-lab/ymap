@@ -126,6 +126,13 @@ else
 	echo "\texit;" >> $outputName;
 	echo "end" >> $outputName;
 
+	echo "\t|\tfunction [] = processing1()" >> $logName;
+	echo "\t|\t\tdiary('"$reflocation"matlab.repetitiveness_analysis.log');" >> $logName;
+	echo "\t|\t\tcd "$main_dir"Matlab/genome_install;" >> $logName;
+	echo "\t|\t\trepetitiveness_1('$user','$genome');" >> $logName;
+	echo "\t|\t\texit;" >> $logName;
+	echo "\t|\tend" >> $logName;
+
 	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 	matlab -nosplash -r "run "$outputName";";
 	sed 's/^/\t\t\t|/;' $reflocation"matlab.repetitiveness_analysis.log" >> $logName;
@@ -170,12 +177,20 @@ else
 	outputName=$reflocation"processing2.m";
 	echo "\t\tWriting MATLAB function file to perform processing step." >> $logName;
 	echo "\t\toutputName = "$outputName >> $logName;
+
 	echo "function [] = processing2()" > $outputName;
 	echo "\tdiary('"$reflocation"matlab.simulated_digest_of_reference.log');" >> $outputName;
 	echo "\tcd "$main_dir"Matlab/genome_install;" >> $outputName;
 	echo "\tgenome_process_for_RADseq_1('$user','$genome');" >> $outputName;
 	echo "\texit;" >> $outputName;
 	echo "end" >> $outputName;
+
+	echo "\t|\tfunction [] = processing2()" >> $logName;
+    echo "\t|\t\tdiary('"$reflocation"matlab.simulated_digest_of_reference.log');" >> $logName;
+    echo "\t|\t\tcd "$main_dir"Matlab/genome_install;" >> $logName;
+    echo "\t|\t\tgenome_process_for_RADseq_1('$user','$genome');" >> $logName;
+    echo "\t|\t\texit;" >> $logName;
+    echo "\t|\tend" >> $logName;
 
 	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 	matlab -nosplash -r "run "$outputName";";
@@ -213,12 +228,20 @@ else
 		outputName=$reflocation"processing3.m";
 		echo "\t\tWriting MATLAB function file to perform processing step." >> $logName;
 		echo "\t\toutputName = "$outputName >> $logName;
+
 		echo "function [] = processing3()" > $outputName;
 		echo "\tdiary('"$reflocation"matlab.expression_digest_of_reference.log');" >> $outputName;
 		echo "\tcd "$main_dir"Matlab/genome_install;" >> $outputName;
 		echo "\tgenome_process_for_expression_1('$user','$genome');" >> $outputName;
 		echo "\texit;" >> $outputName;
 		echo "end" >> $outputName;
+
+		echo "\t|\tfunction [] = processing3()" >> $logName;
+		echo "\t|\t\tdiary('"$reflocation"matlab.expression_digest_of_reference.log');" >> $logName;
+		echo "\t|\t\tcd "$main_dir"Matlab/genome_install;" >> $logName;
+		echo "\t|\t\tgenome_process_for_expression_1('$user','$genome');" >> $logName;
+		echo "\t|\t\texit;" >> $logName;
+		echo "\t|\tend" >> $logName;
 
 		echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 		matlab -nosplash -r "run "$outputName";";

@@ -99,6 +99,12 @@ echo "\tcd "$main_dir"Matlab/IonExpressSeq;" >> $outputName;
 echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
+echo "\t|\tfunction [] = processing1()" >> $logName;
+echo "\t|\t\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/IonExpressSeq;" >> $logName;
+echo "\t|\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo "\t|\tend" >> $logName;
+
 echo "\t\tCalling MATLAB." >> $logName;
 matlab -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from CNV analysis." >> $logName;
@@ -126,6 +132,12 @@ else
 	echo "\tcd "$main_dir"Matlab/ChARM;" >> $outputName;
 	echo "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
 	echo "end" >> $outputName;
+
+	echo "\t|\tfunction [] = processing2()" >> $logName;
+	echo "\t|\t\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $logName;
+	echo "\t|\t\tcd "$main_dir"Matlab/ChARM;" >> $logName;
+	echo "\t|\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
+	echo "\t|\tend" >> $logName;
 
 	echo "\t\tCalling MATLAB." >> $logName;
 	echo "================================================================================================";
@@ -194,6 +206,12 @@ echo "\tcd "$main_dir"Matlab/IonExpressSeq;" >> $outputName;
 echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
+echo "\t|\tfunction [] = processing3()" >> $logName;
+echo "\t|\t\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/IonExpressSeq;" >> $logName;
+echo "\t|\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo "\t|\tend" >> $logName;
+
 echo "\t\tCalling MATLAB." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
@@ -220,6 +238,12 @@ echo "\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $outputName;
 echo "\tcd "$main_dir"Matlab/IonExpressSeq;" >> $outputName;
 echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
+
+echo "\t|\tfunction [] = processing4()" >> $logName;
+echo "\t|\t\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/IonExpressSeq;" >> $logName;
+echo "\t|\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo "\t|\tend" >> $logName;
 
 echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 echo "================================================================================================";

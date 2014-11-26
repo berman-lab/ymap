@@ -29,41 +29,13 @@
 </HEAD>
 <?php
     require_once 'constants.php';
-	$fileName        = filter_input(INPUT_POST, "fileName",        FILTER_SANITIZE_STRING);
 	$user            = filter_input(INPUT_POST, "user",            FILTER_SANITIZE_STRING);
 	$project         = filter_input(INPUT_POST, "project",         FILTER_SANITIZE_STRING);
-	$key             = filter_input(INPUT_POST, "key",             FILTER_SANITIZE_STRING);
 
 // Initialize 'process_log.txt' file.
 	$outputLogName = "../users/".$user."/projects/".$project."/process_log.txt";
 	$outputLog     = fopen($outputLogName, 'w');
     fwrite($outputLog, "Process_log.txt initialized.\n");
-
-// Generate 'working.txt' file to let pipeline know processing is started.
-	$outputName      = "../users/".$user."/projects/".$project."/working.txt";
-	$output          = fopen($outputName, 'w');
-	$startTimeString = date("Y-m-d H:i:s");
-	fwrite($output, $startTimeString);
-	fclose($output);
-	chmod($outputName,0644);
-	fwrite($outputLog, "'working.txt' file generated.\n");
-
-// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
-	$outputName      = "../users/".$user."/projects/".$project."/upload_size_1.txt";
-	$output          = fopen($outputName, 'w');
-	$fileSizeString  = filesize("../users/".$user."/projects/".$project."/".$fileName);
-	fwrite($output, $fileSizeString);
-	fclose($output);
-	chmod($outputName,0644);
-	fwrite($outputLog, "\tGenerated 'upload_size_1.txt' file.\n");
-
-// Generate 'datafile1.txt' file containing: name of first data file.
-	$outputName = "../users/".$user."/projects/".$project."/datafile1.txt";
-	$output     = fopen($outputName, 'w');
-	fwrite($output, $fileName);
-	fclose($output);
-	chmod($outputName,0644);
-	fwrite($outputLog, "'datafile1.txt' file generated.\n");
 
 // Call Matlab to process SnpCgh data file into final figure.
 	$designDefinition   = "design1";
@@ -91,8 +63,7 @@
 	$outputString       =  "function [] = processing()\n";
 	$outputString      .= "\tdiary('matlab.process_log.txt');\n";
 	$outputString      .= "\tcd ../../../../Matlab/SnpCgh_array;\n";
-	$outputString      .= "\tprocess_main('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','".$colLog2ratio."','";
-	$outputString      .=    $phasingData."','".$ploidyEstimate."','".$ploidyBase."','".$imageFormat."','".$projectName."','".$workingDir."','".$show_MRS."');\n";
+	$outputString      .= "\tprocess_main_reinstall('".$phasingData."','".$ploidyEstimate."','".$ploidyBase."','".$imageFormat."','".$projectName."','".$workingDir."','".$show_MRS."');\n";
 	$outputString      .= "\tprocess_main_CNV_only('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','";
 	$outputString      .=    $colLog2ratio."','".$phasingData."','".$ploidyEstimate."','".$ploidyBase."','".$imageFormat."','".$projectName."','".$workingDir."','".$show_MRS."');\n";
 	$outputString      .= "\tprocess_main_SNP_only('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','";
@@ -111,37 +82,6 @@
 	fclose($outputLog);
 	system($system_call_string_2);
 ?>
-<BODY>
-<font size="2" color="red">Upload complete; processing...</font><br>
-<script type="text/javascript">
-	var user    = "<?php echo $user;    ?>";
-	var project = "<?php echo $project; ?>";
-	var key     = "<?php echo $key;     ?>";
-	var status  = "0";
-	// construct and submit form to move on to "project.working_server.2.php";
-	var autoSubmitForm = document.createElement("form");
-		autoSubmitForm.setAttribute("method","post");
-		autoSubmitForm.setAttribute("action","project.working_server.2.php");
-	var input2 = document.createElement("input");
-		input2.setAttribute("type","hidden");
-		input2.setAttribute("name","key");
-		input2.setAttribute("value",key);
-		autoSubmitForm.appendChild(input2);
-	var input2 = document.createElement("input");
-		input2.setAttribute("type","hidden");
-		input2.setAttribute("name","user");
-		input2.setAttribute("value",user);
-		autoSubmitForm.appendChild(input2);
-	var input3 = document.createElement("input");
-		input3.setAttribute("type","hidden");
-		input3.setAttribute("name","project");
-		input3.setAttribute("value",project);
-		autoSubmitForm.appendChild(input3);
-	var input4 = document.createElement("input");
-		input4.setAttribute("type","hidden");
-		input4.setAttribute("name","status");
-		input4.setAttribute("value",status);
-	autoSubmitForm.submit();
 </script>
 </BODY>
 </HTML>

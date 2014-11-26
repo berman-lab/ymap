@@ -241,31 +241,28 @@ else
 			echo "\t\tGATK option to deal with quality coding = ' -fixMisencodedQuals'." >> $logName;
 		fi
 
-		echo "\tGATK options = '"$GATKoptions"'" >> $logName;
-
-		echo "\tGATK : preparing for IndelRealignment." >> $logName;
-		echo "Preparing for indel realignment." >> $condensedLog;
 		GATKlog1=$projectDirectory"gatk.RealignerTargetCreator.log";
-		currentDir=$(pwd);
-		cd $gatkDirectory;
-		echo "\nRunning gatk:RealignerTargetCreator.\n";
-		$java7Directory"java" -jar GenomeAnalysisTK.jar -T RealignerTargetCreator -I $GATKinputFile -R $GATKreference -o $GATKoutputFile1 $GATKoptions > $GATKlog1;
-		currentDir=$(pwd);
-		sed 's/^/\t\t|/;' $GATKlog1 >> $logName;
-		rm $GATKlog1;
-		echo "\tGATK : prepared for IndelRealignment." >> $logName;
-
-		echo "\tGATK : performing IndelRealignment." >> $logName;
-		echo "Realigning indels." >> $condensedLog;
 		GATKlog2=$projectDirectory"gatk.IndelRealigner.log";
 		currentDir=$(pwd);
 		cd $gatkDirectory;
+
+		echo "\tGATK options = '"$GATKoptions"'" >> $logName;
+		echo "\tGATK : preparing for IndelRealignment." >> $logName;
+		echo "Preparing for indel realignment." >> $condensedLog;
+		echo "\nRunning gatk:RealignerTargetCreator.\n";
+		$java7Directory"java" -jar GenomeAnalysisTK.jar -T RealignerTargetCreator -I $GATKinputFile -R $GATKreference -o $GATKoutputFile1 $GATKoptions > $GATKlog1;
+		sed 's/^/\t\t|/;' $GATKlog1 >> $logName;
+		echo "\tGATK : prepared for IndelRealignment." >> $logName;
+		echo "\tGATK : performing IndelRealignment." >> $logName;
+		echo "Realigning indels." >> $condensedLog;
 		echo "\nRunning gatk:IndelRealigner.\n";
 		$java7Directory"java" -jar GenomeAnalysisTK.jar -T IndelRealigner -I $GATKinputFile -R $GATKreference -targetIntervals $GATKoutputFile1 -o $GATKoutputFile2 $GATKoptions > $GATKlog2;
-		currentDir=$(pwd);
 		sed 's/^/\t\t|/;' $GATKlog2 >> $logName;
-		rm $GATKlog2;
 		echo "\tGATK : performed IndelRealignment." >> $logName;
+		rm $GATKlog1;
+		rm $GATKlog2;
+
+		cd $currentDir;
 
 		echo "#============================================================================== 3" >> $logName;
 
@@ -305,11 +302,17 @@ echo   "========================================================================
 
 if [ $hapmapInUse = 0 ]
 then
-	echo "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
+	echo "Passing processing on to 'project.WGseq.install_4.sh' for final analysis." >> $logName;
+	echo "\t"$main_dir"sh/project.WGseq.install_4.sh "$user" "$project" "$main_dir >> $logName;
+	echo "Script executed from: ${PWD}" >> $logName;
+
 	echo   "=========================================================================\n" >> $logName;
 	sh $main_dir"sh/project.WGseq.install_4.sh" $user $project $main_dir;
 else
-	echo "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
-	echo   "=========================================================================\n" >> $logName;
+	echo "Passing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
+	echo "\t"$main_dir"sh/project.WGseq.hapmap.install_4.sh "$user" "$project" "$main_dir >> $logName;
+	echo "Script executed from: ${PWD}" >> $logName;
+
+	echo "=========================================================================\n" >> $logName;
 	sh $main_dir"sh/project.WGseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
 fi

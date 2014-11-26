@@ -11,12 +11,9 @@ user=$1;
 project=$2;
 main_dir=$(pwd)"/../";
 
-user='darren1'
-project='Fig_06A.YJB12712-d1'   # no-hapmap
-#project='Fig_06B.YJB12712-d1'
-#project='Fig_06C.YJB12712-d2'
-#project='Fig_06C.YJB12712-d9'
-#project='Fig_08B.YJB12229-ddRADseq'
+user='default'
+project='Fig_04.SC5314';
+#project='Fig_06A.YJB12712-d1';
 
 
 
@@ -70,7 +67,7 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.
 FASTAname=$(echo $FASTA | sed 's/.fasta//g');                                  # name of genome file, without file type.
-RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   # Name of FASTA file.
+RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   # Name of restriction enxyme list file.
 ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        # Name of digested reference for ddRADseq analysis, using chosen restriction enzymes.
 
 
@@ -143,6 +140,12 @@ else
 	echo "\tanalyze_CNVs_RADseq_3('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo "end" >> $outputName;
 
+	echo "\t|\tfunction [] = processing1()" >> $logName;
+	echo "\t|\t\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $logName;
+	echo "\t|\t\tcd "$main_dir"Matlab/ddRADseq;" >> $logName;
+	echo "\t|\t\tanalyze_CNVs_RADseq_3('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+	echo "\t|\tend" >> $logName;
+
 	echo "\t\tCalling MATLAB." >> $logName;
 	matlab -nosplash -r "run "$outputName"; exit;";
 	echo "\t\tMATLAB log from CNV analysis." >> $logName;
@@ -171,6 +174,12 @@ else
 	echo "\tcd "$main_dir"Matlab/ChARM;" >> $outputName;
 	echo "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
 	echo "end" >> $outputName;
+
+	echo "\t|\tfunction [] = processing2()" >> $logName;
+	echo "\t|\t\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $logName;
+	echo "\t|\t\tcd "$main_dir"Matlab/ChARM;" >> $logName;
+	echo "\t|\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
+	echo "\t|\tend" >> $logName;
 
 	echo "\t\tCalling MATLAB." >> $logName;
 	echo "================================================================================================";
@@ -209,6 +218,12 @@ echo "\tcd "$main_dir"Matlab/ddRADseq;" >> $outputName;
 echo "\tanalyze_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
+echo "\t|\tfunction [] = processing3()" >> $logName;
+echo "\t|\t\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/ddRADseq;" >> $logName;
+echo "\t|\t\tanalyze_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo "\t|\tend" >> $logName;
+
 echo "\t\tCalling MATLAB." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
@@ -236,6 +251,12 @@ echo "\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $outputName;
 echo "\tcd "$main_dir"Matlab/ddRADseq;" >> $outputName;
 echo "\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
+
+echo "\t|\tfunction [] = processing4()" >> $logName;
+echo "\t|\t\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/ddRADseq;" >> $logName;
+echo "\t|\t\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo "\t|\tend" >> $logName;
 
 echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 matlab -nosplash -r "run "$outputName"; exit;";

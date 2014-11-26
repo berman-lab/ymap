@@ -114,7 +114,7 @@ fi
 reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.
 FASTAname=$(echo $FASTA | sed 's/.fasta//g');                                  # name of genome file, without file type.
-RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   # Name of FASTA file.
+RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   # Name of restriction enxyme list file.
 ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        # Name of digested reference for ddRADseq analysis, using chosen restriction enzymes.
 
 
@@ -270,24 +270,26 @@ else
 		fi
 
 		echo "\tGATK options = '"$GATKoptions"'" >> $logName;
+		GATKlog1=$projectDirectory"gatk.RealignerTargetCreator.log";
+		GATKlog2=$projectDirectory"gatk.IndelRealigner.log";
+		currentDir=$(pwd);
 
 		echo "\tGATK : preparing for IndelRealignment." >> $logName;
 		echo "Preparing for indel realignment." >> $condensedLog;
-		GATKlog1=$projectDirectory"gatk.RealignerTargetCreator.log";
 		echo "\nRunning gatk:RealignerTargetCreator.\n";
-		$java7Directory"java" -jar $gatkDirectory"GenomeAnalysisTK.jar" -T RealignerTargetCreator -I $GATKinputFile -R $GATKreference -o $GATKoutputFile1 $GATKoptions > $GATKlog1;
+		$java7Directory"java" -jar GenomeAnalysisTK.jar -T RealignerTargetCreator -I $GATKinputFile -R $GATKreference -o $GATKoutputFile1 $GATKoptions > $GATKlog1;
 		sed 's/^/\t\t|/;' $GATKlog1 >> $logName;
-		rm $GATKlog1;
 		echo "\tGATK : prepared for IndelRealignment." >> $logName;
-
 		echo "\tGATK : performing IndelRealignment." >> $logName;
 		echo "Realigning indels." >> $condensedLog;
-		GATKlog2=$projectDirectory"gatk.IndelRealigner.log";
 		echo "\nRunning gatk:IndelRealigner.\n";
-		$java7Directory"java" -jar $gatkDirectory"GenomeAnalysisTK.jar" -T IndelRealigner -I $GATKinputFile -R $GATKreference -targetIntervals $GATKoutputFile1 -o $GATKoutputFile2 $GATKoptions > $GATKlog2;
+		$java7Directory"java" -jar GenomeAnalysisTK.jar -T IndelRealigner -I $GATKinputFile -R $GATKreference -targetIntervals $GATKoutputFile1 -o $GATKoutputFile2 $GATKoptions > $GATKlog2;
 		sed 's/^/\t\t|/;' $GATKlog2 >> $logName;
-		rm $GATKlog2;
 		echo "\tGATK : performed IndelRealignment." >> $logName;
+		rm $GATKlog1;
+		rm $GATKlog2;
+
+		cd $currentDir;
 
 		echo "#============================================================================== 3" >> $logName;
 
