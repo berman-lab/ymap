@@ -382,7 +382,18 @@ if (performGCbiasCorrection)
 			rawData_chr_X2{chr}        = chr_GCratioData{chr};
 			rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
 			fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
-			normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr}*Y_target;
+
+%			% Filter by dividing out the fit curve.
+%			normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+
+%			% Filter by subtracting out the fit curve : no strong rationale for this.
+%			normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+
+%			% Filter by average of above two methods.
+			try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+			try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+			normalizedData_chr_Y2{chr} = (try1+try2)/2;
+
 		end;
 	end;
 else

@@ -285,7 +285,6 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('Gathering [fragment length], [CNV], & [GC bias] data for plotting bias and correction.\n');
 for fragID = 1:numFragments
-% maybe here is an error.
 %	if ((fragment_data(fragID).length == 0) || (fragment_data(fragID).ave_reads == 0) || (fragment_data(fragID).ave_reads_parent == 0))
 	if (fragment_data(fragID).length == 0)
 		fragment_data(fragID).usable        = 0;
@@ -389,7 +388,7 @@ end;
 fprintf(['Length_flag = ' num2str(performLengthbiasCorrection) '; GC_flag = ' num2str(performGCbiasCorrection) '; Repet_flag = ' num2str(performRepetbiasCorrection) '; End_flag = ' num2str(performEndbiasCorrection) '.\n']);
 
 
-%-------------------------------------------------------------------------------------------------
+%% ===============================================================================================
 % LOWESS fitting project 1 : correcting fragment_length bias.
 %-------------------------------------------------------------------------------------------------
 figure(fig1);

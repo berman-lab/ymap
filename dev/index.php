@@ -141,6 +141,13 @@
 	$cfig_CNV_SNP = "users/".$user."/combined_figure.1.png";
 	$cfig_CNV     = "users/".$user."/combined_figure.2.png";
 	$cfig_SNP     = "users/".$user."/combined_figure.3.png";
+
+	$super_user_flag_file = "users/".$user."/super.txt";
+	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+		$admin = "true";
+	} else {
+		$admin = "false";
+	}
 ?>
 	<div id='combined_fig_options' style='display:none;'>
 		CNV-SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV_SNP; ?>")'>
@@ -156,19 +163,44 @@
 </td><td width="75%" align="right" valign="top">
 <table width="100%" height="<?php echo $ui_tabArea_height; ?>px" cellspacing="0">
 <tr>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_user"             onclick="tabWindow('user');"            >User</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_manageDataset"    onclick="tabWindow('manageDataset');"   >Manage Datasets</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_visualizeDataset" onclick="tabWindow('visualizeDataset');">Visualize Datasets</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_genome"           onclick="tabWindow('genome');"          >Reference Genome</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_hapmap"           onclick="tabWindow('hapmap');"          >Hapmap</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_bugs"             onclick="tabWindow('bugs');"            >Bug Reporting</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_help"             onclick="tabWindow('help');"            >Help</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_examples"         onclick="tabWindow('examples');"        >Example Datasets</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_user"
+	onclick="tabWindow('user');"            >User</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_manageDataset"
+	onclick="tabWindow('manageDataset');"   >Manage Datasets</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_visualizeDataset"
+	onclick="tabWindow('visualizeDataset');">Visualize Datasets</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_genome"
+	onclick="tabWindow('genome');"          >Reference Genome</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_hapmap"
+	onclick="tabWindow('hapmap');"          >Hapmap</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_bugs"
+	onclick="tabWindow('bugs');"            >Bug Reporting</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_help"
+	onclick="tabWindow('help');"            >Help</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_examples"
+	onclick="tabWindow('examples');"        >Example Datasets</td>
+<?php
+if (strcmp($admin,"true") == 0) {
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin" ';
+	echo 'onclick="tabWindow(\'admin\');"           >Admin</td>';
+} else {
+//	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:1px;" align="center" id="tab_admin">&nbsp;</td>';
+	echo '<div id="tab_admin" style="visibility:hidden;"></div>';
+}
+?>
+
 <td class="select" valign="middle" id="tab_blank">&nbsp;</td>
 </tr>
 <tr>
-	<!--- Colspan in the next line should be the number of tabs+1. --!>
-	<td colspan="9" valign="top" id="tab_content">
+	<?php
+		// $number_cols in the next line should be the number of tabs+1.
+		$number_cols = 9;
+		// If admin user, then one further column will be displayed.
+		if (strcmp($admin,"true") == 0) {
+			$number_cols += 1;
+		}
+	?>
+	<td colspan="<?php echo $number_cols; ?>" valign="top" id="tab_content" name="tab_content" style="margin:0; padding:0;">
 	<div id="panel_user"             name="panel_user"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_manageDataset"    name="panel_manageDataset"    style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_visualizeDataset" name="panel_visualizeDataset" style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
@@ -177,6 +209,7 @@
 	<div id="panel_bugs"             name="panel_bugs"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_help"             name="panel_help"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_examples"         name="panel_examples"         style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_admin"            name="panel_admin"            style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	</td>
 </tr></table>
 <!--                                               --!>
@@ -193,6 +226,7 @@ p_hapmap                     = document.getElementById('panel_hapmap');
 p_bugs                       = document.getElementById('panel_bugs');
 p_help                       = document.getElementById('panel_help');
 p_examples                   = document.getElementById('panel_examples');
+p_admin                      = document.getElementById('panel_admin');
 p_user.innerHTML             = '<iframe id="panel_user_iframe"             src="panel.user.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_manageDataset.innerHTML    = '<iframe id="panel_manageDataset_iframe"    src="panel.manageDataset.php"    style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_visualizeDataset.innerHTML = '<iframe id="panel_visualizeDataset_iframe" src="panel.visualizeDataset.php" style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
@@ -201,12 +235,17 @@ p_hapmap.innerHTML           = '<iframe id="panel_hapmap_iframe"           src="
 p_bugs.innerHTML             = '<iframe id="panel_bugs_iframe"             src="panel.bugs.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_help.innerHTML             = '<iframe id="panel_help_iframe"             src="panel.help.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_examples.innerHTML         = '<iframe id="panel_examples_iframe"         src="panel.examples.php"         style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_admin.innerHTML            = '<iframe id="panel_admin_iframe"            src="panel.admin.php"            style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>;">';
 
 function deselect_tab(name) {
 	//console.log( '\tdeselect_tab("'+name+'")' );
 	var current_tab = document.getElementById("tab_"+name);
-	    current_tab.style.border="1px solid #000000";
-	    current_tab.style.backgroundColor="#DDDDDD";
+	current_tab.style.border="1px solid #000000";
+	if (name != "admin") {
+		current_tab.style.backgroundColor="#DDDDDD";
+	} else {
+		current_tab.style.backgroundColor="#DDBBBB";
+	}
 	if (name != "user") {
 		current_tab.style.borderLeft="none";
 	}
@@ -222,13 +261,18 @@ function deselect_all_tabs() {
 	deselect_tab("bugs");
 	deselect_tab("help");
 	deselect_tab("examples");
+	deselect_tab("admin");
 }
 function select_tab(name) {
 	//console.log ( 'select_tab("'+name+'")' );
 	var current_tab = document.getElementById("tab_"+name);
-	    current_tab.style.border="1px solid #000000";
-	    current_tab.style.borderBottom="none";
-	    current_tab.style.backgroundColor="#FFFFFF";
+	current_tab.style.border="1px solid #000000";
+	current_tab.style.borderBottom="none";
+	if (name != "admin") {
+		current_tab.style.backgroundColor="#FFFFFF";
+	} else {
+		current_tab.style.backgroundColor="#FFDDDD";
+	}
 	if (name != "user") {
 		current_tab.style.borderLeft="none";
 	}
