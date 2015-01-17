@@ -48,6 +48,7 @@
 				7th column: probe channel log<sub>2</sub>ratio data.</font>
 			</div>
 		</li>
+		<li>Unused columns in each data lines should contain some text.</li>
 	</ul>
 </p>
 <p>

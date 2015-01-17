@@ -35,131 +35,167 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
     p6_ai = datamax;   p6_bi = locations(3);   p6_ci = init_width;
     p7_ai = datamax;   p7_bi = locations(3);   p7_ci = init_width;
    
-    %initial = [p1_ai,p1_bi,p1_ci, p2_ai,p2_bi,p2_ci, p3_ai,p3_bi,p3_ci, p4_ai,p4_bi,p4_ci, p5_ai,p5_bi,p5_ci, p6_ai,p6_bi,p6_ci, p7_ai,p7_bi,p7_ci];
-    initial = [p1_ai,p1_ci,p2_ai,p3_ai,p4_ai,p5_ai,p6_ai,p7_ai, skew_factor];
+%%	initial = [p1_ai,p1_ci,  p2_ai,p2_ci,  p3_ai,p3_ci,  p4_ai,p4_ci,  p5_ai,p5_ci,  p6_ai,p6_ci,  p7_ai,p7_ci,  skew_factor];
+	initial = [p1_ai,p1_ci,  p2_ai,  p3_ai,  p4_ai,  p5_ai,  p6_ai,  p7_ai,  skew_factor];
     options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
     time    = 1:length(data);
 
-    [Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
-                                        initial, ...     % initial values.
-                                        options, ...     % options for fitting algorithm.
-                                        time, ...        % problem-specific parameter 1.
-                                        data, ...        % problem-specific parameter 2.
-                                        func_type, ...   % problem-specific parameter 3.
-                                        locations, ...   % problem-specific parameter 4.
-                                        show, ...        % problem-specific parameter 5.
-                                        fraction ...     % problem-specific parameter 6.
-                                );
-    if (exitflag > 0)
-        % > 0 : converged to a solution.
-        p1_a = abs(Estimates(1));
-        p1_b = locations(1);
-        p1_c = abs(Estimates(2));
-        p2_a = abs(Estimates(3));
-        p2_b = locations(2);
-        p2_c = p1_c;
-        p3_a = abs(Estimates(4));
-        p3_b = locations(3);
-        p3_c = p1_c;
-        p4_a = abs(Estimates(5));
-        p4_b = locations(4);
-        p4_c = p1_c*(1-fraction);
-        p5_a = abs(Estimates(6));
-        p5_b = locations(5);
-        p5_c = p1_c;
-        p6_a = abs(Estimates(7));
-        p6_b = locations(6);
-        p6_c = p1_c;
-        p7_a = abs(Estimates(8));
-        p7_b = locations(7);
-        p7_c = p1_c;
-        skew_factor = abs(Estimates(9));
-        
-        c1_  = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
-        p1_c = p1_c*p1_c/c1_;
-        c2_  = p2_c/2 + p2_c*skew_factor/(100-abs(100-p2_b))/2;
-        p2_c = p2_c*p2_c/c2_;        
-        c4_  = p4_c/2 + p4_c*skew_factor/(100-abs(100-p4_b))/2;
-        p4_c = p4_c*p4_c/c4_;
-        c5_  = p5_c/2 + p5_c*skew_factor/(100-abs(100-p5_b))/2;
-        p5_c = p5_c*p5_c/c5_;
-        c6_  = p6_c/2 + p6_c*skew_factor/(100-abs(100-p6_b))/2;
-        p6_c = p6_c*p6_c/c6_;
-        c7_  = p7_c/2 + p7_c*skew_factor/(100-abs(100-p7_b))/2;
-        p7_c = p7_c*p7_c/c7_;
-    else
-        % = 0 : exceeded maximum iterations allowed.
-        % < 0 : did not converge to a solution.
-        % return last best estimate anyhow.
-        p1_a = abs(Estimates(1));
-        p1_b = locations(1);
-        p1_c = abs(Estimates(2));
-        p2_a = abs(Estimates(3));
-        p2_b = locations(2);
-        p2_c = p1_c;
-        p3_a = abs(Estimates(4));
-        p3_b = locations(3);
-        p3_c = p1_c;
-        p4_a = abs(Estimates(5));
-        p4_b = locations(4);
-        p4_c = p1_c*(1-fraction);
-        p5_a = abs(Estimates(6));
-        p5_b = locations(5);
-        p5_c = p1_c;
-        p6_a = abs(Estimates(7));
-        p6_b = locations(6);
-        p6_c = p1_c;
-        p7_a = abs(Estimates(8));
-        p7_b = locations(7);
-        p7_c = p1_c;
-        skew_factor = abs(Estimates(9));
-        
-        c1_  = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
-        p1_c = p1_c*p1_c/c1_;
-        c2_  = p2_c/2 + p2_c*skew_factor/(100-abs(100-p2_b))/2;
-        p2_c = p2_c*p2_c/c2_;        
-        c4_  = p4_c/2 + p4_c*skew_factor/(100-abs(100-p4_b))/2;
-        p4_c = p4_c*p4_c/c4_;
-        c5_  = p5_c/2 + p5_c*skew_factor/(100-abs(100-p5_b))/2;
-        p5_c = p5_c*p5_c/c5_;
-        c6_  = p6_c/2 + p6_c*skew_factor/(100-abs(100-p6_b))/2;
-        p6_c = p6_c*p6_c/c6_;
-        c7_  = p7_c/2 + p7_c*skew_factor/(100-abs(100-p7_b))/2;
-        p7_c = p7_c*p7_c/c7_;
-    end;
+	if (data == zeros(1,length(data)))  % curve fittings don't work with no data, curves instead are flat.
+		p1_a = 1;
+		p1_b = locations(1);
+		p1_c = 5;
+		p2_a = 1;
+		p2_b = locations(2);
+		p2_c = p2_a/p1_a*p1_c;             % peak width scales with peak height.
+		p3_a = 1;
+		p3_b = locations(3);
+		p3_c = p3_a/p1_a*p1_c;             % peak width scales with peak height.
+		p4_a = 1;
+		p4_b = locations(4);
+		p4_c = p4_a/p1_a*p1_c;             % peak width scales with peak height.
+		p5_a = 1;
+		p5_b = locations(5);
+		p5_c = p5_a/p1_a*p1_c;             % peak width scales with peak height.
+		p6_a = 1;
+		p6_b = locations(6);
+		p6_c = p6_a/p1_a*p1_c;             % peak width scales with peak height.
+		p7_a = 1;
+		p7_b = locations(7);
+		p7_c = p7_a/p1_a*p1_c;             % peak width scales with peak height.
+		skew_factor = 1;
+	else
+		[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
+		                                    initial, ...     % initial values.
+		                                    options, ...     % options for fitting algorithm.
+		                                    time, ...        % problem-specific parameter 1.
+		                                    data, ...        % problem-specific parameter 2.
+		                                    func_type, ...   % problem-specific parameter 3.
+		                                    locations, ...   % problem-specific parameter 4.
+		                                    show, ...        % problem-specific parameter 5.
+		                                    fraction ...     % problem-specific parameter 6.
+		                            );
+		if (exitflag > 0)
+			% > 0 : converged to a solution.
+		else
+			% = 0 : exceeded maximum iterations allowed.
+			% < 0 : did not converge to a solution.
+			% return last best estimate anyhow.
+		end;
+%%		p1_a = abs(Estimates(1));
+%%		p1_b = locations(1);
+%%		p1_c = abs(Estimates(2));
+%%		p2_a = abs(Estimates(3));
+%%		p2_b = locations(2);
+%%		p2_c = abs(Estimates(4));
+%%		p3_a = abs(Estimates(5));
+%%		p3_b = locations(3);
+%%		p3_c = abs(Estimates(6));
+%%		p4_a = abs(Estimates(7));
+%%		p4_b = locations(4);
+%%		p4_c = abs(Estimates(8));
+%%		p5_a = abs(Estimates(9));
+%%		p5_b = locations(5);
+%%		p5_c = abs(Estimates(10));
+%%		p6_a = abs(Estimates(11));
+%%		p6_b = locations(6);
+%%		p6_c = abs(Estimates(12));
+%%		p7_a = abs(Estimates(13));
+%%		p7_b = locations(7);
+%%		p7_c = abs(Estimates(14));
+%%		skew_factor = abs(Estimates(15));
+		p1_a = abs(Estimates(1));
+		p1_b = locations(1);
+		p1_c = abs(Estimates(2));
+		if (p1_c < 2);   p1_c = 2;   end;
+		p2_a = abs(Estimates(3));
+		p2_b = locations(2);
+		p2_c = p2_a/p1_a*p1_c;             % peak width scales with peak height.
+		p3_a = abs(Estimates(4));
+		p3_b = locations(3);
+		p3_c = p3_a/p1_a*p1_c;             % peak width scales with peak height.
+		p4_a = abs(Estimates(5));
+		p4_b = locations(4);
+		p4_c = p4_a/p1_a*p1_c;             % peak width scales with peak height.
+		p5_a = abs(Estimates(6));
+		p5_b = locations(5);
+		p5_c = p5_a/p1_a*p1_c;             % peak width scales with peak height.
+		p6_a = abs(Estimates(7));
+		p6_b = locations(6);
+		p6_c = p6_a/p1_a*p1_c;             % peak width scales with peak height.
+		p7_a = abs(Estimates(8));
+		p7_b = locations(7);
+		p7_c = p7_a/p1_a*p1_c;             % peak width scales with peak height.
+		skew_factor = abs(Estimates(9));
+	end;
+
+	c1_  = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
+	p1_c = p1_c*p1_c/c1_;
+	c2_  = p2_c/2 + p2_c*skew_factor/(100-abs(100-p2_b))/2;
+	p2_c = p2_c*p2_c/c2_;        
+	c4_  = p4_c/2 + p4_c*skew_factor/(100-abs(100-p4_b))/2;
+	p4_c = p4_c*p4_c/c4_;
+	c5_  = p5_c/2 + p5_c*skew_factor/(100-abs(100-p5_b))/2;
+	p5_c = p5_c*p5_c/c5_;
+	c6_  = p6_c/2 + p6_c*skew_factor/(100-abs(100-p6_b))/2;
+	p6_c = p6_c*p6_c/c6_;
+	c7_  = p7_c/2 + p7_c*skew_factor/(100-abs(100-p7_b))/2;
+	p7_c = p7_c*p7_c/c7_;
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show,fraction)
-    p1_a = abs(params(1));   % height.
-    p1_b = locations(1);     % location.
-    p1_c = abs(params(2));   % width.
-    p2_a = abs(params(3));   % height.
-    p2_b = locations(2);     % location.
-    p2_c = p1_c;             % width.
-    p3_a = abs(params(4));   % height.
-    p3_b = locations(3);     % location.
-    p3_c = p1_c;             % width.
-    p4_a = abs(params(5));   % height.
-    p4_b = locations(4);     % location.
-    p4_c = p1_c*(1-fraction);% width.
-    p5_a = abs(params(6));   % height.
-    p5_b = locations(5);     % location.
-    p5_c = p1_c;             % width.
-    p6_a = abs(params(7));   % height.
-    p6_b = locations(6);     % location.
-    p6_c = p1_c;             % width.
-    p7_a = abs(params(8));   % height.
-    p7_b = locations(7);     % location.
-    p7_c = p1_c;             % width.
-    skew_factor = abs(params(9));
-    
-    if (p1_c < 2);   p1_c = 2;   end;
-    if (p2_c < 2);   p2_c = 2;   end;
-    if (p3_c < 2);   p3_c = 2;   end;
-    if (p4_c < 2*(1-fraction));   p4_c = 2*(1-fraction);   end;
-    if (p5_c < 2);   p5_c = 2;   end;
-    if (p6_c < 2);   p6_c = 2;   end;
-    if (p7_c < 2);   p7_c = 2;   end;
+%%	p1_a = abs(params(1));   % height.
+%%	p1_b = locations(1);     % location.
+%%	p1_c = abs(params(2));   % width.
+%%	p2_a = abs(params(3));
+%%	p2_b = locations(2)
+%%	p2_c = abs(params(4));
+%%	p3_a = abs(params(5));
+%%	p3_b = locations(3);
+%%	p3_c = abs(params(6));
+%%	p4_a = abs(params(7));
+%%	p4_b = locations(4);
+%%	p4_c = abs(params(8));
+%%	p5_a = abs(params(9));
+%%	p5_b = locations(5);
+%%	p5_c = abs(params(10));
+%%	p6_a = abs(params(11));
+%%	p6_b = locations(6);
+%%	p6_c = abs(params(12));
+%%	p7_a = abs(params(13));
+%%	p7_b = locations(7);
+%%	p7_c = abs(params(14));
+%%	skew_factor = abs(params(15));
+	p1_a = abs(params(1));
+	p1_b = locations(1);
+	p1_c = abs(params(2));
+	if (p1_c < 2);   p1_c = 2;   end;
+	p2_a = abs(params(3));
+	p2_b = locations(2);
+	p2_c = p2_a/p1_a*p1_c;             % peak width scales with peak height.
+	p3_a = abs(params(4));
+	p3_b = locations(3);
+	p3_c = p3_a/p1_a*p1_c;             % peak width scales with peak height.
+	p4_a = abs(params(5));
+	p4_b = locations(4);
+	p4_c = p4_a/p1_a*p1_c;             % peak width scales with peak height.
+	p5_a = abs(params(6));
+	p5_b = locations(5);
+	p5_c = p5_a/p1_a*p1_c;             % peak width scales with peak height.
+	p6_a = abs(params(7));
+	p6_b = locations(6);
+	p6_c = p6_a/p1_a*p1_c;             % peak width scales with peak height.
+	p7_a = abs(params(8));
+	p7_b = locations(7);
+	p7_c = p7_a/p1_a*p1_c;             % peak width scales with peak height.
+	skew_factor = abs(params(9));
+
+%%	if (p1_c < 2);   p1_c = 2;   end;
+%%	if (p2_c < 2);   p2_c = 2;   end;
+%%	if (p3_c < 2);   p3_c = 2;   end;
+%%	if (p4_c < 2);   p4_c = 2;   end;
+%%	if (p5_c < 2);   p5_c = 2;   end;
+%%	if (p6_c < 2);   p6_c = 2;   end;
+%%	if (p7_c < 2);   p7_c = 2;   end;
     
     time1_1 = 1:floor(p1_b);
     time1_2 = ceil(p1_b):200;

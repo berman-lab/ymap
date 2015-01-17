@@ -107,8 +107,8 @@ SNP_Genomic_display              = true;
     infillColorBars              = false;
     AnglePlot                    = true;
         FillColors               = true;
-    HistPlot                     = true;
-    ChrNum                       = true;
+    HistPlot                     = false;
+    ChrNum                       = false;
     Yscale_nearest_even_ploidy   = true;
     Show_Genomic_LOH_fraction    = true;
     show_unnassigned             = false;
@@ -433,11 +433,12 @@ save([workingDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV');
 
 
 %% ====================================================================
-% Use the ChARM algorithm to determine CNV edges.
+% Apply the ChARM algorithm to CNV data to determine CNV edges.
+% Apply the ChARM algorithm to SNP ratio data to determine SNP ratio edges.
 %----------------------------------------------------------------------
-ChARM_v4(experiment_name, workingDir);
-[segmental_aneuploidy] = Load_dataset_information_1(experiment_name,workingDir);
-segmental_aneuploidy = [];
+%ChARM_v4(experiment_name, workingDir);
+%ChARM_v5_SNP(experiment_name, workingDir);
+[segmental_aneuploidy] = Load_dataset_information_2(experiment_name,workingDir);
 
 
 %----------------------------------------------------------------------
@@ -464,8 +465,7 @@ fprintf(['\n chr6 breaks = ' num2str(chr_breaks{6})]);
 fprintf(['\n chr7 breaks = ' num2str(chr_breaks{7})]);
 fprintf(['\n chr8 breaks = ' num2str(chr_breaks{8})]);
 fprintf(['\n']);
-[realHomozygous_peak, disomy_fit,skew_factor] = ...
-    FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting);
+[realHomozygous_peak, disomy_fit,skew_factor] = FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir);
 
 % Finds real peak locations.
 [monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = ...
@@ -481,7 +481,7 @@ for chr = chromosomes_to_analyze;
             FindGaussianCutoffs_2(probeset1,chrCopyNum,chr_breaks,chr_size,chr,...
             segment,monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,...
             hexasomy_peak,skew_factor,experiment_name,raw_data_dir,Gaussian_fit_display,show_fitting,...
-            DataTypeToUse);
+            DataTypeToUse, workingDir);
         datasetDetails.histogram_raw{chr,segment}      = raw;
         datasetDetails.histogram_smooth{chr,segment}   = smoothed;
         datasetDetails.peaks{chr,segment}              = peaks/200;
@@ -637,7 +637,7 @@ for i = 1:2:SNP_probeset_length
 				outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorUn_Hom);
 			elseif (probeset1(i).probe_polarity == 4)
 				% null action for when (probe_polarity == 4) due to probe design error; probes are identical.
-			elseif (ChrCopyNumber <= 1)     %monosomy
+			elseif (ChrCopyNumber <= 1.5)     %monosomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % monosomy:'a'
 					probeset1(i).probe_assignment   = 1;
@@ -650,7 +650,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorB);
 				end;
-			elseif (ChrCopyNumber <= 2) %disomy
+			elseif (ChrCopyNumber <= 2.5) %disomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % disomy:'aa'
 					probeset1(i).probe_assignment   = 1;
@@ -668,7 +668,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAB);
 				end;
-			elseif (ChrCopyNumber <= 3) %trisomy
+			elseif (ChrCopyNumber <= 3.5) %trisomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % trisomy:'aaa'
 					probeset1(i).probe_assignment   = 1;
@@ -691,7 +691,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorABB);
 				end;
-			elseif (ChrCopyNumber <= 4) %tetrasomy
+			elseif (ChrCopyNumber <= 4.5) %tetrasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % tetrasomy:'aaaa'
 					probeset1(i).probe_assignment   = 1;
@@ -719,7 +719,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAB);
 				end;
-			elseif (ChrCopyNumber <= 5) %pentasomy
+			elseif (ChrCopyNumber <= 5.5) %pentasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % pentasomy:'aaaaa'
 					probeset1(i).probe_assignment   = 1;
@@ -752,7 +752,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAABBB);
 				end;
-			else %treat as hexasomy: if (ChrCopyNumber <= 6) %hexasomy
+			else %treat as hexasomy: if (ChrCopyNumber <= 6.5) %hexasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % hexasomy:'aaaaaa'
 					probeset1(i).probe_assignment   = 1;
@@ -991,13 +991,22 @@ for chr = 1:num_chrs
 			hold on;
 			copynum    = datasetDetails.chrCopyNum{chr}(segment);
 			region_    = 0;
+
+			fprintf(['important Gaussians = ' num2str(datasetDetails.importantGaussians{chr,segment}) '\n']);
+			fprintf(['Gaussian Cutoffs    = ' num2str(datasetDetails.cutoffs{chr,segment}) '\n']);
+
 			for region = datasetDetails.importantGaussians{chr,segment}
-				region_ = region_+1;
+				if (region_ < length(datasetDetails.importantGaussians{chr,segment}))
+					region_ = region_+1;
+				else
+					break;
+				end;
+
 				if (FillColors == true)
 					if (show_uncalibrated == true)
 						color = colorUn_Hom;
 					else
-						if (copynum <= 1) %monosomy
+						if (copynum <= 1.5) %monosomy
 							if (region == 1); color = colorA;
 							else              color = colorB;
 							end;
@@ -1005,7 +1014,7 @@ for chr = 1:num_chrs
 								set(gca,'XTick',[0 200]);
 								set(gca,'XTickLabel',{'a','b'});
 							end;
-						elseif (copynum <= 2) %disomy
+						elseif (copynum <= 2.5) %disomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAB;
 							else                  color = colorB;
@@ -1014,7 +1023,7 @@ for chr = 1:num_chrs
 								set(gca,'XTick',0:100:200);
 								set(gca,'XTickLabel',{'a','ab','b'});
 							end;
-						elseif (copynum <= 3) %trisomy
+						elseif (copynum <= 3.5) %trisomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAAB;
 							elseif (region == 3); color = colorABB;
@@ -1024,7 +1033,7 @@ for chr = 1:num_chrs
 								set(gca,'XTick',[0 66.667 133.333 200]);
 								set(gca,'XTickLabel',{'a','aab','abb','b'});
 							end;
-						elseif (copynum <= 4) %tetrasomy
+						elseif (copynum <= 4.5) %tetrasomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAAAB;
 							elseif (region == 3); color = colorAB;
@@ -1033,9 +1042,9 @@ for chr = 1:num_chrs
 							end;
 							if (segment == 1)
 								set(gca,'XTick',0:50:200);
-								set(gca,'XTickLabel',{'a', 'aaab', 'ab', 'abbb' 'b'});
+								set(gca,'XTickLabel',{'a', '3ab', 'ab', 'a3b' 'b'});
 							end;
-						elseif (copynum <= 5) %pentasomy
+						elseif (copynum <= 5.5) %pentasomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAAAAB;
 							elseif (region == 3); color = colorAAABB;
@@ -1045,9 +1054,9 @@ for chr = 1:num_chrs
 							end;
 							if (segment == 1)
 								set(gca,'XTick',0:40:200);
-								set(gca,'XTickLabel',{'a', 'aaaab', 'aaabb', 'aabbb', 'abbbb' 'b'});
+								set(gca,'XTickLabel',{'a', '4ab', '3abb', 'aa3b', 'a4b' 'b'});
 							end;
-						else % if (copynum <= 6) %hexasomy
+						else % if (copynum <= 6.5) %hexasomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAAAAAB;
 							elseif (region == 3); color = colorAAB;
@@ -1058,7 +1067,7 @@ for chr = 1:num_chrs
 							end;
 							if (segment == 1)
 								set(gca,'XTick',0:33.333:200);
-								set(gca,'XTickLabel',{'a', 'aaaaab', 'aab', 'ab', 'abb', 'abbbbb' 'b'});
+								set(gca,'XTickLabel',{'a', '5ab', 'aab', 'ab', 'abb', 'a5b' 'b'});
 							end;
 						end;
 					end;
@@ -1068,23 +1077,41 @@ for chr = 1:num_chrs
 				if (length(datasetDetails.importantGaussians{chr,segment}) == 1)
 					area(1:200,smoothed(1:200),'FaceColor',color,'EdgeColor',color);
 				else
+					if (region_ > 1) && (region_ < length(datasetDetails.importantGaussians{chr,segment}))
+						if (round(200-datasetDetails.cutoffs{chr,segment}(region_)*200) == 0)
+							% If the difference between the position and the end is < 0, move the "region_" to the end of the list.
+							last_region_ = region_-1;
+							region_      = length(datasetDetails.importantGaussians{chr,segment});
+						else
+							last_region_ = region_-1;
+						end;
+					else
+						last_region_ = region_-1;
+					end;
+
+					fprintf(['test :\t' num2str(region) '\t' num2str(region_) '\t']);
+					if (region_ < length(datasetDetails.cutoffs{chr,segment}))
+						fprintf([num2str(datasetDetails.cutoffs{chr,segment}(region_)) '\t' ...
+						         num2str(round(200-datasetDetails.cutoffs{chr,segment}(region_)*200)) '\t' ...
+						         num2str(smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_)*200))) '\t' ...
+						         num2str(last_region_) '\n']);
+					else
+						fprintf([num2str(last_region_) '\n']);
+					end;
+
 					if (region_ == 1)
-						area(		  round(200-datasetDetails.cutoffs{chr,segment}(region_  )*200): ...
-											200                                                           , ...
-							 smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_  )*200): ...
-											200                                                           ) ...
+						area(		  round(200-datasetDetails.cutoffs{chr,segment}(region_)*200):200, ...
+							 smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_)*200):200) ...
 							 ,'FaceColor',color,'EdgeColor',color);
 					elseif (region_ == length(datasetDetails.importantGaussians{chr,segment}))
-						area(		  1                                                                   : ...
-									  round(200-datasetDetails.cutoffs{chr,segment}(region_-1)*200), ...
-							 smoothed(1                                                                   : ...
-									  round(200-datasetDetails.cutoffs{chr,segment}(region_-1)*200)) ...
+						area(		  1:round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200), ...
+							 smoothed(1:round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200)) ...
 							 ,'FaceColor',color,'EdgeColor',color);
 					else
-						area(		  round(200-datasetDetails.cutoffs{chr,segment}(region_  )*200): ...
-									  round(200-datasetDetails.cutoffs{chr,segment}(region_-1)*200), ...
-							 smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_  )*200): ...
-									  round(200-datasetDetails.cutoffs{chr,segment}(region_-1)*200)) ...
+						area(		  round(200-datasetDetails.cutoffs{chr,segment}(region_     )*200): ...
+									  round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200), ...
+							 smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_     )*200): ...
+									  round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200)) ...
 							,'FaceColor',color,'EdgeColor',color);
 					end;
 				end;
@@ -1608,6 +1635,6 @@ completionTime = datestr(clock, 0)
 fprintf(new_fid,completionTime);
 fclose(new_fid);
 
-delete([workingDir 'working.txt'],'w');
+delete([workingDir 'working.txt']);
 
 end

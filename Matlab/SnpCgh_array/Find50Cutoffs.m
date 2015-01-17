@@ -1,5 +1,5 @@
 function [raw,smoothed,x_peaks,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = Find50Cutoffs(probeset1,chrCopyNum,chr_breaks,chr_size,dataset,chromosome,segment, ...
-    monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,name,file_dir,MakeFigure,~,DataTypeToUse)
+    monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,name,file_dir,MakeFigure,~,DataTypeToUse, workingDir)
 
 % Overlap of 1st SD before assume identity.
 
@@ -245,19 +245,9 @@ if (MakeFigure == true)
     xlim([1,200]);
     ylim([0,max(raw)]);
     % save then delete figures.
-    if ispc  % Windows
-        fig_dir = 'figures\scatterHist_perChr\';
-        if (isdir([file_dir 'figures\scatterHist_perChr']) == 0)
-            mkdir([file_dir 'figures\scatterHist_perChr']);
-        end;
-    else     % MacOS
-        fig_dir = 'figures/scatterHist_perChr/';
-        if (isdir([file_dir 'figures/scatterHist_perChr']) == 0)
-            mkdir([file_dir 'figures/scatterHist_perChr']);
-        end;
-    end;
-    %saveas(fig, [file_dir fig_dir strrep(name,' ','_') '_chr-' num2str(chromosome) '_seg-' num2str(segment) '.eps'], 'epsc');
-    saveas(fig, [file_dir fig_dir strrep(name,' ','_') '_chr-' num2str(chromosome) '_seg-' num2str(segment) '.png'], 'png');
+
+    % saveas(fig, [workingDir '50cutoffs_chr-' num2str(chromosome) '_seg-' num2str(segment) '.eps'], 'epsc');
+      saveas(fig, [workingDir '50cutoffs_chr-' num2str(chromosome) '_seg-' num2str(segment) '.png'], 'png');
     delete(fig);
 end;
 end

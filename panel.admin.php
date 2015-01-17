@@ -9,7 +9,7 @@
 	}
 </style>
 <font size='3'>
-Sapir, your account ("sapirzariel") has been provided with administrator priviledges.<br><br>
+Your account has been provided with administrator priviledges.<br><br>
 You can now examine and respond to bug reports using the "Bug Reporting" tab.<br>
 This "Admin" tab will have system troubleshooting tools and/or notes for administrators, but cannot be seen by normal user accounts.<br>
 It may be helpful for you to make a second account to view the site as a normal user.<br>
@@ -43,6 +43,7 @@ to manage effectively, so I had to put together this alternative.
 Future Updates to website:
 <ol>
 	<li>Add citation to "Help" tab when paper is published.</li>
+	<li>Add BAM file download to "Manage Datasets" tab. A link at the right of existing download links, looking like "[BAM file]".</li>
 </ol>
 </font>
 <hr width="100%">

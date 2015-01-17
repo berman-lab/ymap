@@ -1,6 +1,6 @@
 function [] = analyze_SNPs_hapmap(main_dir, user, genomeUser, project, hapmap, genome, ploidyEstimateString,ploidyBaseString)
 % analyze_CNVS(<Project Name>,<Project File>,<Ploidy Estimate)
-% A componant of the sequence analysis pipeline, analyzing CNVs only.
+% A componant of the sequence analysis pipeline, analyzing SNPs only.
 %    <Project Name>    : the name of the project.
 %    <Project File>    : the name of the project file, including directory location.
 %    <Ploidy Estimate> : a numerical value for ploidy from other work.

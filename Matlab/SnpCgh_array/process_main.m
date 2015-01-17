@@ -52,20 +52,20 @@ fprintf(['    ext  : ''' raw_data_ext '''\n']);
 raw_data_file = [raw_data_file raw_data_ext];
 
 %% initial test case.
-%clear;
-%microarray_design  = 'design1';
-%raw_data_dir       = 'input';
-%raw_data_file      = 'example_data.txt';
-%header_rows        = 46; % lines of header to be skipped before data lines.
-%probeName_col      = 1;  % column containing probe ID/name.
-%data_col_ch1       = 4;  % column containing probe channel 1 data.
-%data_col_ch2       = 5;  % column containing probe channel 1 data.
-%data_col_ratio     = 6;  % column containing probe channel ratio data.
-%data_col_log2ratio = 7;  % column containing probe channel log2ratio data.
-%phasing_dataset    = 'design1.cal_paper';
-%ploidy_estimate    = 2.0;
-%image_format       = 'png';
-%experiment_name    = 'test case 1';
+% clear;
+% microarray_design  = 'design1';
+% raw_data_dir       = 'input';
+% raw_data_file      = 'example_data.txt';
+% header_rows        = 46; % lines of header to be skipped before data lines.
+% probeName_col      = 1;  % column containing probe ID/name.
+% data_col_ch1       = 4;  % column containing probe channel 1 data.
+% data_col_ch2       = 5;  % column containing probe channel 1 data.
+% data_col_ratio     = 6;  % column containing probe channel ratio data.
+% data_col_log2ratio = 7;  % column containing probe channel log2ratio data.
+% phasing_dataset    = 'design1.cal_paper';
+% ploidy_estimate    = 2.0;
+% image_format       = 'png';
+% experiment_name    = 'test case 1';
 
 figureDir           = workingDir;
 matlab_save_dir     = workingDir;
@@ -121,9 +121,10 @@ SNP_Genomic_display              = true;
     Centromere_format            = 2;
     scale_type                   = 'Ratio';
     Chr_max_width                = 0.8;
+	Show_ChARM_edges             = true;
 
-    %not in place yet... uninformative currently looks like unnassigned to script.
-    show_uninformative           = false;
+% not in place yet... uninformative currently looks like unnassigned to script.
+show_uninformative           = false;
 
 % Generate CGD annotation files for analyzed microarrays.
 Output_CGD_annotations           = true;
@@ -132,7 +133,7 @@ Output_CGD_annotations           = true;
 Gaussian_fit_display             = false;
     DataTypeToUse                = 1;   % (1)AllelicFraction; (2)Angle.
     show_fitting                 = 0;   % (0)false; (~0)figure number to use.
-    
+
 % Analyze incidence of SNP interpretation runs.
 SNP_Runs_analysis                = false;
 
@@ -231,7 +232,7 @@ SNP_probeset_length = length(probeset_2);
 if (no_calibration == 0)
     for i = 1:2:SNP_probeset_length
         if (strcmp(probeset_2(i).probe_sequence,probeset_2(i+1).probe_sequence) == 1)
-            % Gresham-designed SNP probes are identical.
+            % some Gresham-designed SNP probes are identical.
             % There was a bug in Gresham's script which did not force the
             % SNP to be in the center of the probe pair.
             % 1197 probe pairs are garbage because of this.
@@ -252,6 +253,7 @@ if (no_calibration == 0)
     end;
 end;
 
+
 %% ====================================================================
 % Process raw data file into structures containing CGH and SNP information (if not already done).
 %----------------------------------------------------------------------
@@ -261,6 +263,7 @@ load([matlab_save_dir '/' experiment_name '.' microarray_design '.SNP_data.mat']
 load([matlab_save_dir '/' experiment_name '.' microarray_design '.CGH_data.mat']);
 SNP_probeset_length = length(probeset1);
 CGH_probeset_length = length(probeset2);
+
 
 %% ====================================================================
 % Apply probe polarity assignment from calibration data to experimental data.
@@ -274,6 +277,7 @@ for i = 1:SNP_probeset_length
     end;
 end;
 
+
 %% ====================================================================
 % Initializes vectors used to hold values to display.
 %......................................................................
@@ -285,11 +289,10 @@ for chr = 1:num_chrs   % eight chromosomes.
 	end;
 end;
 
+
 %% ====================================================================
 % Tally CGH data into chromosome position bins for main figure histogram.
 %----------------------------------------------------------------------
-% h = waitbar(0.0,'Please wait...','CreateCancelBtn','delete(h); clear h');
-% set(h,'Name','Plotting CGH data.');
 counter = 0;
 for i = 1:CGH_probeset_length
 	counter = counter+1;
@@ -421,6 +424,7 @@ if (performGCbiasCorrection)
 	end;
 end;
 
+
 %% ====================================================================
 % Save presented CNV data in a file format common across pipeline modules.
 %----------------------------------------------------------------------
@@ -433,15 +437,31 @@ save([workingDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV');
 
 
 %% ====================================================================
-% Use the ChARM algorithm to determine CNV edges.
+% Determine average allelic ratio per figure bin.
+% Save SNP ratio data in 'Common_SNPratio" file.
 %----------------------------------------------------------------------
-ChARM_v4(experiment_name, workingDir);
-[segmental_aneuploidy] = Load_dataset_information_1(experiment_name,workingDir);
-segmental_aneuploidy = [];
+for chr = chromosomes_to_analyze;
+	[chr_SNPdata_ratios{chr,1}, chr_SNPdata_ratios{chr,2}] = Collect_SNP_ratios(chr, chr_size, probeset1, experiment_name);
+end;
+fprintf('\nSaving "Common_SNPratio" data file.');
+for chr = 1:num_chrs
+    CNVplot2{chr} = chr_CGHdata{chr,2};
+end;
+save([workingDir 'Common_SNPratio.mat'], 'chr_SNPdata_ratios');
 
 
+%% ====================================================================
+% Apply the ChARM algorithm to CNV data to determine CNV edges.
+% Apply the ChARM algorithm to SNP ratio data to determine SNP ratio edges.
+% Integrate ChARM results together.
 %----------------------------------------------------------------------
-% Determine chromosome copy numbers.
+ChARM_v5_CNV(experiment_name, workingDir);
+ChARM_v5_SNP(experiment_name, workingDir); %% the algorithm doesn't work very well for SNP ratio data and data gaps.
+[segmental_aneuploidy] = Load_dataset_information_2(experiment_name,workingDir);
+
+
+%% ====================================================================
+% Determine chromosome copy numbers for identified segments.
 %----------------------------------------------------------------------
 datasetDetails = [];
 fprintf('\nDetermining chromsome copy numbers for microarray.');
@@ -449,7 +469,7 @@ fprintf('\nDetermining chromsome copy numbers for microarray.');
 datasetDetails.chr_breaks = chr_breaks;
 datasetDetails.chrCopyNum = chrCopyNum;
 
- 
+
 %% ====================================================================
 % Determine cutoffs for experimental dataset chromosome segments
 %----------------------------------------------------------------------
@@ -464,12 +484,11 @@ fprintf(['\n chr6 breaks = ' num2str(chr_breaks{6})]);
 fprintf(['\n chr7 breaks = ' num2str(chr_breaks{7})]);
 fprintf(['\n chr8 breaks = ' num2str(chr_breaks{8})]);
 fprintf(['\n']);
-[realHomozygous_peak, disomy_fit,skew_factor] = ...
-    FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting);
+[realHomozygous_peak, disomy_fit,skew_factor] = FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir);
 
 % Finds real peak locations.
-[monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = ...
-    FindPeaks(realHomozygous_peak);
+[monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = FindPeaks(realHomozygous_peak);
+
 % Determine cutoffs between peaks for each datasets:chromosome:segment.
 for chr = chromosomes_to_analyze;
     for segment = 1:length(chrCopyNum{chr})
@@ -478,16 +497,16 @@ for chr = chromosomes_to_analyze;
         % Determins cutoffs for a single chr segment, using intersections of Gaussian fit curves.
         MakeFigure = Gaussian_fit_display;
         [raw,smoothed,peaks,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = ...
-            FindGaussianCutoffs_2(probeset1,chrCopyNum,chr_breaks,chr_size,chr,...
-            segment,monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,...
-            hexasomy_peak,skew_factor,experiment_name,raw_data_dir,Gaussian_fit_display,show_fitting,...
-            DataTypeToUse);
+			FindGaussianCutoffs_2(probeset1,chrCopyNum,chr_breaks,chr_size,chr,...
+			segment,monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,...
+			hexasomy_peak,skew_factor,experiment_name,raw_data_dir,Gaussian_fit_display,show_fitting,...
+			DataTypeToUse, workingDir);
         datasetDetails.histogram_raw{chr,segment}      = raw;
         datasetDetails.histogram_smooth{chr,segment}   = smoothed;
         datasetDetails.peaks{chr,segment}              = peaks/200;
         datasetDetails.cutoffs{chr,segment}            = actual_cutoffs/200;
         datasetDetails.importantGaussians{chr,segment} = mostLikelyGaussians;
-        datasetDetails.chrCopyNum                             = chrCopyNum;
+        datasetDetails.chrCopyNum                      = chrCopyNum;
     end;
 end;
 
@@ -535,6 +554,8 @@ for chr = 1:num_chrs   % eight chromosomes.
 	for j = 1:14   % 14 SNP interpretation catagories tracked.
 		chr_SNPdata{chr,j} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
 	end;
+	chr_SNPdata_ratios{chr,1} = zeros(1,ceil(chr_size(chr)/bases_per_bin));   % SNP count.
+	chr_SNPdata_ratios{chr,2} = zeros(1,ceil(chr_size(chr)/bases_per_bin));   % ratio sum.
 end;
 
 
@@ -637,7 +658,7 @@ for i = 1:2:SNP_probeset_length
 				outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorUn_Hom);
 			elseif (probeset1(i).probe_polarity == 4)
 				% null action for when (probe_polarity == 4) due to probe design error; probes are identical.
-			elseif (ChrCopyNumber <= 1)     %monosomy
+			elseif (ChrCopyNumber <= 1.5)     %monosomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % monosomy:'a'
 					probeset1(i).probe_assignment   = 1;
@@ -650,7 +671,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorB);
 				end;
-			elseif (ChrCopyNumber <= 2) %disomy
+			elseif (ChrCopyNumber <= 2.5) %disomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % disomy:'aa'
 					probeset1(i).probe_assignment   = 1;
@@ -668,7 +689,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAB);
 				end;
-			elseif (ChrCopyNumber <= 3) %trisomy
+			elseif (ChrCopyNumber <= 3.5) %trisomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % trisomy:'aaa'
 					probeset1(i).probe_assignment   = 1;
@@ -691,7 +712,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorABB);
 				end;
-			elseif (ChrCopyNumber <= 4) %tetrasomy
+			elseif (ChrCopyNumber <= 4.5) %tetrasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % tetrasomy:'aaaa'
 					probeset1(i).probe_assignment   = 1;
@@ -719,7 +740,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAB);
 				end;
-			elseif (ChrCopyNumber <= 5) %pentasomy
+			elseif (ChrCopyNumber <= 5.5) %pentasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % pentasomy:'aaaaa'
 					probeset1(i).probe_assignment   = 1;
@@ -752,7 +773,7 @@ for i = 1:2:SNP_probeset_length
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
 					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAABBB);
 				end;
-			else %treat as hexasomy: if (ChrCopyNumber <= 6) %hexasomy
+			else %treat as hexasomy: if (ChrCopyNumber <= 6.5) %hexasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
 				if (section == 1)   % hexasomy:'aaaaaa'
 					probeset1(i).probe_assignment   = 1;
@@ -927,6 +948,8 @@ for chr = 1:num_chrs
 			end;
 		end;
 		text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24 );
+
+		fprintf(['Copy number for chr' num2str(chr) ' is :' chr_string '\n']);
 	end;
 
 	% make allelic fraction histograms to the left of the main chr cartoons.
@@ -991,13 +1014,21 @@ for chr = 1:num_chrs
 			hold on;
 			copynum    = datasetDetails.chrCopyNum{chr}(segment);
 			region_    = 0;
+
+			fprintf(['important Gaussians = ' num2str(datasetDetails.importantGaussians{chr,segment}) '\n']);
+			fprintf(['Gaussian Cutoffs    = ' num2str(datasetDetails.cutoffs{chr,segment}) '\n']);
+
 			for region = datasetDetails.importantGaussians{chr,segment}
-				region_ = region_+1;
+				if (region_ < length(datasetDetails.importantGaussians{chr,segment}))
+					region_ = region_+1;
+				else
+					break;
+				end;
 				if (FillColors == true)
 					if (show_uncalibrated == true)
 						color = colorUn_Hom;
 					else
-						if (copynum <= 1) %monosomy
+						if (copynum <= 1.5) %monosomy
 							if (region == 1); color = colorA;
 							else              color = colorB;
 							end;
@@ -1005,7 +1036,7 @@ for chr = 1:num_chrs
 								set(gca,'XTick',[0 200]);
 								set(gca,'XTickLabel',{'a','b'});
 							end;
-						elseif (copynum <= 2) %disomy
+						elseif (copynum <= 2.5) %disomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAB;
 							else                  color = colorB;
@@ -1014,7 +1045,7 @@ for chr = 1:num_chrs
 								set(gca,'XTick',0:100:200);
 								set(gca,'XTickLabel',{'a','ab','b'});
 							end;
-						elseif (copynum <= 3) %trisomy
+						elseif (copynum <= 3.5) %trisomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAAB;
 							elseif (region == 3); color = colorABB;
@@ -1024,7 +1055,7 @@ for chr = 1:num_chrs
 								set(gca,'XTick',[0 66.667 133.333 200]);
 								set(gca,'XTickLabel',{'a','aab','abb','b'});
 							end;
-						elseif (copynum <= 4) %tetrasomy
+						elseif (copynum <= 4.5) %tetrasomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAAAB;
 							elseif (region == 3); color = colorAB;
@@ -1033,9 +1064,9 @@ for chr = 1:num_chrs
 							end;
 							if (segment == 1)
 								set(gca,'XTick',0:50:200);
-								set(gca,'XTickLabel',{'a', 'aaab', 'ab', 'abbb' 'b'});
+								set(gca,'XTickLabel',{'a', '3ab', 'ab', 'a3b' 'b'});
 							end;
-						elseif (copynum <= 5) %pentasomy
+						elseif (copynum <= 5.5) %pentasomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAAAAB;
 							elseif (region == 3); color = colorAAABB;
@@ -1045,9 +1076,9 @@ for chr = 1:num_chrs
 							end;
 							if (segment == 1)
 								set(gca,'XTick',0:40:200);
-								set(gca,'XTickLabel',{'a', 'aaaab', 'aaabb', 'aabbb', 'abbbb' 'b'});
+								set(gca,'XTickLabel',{'a', '4ab', '3abb', 'aa3b', 'a4b' 'b'});
 							end;
-						else % if (copynum <= 6) %hexasomy
+						else % if (copynum <= 6.5) %hexasomy
 							if (region == 1);     color = colorA;
 							elseif (region == 2); color = colorAAAAAB;
 							elseif (region == 3); color = colorAAB;
@@ -1058,7 +1089,7 @@ for chr = 1:num_chrs
 							end;
 							if (segment == 1)
 								set(gca,'XTick',0:33.333:200);
-								set(gca,'XTickLabel',{'a', 'aaaaab', 'aab', 'ab', 'abb', 'abbbbb' 'b'});
+								set(gca,'XTickLabel',{'a', '5ab', 'aab', 'ab', 'abb', 'a5b' 'b'});
 							end;
 						end;
 					end;
@@ -1068,24 +1099,53 @@ for chr = 1:num_chrs
 				if (length(datasetDetails.importantGaussians{chr,segment}) == 1)
 					area(1:200,smoothed(1:200),'FaceColor',color,'EdgeColor',color);
 				else
+					if (region_ > 1) && (region_ < length(datasetDetails.importantGaussians{chr,segment}))
+						if (round(200-datasetDetails.cutoffs{chr,segment}(region_)*200) == 0)
+							% If the difference between the position and the end is < 0, move the "region_" to the end of the list.
+							last_region_ = region_-1;
+							region_      = length(datasetDetails.importantGaussians{chr,segment});
+						else
+							last_region_ = region_-1;
+						end;
+					else
+						last_region_ = region_-1;
+					end;
+
+					fprintf(['test :\t' num2str(region) '\t' num2str(region_) '\t']);
+					if (region_ < length(datasetDetails.cutoffs{chr,segment}))
+						fprintf([num2str(datasetDetails.cutoffs{chr,segment}(region_)) '\t' ...
+						         num2str(round(200-datasetDetails.cutoffs{chr,segment}(region_)*200)) '\t' ...
+						         num2str(smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_)*200))) '\t' ...
+						         num2str(last_region_) '\n']);
+					else
+						fprintf([num2str(last_region_) '\n']);
+					end;
+
 					if (region_ == 1)
-						area(		  round(200-datasetDetails.cutoffs{chr,segment}(region_  )*200): ...
-											200                                                           , ...
-							 smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_  )*200): ...
-											200                                                           ) ...
+						area(		  round(200-datasetDetails.cutoffs{chr,segment}(region_)*200):200, ...
+							 smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_)*200):200) ...
 							 ,'FaceColor',color,'EdgeColor',color);
 					elseif (region_ == length(datasetDetails.importantGaussians{chr,segment}))
-						area(		  1                                                                   : ...
-									  round(200-datasetDetails.cutoffs{chr,segment}(region_-1)*200), ...
-							 smoothed(1                                                                   : ...
-									  round(200-datasetDetails.cutoffs{chr,segment}(region_-1)*200)) ...
+						area(		  1:round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200), ...
+							 smoothed(1:round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200)) ...
 							 ,'FaceColor',color,'EdgeColor',color);
 					else
-						area(		  round(200-datasetDetails.cutoffs{chr,segment}(region_  )*200): ...
-									  round(200-datasetDetails.cutoffs{chr,segment}(region_-1)*200), ...
-							 smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_  )*200): ...
-									  round(200-datasetDetails.cutoffs{chr,segment}(region_-1)*200)) ...
-							,'FaceColor',color,'EdgeColor',color);
+						fprintf(['\narea[' num2str(round(200-datasetDetails.cutoffs{chr,segment}(region_     )*200)) ':' ...
+						                   num2str(round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200)) ', ' num2str(length(smoothed)) ']\n']);
+						fprintf(['region_ = ' num2str(region_) ', last_region_ = ' num2str(last_region_) '.\n']);
+						fprintf(['datasetDetails.cutoffs{chr,segment}(region_     ) = ' num2str(datasetDetails.cutoffs{chr,segment}(region_     )) '\n']);
+						fprintf(['datasetDetails.cutoffs{chr,segment}(last_region_) = ' num2str(datasetDetails.cutoffs{chr,segment}(last_region_)) '\n']);
+% darren : the below was a quick fix, but not a full one.
+						val1 = round(200-datasetDetails.cutoffs{chr,segment}(region_     )*200);
+						val2 = round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200);
+						%area(         round(200-datasetDetails.cutoffs{chr,segment}(region_     )*200): ...
+						%              round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200), ...
+						%     smoothed(round(200-datasetDetails.cutoffs{chr,segment}(region_     )*200): ...
+						%              round(200-datasetDetails.cutoffs{chr,segment}(last_region_)*200)), ...
+						%     'FaceColor',color,'EdgeColor',color);
+						area(         min(val1,val2):max(val1,val2), ...
+						     smoothed(min(val1,val2):max(val1,val2)), ...
+						     'FaceColor',color,'EdgeColor',color);
 					end;
 				end;
 			end;
@@ -1331,6 +1391,22 @@ for chr = 1:num_chrs
 		hold off;
 	end;
 	% end show MRS locations.
+
+	% standard : show ChARM edges.
+	if (Show_ChARM_edges)
+		hold on;
+		for i = 1:length(segmental_aneuploidy)
+			if (segmental_aneuploidy(i).chr == chr)
+				EDGEloc = segmental_aneuploidy(i).break*chr_size(chr)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
+				plot([EDGEloc EDGEloc], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+
+% darren : adding annotations for ChARM edges.
+
+			end;
+		end;
+		hold off;
+	end;
+	% end show ChARM edges.
 
 	hold off;
 	xlim([0,chr_size(chr)*chr_length_scale_multiplier]);

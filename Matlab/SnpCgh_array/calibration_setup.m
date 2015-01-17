@@ -1,4 +1,4 @@
-function calibration_setup();
+function calibration_setup(workingDir);
 %
 %    This function contains the code used to generate a hapmap file from datasets.   It was run offline and has not yet been adapted for online use.
 % There is limited motivation to adapt it for online use, since the SnpCghArray-generated-hapmap has already been calculated and generally it is not
@@ -262,7 +262,7 @@ while (calibration_complete == 0)
             FindChrSizes(segmental_aneuploidy,CGH_probeset_length,probeset2,dataset,chr_size,flow_ploidy);
         % precalculation of SNP peaks and cutoffs.
         [realHomozygous_peak{dataset}, disomy_fit{dataset}] = ...
-            FindRealHomozygousPeaks_2(chrCopyNum{dataset},SNP_probeset_length,probeset1,dataset,chr_breaks{dataset},chr_size,show_unnassigned,DataTypeToUse,show_fitting);
+			FindRealHomozygousPeaks_2(chrCopyNum{dataset},SNP_probeset_length,probeset1,dataset,chr_breaks{dataset},chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir);
         [monosomy_peak{dataset},disomy_peak{dataset},trisomy_peak{dataset},tetrasomy_peak{dataset},pentasomy_peak{dataset},hexasomy_peak{dataset} ] = ...
             FindPeaks(realHomozygous_peak{dataset});
         [monosomy_cutoff{dataset},disomy_cutoff{dataset},trisomy_cutoff{dataset},tetrasomy_cutoff{dataset},pentasomy_cutoff{dataset},hexasomy_cutoff{dataset} ] = ...

@@ -6,7 +6,7 @@
 #	5) logName  :
 #
 # Process input files:
-#	1) Raw SNP data                 : $workingDir"users/"$user"/projects/"$project"/SNP_CNV_v1.txt.txt".
+#	1) Raw SNP data                 : $workingDir"users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
 #	2) FASTA file name              : $workingDir"users/default/genomes/default/reference.txt",
 #	                               or $workingDir"users/"$user"/genomes/default/reference.txt" as $FastaName.
 #	3) Coordinates of standard bins : $workingDir"users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",
@@ -21,6 +21,8 @@
 #		4) list of unphased data ratios.
 #		5) list of phased data coordinates.
 #		6) list of unphased data coordinates.
+#		7) list of phased data alleles.
+#		8) list of unphased data alleles.
 #		Comment lines in output begin with '#'.
 #
 

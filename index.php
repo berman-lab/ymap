@@ -131,6 +131,7 @@
 		<img src="images/Logo_title.2.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
 		</td></tr><tr valign="bottom"><td align="middle">
 <font size='2'>
+<!-- Combined figures option is acting strangely. --!>
 	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
 <?php
 	if (isset($_SESSION['logged_on'])) {

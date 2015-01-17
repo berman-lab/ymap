@@ -6,7 +6,7 @@
 #	5) logName  :
 #
 # Process input files:
-#	1) Raw SNP data                 : $workingDir"users/"$user"/projects/"$project"/SNP_CNV_v1.txt.txt".
+#	1) Raw SNP data                 : $workingDir"users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
 #	2) FASTA file name              : $workingDir"users/default/genomes/default/reference.txt",
 #	                               or $workingDir"users/"$user"/genomes/default/reference.txt" as $FastaName.
 #	3) Coordinates of standard bins : $workingDir"users/default/genomes/"$genome"/"$FastaName"."$restrictionEnzymes".fasta",

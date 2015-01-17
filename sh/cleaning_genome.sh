@@ -70,17 +70,18 @@ if [ -f $timesLogFile ]
 then
 	echo -n $user"("$genome")[genome]\t" >> $timesLogFile;
 	cat $reflocation"working.txt" >> $timesLogFile;
-	echo $timestamp >> $completeFile;
 	echo " -> "$timestamp >> $timesLogFile;
 fi
 
 completeFile=$reflocation"complete.txt";
 echo "complete" > $completeFile;
+echo $timestamp >> $completeFile;
 echo "\tGenerated 'complete.txt' file." >> $logName;
 chmod 0755 $completeFile;
 
 if [ -f $reflocation"working.txt" ]
 then
+	echo "\n"$timestamp >> $reflocation"working.txt"
 	mv $reflocation"working.txt" $reflocation"working_done.txt";
 	echo "\tworking.txt" >> $logName;
 fi

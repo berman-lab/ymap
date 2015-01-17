@@ -1,5 +1,7 @@
-function [realHomozygous_peak, disomy_fit, skew_factor] = ...
-    FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting)
+function [realHomozygous_peak, disomy_fit, skew_factor] = FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir)
+
+show_fitting = true;
+
 % FindRealHomozygousPeakLocation determines where homozygous peaks
 %    are in the data for an experiment.
 no_usable_ploidies = 1;
@@ -60,9 +62,8 @@ if (no_usable_ploidies == 0) % disomics/tetrasomics were found, so we can determ
     hist_ab = hist_a+hist_b;
     smoothed_1a = smooth_gaussian(hist_ab,5,20);
 
-    [initialHomozygous_peak, disomy_fit, skew_factor] = ...
-        FindRealHomozygousPeaks_initial_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting);
-    
+    [initialHomozygous_peak, disomy_fit, skew_factor] = FindRealHomozygousPeaks_initial_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir);
+
     % fit gaussians to homozygous peaks, to fine-tune their location.
     disomy_peak_estimates = [initialHomozygous_peak*200 100 200-initialHomozygous_peak*200];
     [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = ...
@@ -71,6 +72,8 @@ if (no_usable_ploidies == 0) % disomics/tetrasomics were found, so we can determ
     disomy_fit(1) = p1_a;    disomy_fit(2) = p1_b;    disomy_fit(3) = p1_c;
     disomy_fit(4) = p2_a;    disomy_fit(5) = p2_b;    disomy_fit(6) = p2_c;
     disomy_fit(7) = p3_a;    disomy_fit(8) = p3_b;    disomy_fit(9) = p3_c;
+else
+	skew_factor = 75;
 end;
 
 end

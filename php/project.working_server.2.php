@@ -100,7 +100,7 @@ body {font-family: arial;}
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
 		if (strcmp($dataType,"0") == 0) {
-			$timeLimit  = 60*30;   // 30 minutes for array analysis.
+			$timeLimit  = 60*60;   // 1 hour minutes for array analysis.
 		} else {
 			$timeLimit  = 60*60*6; // 6 hours
 		}
@@ -109,7 +109,7 @@ body {font-family: arial;}
 			<BODY onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 100);" class="tab">
 				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?><br>
 				<font size="2">Processing of data has taken longer than expected and might be stalled.<br>
-				Contact the admin through the "System" tab with details and they will check on the job.<br>
+				Check back later or contact the admin through the "System" tab with details and they will check on the job.<br>
 				Don't delete the job until the admin has responded, or they will be unable to assist.</font>
 			</BODY>
 			</HTML>
@@ -162,7 +162,7 @@ body {font-family: arial;}
 			echo $clock."<br>";
 			if (strcmp($dataType,"0") == 0) {
 				echo "<div style='font-size: 10px;'>";
-				echo "SnpCgh microarray analysis usually complete in a few minutes.";
+				echo "SnpCgh microarray analysis usually completes in less than an hour, depending on system load.";
 				echo "</div>";
 			} else {
 				echo "<div style='font-size: 10px;'>";
