@@ -1,5 +1,0 @@
-darren|WGseq : displays annotations in all figures.|Bug|Minor feature, requiring a boolean check.
-darren|Option to output CNV histograms as text data.|Feature|Suggested by Aleeza. Format details?
-darren|Output %LOH from SNP/LOH/hapmap analysis.|Feature|Suggested by Meleah; data exists in system.
-darren|GBrowse annotation files produced by NGS methods don't include SNP alleles.|Feature|Data exists in system, but must be passed from early to late stage.
-darren|ChARM algorithm isn't sucessfully finding CNV edges in sequence data, problematic|Bug|Unknown difficulty to resolve.
