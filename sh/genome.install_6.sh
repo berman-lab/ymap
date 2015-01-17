@@ -303,7 +303,7 @@ else
 	echo "\n\tCalculating GC-ratios per each restriction digestion fragment." >> $logName;
 	echo "\n\t\treflocation = "$reflocation >> $logName;
 	echo "" > $outputFile;
-	python $main_dir"py/genome/genome_process_for_RADseq.GC_bias_1.py" $reflocation $logName >> $outputFile;
+	python $main_dir"py/genome/genome_process_for_RADseq.GC_bias_1.py" $reflocation  $ddRADseq_FASTA $logName >> $outputFile;
 fi
 
 if [ -e $repetgenome ]
@@ -319,44 +319,47 @@ then
 		echo "\n\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
 		inputFile=$reflocation$FASTAname".repetitiveness.txt";
 		echo "" > $outputFile;
-		python $main_dir"py/genome/genome_process_for_RADseq.repetitiveness_1.py" $inputFile $reflocation $logName >> $outputFile;
+		python $main_dir"py/genome/genome_process_for_RADseq.repetitiveness_1.py" $inputFile $reflocation $ddRADseq_FASTA $logName >> $outputFile;
 	fi
 fi
 
 echo "\t----------------------------------------------------------------------------------------------" >> $logName;
 
-## Reformat digested FASTA file to have single-line entries for each sequence fragment.
-echo "Reformatting expression genome fragments FASTA file." >> $condensedLog;
-echo "\tReformatting expression FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$RNAseq_FASTA;
-
-outputFile=$reflocation$FASTAname".GC_ratios.expression.txt";
-if [ -e $outputFile ]
+if [ -e $reflocation"expression.txt" ]
 then
-	echo "\n\tGC-ratios per expression fragment has been calculated." >> $logName
-else
-	echo "Calculating GC ratios for expression fragments." >> $condensedLog;
-	## Calculating GC_ratio  of RNAseq (expression) fragments.
-	echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
-	echo "\n\t\treflocation = "$reflocation >> $logName;
-	echo "" > $outputFile;
-	python $main_dir"py/genome/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $logName >> $outputFile;
-fi
+	## Reformat digested FASTA file to have single-line entries for each sequence fragment.
+	echo "Reformatting expression genome fragments FASTA file." >> $condensedLog;
+	echo "\tReformatting expression FASTA file => single-line per sequence fragment." >> $logName;
+	sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$RNAseq_FASTA;
 
-if [ -e $repetgenome ]
-then
-	# This depends on whole genome repetitiveness analysis done previously.
-	outputFile=$reflocation$FASTAname".repetitiveness.expression.txt";
+	outputFile=$reflocation$FASTAname".GC_ratios.expression.txt";
 	if [ -e $outputFile ]
 	then
-		echo "\n\tRepetitiveness per expression fragment has been calculated." >> $logName
+		echo "\n\tGC-ratios per expression fragment has been calculated." >> $logName
 	else
-		echo "Calculating repetitiveness for expression fragments." >> $condensedLog;
-		## Calculating repetitiveness of RNAseq (expression) fragments.
-		echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
-		inputFile=$reflocation$FASTAname".repetitiveness.txt";
+		echo "Calculating GC ratios for expression fragments." >> $condensedLog;
+		## Calculating GC_ratio  of RNAseq (expression) fragments.
+		echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
+		echo "\n\t\treflocation = "$reflocation >> $logName;
 		echo "" > $outputFile;
-		python $main_dir"py/genome/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $logName >> $outputFile;
+		python $main_dir"py/genome/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $RNAseq_FASTA $logName >> $outputFile;
+	fi
+
+	if [ -e $repetgenome ]
+	then
+		# This depends on whole genome repetitiveness analysis done previously.
+		outputFile=$reflocation$FASTAname".repetitiveness.expression.txt";
+		if [ -e $outputFile ]
+		then
+			echo "\n\tRepetitiveness per expression fragment has been calculated." >> $logName
+		else
+			echo "Calculating repetitiveness for expression fragments." >> $condensedLog;
+			## Calculating repetitiveness of RNAseq (expression) fragments.
+			echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
+			inputFile=$reflocation$FASTAname".repetitiveness.txt";
+			echo "" > $outputFile;
+			python $main_dir"py/genome/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $RNAseq_FASTA $logName >> $outputFile;
+		fi
 	fi
 fi
 
