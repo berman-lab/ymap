@@ -194,7 +194,7 @@
 		</tr>
 <?php	if ($rDNA_chr != "null") {?>
 		<tr>
-			<td align="middle"><font size="2"><?php echo $chr_shortNames[$rDNA_chr]; ?></font></td>
+			<td align="middle"><font size="2"><?php echo $chr_shortNames[$rDNA_chr-1]; ?></font></td>
 			<td align="middle"><font size="2">dot</font></td>
 			<td align="middle"><font size="2"><?php echo $rDNA_start; ?></font></td>
 			<td align="middle"><font size="2"><?php echo $rDNA_end; ?></font></td>
