@@ -48,7 +48,7 @@ refFile        = open(reference_file,'r')
 refFASTA       = refFile.read().strip()
 refFile.close()
 
-# Open restriction-digested genome FASTQ file.
+# Open standard-fragmented genome FASTQ file.
 standardBins_FASTA_file = workingDir + string.replace(refFASTA, '.fasta','.standard_bins.fasta')
 standardBins_FASTA_data = open(standardBins_FASTA_file,'r')
 

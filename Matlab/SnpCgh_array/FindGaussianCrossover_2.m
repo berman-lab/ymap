@@ -2,7 +2,8 @@ function [crossoverPoint] = FindGaussianCrossover_2(G1,G2, cross)
 % FindGaussianCutoffs_2 finds the equal probability point between two skew
 %     gaussians.   Equations found by manually solving for the intersection
 %     of componant Gaussians of skew Gaussians.
-% [a = height; b = location; c = width; d = skew]
+%  G1, G2 = [a = height; b = location; c = width; d = skew]
+%  cross  = point where skew-Gaussians crossover.
 
 %% Very simplistic guess.
 %{
@@ -45,9 +46,19 @@ end;
 if (cross > 100)
     cross = cross+1;
 end;
+fprintf(['G1.a  = ' num2str(G1.a)  '\t']);
+fprintf(['G1.b  = ' num2str(G1.b)  '\t']);
+fprintf(['G1.c  = ' num2str(G1.c)  '\n']);
+fprintf(['cross = ' num2str(cross) '\n']);
+fprintf(['G2.a  = ' num2str(G2.a)  '\t']);
+fprintf(['G2.b  = ' num2str(G2.b)  '\t']);
+fprintf(['G2.c  = ' num2str(G2.c)  '\n']);
+
 if (G1.b < 100)
     if (cross < G1.b)
         G1_skew = 0;
+	elseif (cross == G1.b)
+		G1_skew = 0;
     elseif (cross > G1.b)
         G1_skew = 1;
     end;
@@ -56,6 +67,8 @@ elseif (G1.b == 100)
 elseif (G1.b > 100)
     if (cross > G1.b)
         G1_skew = 0;
+	elseif (cross == G1.b)
+		G1_skew = 0;
     elseif (cross < G1.b)
         G1_skew = 1;
     end;
@@ -64,6 +77,8 @@ end;
 if (G2.b < 100)
     if (cross < G2.b)
         G2_skew = 0;
+	elseif (cross == G2.b)
+		G2_skew = 0;
     elseif (cross > G2.b)
         G2_skew = 1;
     end;
@@ -72,6 +87,8 @@ elseif (G2.b == 100)
 elseif (G2.b > 100)
     if (cross > G2.b)
         G2_skew = 0;
+	elseif (cross == G2.b)
+		G2_skew = 0;
     elseif (cross < G2.b)
         G2_skew = 1;
     end;

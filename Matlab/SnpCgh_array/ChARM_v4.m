@@ -1,12 +1,12 @@
 function [] = ChARM_v4(projectName, workingDir)
 %% =========================================================================================
-% Analyze CNV information for copy number changes.   Code based on algorithms
-% described in:
+% Analyze CNV information for copy number changes.
+% Code based on algorithms described in:
 % 	Accurate detection of aneuploidies in array CGH and gene expression microarray data 
 %	Chad L. Myers, Maitreya J. Dunham, S.Y. Kung, Olga G. Troyanskaya (2004)
 %===========================================================================================
 
-fprintf(['\nGenerating ChARM figure from project "' projectName '" data.\n']);
+fprintf(['\nGenerating ChARM figures from project "' projectName '" CNV data.\n']);
 
 HistPlot          = true;
 ChrNum            = true;
@@ -15,13 +15,14 @@ show_annotations  = true;
    temp_figures   = true;
 
 %%=========================================================================
-% Load common_CNV file for project : 'CNVplot2', 'genome_CNV'.
+% Load Common_CNV file for project : 'CNVplot2', 'genome_CNV'.
 %--------------------------------------------------------------------------
 dataFile = [workingDir 'Common_CNV.mat'];
 fprintf(['\nLoading common_CNV file for "' projectName '" : ' dataFile '\n']);
 load(dataFile);
-vars   = who('-file',dataFile);
-genome = genome_CNV;
+vars          = who('-file',dataFile);
+genome        = genome_CNV;
+examined_data = CNVplot2;
 
 %%=========================================================================
 % Control variables.
@@ -113,21 +114,21 @@ window_halfwidth = (window_width-1)/2;
 
 fprintf('\nMedian Filter');
 for chr = 1:num_chr
-    fprintf(['\n\t' num2str(chr) ':' num2str(num_chr) ':' num2str(length(CNVplot2{chr})) ]);
-    for data = 1:length(CNVplot2{chr})
+    fprintf(['\n\t' num2str(chr) ':' num2str(num_chr) ':' num2str(length(examined_data{chr})) ]);
+    for data = 1:length(examined_data{chr})
 	window_start   = max(data-window_halfwidth, 1);
-	window_end     = min(data+window_halfwidth, length(CNVplot2{chr}));
-	window         = CNVplot2{chr}(window_start:window_end);
+	window_end     = min(data+window_halfwidth, length(examined_data{chr}));
+	window         = examined_data{chr}(window_start:window_end);
 	if (window_start == 1)
 	    if (length(window) < window_width)
 		for jj = 1:(window_width - length(window))
-		    window = [CNVplot2{chr}(1) window];
+		    window = [examined_data{chr}(1) window];
 		end;
 	    end;
-	elseif (window_end == length(CNVplot2{chr}))
+	elseif (window_end == length(examined_data{chr}))
 	    if (length(window) < window_width)
 		for jj = 1:(window_width - length(window))
-		    window = [window CNVplot2{chr}(end)];
+		    window = [window examined_data{chr}(end)];
 		end;
 	    end;
 	end;
@@ -208,7 +209,7 @@ end;
 %-----------------------------------------------------------------------------------------------------
 if (temp_figures == true)
     %% Assigning raw and filtered data to convenient names for later use.
-    data1 = CNVplot2;
+    data1 = examined_data;
     for chr = 1:num_chr
 	data2{chr} = CNV_median{chr};
 	data3{chr} = CNV_median_smoothed{chr};
@@ -224,7 +225,7 @@ if (temp_figures == true)
 	subplot('Position',[left bottom width height]);
 	hold on;
 	c_ = [0 0 0];
-	fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
+	fprintf(['chr' num2str(chr) ':' num2str(length(examined_data{chr})) '\n']);
 	for i = 1:length(dataShow{chr});
 	    x_ = [i i i-1 i-1];
 	    if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
@@ -249,7 +250,7 @@ if (temp_figures == true)
 	subplot('Position',[left bottom width height]);
 	hold on;
 	c_ = [0 0 0];
-	fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
+	fprintf(['chr' num2str(chr) ':' num2str(length(examined_data{chr})) '\n']);
 	for i = 1:length(dataShow{chr});
 	    x_ = [i i i-1 i-1];
 	    if (dataShow{chr}(i) == 0);    CNVhistValue = 0;    else;    CNVhistValue = dataShow{chr}(i);    end;
@@ -274,7 +275,7 @@ if (temp_figures == true)
 	subplot('Position',[left bottom width height]);
 	hold on;
 	c_ = [0 0 0];
-	fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
+	fprintf(['chr' num2str(chr) ':' num2str(length(examined_data{chr})) '\n']);
 	for i = 1:length(dataShow{chr});
 	    x_ = [i i i-1 i-1];
 	    if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
@@ -338,7 +339,7 @@ end;
 for chr = 1:num_chr
     position  = locs{chr};       % locations of edges for this chromosome.
     num_edges = length(position);
-    data      = CNVplot2{chr};
+    data      = examined_data{chr};
     for edge = 1
 	pos                = position(edge);
 	R_windowSize(edge) = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
@@ -376,7 +377,7 @@ for t = 1:1; % num_permutations
     for chr = 1:num_chr
 	position  = locs{chr};       % locations of edges for this chromosome.
 	num_edges = length(position);
-	data      = CNVplot2{chr};   % data to be examined for this chromosome.
+	data      = examined_data{chr};   % data to be examined for this chromosome.
 	for edge = 1
 	    % Left edge of chromosome.
 	    position(edge) = 1;
@@ -424,7 +425,7 @@ for t = 1:1; % num_permutations
     for chr = 1:num_chr
 	position         = locs{chr};       % locations of edges for this chromosome.
 	num_edges        = length(position);
-	data             = CNVplot2{chr};
+	data             = examined_data{chr};
 	chr_bins         = length(data);
 	old_pP_dist_is_L = old_Ppost_dist_is_L{chr};
 	old_pP_dist_is_R = old_Ppost_dist_is_R{chr};
@@ -445,7 +446,7 @@ for t = 1:1; % num_permutations
 	R_term       = R_terms{chr};
 	cP_dist_is_L = Pcond_dist_is_L{chr};
 	cP_dist_is_R = Pcond_dist_is_R{chr};
-	data         = CNVplot2{chr};
+	data         = examined_data{chr};
 	for edge = 2:(num_edges-1);
 	    L_windowSize(edge)   = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
 	    R_windowSize(edge)   = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
@@ -464,7 +465,7 @@ for t = 1:1; % num_permutations
     for chr = 1:num_chr
 	position     = locs{chr};       % locations of edges for this chromosome.
 	num_edges    = length(position);
-	data         = CNVplot2{chr};   % data to be examined for this chromosome.
+	data         = examined_data{chr};   % data to be examined for this chromosome.
 	pP_dist_is_L = Ppost_dist_is_L{chr};
 	pP_dist_is_R = Ppost_dist_is_R{chr};
 	for edge = 2:(num_edges-1)
@@ -543,13 +544,13 @@ for chr = 1:num_chr
     for t = 1:num_starting_edges
 	position     = locs{chr};
 	num_edges    = length(position);
-	data         = CNVplot2{chr};
+	data         = examined_data{chr};
 	%----------------------------------------------------------------------
 	% Force left and right edges to left and right of datasets.
 	%    This was not described in the ChARM paper, but is useful.
 	%----------------------------------------------------------------------
 	position(1)   = 1;
-	position(end) = length(CNVplot2{chr});   
+	position(end) = length(examined_data{chr});   
 
 	%----------------------------------------------------------------------
 	% Converts edge pairs that are too close into single edges.
@@ -692,7 +693,7 @@ if (temp_figures == true)
 	subplot('Position',[left bottom width height]);
 	hold on;
 	c_ = [0 0 0];
-	fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
+	fprintf(['chr' num2str(chr) ':' num2str(length(examined_data{chr})) '\n']);
 	for i = 1:length(dataShow{chr});
 	    x_ = [i i i-1 i-1];
 	    if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
@@ -724,7 +725,7 @@ segmental_aneuploidy = [];
 for chr = 1:num_chr
 	position  = locs{chr};
 	num_edges = length(position);
-	data      = CNVplot2{chr};
+	data      = examined_data{chr};
 	chr_size  = length(data);
 	for edge = 1:num_edges
 		if (position(edge) == 1) || (position(edge) == chr_size)

@@ -1,8 +1,11 @@
 function [raw,smoothed,x_peak,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = FindGaussianCutoffs_2(probeset1,chrCopyNum,chr_breaks,chr_size,chromosome,segment, ...
-    monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,skew_factor,name,file_dir,MakeFigure,show_fitting,DataTypeToUse)
+    monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,skew_factor,name,file_dir,MakeFigure,show_fitting,DataTypeToUse, workingDir)
+
+MakeFigure = true;
+
 
 % Overlap of 1st SD before assume identity.
-OverlapLimit = 0.5;
+OverlapLimit = 1; %0.5;
 
 % initialize vectors for scattergram analysis
 data1_0 = [];   data2_0 = [];   data1_1 = [];
@@ -84,7 +87,8 @@ if (MakeFigure == true)
     [~,~,~,~,~,~,~,~,~,~,~,~,~,colorPeak,colorCutoff] = DefineColors();
 end;
 
-if (chrCopyNum{chromosome}(segment) <= 1)
+if (length(smoothed) > 1)
+if (chrCopyNum{chromosome}(segment) <= 1.5)
     fraction = 0;
     peaks = [];
     peaks(1) = monosomy_peak(1);
@@ -109,7 +113,7 @@ if (chrCopyNum{chromosome}(segment) <= 1)
     if (MakeFigure == true)
         figure(fig);
         hold on;
-        time1_1 =   1:floor(G{1}.b);
+        time1_1 = 1:floor(G{1}.b);
         time1_2 = ceil(G{1}.b):200;
         if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
         time2_1 =   1:floor(G{2}.b);
@@ -145,7 +149,7 @@ if (chrCopyNum{chromosome}(segment) <= 1)
         end;
         hold off;
     end;
-elseif (chrCopyNum{chromosome}(segment) <= 2)
+elseif (chrCopyNum{chromosome}(segment) <= 2.5)
     fraction = 2-chrCopyNum{chromosome}(segment);
     peaks = [];
     peaks(1) = disomy_peak(1);
@@ -215,7 +219,7 @@ elseif (chrCopyNum{chromosome}(segment) <= 2)
         end;
         hold off;
     end;
-elseif (chrCopyNum{chromosome}(segment) <= 3)
+elseif (chrCopyNum{chromosome}(segment) <= 3.5)
     fraction = 3-chrCopyNum{chromosome}(segment);
     peaks = [];
     peaks(1) = trisomy_peak(1);
@@ -375,7 +379,7 @@ elseif (chrCopyNum{chromosome}(segment) <= 3)
             hold off;
         end;
     end;
-elseif (chrCopyNum{chromosome}(segment) <= 4)
+elseif (chrCopyNum{chromosome}(segment) <= 4.5)
     fraction = 4-chrCopyNum{chromosome}(segment);
     peaks = [];
     peaks(1) = tetrasomy_peak(1);
@@ -557,7 +561,7 @@ elseif (chrCopyNum{chromosome}(segment) <= 4)
             hold off;
         end;
     end;
-elseif (chrCopyNum{chromosome}(segment) <= 5)
+elseif (chrCopyNum{chromosome}(segment) <= 5.5)
     fraction = 5-chrCopyNum{chromosome}(segment);
     peaks = [];
     peaks(1) = pentasomy_peak(1);
@@ -586,7 +590,7 @@ elseif (chrCopyNum{chromosome}(segment) <= 5)
         end;
     end;
     mostLikelyGaussians = [mostLikelyGaussians list(200)];
-    
+%darren    
     % If central two gaussians overlap by their 1st SD, then assume one
     % central peak and recalculate.   The difference from 2n is not
     % significant.
@@ -763,7 +767,7 @@ elseif (chrCopyNum{chromosome}(segment) <= 5)
             hold off;
         end;
     end;
-else % (chrCopyNum{chromosome}(segment) <= 6)
+else % (chrCopyNum{chromosome}(segment) <= 6.5)
     fraction = 6-chrCopyNum{chromosome}(segment);
     peaks = [];
     peaks(1) = hexasomy_peak(1);
@@ -992,6 +996,7 @@ else % (chrCopyNum{chromosome}(segment) <= 6)
         end;
     end;
 end;
+end;
 if (MakeFigure == true)
     hold on;
     plot(raw     ,'color',[0.75 0.75 1.0],'linestyle','-','linewidth',1);
@@ -1001,20 +1006,9 @@ if (MakeFigure == true)
     xlim([1,200]);
     ylim([0,max(raw)]);
     % save then delete figures.
-    if ispc  % Windows
-        fig_dir = 'figures\scatterHist_perChr\';
-        if (isdir([file_dir 'figures\scatterHist_perChr']) == 0)
-            mkdir([file_dir 'figures\scatterHist_perChr']);
-        end;
-    else     % MacOS
-        fig_dir = 'figures/scatterHist_perChr/';
-        if (isdir([file_dir 'figures/scatterHist_perChr']) == 0)
-            mkdir([file_dir 'figures/scatterHist_perChr']);
-        end;
-    end;
-    %saveas(fig, [file_dir fig_dir strrep(name,' ','_') '_chr-' num2str(chromosome) '_seg-' num2str(segment) '.eps'], 'epsc');
-    
-    saveas(fig, [file_dir fig_dir strrep(name,' ','_') '_chr-' num2str(chromosome) '_seg-' num2str(segment) '.png'], 'png');
-    delete(fig);
+
+	% saveas(fig, [workingDir 'hist_chr-' num2str(chromosome) '_seg-' num2str(segment) '.eps'], 'epsc');    
+	  saveas(fig, [workingDir 'hist_chr-' num2str(chromosome) '_seg-' num2str(segment) '.png'], 'png');
+	delete(fig);
 end;
 end

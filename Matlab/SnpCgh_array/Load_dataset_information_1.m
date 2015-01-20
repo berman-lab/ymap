@@ -5,17 +5,18 @@ function [segmental_aneuploidy] = Load_dataset_information_1(projectName,working
 %       respect to each chromosome.
 
 %%=========================================================================
-% Load common_ChARM file for project : 'segmental_aneuploidy'.
+% Load Common_ChARM file for project : 'segmental_aneuploidy'.
 %--------------------------------------------------------------------------
-if (exist([workingDir projectName '.common_ChARM.mat'],'file') ~= 0)
-    dataFile = [workingDir projectName '.common_ChARM.mat'];
-    fprintf(['\nLoading common_ChARM file for "' projectName '" : ' dataFile '\n']);
+if (exist([workingDir 'Common_ChARM.mat'],'file') ~= 0)
+    dataFile = [workingDir 'Common_ChARM.mat'];
+    fprintf(['\nLoading Common_ChARM file for "' projectName '" : ' dataFile '\n']);
     load(dataFile);
 else
-    fprintf(['\nThe common_ChARM file for "' projectName '" was not found.\n']);
+    fprintf(['\nThe Common_ChARM file for "' projectName '" was not found.\n']);
     fprintf(['Analyze your dataset with "analyze_ChARM.sh" first.\n']);
     segmental_aneuploidy = [];
 end;
+
 
 % %% ====================================================================
 % % Get segmental aneuploidy data for experiment from "segmental_aneuploidy"

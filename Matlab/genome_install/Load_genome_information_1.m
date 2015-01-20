@@ -133,7 +133,11 @@ fclose(annotations_fid);
 %    Chr height : The height in %.
 figInfo_ploidy_default = 2.0;
 figure_details         = [];
-figInfo_fid            = fopen([genomeDir '/figure_definitions.txt'], 'r');
+figInfo_fid            = fopen([genomeDir 'figure_definitions.txt'], 'r');
+
+fprintf(['\ncurrentDir        = ' pwd '\n']);
+fprintf(['\nfigureDefinitions = ' genomeDir 'figure_definitions.txt\n']);
+
 discard                = fgetl(figInfo_fid);   clear discard; %discard header line.
 lines_analyzed         = 0;
 while not (feof(figInfo_fid))
@@ -143,7 +147,12 @@ while not (feof(figInfo_fid))
 	figInfo_useChr = sscanf(line, '%s',2);   for i = 1:size(sscanf(line,'%s',1),2);   figInfo_useChr(1) = [];   end;
 	figInfo_useChr = str2num(figInfo_useChr);
 	figInfo_label  = sscanf(line, '%s',3);   for i = 1:size(sscanf(line,'%s',2),2);   figInfo_label(1)  = [];   end;
-	if (figInfo_chr > 0) || (figInfo_useChr > 0) || ((figInfo_chr == 0) && (strcmp(figInfo_label,'Key') == 1)) || ((figInfo_chr == 0) && (strcmp(figInfo_label,'Mito') == 1))
+
+	run = 0;
+	if (figInfo_useChr >  0);                                             run = 1; end;
+	if ((figInfo_chr   == 0) && (strcmp(figInfo_label,'Ploidy') == 1));   run = 2; end;
+
+	if (run == 1)
 		lines_analyzed = lines_analyzed+1;
 		figInfo_name   = sscanf(line, '%s',4);   for i = 1:size(sscanf(line,'%s',3),2);   figInfo_name(1)   = [];   end;
 		figInfo_posX   = sscanf(line, '%s',5);   for i = 1:size(sscanf(line,'%s',4),2);   figInfo_posX(1)   = [];   end;
@@ -158,7 +167,7 @@ while not (feof(figInfo_fid))
 		figure_details(figInfo_chr).posY   = str2double(figInfo_posY);
 		figure_details(figInfo_chr).width  = figInfo_width;
 		figure_details(figInfo_chr).height = str2double(figInfo_height);
-	elseif ((figInfo_chr == 0) && (strcmp(figInfo_label,'Ploidy') == 1))
+	elseif (run == 2)
 		figInfo_ploidy_default = sscanf(line, '%s',4);	for i = 1:size(sscanf(line,'%s',3),2);   figInfo_ploidy_default(1) = [];   end;
 		figInfo_ploidy_default = str2num(figInfo_ploidy_default);
 	end;

@@ -12,11 +12,14 @@
 </HEAD>
 <?php
     require_once 'constants.php';
+	include_once 'process_input_files.genome.php';
 
 	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$genome   = filter_input(INPUT_POST, "genome",   FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
+
+	$fasta_name = $genome.".fasta";
 
 	if (($fileName == ".") || ($fileName == "..") || ($user == ".") || ($user == "..") || ($genome == ".") || ($genome == "..") || ($key == ".") || ($key == "..")) {
 		echo "Invalid input data";
@@ -45,10 +48,10 @@
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
 		$output       = fopen($outputName, 'w');
-		fwrite($output, $fileContents);
+		fwrite($output, $fasta_name);
 	} else {
 		$output       = fopen($outputName, 'w');
-		fwrite($output, $fileName);
+		fwrite($output, $fasta_name);
 	}
 	fclose($output);
 	unset($outputName);
@@ -81,20 +84,42 @@
 	chmod($outputName,0755);
 	fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
 
+		// Process uploaded file.
+		$name        = str_replace("\\", ",", $fileName);
+		rename($genomePath.$name,$genomePath.strtolower($name));
+		$name        = strtolower($name);
+		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
+		fwrite($logOutput, "\tFile ".$key."\n");
+		fwrite($logOutput, "\t\tDatafile  : '$name'.\n");
+		fwrite($logOutput, "\t\tFilename  : '$filename.'.\n");
+		fwrite($logOutput, "\t\tExtension : '$ext'.\n");
+		fwrite($logOutput, "\t\tPath      : '$genomePath'.\n");
+
+		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
+		$output2Name    = $genomePath."upload_size_1.txt";
+		$output2        = fopen($output2Name, 'w');
+		$fileSizeString = filesize($genomePath.$name);
+		fwrite($output2, $fileSizeString);
+		fclose($output2);
+		chmod($output2Name,0755);
+		fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
+
+		// Process the uploaded file.
+		process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
+		$fileName = $fasta_name;
+
 	// Reformat FASTA file from multiple lines per text block to single line.
 	fwrite($logOutput, "\tReformatting genome FASTA to single-line entries.\n");
-	$currentdir  = getcwd();
-	chdir("../users/".$user."/genomes/".$genome."/");
-	$system_call_string = "sh ../sh/FASTA_reformat_1.sh ".$fileName;
+	$currentdir = getcwd();
+	fwrite($logOutput, "\tCurrDir     : '$currentdir'.\n");
+	$file_path  = "../users/".$user."/genomes/".$genome."/".$fileName;
+	fwrite($logOutput, "\tfile_path   : '$file_path'.\n");
+	$system_call_string = "sh ../sh/FASTA_reformat_1.sh ".$file_path;
 	exec($system_call_string, $result);
-	chdir($currentDir);
 
 	// Process FASTA file for chromosome count, names, and lengths.
 	fwrite($logOutput, "\tReading chromosome count, names, and lengths from FASTA.\n");
-	fwrite($logOutput, $fileName."\n");
-
-
-	$file_path   = "../../../../users/".$user."/genomes/".$genome."/".$fileName;
 	$file_lines  = file($file_path);
 	$num_lines   = sizeof($file_lines);
 	$chr_count   = 0;
@@ -118,14 +143,12 @@
 	unset($chr_length);
 	unset($line_parts);
 	unset($chr_name);
+	fwrite($logOutput, "\tnum chrs    : '$chr_count'.\n");
 
 	// Reformat FASTA file from multiple lines per text block to single line.
 	fwrite($logOutput, "\tReformatting genome FASTA to multi-line entries.\n");
-	$currentdir  = getcwd();
-	chdir("../users/".$user."/genomes/".$genome."/");
 	$system_call_string = "sh ../sh/FASTA_reformat_2.sh ".$file_path;
 	exec($system_call_string,$result);
-	chdir($currentDir);
 
 	// Store variables of interest into $_SESSION.
 	fwrite($logOutput, "\tStoring PHP session variables.\n");

@@ -48,7 +48,7 @@ echo "Setting up for processing." >> $condensedLog;
 # Initialization of various programs below.   #
 #============================================##
 
-echo "\t============================================================================================== 1" >> $logName;
+echo "\n\t============================================================================================== 1" >> $logName;
 
 ## Check is genome and index files for Bowtie are available: Exit if genome files not found; Generate index files if needed.
 if [ ! -e $reflocation"bowtie_index.4.bt2" ]
@@ -61,7 +61,7 @@ else
 	echo "\tBowtie index for genome '$genome' found" >> $logName;
 fi
 
-#echo "\t============================================================================================== 2" >> $logName;
+#echo "\n\t============================================================================================== 2" >> $logName;
 #
 ## Check if BLAST database has been made for selected genome. Generate database if not found.
 #if [ -e $reflocation$FASTA".nin" ]
@@ -73,7 +73,7 @@ fi
 #	formatdb -i $reflocation$FASTA -p F -o T;
 #fi
 
-echo "\t============================================================================================== 3" >> $logName;
+echo "\n\t============================================================================================== 3" >> $logName;
 
 ## Check if GATK dictionary and index files have been made for selected genome. Generate these files if not found.
 if [ -e $reflocation$FASTAname".dict" ]
@@ -87,7 +87,7 @@ else
 	java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
 fi
 
-echo "\t============================================================================================== 4" >> $logName;
+echo "\n\t============================================================================================== 4" >> $logName;
 
 ## Check if Samtools FASTA index file is found.
 if [ -e $reflocation$FASTA".fai" ]
@@ -99,10 +99,10 @@ else
 	samtools faidx $reflocation$FASTA;
 fi
 
-echo "\t============================================================================================== 5" >> $logName;
+echo "\n\t============================================================================================== 5" >> $logName;
 
-# echo "\tRepetitiveness calculations have been removed from pipeline." >> $logName;
-# echo "\tThey are very time-consuming and have been found to have little utility at present." >> $logName;
+echo "\tRepetitiveness calculations have been removed from pipeline." >> $logName;
+echo "\tThey are very time-consuming and have been found to have little utility at present." >> $logName;
 
 ## Check if repetitiveness analysis has been done for genome.
 repetgenome=$reflocation$FASTAname".repetitiveness.txt";
@@ -138,7 +138,7 @@ else
 	sed 's/^/\t\t\t|/;' $reflocation"matlab.repetitiveness_analysis.log" >> $logName;
 fi
 
-echo "\t============================================================================================== 6" >> $logName;
+echo "\n\t============================================================================================== 6" >> $logName;
 
 if [ -e $reflocation$standard_bin_FASTA ]
 then
@@ -159,12 +159,19 @@ else
     echo "\texit;" >> $outputName;
     echo "end" >> $outputName;
 
+	echo "\t|function [] = processing3()" >> $logName;
+	echo "\t|\tdiary('"$reflocation"matlab.standard_fragmentation_of_reference.log');" >> $logName;
+	echo "\t|\tcd "$main_dir"Matlab/genome_install;" >> $logName;
+	echo "\t|\tgenome_process_for_standard_bins_1('$user','$genome');" >> $logName;
+	echo "\t|\texit;" >> $logName;
+	echo "\t|end" >> $logName;
+
     echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
     matlab -nosplash -r "run "$outputName";";
     sed 's/^/\t\t\t|/;' $reflocation"matlab.standard_fragmentation_of_reference.log" >> $logName;
 fi
 
-echo "\t----------------------------------------------------------------------------------------------" >> $logName;
+echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
 if [ -e $reflocation$ddRADseq_FASTA ]
 then
@@ -197,7 +204,7 @@ else
 	sed 's/^/\t\t\t|/;' $reflocation"matlab.simulated_digest_of_reference.log" >> $logName;
 fi
 
-echo "\t============================================================================================== 7" >> $logName;
+echo "\n\t============================================================================================== 7" >> $logName;
 
 inputFile=$reflocation"chromosome_features.txt";
 outputFile=$reflocation"chromosome_features_2.txt";
@@ -213,7 +220,7 @@ else
 	echo "\n\tChromosome features file not available." >> $logName;
 fi
 
-echo "\t----------------------------------------------------------------------------------------------" >> $logName;
+echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
 if [ -e $reflocation$RNAseq_FASTA ]
 then
@@ -249,7 +256,7 @@ else
 	fi
 fi
 
-echo "\t============================================================================================== 7" >> $logName;
+echo "\n\t============================================================================================== 7" >> $logName;
 
 ## Reformat standard-bin fragmented FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting standard genome fragments FASTA file." >> $condensedLog;
@@ -286,7 +293,7 @@ then
 	fi
 fi
 
-echo "\t----------------------------------------------------------------------------------------------" >> $logName;
+echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
 ## Reformat digested FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting digested genome fragments FASTA file." >> $condensedLog;
@@ -303,7 +310,7 @@ else
 	echo "\n\tCalculating GC-ratios per each restriction digestion fragment." >> $logName;
 	echo "\n\t\treflocation = "$reflocation >> $logName;
 	echo "" > $outputFile;
-	$python_exec $main_dir"py/genome/genome_process_for_RADseq.GC_bias_1.py" $reflocation $logName >> $outputFile;
+	$python_exec $main_dir"py/genome/genome_process_for_RADseq.GC_bias_1.py" $reflocation $ddRADseq_FASTA $logName >> $outputFile;
 fi
 
 if [ -e $repetgenome ]
@@ -317,51 +324,53 @@ then
 		echo "Calculating repetitiveness for digested genome fragments." >> $condensedLog;
 		## Calculating repetitiveness of ddRADseq (MfeI & MboI) fragments.
 		echo "\n\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
-		inputFile=$reflocation$FASTAname".repetitiveness.txt";
+#		inputFile=$reflocation$FASTAname".repetitiveness.txt";
 		echo "" > $outputFile;
-		$python_exec $main_dir"py/genome/genome_process_for_RADseq.repetitiveness_1.py" $inputFile $reflocation $logName >> $outputFile;
+		$python_exec $main_dir"py/genome/genome_process_for_RADseq.repetitiveness_1.py" $FASTAname $reflocation $ddRADseq_FASTA $logName >> $outputFile;
 	fi
 fi
 
-echo "\t----------------------------------------------------------------------------------------------" >> $logName;
+echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
-## Reformat digested FASTA file to have single-line entries for each sequence fragment.
-echo "Reformatting expression genome fragments FASTA file." >> $condensedLog;
-echo "\tReformatting expression FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$RNAseq_FASTA;
-
-outputFile=$reflocation$FASTAname".GC_ratios.expression.txt";
-if [ -e $outputFile ]
+if [ -e $reflocation"expression.txt" ]
 then
-	echo "\n\tGC-ratios per expression fragment has been calculated." >> $logName
-else
-	echo "Calculating GC ratios for expression fragments." >> $condensedLog;
-	## Calculating GC_ratio  of RNAseq (expression) fragments.
-	echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
-	echo "\n\t\treflocation = "$reflocation >> $logName;
-	echo "" > $outputFile;
-	$python_exec $main_dir"py/genome/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $logName >> $outputFile;
-fi
+	## Reformat digested FASTA file to have single-line entries for each sequence fragment.
+	echo "Reformatting expression genome fragments FASTA file." >> $condensedLog;
+	echo "\tReformatting expression FASTA file => single-line per sequence fragment." >> $logName;
+	sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$RNAseq_FASTA;
 
-if [ -e $repetgenome ]
-then
-	# This depends on whole genome repetitiveness analysis done previously.
-	outputFile=$reflocation$FASTAname".repetitiveness.expression.txt";
+	outputFile=$reflocation$FASTAname".GC_ratios.expression.txt";
 	if [ -e $outputFile ]
 	then
-		echo "\n\tRepetitiveness per expression fragment has been calculated." >> $logName
+		echo "\n\tGC-ratios per expression fragment has been calculated." >> $logName
 	else
-		echo "Calculating repetitiveness for expression fragments." >> $condensedLog;
-		## Calculating repetitiveness of RNAseq (expression) fragments.
-		echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
-		inputFile=$reflocation$FASTAname".repetitiveness.txt";
+		echo "Calculating GC ratios for expression fragments." >> $condensedLog;
+		## Calculating GC_ratio  of RNAseq (expression) fragments.
+		echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
+		echo "\n\t\treflocation = "$reflocation >> $logName;
 		echo "" > $outputFile;
-		$python_exec $main_dir"py/genome/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $logName >> $outputFile;
+		$python_exec $main_dir"py/genome/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $RNAseq_FASTA $logName >> $outputFile;
+	fi
+
+	if [ -e $repetgenome ]
+	then
+		# This depends on whole genome repetitiveness analysis done previously.
+		outputFile=$reflocation$FASTAname".repetitiveness.expression.txt";
+		if [ -e $outputFile ]
+		then
+			echo "\n\tRepetitiveness per expression fragment has been calculated." >> $logName
+		else
+			echo "Calculating repetitiveness for expression fragments." >> $condensedLog;
+			## Calculating repetitiveness of RNAseq (expression) fragments.
+			echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
+			inputFile=$reflocation$FASTAname".repetitiveness.txt";
+			echo "" > $outputFile;
+			$python_exec $main_dir"py/genome/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $RNAseq_FASTA $logName >> $outputFile;
+		fi
 	fi
 fi
 
 echo "\n\t============================================================================================== 8" >> $logName;
-
 
 ##==============================================================================
 ## Cleanup intermediate processing files.

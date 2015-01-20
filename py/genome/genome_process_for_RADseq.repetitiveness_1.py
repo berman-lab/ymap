@@ -9,10 +9,10 @@
 #
 
 import string, sys, re, time
-inputFile      = sys.argv[1]
+genome         = sys.argv[1]
 workingDir     = sys.argv[2]
 digestedGenome = sys.argv[3]
-logName        = sys.argv[3]
+logName        = sys.argv[4]
 
 t0 = time.clock()
 
@@ -165,10 +165,10 @@ with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t\tOpen genome repetitiveness file.")
 
 # Open genome repetitiveness file.
-# datafile    = workingDir + genome + '_repetitiveness.txt'
-print '### InputFile = ' + inputFile
+datafile    = workingDir + genome + '.repetitiveness.txt'
+print '### datafile = ' + datafile
 #datafile      = workingDir + inputFile
-datafile      = inputFile
+#datafile      = inputFile
 data          = open(datafile,'r')
 
 #............................................................................................................
