@@ -349,7 +349,7 @@ then
 		echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
 		echo "\n\t\treflocation = "$reflocation >> $logName;
 		echo "" > $outputFile;
-		python $main_dir"py/genome/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $logName >> $outputFile;
+		python $main_dir"py/genome/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $RNAseq_FASTA $logName >> $outputFile;
 	fi
 
 	if [ -e $repetgenome ]
@@ -365,7 +365,7 @@ then
 			echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
 			inputFile=$reflocation$FASTAname".repetitiveness.txt";
 			echo "" > $outputFile;
-			python $main_dir"py/genome/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $logName >> $outputFile;
+			python $main_dir"py/genome/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $RNAseq_FASTA $logName >> $outputFile;
 		fi
 	fi
 fi

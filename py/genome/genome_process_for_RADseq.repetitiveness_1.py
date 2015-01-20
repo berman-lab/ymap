@@ -14,11 +14,6 @@ workingDir     = sys.argv[2]
 digestedGenome = sys.argv[3]
 logName        = sys.argv[4]
 
-#inputFile      = sys.argv[1]
-#workingDir     = sys.argv[2]
-#digestedGenome = sys.argv[3]
-#logName        = sys.argv[3]
-
 t0 = time.clock()
 
 with open(logName, "a") as myfile:
