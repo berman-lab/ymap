@@ -215,7 +215,7 @@ then
 	echo "\n\tSimplifying and sorting chromosome features file." >> $logName;
 	echo "\n\t\tfeatures file = "$reflocation"chromosome_features.txt" >> $logName;
 	echo "" > $outputFile;
-	python $main_dir"py/genome/chromosome_features.simplify.py" $user $genome $main_dir $logName >> $outputFile;
+	$python_exec $main_dir"py/genome/chromosome_features.simplify.py" $user $genome $main_dir $logName >> $outputFile;
 else
 	echo "\n\tChromosome features file not available." >> $logName;
 fi
@@ -273,7 +273,7 @@ else
 	echo "\n\tCalculating GC-ratios per each standard bin fragment." >> $logName;
 	echo "\n\t\treflocation = "$reflocation >> $logName;
 	echo "" > $outputFile;
-	python $main_dir"py/genome/genome_process_for_standard_bins.GC_bias_1.py" $reflocation $logName >> $outputFile;
+	$python_exec $main_dir"py/genome/genome_process_for_standard_bins.GC_bias_1.py" $reflocation $logName >> $outputFile;
 fi
 
 if [ -e $repetgenome ]
@@ -289,7 +289,7 @@ then
 		echo "\tCalculating repetitiveness per each digestion fragment." >> $logName;
 		inputFile=$reflocation$FASTAname".repetitiveness.txt";
 		echo "" > $outputFile;
-		python $main_dir"py/genome/genome_process_for_standard_bins.repetitiveness_1.py" $inputFile $reflocation $logName >> $outputFile;
+		$python_exec $main_dir"py/genome/genome_process_for_standard_bins.repetitiveness_1.py" $inputFile $reflocation $logName >> $outputFile;
 	fi
 fi
 
@@ -310,7 +310,7 @@ else
 	echo "\n\tCalculating GC-ratios per each restriction digestion fragment." >> $logName;
 	echo "\n\t\treflocation = "$reflocation >> $logName;
 	echo "" > $outputFile;
-	python $main_dir"py/genome/genome_process_for_RADseq.GC_bias_1.py" $reflocation $ddRADseq_FASTA $logName >> $outputFile;
+	$python_exec $main_dir"py/genome/genome_process_for_RADseq.GC_bias_1.py" $reflocation $ddRADseq_FASTA $logName >> $outputFile;
 fi
 
 if [ -e $repetgenome ]
@@ -326,7 +326,7 @@ then
 		echo "\n\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
 #		inputFile=$reflocation$FASTAname".repetitiveness.txt";
 		echo "" > $outputFile;
-		python $main_dir"py/genome/genome_process_for_RADseq.repetitiveness_1.py" $FASTAname $reflocation $ddRADseq_FASTA $logName >> $outputFile;
+		$python_exec $main_dir"py/genome/genome_process_for_RADseq.repetitiveness_1.py" $FASTAname $reflocation $ddRADseq_FASTA $logName >> $outputFile;
 	fi
 fi
 
@@ -349,7 +349,7 @@ then
 		echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
 		echo "\n\t\treflocation = "$reflocation >> $logName;
 		echo "" > $outputFile;
-		python $main_dir"py/genome/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $RNAseq_FASTA $logName >> $outputFile;
+		$python_exec $main_dir"py/genome/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $RNAseq_FASTA $logName >> $outputFile;
 	fi
 
 	if [ -e $repetgenome ]
@@ -365,7 +365,7 @@ then
 			echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
 			inputFile=$reflocation$FASTAname".repetitiveness.txt";
 			echo "" > $outputFile;
-			python $main_dir"py/genome/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $RNAseq_FASTA $logName >> $outputFile;
+			$python_exec $main_dir"py/genome/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $RNAseq_FASTA $logName >> $outputFile;
 		fi
 	fi
 fi
