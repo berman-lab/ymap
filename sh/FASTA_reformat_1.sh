@@ -24,7 +24,9 @@ then
 	exit 1;
 else
 	# 1) For lines that start with ">", convert the ending "\n" into "\t".
-	sed -i '/^[>]/{N;s/\n/\t/}' $1
+    TAB=$'\t' # Mac's sed is really old and doesn't understan \t, thus we must resort to trickery. Also not giving -i an extesion doesn't work for some reason. Also
+    sed -e '/^[>]/{' -e "N;s/\n/${TAB}/" -e '}' -i .temp.bak $1
+    rm $1.temp.bak
 
 	# 2) Removes all newline characters.
 	perl -pi -e 's/\n//g' $1

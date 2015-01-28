@@ -122,6 +122,13 @@ if (strcmp($ext,"zip") == 0) {
 	// extension indicates the file is not a compressed archive.
 	$ext_new  = $ext;
 	$name_new = $name;
+	
+	$rename = $output_fileName;
+	$currentDir = getcwd();
+	chdir($genomePath);
+	rename($name_new,$rename);
+	chdir($currentDir);
+	$name_new = $rename;
 }
 if (strcmp($ext_new,"") == 0) {
 	// A file extension is not found.
