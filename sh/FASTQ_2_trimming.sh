@@ -61,7 +61,7 @@ else
 		# this will be used to trim the original data files to a consistent valid length.
 		echo -e "\tNumber of lines for paired-end reads in files:";
 		stringer=$length_base1" "$length_base2;
-		stringer=$(echo $stringer | sed 's/ /\n/g' | sort -n)
+		stringer=$(echo $stringer | tr ' ' '\n' | sort -n)
 		lesser_length_base=$(echo $stringer | awk '{print $1}');
 		echo -e "\t\t"$lesser_length_base;
 		echo;
