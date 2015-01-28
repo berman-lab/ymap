@@ -593,6 +593,7 @@ ploidy = str2num(ploidyEstimateString);
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
 fprintf('\n');
 largestChr = find(chr_width == max(chr_width));
+largestChr = largestChr(1);
 
 %% -----------------------------------------------------------------------------------------
 % Setup for linear-view figure generation.
