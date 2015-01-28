@@ -17,8 +17,8 @@ main_dir=$(pwd)"/../";
 #hapmap='test'
 #main_dir='/heap/hapmap/bermanlab/'
 
-
-
+# load local installed program location variables.
+. $main_dir/sh/local_installed_programs.sh;
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -94,7 +94,7 @@ then
 	echo "\t\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.RNAseq.py'" >> $logName;
 else
 	echo "\t\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.RNAseq.py'" >> $logName;
-	python $main_dir"py/dataset_process_for_CNV_analysis.RNAseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.RNAseq.txt";
+	$python_exec $main_dir"py/dataset_process_for_CNV_analysis.RNAseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.RNAseq.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -120,12 +120,12 @@ else
 	fi
 
 	# preprocess parent for comparison. abbey
-	python $main_dir"py/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
+	$python_exec $main_dir"py/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
 
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
-	python $main_dir"py/dataset_process_for_SNP_analysis.RNAseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.RNAseq.txt";
+	$python_exec $main_dir"py/dataset_process_for_SNP_analysis.RNAseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.RNAseq.txt";
 	chmod 0777 $projectDirectory"preprocessed_SNPs.RNAseq.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi

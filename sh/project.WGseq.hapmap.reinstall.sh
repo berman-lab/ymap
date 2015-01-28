@@ -12,6 +12,9 @@ project=$2;
 hapmap=$3
 main_dir=$(pwd)"/../";
 
+# load local installed program location variables.
+. $main_dir/sh/local_installed_programs.sh;
+
 user="default";
 project="Fig_08A.YJB10490-WGseq";
 hapmap="C_albicans_SC5314_A21-s02-m09-r07";
@@ -88,7 +91,7 @@ then
 	echo "\t\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.py'" >> $logName;
 else
 	echo "\t\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.py'" >> $logName;
-	python $main_dir"py/dataset_process_for_CNV_analysis.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
+	$python_exec $main_dir"py/dataset_process_for_CNV_analysis.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -176,7 +179,7 @@ then
 	echo "\t\tSNP data already preprocessed with python script : 'py/dataset_process_for_SNP_analysis.3.py'" >> $logName;
 else
 	echo "\t\tPreprocessing SNP data with python script : 'py/dataset_process_for_SNP_analysis.3.py'" >> $logName;
-	python $main_dir"py/dataset_process_for_SNP_analysis.3.py" $genome $genomeUser $hapmap $hapmapUser $project $user $main_dir $logName hapmap  > $projectDirectory"preprocessed_SNPs.txt";
+	$python_exec $main_dir"py/dataset_process_for_SNP_analysis.3.py" $genome $genomeUser $hapmap $hapmapUser $project $user $main_dir $logName hapmap  > $projectDirectory"preprocessed_SNPs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 

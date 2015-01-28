@@ -306,19 +306,19 @@ else
 	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
 	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
-	# python $main_dir"py/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
+	# $python_exec $main_dir"py/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
 	# echo "\tPython : Pileup processed for CNVs." >> $logName; ) &
 	#
 	# ( echo "\tPython : Processing pileup for INDELs." >> $logName;
-	# python $main_dir"py/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
+	# $python_exec $main_dir"py/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
 	# echo "\tPython : Pileup processed for INDELs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
-	python $main_dir"py/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
+	$python_exec $main_dir"py/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNP-CNV." >> $logName;
-	python $main_dir"py/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
+	$python_exec $main_dir"py/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
@@ -328,8 +328,8 @@ then
 	echo "\tDone: processing child and parent pileup for SNP coordinate data." >> $logName;
 else
 	echo "\tPython : Processing child pileup for parent putatitve_SNP loci." >> $logName;
-	python $main_dir"py/putative_SNPs_from_parent_in_child.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
-	python $main_dir"py/putative_SNPs_from_parent.py"          $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
+	$python_exec $main_dir"py/putative_SNPs_from_parent_in_child.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+	$python_exec $main_dir"py/putative_SNPs_from_parent.py"          $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
 	echo "\tPython : Child pileup processed." >> $logName;
 fi
 
