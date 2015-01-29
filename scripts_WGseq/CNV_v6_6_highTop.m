@@ -126,6 +126,7 @@ full_data_threshold = floor(bases_per_bin/100);
 Standard_fig = figure();
 set(gcf, 'Position', [0 70 1024 600]);
 largestChr = find(chr_width == max(chr_width));
+largestChr = largestChr(1);
 
 
 %% -----------------------------------------------------------------------------------------

@@ -1,0 +1,5 @@
+# Ignore contents of this directory, except the .gitignore file itself and the default user directory.
+*
+!.gitignore
+!default/
+

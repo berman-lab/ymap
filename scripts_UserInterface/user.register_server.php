@@ -26,11 +26,14 @@
 //---------------------------------------------------------
 	function createNewUser($user, $pw){
 		if (!doesUserDirectoryExist($user)) {
+			$FTPdir = "../FTP_drop/".$user;
+			mkdir($FTPdir);
+			chmod($FTPdir,0777);
 			$dir = "../users/".$user;
 			mkdir($dir);
+			chmod($dir,0777);
 			mkdir($dir."/projects/");    // initialize user projects dir.
 			mkdir($dir."/genomes/");     // initialize user genomes dir.
-			chmod($dir,0777);
 			chmod($dir."/projects/",0777);
 			chmod($dir."/genomes/", 0777);
 			writePassword($user, $pw);
