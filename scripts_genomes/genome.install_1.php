@@ -37,7 +37,7 @@
 	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized\n");
-	fwrite($logOutput, "Running 'php/genome.install_1.php'.\n");
+	fwrite($logOutput, "Running 'scripts_genomes/genome.install_1.php'.\n");
 
 // Initialize 'condensed_log.txt' file.
 	$condensedLogOutputName = "../users/".$user."/genomes/".$genome."/condensed_log.txt";
@@ -82,7 +82,7 @@
 	unset($output);
 
 	// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
-	$genomePath      = "users/".$user."/genomes/".$genome."/";
+	$genomePath      = "../users/".$user."/genomes/".$genome."/";
 	$outputName      = $genomePath."upload_size_1.txt";
 	$output          = fopen($outputName, 'w');
 	$fileSizeString  = filesize($genomePath.$fileName);
@@ -97,11 +97,12 @@
 		$name        = strtolower($name);
 		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
-		fwrite($logOutput, "\tKey       : ".$key."\n");
-		fwrite($logOutput, "\tDatafile  : '".$name."'.\n");
-		fwrite($logOutput, "\tFilename  : '".$filename."'.\n");
-		fwrite($logOutput, "\tExtension : '".$ext."'.\n");
-		fwrite($logOutput, "\tPath      : '".$genomePath."'.\n");
+		fwrite($logOutput, "\tKey         : ".$key."\n");
+		fwrite($logOutput, "\tDatafile    : '".$name."'.\n");
+		fwrite($logOutput, "\tFilename    : '".$filename."'.\n");
+		fwrite($logOutput, "\tExtension   : '".$ext."'.\n");
+		fwrite($logOutput, "\tScript_path : '".getcwd()."'.\n");
+		fwrite($logOutput, "\tPath        : '".$genomePath."'.\n");
 
 		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
 		$output2Name    = $genomePath."upload_size_1.txt";
