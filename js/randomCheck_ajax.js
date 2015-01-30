@@ -1,6 +1,6 @@
 function randomCheck(project, file){
 	$.ajax({
-		url : './php/randomCheck_server.php',
+		url : './randomCheck_server.php',
 		type : 'post',
 		data : {},
 		success : function(answer){

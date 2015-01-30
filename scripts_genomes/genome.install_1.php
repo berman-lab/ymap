@@ -11,7 +11,8 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
+// current directory
+    require_once '../constants.php';
 	include_once 'process_input_files.genome.php';
 
 	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
@@ -19,8 +20,14 @@
 	$genome   = filter_input(INPUT_POST, "genome",   FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
 
-	$fasta_name = $genome.".fasta";
+//// Debugging
+// echo getcwd() . "\n";
+// echo $fileName."\n";
+// echo $user."\n";
+// echo $genome."\n";
+// echo $key."\n";
 
+	$fasta_name = $genome.".fasta";
 	if (($fileName == ".") || ($fileName == "..") || ($user == ".") || ($user == "..") || ($genome == ".") || ($genome == "..") || ($key == ".") || ($key == "..")) {
 		echo "Invalid input data";
 		exit;
@@ -75,7 +82,7 @@
 	unset($output);
 
 	// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
-	$genomePath      = "../users/".$user."/genomes/".$genome."/";
+	$genomePath      = "users/".$user."/genomes/".$genome."/";
 	$outputName      = $genomePath."upload_size_1.txt";
 	$output          = fopen($outputName, 'w');
 	$fileSizeString  = filesize($genomePath.$fileName);
@@ -90,11 +97,11 @@
 		$name        = strtolower($name);
 		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
-		fwrite($logOutput, "\tFile ".$key."\n");
-		fwrite($logOutput, "\t\tDatafile  : '$name'.\n");
-		fwrite($logOutput, "\t\tFilename  : '$filename.'.\n");
-		fwrite($logOutput, "\t\tExtension : '$ext'.\n");
-		fwrite($logOutput, "\t\tPath      : '$genomePath'.\n");
+		fwrite($logOutput, "\tKey       : ".$key."\n");
+		fwrite($logOutput, "\tDatafile  : '".$name."'.\n");
+		fwrite($logOutput, "\tFilename  : '".$filename."'.\n");
+		fwrite($logOutput, "\tExtension : '".$ext."'.\n");
+		fwrite($logOutput, "\tPath      : '".$genomePath."'.\n");
 
 		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
 		$output2Name    = $genomePath."upload_size_1.txt";
@@ -115,7 +122,7 @@
 	fwrite($logOutput, "\tCurrDir     : '$currentdir'.\n");
 	$file_path  = "../users/".$user."/genomes/".$genome."/".$fileName;
 	fwrite($logOutput, "\tfile_path   : '$file_path'.\n");
-	$system_call_string = "sh ../sh/FASTA_reformat_1.sh ".$file_path;
+	$system_call_string = "sh ../scripts_general/FASTA_reformat_1.sh ".$file_path;
 	exec($system_call_string, $result);
 
 	// Process FASTA file for chromosome count, names, and lengths.
@@ -147,7 +154,7 @@
 
 	// Reformat FASTA file from multiple lines per text block to single line.
 	fwrite($logOutput, "\tReformatting genome FASTA to multi-line entries.\n");
-	$system_call_string = "sh ../sh/FASTA_reformat_2.sh ".$file_path;
+	$system_call_string = "sh ../scripts_general/FASTA_reformat_2.sh ".$file_path;
 	exec($system_call_string,$result);
 
 	// Store variables of interest into $_SESSION.

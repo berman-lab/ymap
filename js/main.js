@@ -3,7 +3,7 @@ $(function () {
 
 	// Set up our file upload script.
 	$("#fileupload").html5Uploader({
-		url: 'php/uploader/',
+		url: 'uploader/',
 		maxFileSize: 1024*1024*20 // 20MB   
 	});
 
