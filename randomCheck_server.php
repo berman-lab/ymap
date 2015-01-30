@@ -6,7 +6,7 @@
 
 	// If the user is not logged on, redirect to login page.
 	// Exec random.pl which will return true or false based on whether there is a problem
-	$exec_str = "../scripts/random.pl 2>&1";
+	$exec_str = "scripts/random.pl 2>&1";
 	exec($exec_str, $exec_output, $exec_return);
 
 	if(!$exec_return){

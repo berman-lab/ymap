@@ -204,7 +204,7 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	fwrite($output, $name_new."\n");
 } elseif ((strcmp($ext_new,"fasta") == 0) || (strcmp($ext_new,"fa") == 0)) {
 	fwrite($logOutput, "\t| This is a FASTA file.\n");
-	$errorFile = fopen("../users/".$user."/projects/".$project."/error.txt", 'w');
+	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : FASTA file uploaded as input. Upload FASTQ, or ZIP or GZ archives.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
@@ -214,7 +214,7 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	// Convert BAM to SAM file, if needed.
 	if (strcmp($ext_new,"bam") == 0) {
 		fwrite($condensedLogOutput, "Decompressing BAM file to SAM.\n");
-		$null = shell_exec("sh ../sh/bam2sam.sh ".$user." ".$project." ".$name_new);
+		$null = shell_exec("sh sh/bam2sam.sh ".$user." ".$project." ".$name_new);
 		unlink($projectPath.$name_new);
 		unlink($projectPath.$name_new.".bai");
 		$name_new = "data.sam";
@@ -222,7 +222,7 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	// Convert SAM file to FASTQ files.
 	fwrite($condensedLogOutput, "Decompressing SAM file to FASTQ.\n");
 	$currentDir = getcwd();
-	$null       = shell_exec("sh ../sh/sam2fastq.sh ".$user." ".$project." ".$name_new);
+	$null       = shell_exec("sh sh/sam2fastq.sh ".$user." ".$project." ".$name_new);
 	// sam2fastq.sh user project main_dir inputFile;
 	fwrite($output, "data_r1.fastq\n");
 	fwrite($output, "data_r2.fastq\n");
@@ -233,7 +233,7 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 } elseif (strcmp($ext_new,"txt") == 0) {
 	fwrite($logOutput, "\t| This is a txt file.\n");
 	$currentDir = getcwd();
-	$null       = shell_exec("sh ../sh/Gareth2pileups.sh ".$user." ".$project." ".$name_new);
+	$null       = shell_exec("sh sh/Gareth2pileups.sh ".$user." ".$project." ".$name_new);
 	// sam2fastq.sh user project main_dir inputFile;
 	fwrite($output, "null1\n");
 	fwrite($output, "null2\n");
@@ -243,21 +243,21 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	$paired = 1;
 } elseif (strcmp($ext_new,"none1") == 0) {
 	fwrite($logOutput, "\t| This archive contained a file with no extension and the file type could not be determined.\n");
-	$errorFile = fopen("../users/".$user."/projects/".$project."/error.txt", 'w');
+	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : Archive contained a file with no extension and the file type could not be determined.\nUpload FASTQ, or ZIP or GZ archives containing a FASTQ file.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
 	exit;
 } elseif (strcmp($ext_new,"none2") == 0) {
 	fwrite($logOutput, "\t| This file had no extension and the file type could not be determined.\n");
-	$errorFile = fopen("../users/".$user."/projects/".$project."/error.txt", 'w');
+	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : File had no extension and the file type could not be determined.\nUpload FASTQ, or ZIP or GZ archives containing a FASTQ file.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
 	exit;
 } else {
 	fwrite($logOutput, "\t| This is an unknown file type.\n");
-	$errorFile = fopen("../users/".$user."/projects/".$project."/error.txt", 'w');
+	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : Unknown file type as input.\nUpload FASTQ, or ZIP or GZ archives containing a FASTQ file.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);

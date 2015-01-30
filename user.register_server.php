@@ -26,10 +26,10 @@
 //---------------------------------------------------------
 	function createNewUser($user, $pw){
 		if (!doesUserDirectoryExist($user)) {
-			$FTPdir = "../FTP_drop/".$user;
+			$FTPdir = "FTP_drop/".$user;
 			mkdir($FTPdir);
 			chmod($FTPdir,0777);
-			$dir = "../users/".$user;
+			$dir = "users/".$user;
 			mkdir($dir);
 			chmod($dir,0777);
 			mkdir($dir."/projects/");    // initialize user projects dir.
@@ -41,31 +41,31 @@
 			$_SESSION['user']      = $user;
 			echo "<font color=\"green\"><b>SUCCESS: User account created.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 			return false;
 		} else {
 			// The user directory already exists!
 			echo "<font color=\"red\"><b>ERROR: Invalid user name, try another.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../user.register.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 			return false;
 		}
 	}
 	function writePassword($user, $pw){
-		$pwFile = "../users/".$user."/pw.txt";
+		$pwFile = "users/".$user."/pw.txt";
 		$fh     = fopen($pwFile, 'w');
 		fwrite($fh, $pw);
 		fclose($fh);
 		chmod($pwFile, 0644);
 	}
 	function doesUserDirectoryExist($user){
-		$dir = "../users/".$user."/";
+		$dir = "users/".$user."/";
 		return file_exists($dir);
 	}
 	function createSecondaryInformationFile($user, $primaryInvestigatorName, $primaryInvestigatorEmail, $researchInstitution, $secondaryName, $secondaryEmail){
-		$secondaryInformationFile = "../users/".$user."/info.txt";
+		$secondaryInformationFile = "users/".$user."/info.txt";
 		$fileHandle               = fopen($secondaryInformationFile, 'w');
 		fwrite($fileHandle, "User: ".$user."\n");
 		fwrite($fileHandle, "Primary Investigator Name: ".$primaryInvestigatorName."\n");
@@ -87,7 +87,7 @@
 		if (strlen($user) < $MIN_USER_LENGTH) {
 			echo "<font color=\"red\"><b>ERROR: Your user name is too short, minimum is $MIN_USER_LENGTH.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../user.register.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
 			echo "</script>\n";
 			return "";
@@ -96,7 +96,7 @@
 		if (strlen($user) > $MAX_USER_LENGTH) {
 			echo "<font color=\"red\"><b>ERROR: Your user name is too long, maximum is $MAX_USER_LENGTH.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../user.register.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
 			echo "</script>\n";
 			return "";
@@ -105,7 +105,7 @@
 		if (checkForAlphanumericCharacters($user)) {
 			echo "<font color=\"red\"><b>ERROR: You have a non-alphanumeric character in your username.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../user.register.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
 			echo "</script>\n";
 			return "";
@@ -127,7 +127,7 @@
 		if (strlen($pwOrig) < $MIN_PASSWORD_LENGTH) {
 			echo "<font color=\"red\"><b>ERROR: Your password is too short, minimum is $MIN_PASSWORD_LENGTH.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../user.register.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
 			echo "</script>\n";
 			return "";
@@ -136,7 +136,7 @@
 		if (strlen($pwOrig) > $MAX_PASSWORD_LENGTH) {
 			echo "<font color=\"red\"><b>ERROR: Your password is too long, maximum is $MAX_PASSWORD_LENGTH.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../user.register.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
 			echo "</script>\n";
 			return "";
@@ -145,7 +145,7 @@
 		if ($pwOrig != $pwCopy) {
 			echo "<font color=\"red\"><b>ERROR: The passwords that you entered do not match.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../user.register.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
 			echo "</script>\n";
 			return "";

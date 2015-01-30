@@ -20,8 +20,8 @@
 		global $currentPath;
 		if(doesUserDirectoryExist($user)){
 			// User Exists
-			$userDir = "../users/".$user."/";
-			$pwFile  = "../users/".$user."/pw.txt";
+			$userDir = "users/".$user."/";
+			$pwFile  = "users/".$user."/pw.txt";
 
 			if (file_exists($userDir)) {
 				if(file_get_contents($pwFile) === $pw) {
@@ -29,30 +29,30 @@
 					$_SESSION['user']      = $user;
 					echo "<font color=\"green\"><b>SUCCESS: User is now logged in.</b></font><br>\n";
 					echo "(Main page will reload shortly...)<br>\n";
-					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 					echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 				} else {
 					echo "<font color=\"red\"><b>ERROR: Input did not match a registed username & password combination.</b></font><br>\n";
 					echo "(Main page will reload shortly...)<br>\n";
-					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 					echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 				}
 			} else {
 				echo "<font color=\"red\"><b>ERROR: Input did not match a registed username & password combination.</b></font><br>\n";
 				echo "(Main page will reload shortly...)<br>\n";
-				echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+				echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 				echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 			}
 		} else {
 			//User doesn't exist
 			echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 		}
 	}
 	function doesUserDirectoryExist($user){
-		$dir = "../users/".$user."/";
+		$dir = "users/".$user."/";
 		return file_exists($dir);
 	}
 
@@ -66,7 +66,7 @@
 		if(strlen($user) < $MIN_USER_LENGTH){
 			echo "<font color=\"red\"><b>ERROR: Usernames must be at least $MIN_USER_LENGTH characters long.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 			return "";
 		}
@@ -74,7 +74,7 @@
 		if(strlen($user) > $MAX_USER_LENGTH){
 			echo "<font color=\"red\"><b>ERROR: Usernames must be at most $MAX_USER_LENGTH characters long.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 			return "";
 		}
@@ -82,7 +82,7 @@
 		if(checkForAlphanumericCharacters($user)){
 			echo "<font color=\"red\"><b>ERROR: Your username contains non-alphanumeric characters.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 			return "";
 		}
@@ -103,7 +103,7 @@
 		if(strlen($pw) < $MIN_PASSWORD_LENGTH){
 			echo "<font color=\"red\"><b>ERROR: Passwords must be at least $MIN_PASSWORD_LENGTH.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 			return "";
 		}
@@ -111,7 +111,7 @@
 		if(strlen($pw) > $MAX_PASSWORD_LENGTH){
 			echo "<font color=\"red\"><b>ERROR: Passwords must be at most $MAX_PASSWORD_LENGTH.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"../panel.user.php\");\n}\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 			return "";
 		}

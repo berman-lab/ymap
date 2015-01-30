@@ -18,13 +18,13 @@
 		$description = str_replace($order, $replace, $description);
 		$description = str_replace("|", ":", $description);
 
-		$bugtrackFile = "../bugtracker/bugs.txt";
+		$bugtrackFile = "bugtracker/bugs.txt";
 
 		// Write the new bug into the tracking file.
 		$bugFileHandle = fopen($bugtrackFile, 'a');
 		fwrite($bugFileHandle, $submitter."|".$description."| | |0\n");
 		fclose($bugFileHandle);
-		chmod("../bugtracker/bugs.txt", 0777);
+		chmod("bugtracker/bugs.txt", 0777);
 
 		// Email system administrator about new bug/reature comment.
 		$email_subject     = "Ymap | Bug Report or Feature Request";

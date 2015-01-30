@@ -9,7 +9,7 @@
 
 	if($user == $_SESSION['user']){
 		// User confirmed, can delete project
-		$dir = "../users/".$user."/projects/".$project;
+		$dir = "users/".$user."/projects/".$project;
 		rrmdir($dir);
 		echo "COMPLETE";
 	} else {

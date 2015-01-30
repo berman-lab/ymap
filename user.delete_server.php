@@ -9,7 +9,7 @@
 
 	if($user == $_SESSION['user']){
 		// User confirmed, can delete user.
-		$dir = "../users/".$user;
+		$dir = "users/".$user;
 		rrmdir($dir);
 		session_unset();
 		echo "COMPLETE";
