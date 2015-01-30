@@ -11,7 +11,7 @@
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
-		header('Location: ../user.login.php');
+		header('Location: user.login.php');
 	}
 
 	$bad_chars = array(".", ",", "\\", "/", " ");
@@ -19,12 +19,12 @@
 	$user      = filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING);
 	$key       = filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING);
 
-	$dir1      = "../users/".$user."/hapmaps";
-	$dir2      = "../users/".$user."/hapmaps/".$hapmap;
-	$dir3      = "../users/default/hapmaps/".$hapmap;
+	$dir1      = "users/".$user."/hapmaps";
+	$dir2      = "users/".$user."/hapmaps/".$hapmap;
+	$dir3      = "users/default/hapmaps/".$hapmap;
 
 	// figure out what user the hapmap is installed under.
-	$folder = "../users/".$user."/hapmaps/".$hapmap."/";
+	$folder = "users/".$user."/hapmaps/".$hapmap."/";
 
 	// Load genome from 'hapmap/genome.txt'.
 	$handle1 = fopen($folder."genome.txt", "r");
@@ -58,7 +58,7 @@ print $hapmap.":".$user.":".$key;
 
 			<!-- If user is logged in, show logout button, otherwise, show the login button so we can get the user logged in-->
 			<button type="button" onclick="window.location.href='<?php if(isset($_SESSION['logged_on'])){echo "logout_server.php";}else{echo "user.login.php";}?>'"><?php if(isset($_SESSION['logged_on'])){echo "Logout";}else{echo "Login";}?></button>
-			<button type="button" onclick="window.location.href='../index.php'">Back to Home</button>
+			<button type="button" onclick="window.location.href='index.php'">Back to Home</button>
 		</p></div>
 		<div id="hapmapCreationInformation"><p>
 			<form action="hapmap.addTo_2.php" method="post">
@@ -77,8 +77,8 @@ print $hapmap.":".$user.":".$key;
 				</td></tr><tr bgcolor="#CCCCFF"><td valign="top">
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
-					$projectsDir1       = "../users/default/projects/";
-					$projectsDir2       = "../users/".$user."/projects/";
+					$projectsDir1       = "users/default/projects/";
+					$projectsDir2       = "users/".$user."/projects/";
 					$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 					$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);

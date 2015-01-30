@@ -6,7 +6,7 @@
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
-		header('Location: ../user.login.php');
+		header('Location: user.login.php');
 	}
 
 	$bad_chars = array(".", ",", "\\", "/", " ");
@@ -17,10 +17,10 @@
 	$child     = filter_input(INPUT_POST, "selectNext",  FILTER_SANITIZE_STRING);
 
 	// Re-initialize 'process_log.txt' file.
-	$logOutputName = "../users/".$user."/hapmaps/".$hapmap."/process_log.txt";
+	$logOutputName = "users/".$user."/hapmaps/".$hapmap."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "Log file restarted for hapmap addition\n");
-	fwrite($logOutput, "Running 'php/hapmap.addTo_1.php'.\n");
+	fwrite($logOutput, "Running 'hapmap.addTo_1.php'.\n");
 
 	// Make a form to generate a form to POST information to pass along to the next page in the process.
 	echo "<script type=\"text/javascript\">\n";
@@ -56,6 +56,6 @@
 	echo "</script>";
 
 
-	fwrite($logOutput, "'php/hapmap.addTo_1.php' completed.\n");
+	fwrite($logOutput, "'hapmap.addTo_1.php' completed.\n");
 	fclose($logOutput);
 ?>

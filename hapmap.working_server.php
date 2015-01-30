@@ -23,31 +23,31 @@
 
 	// increment clock animation...
 	$status   = ($status + 1) % 12;
-	if ($status == 0) {          $clock = "<img src=\"../images/12.png\" alt-text=\"12\" class=\"clock\" >";
-	} else if ($status == 1) {   $clock = "<img src=\"../images/01.png\" alt-text=\"01\" class=\"clock\" >";
-	} else if ($status == 2) {   $clock = "<img src=\"../images/02.png\" alt-text=\"02\" class=\"clock\" >";
-	} else if ($status == 3) {   $clock = "<img src=\"../images/03.png\" alt-text=\"03\" class=\"clock\" >";
-	} else if ($status == 4) {   $clock = "<img src=\"../images/04.png\" alt-text=\"04\" class=\"clock\" >";
-	} else if ($status == 5) {   $clock = "<img src=\"../images/05.png\" alt-text=\"05\" class=\"clock\" >";
-	} else if ($status == 6) {   $clock = "<img src=\"../images/06.png\" alt-text=\"06\" class=\"clock\" >";
-	} else if ($status == 7) {   $clock = "<img src=\"../images/07.png\" alt-text=\"07\" class=\"clock\" >";
-	} else if ($status == 8) {   $clock = "<img src=\"../images/08.png\" alt-text=\"08\" class=\"clock\" >";
-	} else if ($status == 9) {   $clock = "<img src=\"../images/09.png\" alt-text=\"09\" class=\"clock\" >";
-	} else if ($status == 10) {  $clock = "<img src=\"../images/10.png\" alt-text=\"10\" class=\"clock\" >";
-	} else if ($status == 11) {  $clock = "<img src=\"../images/11.png\" alt-text=\"11\" class=\"clock\" >";
+	if ($status == 0) {          $clock = "<img src=\"images/12.png\" alt-text=\"12\" class=\"clock\" >";
+	} else if ($status == 1) {   $clock = "<img src=\"images/01.png\" alt-text=\"01\" class=\"clock\" >";
+	} else if ($status == 2) {   $clock = "<img src=\"images/02.png\" alt-text=\"02\" class=\"clock\" >";
+	} else if ($status == 3) {   $clock = "<img src=\"images/03.png\" alt-text=\"03\" class=\"clock\" >";
+	} else if ($status == 4) {   $clock = "<img src=\"images/04.png\" alt-text=\"04\" class=\"clock\" >";
+	} else if ($status == 5) {   $clock = "<img src=\"images/05.png\" alt-text=\"05\" class=\"clock\" >";
+	} else if ($status == 6) {   $clock = "<img src=\"images/06.png\" alt-text=\"06\" class=\"clock\" >";
+	} else if ($status == 7) {   $clock = "<img src=\"images/07.png\" alt-text=\"07\" class=\"clock\" >";
+	} else if ($status == 8) {   $clock = "<img src=\"images/08.png\" alt-text=\"08\" class=\"clock\" >";
+	} else if ($status == 9) {   $clock = "<img src=\"images/09.png\" alt-text=\"09\" class=\"clock\" >";
+	} else if ($status == 10) {  $clock = "<img src=\"images/10.png\" alt-text=\"10\" class=\"clock\" >";
+	} else if ($status == 11) {  $clock = "<img src=\"images/11.png\" alt-text=\"11\" class=\"clock\" >";
 	} else {                     $clock = "[ * ]";
 	}
 
-	if (file_exists("../users/".$user."/hapmaps/".$hapmap."/complete.txt")) {
+	if (file_exists("users/".$user."/hapmaps/".$hapmap."/complete.txt")) {
 		?>
 		<html>
 		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_hapmap('<?php echo $key; ?>', 0);" >
 		</body>
 		</html>
 		<?php
-	} else if (file_exists("../users/".$user."/hapmaps/".$hapmap."/error.txt")) {
+	} else if (file_exists("users/".$user."/hapmaps/".$hapmap."/error.txt")) {
 		// Load error.txt from hapmap folder.
-        $handle = fopen("../users/".$user."/hapmaps/".$hapmap."/error.txt", "r");
+        $handle = fopen("users/".$user."/hapmaps/".$hapmap."/error.txt", "r");
         $error = fgets($handle);
         fclose($handle);
 		?>
@@ -58,9 +58,9 @@
 		</body>
 		</html>
 		<?php
-	} else if (file_exists("../users/".$user."/hapmaps/".$hapmap."/working.txt")) {
+	} else if (file_exists("users/".$user."/hapmaps/".$hapmap."/working.txt")) {
 		// Load start time from 'working.txt'
-		$startTimeStamp = file_get_contents("../users/".$user."/hapmaps/".$hapmap."/working.txt");
+		$startTimeStamp = file_get_contents("users/".$user."/hapmaps/".$hapmap."/working.txt");
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
@@ -74,7 +74,7 @@
 			<?php
 		} else {
 			// Load last line from "condensed_log.txt" file.
-			$condensedLog      = explode("\n", trim(file_get_contents("../users/".$user."/hapmaps/".$hapmap."/condensed_log.txt")));
+			$condensedLog      = explode("\n", trim(file_get_contents("users/".$user."/hapmaps/".$hapmap."/condensed_log.txt")));
 			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
 			?>
 			<script type="text/javascript">

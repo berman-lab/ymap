@@ -15,7 +15,7 @@ function deleteProjectConfirmation(user,project,key){
 function deleteProject_yes(user,project,key){
 	console.log('deleteProject_yes');
 	$.ajax({
-		url : 'php/project.delete_server.php',
+		url : 'project.delete_server.php',
 		type : 'post',
 		data : {
 			user: user,

@@ -1,15 +1,8 @@
 <?php
 	session_start();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<?php
-	// If the user is not logged on, redirect to login page.
-	if(!isset($_SESSION['logged_on'])){
-		header('Location: user.login.php');
-	}
-
-	require_once 'php/constants.php';
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	require_once 'constants.php';
+	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
 <html lang="en">
 	<HEAD>
@@ -21,20 +14,8 @@
 		<title>[Needs Title]</title>
 	</HEAD>
 	<BODY onload="UpdateProjectList()">
-		<div id="loginControls"><p>
-			<?php
-			if (isset($_SESSION['logged_on'])) {
-				$user = $_SESSION['user'];
-				echo "user: ".$user."<br>";
-			}
-			?>
-
-			<!-- If user is logged in, show logout button, otherwise, show the login button so we can get the user logged in-->
-			<button type="button" onclick="window.location.href='<?php if(isset($_SESSION['logged_on'])){echo "php/logout_server.php";}else{echo "user.login.php";}?>'"><?php if(isset($_SESSION['logged_on'])){echo "Logout";}else{echo "Login";}?></button>
-			<button type="button" onclick="window.location.href='index.php'">Back to Home</button>
-		</p></div>
 		<div id="hapmapCreationInformation"><p>
-			<form action="php/hapmap.install_1.php" method="post">
+			<form action="hapmap.install_1.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="hapmap">Hapmap Name : </label><input type="text" name="hapmap" id="hapmap">
 				</td><td>

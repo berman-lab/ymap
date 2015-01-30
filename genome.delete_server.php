@@ -9,7 +9,7 @@
 
 	if($user == $_SESSION['user']){
 		// User confirmed, can delete genome
-		$dir = "../users/".$user."/genomes/".$genome;
+		$dir = "users/".$user."/genomes/".$genome;
 		rrmdir($dir);
 		echo "COMPLETE";
 	} else {

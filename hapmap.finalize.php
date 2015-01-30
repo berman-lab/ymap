@@ -29,7 +29,7 @@
 			FinalizeHapmap=function() {
 			var autoSubmitForm = document.createElement('form');
 			autoSubmitForm.setAttribute('method','post');
-			autoSubmitForm.setAttribute('action','php/hapmap.finalize_hapmap.php');
+			autoSubmitForm.setAttribute('action','hapmap.finalize_hapmap.php');
 			var input1 = document.createElement('input');
 				input1.setAttribute('type','hidden');
 				input1.setAttribute('name','user');

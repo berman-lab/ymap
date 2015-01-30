@@ -29,7 +29,7 @@
 			AddHaplotypeEntry=function() {
 			var autoSubmitForm = document.createElement('form');
 			autoSubmitForm.setAttribute('method','post');
-			autoSubmitForm.setAttribute('action','php/hapmap.addTo_1.php');
+			autoSubmitForm.setAttribute('action','hapmap.addTo_1.php');
 			var input1 = document.createElement('input');
 				input1.setAttribute('type','hidden');
 				input1.setAttribute('name','user');

@@ -1,6 +1,6 @@
 <?php
     session_start();
-    require_once '../constants.php';
+    require_once 'constants.php';
 
 //print_r($_SERVER);
 //print_r($GLOBALS);
@@ -21,7 +21,7 @@ foreach($files as $file){ // iterate files
     unlink($file); // delete file
 }
 
-header("Location: ../resetter.html");
+header("Location: resetter.html");
 exit;
 
 ?>

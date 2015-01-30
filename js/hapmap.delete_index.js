@@ -14,7 +14,7 @@ function deleteHapmapConfirmation(user,hapmap,key){
 
 function deleteHapmap_yes(user,hapmap,key){
 	$.ajax({
-		url : 'php/hapmap.delete_server.php',
+		url : 'hapmap.delete_server.php',
 		type : 'post',
 		data : {
 			user: user,

@@ -14,7 +14,7 @@
 	</head>
 	<body>
 		<div id="genomeCreationInformation"><p>
-			<form action="genome.create_server.test.php" method="post">
+			<form action="genome.create_server.php" method="post">
 				<label for="newGenomeName">Genome Name: </label><input type="text" name="newGenomeName" id="newGenomeName" size="100"><br>
 				<br>
 				<input type="submit" value="Create New Genome">

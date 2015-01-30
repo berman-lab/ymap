@@ -10,7 +10,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 
-require_once '../constants.php';
+require_once 'constants.php';
 session_start();
 
 class UploadHandler {
@@ -38,7 +38,7 @@ class UploadHandler {
 
     function __construct($target, $script, $key, $options = null, $initialize = true, $error_messages = null) {
 		global $key;
-		$target_path = "../../".$target;
+		$target_path = $target;
 		$target_url  = $url.$target;
 
         $this->options = array(

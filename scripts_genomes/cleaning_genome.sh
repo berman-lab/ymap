@@ -10,7 +10,7 @@ umask 007;
 ### define script file locations.
 user=$1;
 genome=$2;
-main_dir=$(pwd)"/../";
+main_dir=$(pwd)"/";
 
 #user="darren"
 #genome="test_02";

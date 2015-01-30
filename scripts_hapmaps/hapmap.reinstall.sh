@@ -17,7 +17,7 @@ referencePloidy=$2;
 project1=$3;
 project2=$4;
 hapmap=$5;
-main_dir=$(pwd)"/../";
+main_dir=$(pwd)"/";
 
 user='darren1';
 referencePloidy="2.0";

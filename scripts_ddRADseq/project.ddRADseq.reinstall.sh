@@ -9,7 +9,7 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$(pwd)"/../";
+main_dir=$(pwd)"/";
 
 user='default'
 project='Fig_04.SC5314';

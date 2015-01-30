@@ -8,15 +8,15 @@
 
 
 	if(!isset($_SESSION['logged_on'])){
-		header('Location: ../user.login.php');
+		header('Location: user.login.php');
 	}
 
 	$bad_chars      = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/"," ","'",'"',"[","]","!");
 	$genomeName     = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING) ));
 	$user           = $_SESSION['user'];
-	$dir1           = "../users/".$user."/genomes";
-	$dir2           = "../users/".$user."/genomes/".$genomeName;
-	$dir3           = "../users/default/genomes/".$genomeName;
+	$dir1           = "users/".$user."/genomes";
+	$dir2           = "users/".$user."/genomes/".$genomeName;
+	$dir3           = "users/default/genomes/".$genomeName;
 
 	// Deals with accidental deletion of genomes dir.
 	if (!file_exists($dir1)){
@@ -34,7 +34,7 @@
 
 		// Generate 'name.txt' file containing:
 	    //      one line; name of genome.
-	    $outputName       = "../users/".$user."/genomes/".$genomeName."/name.txt";
+	    $outputName       = "users/".$user."/genomes/".$genomeName."/name.txt";
 		$output       = fopen($outputName, 'w');
 		fwrite($output, str_replace("_"," ",$genomeName));
 	    fclose($output);
@@ -53,7 +53,7 @@ el2.style.visibility = 'visible';
 var el3 = parent.document.getElementById('Hidden_InstallNewGenome');
 el3.style.display = 'none';
 
-window.location = "../genome.create_window.php";
+window.location = "genome.create_window.php";
 </script>
 </body>
 </html>

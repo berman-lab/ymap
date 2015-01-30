@@ -6,7 +6,7 @@ function deleteGenomeConfirmation(user,genome,key){
 	dom_object               = panel_iframe.contentDocument.getElementById('g_delete_'+key);
 
 	dom_object.innerHTML     = "<b><font color=\"red\">[Are you sure?]</font><button type='button' onclick='parent.deleteGenome_yes(\""+user+"\",\""+genome+"\",\""+key+"\")'>Yes, delete.</button>";
-    dom_object.innerHTML    += "<button type='button' onclick='parent.deleteGenome_no(\""+user+"\",\""+genome+"\",\""+key+"\")'>No, cancel</button></b>";
+ 	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteGenome_no(\""+user+"\",\""+genome+"\",\""+key+"\")'>No, cancel</button></b>";
 
 	dom_button               = panel_iframe.contentDocument.getElementById('genome_delete_'+key);
 	dom_button.style.display = 'none';
@@ -14,7 +14,7 @@ function deleteGenomeConfirmation(user,genome,key){
 
 function deleteGenome_yes(user,genome,key){
 	$.ajax({
-		url : 'php/genome.delete_server.php',
+		url : 'genome.delete_server.php',
 		type : 'post',
 		data : {
 			user: user,

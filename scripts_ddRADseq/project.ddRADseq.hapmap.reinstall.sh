@@ -10,7 +10,7 @@ umask 007;
 user=$1;
 project=$2;
 hapmap=$3;
-main_dir=$(pwd)"/../";
+main_dir=$(pwd)"/";
 
 user='default';
 hapmap='C_albicans_SC5314_A21-s02-m09-r07';

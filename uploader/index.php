@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once '../constants.php';
+	require_once 'constants.php';
 	error_reporting(E_ALL | E_STRICT);
 
 	$target_dir        = $_POST["target_dir"];

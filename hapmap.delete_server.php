@@ -9,7 +9,7 @@
 
 	if($user == $_SESSION['user']){
 		// User confirmed, can delete hapmap
-		$dir = "../users/".$user."/hapmaps/".$hapmap;
+		$dir = "users/".$user."/hapmaps/".$hapmap;
 		rrmdir($dir);
 		echo "COMPLETE";
 	} else {
