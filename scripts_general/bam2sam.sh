@@ -4,7 +4,7 @@
 user=$1;
 project=$2;
 inputFile=$3;
-main_dir=$(pwd)"/../";
+main_dir=$(pwd)"/";
 
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logFile=$projectDirectory"process_log.txt";
