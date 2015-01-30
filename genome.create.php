@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 	// If the user is not logged on, redirect to login page.
 //	if(!isset($_SESSION['logged_on'])){
 //		header('Location: user.login.php');
@@ -21,11 +21,11 @@
 			<?php if(isset($_SESSION['logged_on'])){echo "user: ".$_SESSION['user']."<br>";}?>
 
 			<!-- If user is logged in, show logout button, otherwise, show the login button so we can get the user logged in-->
-			<button type="button" onclick="window.location.href='<?php if(isset($_SESSION['logged_on'])){echo "php/logout_server.php";}else{echo "user.login.php";}?>'"><?php if(isset($_SESSION['logged_on'])){echo "Logout";}else{echo "Login";}?></button>
+			<button type="button" onclick="window.location.href='<?php if(isset($_SESSION['logged_on'])){echo "logout_server.php";}else{echo "user.login.php";}?>'"><?php if(isset($_SESSION['logged_on'])){echo "Logout";}else{echo "Login";}?></button>
 			<button type="button" onclick="window.location.href='index.php'">Back to Home</button>
 		</p></div>
 		<div id="genomeCreationInformation"><p>
-			<form action="php/genome.create_server.php" method="post">
+			<form action="genome.create_server.php" method="post">
 				<label for="newGenomeName">Genome Name: </label><input type="text" name="newGenomeName" id="newGenomeName" size="100"><br>
 				<br>
 				<input type="submit" value="Create New Genome">

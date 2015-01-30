@@ -1,6 +1,6 @@
 <?php
 	// Pipeline componant location constants.
-	$users_dir    = "../users/";
+	$users_dir    = "users/";
 	$hapmapGenome = "C_albicans_SC5314_version_A21-s02-m03-r03";
 
 	// User interface details.
@@ -13,6 +13,6 @@
 	$bugtrackDir  = "bugtracker/";
 	$bugtrackFile = "bugs.txt";
 	$bugNumFile   = "numBugs.txt";
-	
+
 	$directory = ".";
 ?>

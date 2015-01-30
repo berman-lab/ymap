@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
 <html lang="en">
@@ -17,7 +17,7 @@
 		<div id="loginControls"><p>
 		</p></div>
 		<div id="projectCreationInformation"><p>
-			<form action="php/project.create_server.test.php" method="post">
+			<form action="project.create_server.test.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project">
 				</td><td>

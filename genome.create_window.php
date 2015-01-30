@@ -1,7 +1,7 @@
 <?php
     session_start();
     if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-    require_once 'php/constants.php';
+    require_once 'constants.php';
     echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
 <html lang="en">
@@ -14,7 +14,7 @@
 	</head>
 	<body>
 		<div id="genomeCreationInformation"><p>
-			<form action="php/genome.create_server.test.php" method="post">
+			<form action="genome.create_server.test.php" method="post">
 				<label for="newGenomeName">Genome Name: </label><input type="text" name="newGenomeName" id="newGenomeName" size="100"><br>
 				<br>
 				<input type="submit" value="Create New Genome">

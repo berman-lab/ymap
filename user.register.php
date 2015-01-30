@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
@@ -19,7 +19,7 @@
 		<div class='tab' style='font-size:10pt'>
 		</div>
 		<div style='font-size:10pt'>
-		<form action="php/user.register_server.php" method="post">
+		<form action="user.register_server.php" method="post">
 			<label for="primaryInvestigator_email">Email address: </label>              <input type="text"     id="primaryInvestigator_email" name="primaryInvestigator_email"><br>
 			<div class='tab' style='font-size:10pt'>
 			Email address will only be used for system administration tasks, such as resetting passwords.<br><br>

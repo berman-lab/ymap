@@ -4,7 +4,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <?php
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 	chmod($GLOBALS['bugtrackDir'].$GLOBALS['bugtrackFile'], 0777);
 
 	$user = $_SESSION['user'];
@@ -23,7 +23,7 @@
 					submitter = $('#submitter').val();
 					description = $('#description').val();
 					$.ajax({
-						url : 'php/addBug_server.php',
+						url : 'addBug_server.php',
 						type : 'post',
 						data : {
 							submitter: submitter,

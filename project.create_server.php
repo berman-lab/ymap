@@ -6,7 +6,7 @@
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
-		header('Location: ../user.login.php');
+		header('Location: user.login.php');
 	}
 
 	// Proces POST data.
@@ -30,8 +30,8 @@
 
 	$user              = $_SESSION["user"];
 
-	$dir1              = "../users/".$user."/projects";
-	$dir2              = "../users/".$user."/projects/".$name;
+	$dir1              = "users/".$user."/projects";
+	$dir2              = "users/".$user."/projects/".$name;
 
 	// Deals with accidental deletion of projects dir.
 	if (!file_exists($dir1)) {
@@ -43,10 +43,10 @@
 	} else {
 	mkdir($dir2);
 	chmod($dir2,0777);
-	header('Location: ../');  //send browser back to main page.
+	header('Location: /');  //send browser back to main page.
 
 	// Generate 'ploidy.txt' file.
-		$fileName = "../users/".$user."/projects/".$name."/ploidy.txt";
+		$fileName = "users/".$user."/projects/".$name."/ploidy.txt";
 		$file     = fopen($fileName, 'w');
 		if (is_numeric($ploidy)) {
 			fwrite($file, $ploidy."\n");
@@ -67,7 +67,7 @@
 		chmod($fileName,0644);
 
 	// Generate 'parent.txt' file.
-		$fileName = "../users/".$user."/projects/".$name."/parent.txt";
+		$fileName = "users/".$user."/projects/".$name."/parent.txt";
 		$file     = fopen($fileName, 'w');
 		if ($dataType == "0") {
 			fwrite($file, "none");
@@ -78,9 +78,9 @@
 		chmod($fileName,0644);
 
 	// Generate 'dataType.txt' and 'dataBiases.txt' files.
-		$fileName1 = "../users/".$user."/projects/".$name."/dataType.txt";
+		$fileName1 = "users/".$user."/projects/".$name."/dataType.txt";
 		$file1     = fopen($fileName1, 'w');
-		$fileName2 = "../users/".$user."/projects/".$name."/dataBiases.txt";
+		$fileName2 = "users/".$user."/projects/".$name."/dataBiases.txt";
 		$file2     = fopen($fileName2, 'w');
 		if ($dataType == "0") { // SnpCghArray
 			fwrite($file1, $dataType);
@@ -127,7 +127,7 @@
 
 	// Generate 'restrictionEnzymes.txt' file, only fir ddRADseq projects.
 		if ($dataType == "2") { // ddRADseq
-			$fileName = "../users/".$user."/projects/".$name."/restrictionEnzymes.txt";
+			$fileName = "users/".$user."/projects/".$name."/restrictionEnzymes.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $restrictionEnzymes);
 			fclose($file);
@@ -135,7 +135,7 @@
 		}
 
 	// Generate 'snowAnnotations.txt' file.
-		$fileName = "../users/".$user."/projects/".$name."/showAnnotations.txt";
+		$fileName = "users/".$user."/projects/".$name."/showAnnotations.txt";
 		$file     = fopen($fileName, 'w');
 		fwrite($file, $showAnnotations);
 		fclose($file);
@@ -144,7 +144,7 @@
 	// Generate 'genome.txt' file : containing genome used.
 	//	1st line : (String) genome name.
 	//	2nd line : (String) hapmap name.
-		$fileName = "../users/".$user."/projects/".$name."/genome.txt";
+		$fileName = "users/".$user."/projects/".$name."/genome.txt";
 		$file     = fopen($fileName, 'w');
 		if ($hapmap == "none") {
 			fwrite($file, $genome);
@@ -164,7 +164,7 @@
 	//    5. G
 	//    6. B
 		if (strlen($manualLOH) > 0) {
-			$fileName = "../users/".$user."/projects/".$name."/manualLOH.txt";
+			$fileName = "users/".$user."/projects/".$name."/manualLOH.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $manualLOH);
 			fclose($file);

@@ -25,22 +25,22 @@ body {font-family: arial;}
 
 	// increment clock animation...
 	$status   = ($status + 1) % 12;
-	if ($status == 0) {          $clock = "<img src=\"../images/12.png\" alt-text=\"12\" class=\"clock\" >";
-	} else if ($status == 1) {   $clock = "<img src=\"../images/01.png\" alt-text=\"01\" class=\"clock\" >";
-	} else if ($status == 2) {   $clock = "<img src=\"../images/02.png\" alt-text=\"02\" class=\"clock\" >";
-	} else if ($status == 3) {   $clock = "<img src=\"../images/03.png\" alt-text=\"03\" class=\"clock\" >";
-	} else if ($status == 4) {   $clock = "<img src=\"../images/04.png\" alt-text=\"04\" class=\"clock\" >";
-	} else if ($status == 5) {   $clock = "<img src=\"../images/05.png\" alt-text=\"05\" class=\"clock\" >";
-	} else if ($status == 6) {   $clock = "<img src=\"../images/06.png\" alt-text=\"06\" class=\"clock\" >";
-	} else if ($status == 7) {   $clock = "<img src=\"../images/07.png\" alt-text=\"07\" class=\"clock\" >";
-	} else if ($status == 8) {   $clock = "<img src=\"../images/08.png\" alt-text=\"08\" class=\"clock\" >";
-	} else if ($status == 9) {   $clock = "<img src=\"../images/09.png\" alt-text=\"09\" class=\"clock\" >";
-	} else if ($status == 10) {  $clock = "<img src=\"../images/10.png\" alt-text=\"10\" class=\"clock\" >";
-	} else if ($status == 11) {  $clock = "<img src=\"../images/11.png\" alt-text=\"11\" class=\"clock\" >";
+	if ($status == 0) {          $clock = "<img src=\"images/12.png\" alt-text=\"12\" class=\"clock\" >";
+	} else if ($status == 1) {   $clock = "<img src=\"images/01.png\" alt-text=\"01\" class=\"clock\" >";
+	} else if ($status == 2) {   $clock = "<img src=\"images/02.png\" alt-text=\"02\" class=\"clock\" >";
+	} else if ($status == 3) {   $clock = "<img src=\"images/03.png\" alt-text=\"03\" class=\"clock\" >";
+	} else if ($status == 4) {   $clock = "<img src=\"images/04.png\" alt-text=\"04\" class=\"clock\" >";
+	} else if ($status == 5) {   $clock = "<img src=\"images/05.png\" alt-text=\"05\" class=\"clock\" >";
+	} else if ($status == 6) {   $clock = "<img src=\"images/06.png\" alt-text=\"06\" class=\"clock\" >";
+	} else if ($status == 7) {   $clock = "<img src=\"images/07.png\" alt-text=\"07\" class=\"clock\" >";
+	} else if ($status == 8) {   $clock = "<img src=\"images/08.png\" alt-text=\"08\" class=\"clock\" >";
+	} else if ($status == 9) {   $clock = "<img src=\"images/09.png\" alt-text=\"09\" class=\"clock\" >";
+	} else if ($status == 10) {  $clock = "<img src=\"images/10.png\" alt-text=\"10\" class=\"clock\" >";
+	} else if ($status == 11) {  $clock = "<img src=\"images/11.png\" alt-text=\"11\" class=\"clock\" >";
 	} else {                     $clock = "[ * ]";
 	}
 
-	$dirFigureBase = "../users/".$user."/projects/".$project."/";
+	$dirFigureBase = "users/".$user."/projects/".$project."/";
 
 	// Load 'dataType' from project folder.
 	$handle   = fopen($dirFigureBase."dataType.txt", "r");
@@ -56,11 +56,11 @@ body {font-family: arial;}
 	echo "\n\tproject = ".$project." --!>";
 
 
-	$sizeFile_1   = "../users/".$user."/projects/".$project."/upload_size_1.txt";
+	$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
 	$handle       = fopen($sizeFile_1,'r');
 	$sizeString_1 = trim(fgets($handle));
 	fclose($handle);
-	$sizeFile_2   = "../users/".$user."/projects/".$project."/upload_size_2.txt";
+	$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
 	$handle       = fopen($sizeFile_2,'r');
 	$sizeString_2 = trim(fgets($handle));
 	fclose($handle);
@@ -95,7 +95,7 @@ body {font-family: arial;}
 		<?php
 	} else if (file_exists($dirFigureBase."working.txt")) {
 		// Load start time from 'working.txt'
-		$startTimeStamp = file_get_contents("../users/".$user."/projects/".$project."/working.txt");
+		$startTimeStamp = file_get_contents("users/".$user."/projects/".$project."/working.txt");
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;

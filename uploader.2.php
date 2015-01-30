@@ -19,7 +19,7 @@
 </head>
 <BODY class="tab">
 <!---------- Main section of User interface ----------!>
-	<form id="fileupload" class="HTML5Uploader" method="POST" action="php/uploader/" enctype="multipart/form-data">
+	<form id="fileupload" class="HTML5Uploader" method="POST" action="uploader/" enctype="multipart/form-data">
 		<div class="upload-wrapper">
 			<div id="1-wrapper">
 			<table><tr>

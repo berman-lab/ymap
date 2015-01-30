@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
@@ -27,8 +27,8 @@
 			There are no backups to restore from.<br>
 			Are you absolutely sure?<br>
 			<div style='font-size:10pt'>
-			<form action="$.ajax({url : 'php/user.delete_server.php', type : 'post', data : {user : user}, success : function(answer){if(answer == 'COMPLETE'){window.location.href=window.location.href;}} });" method="post">
-				<input type="button" value="Yes! Delete." onclick="console.log('@user.delete.php@ user = '+user); $.ajax({url : 'php/user.delete_server.php', type : 'post', data : {user : user}, success : function(answer){if(answer == 'COMPLETE'){window.location.href=window.location.href;}} }); location.replace('panel.user.php');">
+			<form action="$.ajax({url : 'user.delete_server.php', type : 'post', data : {user : user}, success : function(answer){if(answer == 'COMPLETE'){window.location.href=window.location.href;}} });" method="post">
+				<input type="button" value="Yes! Delete." onclick="console.log('@user.delete.php@ user = '+user); $.ajax({url : 'user.delete_server.php', type : 'post', data : {user : user}, success : function(answer){if(answer == 'COMPLETE'){window.location.href=window.location.href;}} }); location.replace('panel.user.php');">
 				<input type="button" value="No! Cancel."  onclick="location.replace('panel.user.php');">
 			</form>
 			</div>

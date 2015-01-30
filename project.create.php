@@ -9,7 +9,7 @@
 		header('Location: user.login.php');
 	}
 
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 ?>
 <html lang="en">
 	<HEAD>
@@ -29,12 +29,12 @@
 			}
 			?>
 			<!-- If user is logged in, show logout button, otherwise, show the login button so we can get the user logged in-->
-			<button type="button" onclick="window.location.href='<?php if(isset($_SESSION['logged_on'])){echo "php/logout_server.php";}else{echo "user.login.php";}?>'">
+			<button type="button" onclick="window.location.href='<?php if(isset($_SESSION['logged_on'])){echo "logout_server.php";}else{echo "user.login.php";}?>'">
 			<?php if(isset($_SESSION['logged_on'])){echo "Logout";}else{echo "Login";}?></button>
 			<button type="button" onclick="window.location.href='index.php'">Back to Home</button>
 		</p></div>
 		<div id="projectCreationInformation"><p>
-			<form action="php/project.create_server.php" method="post">
+			<form action="project.create_server.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="project">Project Name : </label><input type="text" name="project" id="project">
 				</td><td>
