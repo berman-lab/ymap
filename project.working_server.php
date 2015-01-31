@@ -129,7 +129,7 @@ body {font-family: arial;}
 				// Make a form to generate a form to POST information to pass along to page reloads, auto-triggered by form submit.
 				var autoSubmitForm = document.createElement('form');
 				    autoSubmitForm.setAttribute('method','post');
-				    autoSubmitForm.setAttribute('action','project.working_server.2.php');
+				    autoSubmitForm.setAttribute('action','project.working_server.php');
 				var input2 = document.createElement('input');
 				    input2.setAttribute('type','hidden');
 				    input2.setAttribute('name','key');

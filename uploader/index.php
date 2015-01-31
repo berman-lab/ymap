@@ -1,3 +1,6 @@
+<script type="text/javascript">
+	console.log('$$ uploader/index.php $$');
+</script>
 <?php
 	session_start();
 	require_once '../constants.php';
@@ -10,9 +13,10 @@
 	//============================================================================
 	// HTML5Uploader ::  Adam Filkor : http://filkor.org
 	// Licensed under the MIT license : http://www.opensource.org/licenses/MIT
-	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// non-MySQL version.
 	//----------------------------------------------------------------------------
+
 	require('UploadHandler.php');
 	$upload_handler = new UploadHandler($target_dir, $conclusion_script, $key);
 ?>

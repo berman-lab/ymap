@@ -18,7 +18,7 @@
 		// Generate a form to post data to loaded page.
 		var conclusion = document.createElement("form");
 		conclusion.setAttribute("method","post");
-		conclusion.setAttribute("action","project.working_server.2.php");
+		conclusion.setAttribute("action","project.working_server.php");
 		var input1 = document.createElement("input");
 		input1.setAttribute("type","hidden");
 		input1.setAttribute("name","user");
