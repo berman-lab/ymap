@@ -1,6 +1,6 @@
 <?php
     session_start();
-    require_once 'constants.php';
+    require_once '../constants.php';
 
 //print_r($_SERVER);
 //print_r($GLOBALS);
