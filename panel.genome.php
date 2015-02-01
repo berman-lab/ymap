@@ -167,7 +167,9 @@ if (isset($_SESSION['logged_on'])) {
 		echo "g_js.display_string    = new Array();\n\t";
 		echo "g_js.display_string[0] = \"Add : Genome reference FASTA file...\";\n\t";
 		echo "g_js.target_dir        = \"users/".$user."/genomes/".$genome."/\";\n\t";
-		echo "g_js.conclusion_script = \"scripts_genomes/genome.install_1.php\";\n\t";
+//		echo "g_js.conclusion_script = \"scripts_genomes/genome.install_1.php\";\n\t";
+		echo "g_js.conclusion_script = \"php/genome.install_1.php\";\n\t";
+
 		echo "g_js.user              = \"".$user."\";\n\t";
 		echo "g_js.genome            = \"".$genome."\";\n\t";
 		echo "g_js.key               = \"g_".$key."\";\n";
