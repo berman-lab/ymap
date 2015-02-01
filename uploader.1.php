@@ -20,7 +20,7 @@
 </head>
 <BODY class="tab">
 <!---------- Main section of User interface ----------!>
-	<form id="fileupload" class="HTML5Uploader" method="POST" action="php/uploader/index.php" enctype="multipart/form-data">
+	<form id="fileupload" class="HTML5Uploader" method="POST" action="php/uploader/" enctype="multipart/form-data">
 		<div class="upload-wrapper">
 			<table><tr>
 			<!---------- Add file to upload button. ----------!>
@@ -100,6 +100,7 @@
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script>
+		console.log('$$ uploader.1.php $$ currentDir = <?php echo getcwd(); ?>');
 		window.jQuery || document.write('<script src="js/jquery-1.9.1.min.js"><\/script>')
 	</script>
 
@@ -107,14 +108,13 @@
 	<script src="js/handlebars.min.js"            ></script>
 
 	<!-- HTML5Uploader -->
-	<script src="js/jquery.ui.widget.js"          ></script>
-	<script src="js/bootstrap-transition.js"      ></script>
-	<script src="js/jquery.iframe-transport.js"   ></script>
-	<script src="js/jquery.fileupload.js"         ></script>
-	<script src="js/jquery.fileupload-process.js" ></script>
-	<script src="js/jquery.fileupload-validate.js"></script>
-	<script src="js/HTML5Uploader.js"             ></script>
-	<script src="js/main.js"                      ></script>
-
+<script src="js/jquery.ui.widget.js"          ></script>
+<script src="js/bootstrap-transition.js"      ></script>
+<script src="js/jquery.iframe-transport.js"   ></script>
+<script src="js/jquery.fileupload.js"         ></script>
+<script src="js/jquery.fileupload-process.js" ></script>
+<script src="js/jquery.fileupload-validate.js"></script>
+<script src="js/HTML5Uploader.js"             ></script>
+<script src="js/main.js"                      ></script>
 </body>
 </html>
