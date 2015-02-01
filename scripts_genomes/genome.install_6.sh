@@ -42,7 +42,7 @@ echo "" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 
 # load local installed program location variables.
-. $main_dir/sh/local_installed_programs.sh;
+. $main_dir/scripts_general/local_installed_programs.sh;
 
 ##============================================#
 # Initialization of various programs below.   #

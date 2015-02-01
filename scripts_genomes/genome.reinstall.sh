@@ -10,11 +10,10 @@ umask 007;
 ## define script file locations.
 user=$1;
 genome=$2;
-main_dir=$(pwd)"/";
+main_dir=$(pwd)"/../";
 
 user="darren1";
-genome="test";
-main_dir="/heap/hapmap/bermanlab/";
+genome="test_fasta";
 
 
 reflocation=$main_dir"users/"$user"/genomes/"$genome"/";				# Directory where FASTA file is kept.
@@ -31,6 +30,7 @@ echo "\n\nRunning 'sh/genome.install_6.sh'" >> $logName;
 echo "\tInput to shell script:" >> $logName;
 echo "\t\t\$1 (user)         = $1" >> $logName;
 echo "\t\t\$2 (genome)       = $2" >> $logName;
+echo "\t\t\$main_dir         = $main_dir" >> $logName;
 echo "" >> $logName;
 echo "\tImportant location variables in script:" >> $logName;
 echo "\t\t\$logName          = "$logName >> $logName;
@@ -43,7 +43,7 @@ echo "" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 
 # load local installed program location variables.
-. $main_dir/sh/local_installed_programs.sh;
+. $main_dir/scripts_general/local_installed_programs.sh;
 
 ##============================================#
 # Initialization of various programs below.   #

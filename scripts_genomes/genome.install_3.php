@@ -25,7 +25,7 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
+    require_once '../constants.php';
 
 	$user               = $_SESSION['user'];
 	$key                = filter_input(INPUT_POST, "key",                FILTER_SANITIZE_STRING);
@@ -57,7 +57,7 @@
 // Open 'process_log.txt' file.
     $logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
     $logOutput     = fopen($logOutputName, 'a');
-    fwrite($logOutput, "Running 'php/genome.install_3.php'.\n");
+    fwrite($logOutput, "Running 'scripts_genomes/genome.install_3.php'.\n");
 
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing annotation specifications.\n");
@@ -122,6 +122,7 @@
 		echo "    </form>\n";
 		echo "</BODY>\n";
 	} else {
+		fwrite($logOutput, "skipping 'scripts_genomes/genome.install_4.php'.\n");
 		//
 		// Chromosome features file is not available, so go directly to "genome.install_5.php".
 		//
@@ -136,6 +137,6 @@
 	}
 	echo "</HTML>";
 
-	fwrite($logOutput, "\t'php/genome_install_3.php' has completed.\n");
+	fwrite($logOutput, "\t'scripts_genomes/genome_install_3.php' has completed.\n");
 	fclose($logOutput);
 ?>

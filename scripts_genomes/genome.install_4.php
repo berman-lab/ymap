@@ -30,7 +30,7 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
+    require_once '../constants.php';
 
 	$user             = $_SESSION['user'];
 	$key              = filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING);
@@ -39,7 +39,7 @@
 // Open 'process_log.txt' file.
 	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
-	fwrite($logOutput, "Running 'php/genome.install_4.php'.\n");
+	fwrite($logOutput, "Running 'scripts_genomes/genome.install_4.php'.\n");
 
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing genome specific information.\n");
@@ -59,7 +59,7 @@
 	fclose($output);
 
 // process_log.txt output.
-	fwrite($logOutput, "\t'php/genome.install_4.php' has completed'.\n");
+	fwrite($logOutput, "\t'scripts_genomes/genome.install_4.php' has completed'.\n");
 
 	// Final install functions are in shell script.
 //	$system_call_string = "sh ../sh/genome.install_6.plus_RNAseq.sh ".$user." ".$genome." > /dev/null &";
@@ -73,8 +73,8 @@
 		echo "el_g.innerHTML='<iframe id=\"g_new\" name=\"g_new\" class=\"upload\" style=\"height:38px\" src=\"../uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 		echo "frames['g_new'].display_string = new Array();\n\t\t";
 		echo "frames['g_new'].display_string[0] = \"Add : chromosome feature file...\";\n\t\t";
-		echo "frames['g_new'].target_dir        = \"../../users/".$user."/genomes/".$genome."/\";\n\t\t";
-		echo "frames['g_new'].conclusion_script = \"php/genome.install_5.php\";\n\t\t";
+		echo "frames['g_new'].target_dir        = \"../users/".$user."/genomes/".$genome."/\";\n\t\t";
+		echo "frames['g_new'].conclusion_script = \"genome.install_5.php\";\n\t\t";
 		echo "frames['g_new'].user              = \"".$user."\";\n\t\t";
 		echo "frames['g_new'].genome            = \"".$genome."\";\n\t\t";
 		echo "frames['g_new'].key               = \"".$key."\";\n\t";

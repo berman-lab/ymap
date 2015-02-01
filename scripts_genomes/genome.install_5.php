@@ -30,7 +30,7 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
+    require_once '../constants.php';
 
 	$user             = $_SESSION['user'];
 	$key              = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
@@ -54,7 +54,7 @@
 // Open 'process_log.txt' file.
 	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
-	fwrite($logOutput, "Running 'php/genome.install_5.php'.\n");
+	fwrite($logOutput, "Running 'scripts_genomes/genome.install_5.php'.\n");
 	fwrite($logOutput, "\tkey     :'".$key."'\n");
 	fwrite($logOutput, "\tfileName:'".$fileName."'\n");
 
@@ -67,7 +67,7 @@
 	fclose($output);
 
 // process_log.txt output.
-	fwrite($logOutput, "\t'php/genome.install_5.php' has completed.\n");
+	fwrite($logOutput, "\t'scripts_genomes/genome.install_5.php' has completed.\n");
 
 // Standardize name of uploaded file.
 	if ($fileName == '') {
@@ -104,7 +104,7 @@
 		// construct and submit form to move on to "project.working_server.2.php";
 		var autoSubmitForm = document.createElement("form");
 			autoSubmitForm.setAttribute("method","post");
-			autoSubmitForm.setAttribute("action","genome.working_server.php");
+			autoSubmitForm.setAttribute("action","../genome.working_server.php");
 		var input2 = document.createElement("input");
 			input2.setAttribute("type","hidden");
 			input2.setAttribute("name","key");

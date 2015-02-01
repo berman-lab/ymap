@@ -11,7 +11,7 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
+    require_once '../constants.php';
 
 	$user             = $_SESSION['user'];
 	$key              = filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING);
@@ -28,7 +28,7 @@
 // Open 'process_log.txt' file.
     $logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
     $logOutput     = fopen($logOutputName, 'a');
-    fwrite($logOutput, "Running 'php/genome.install_2.php'.\n");
+    fwrite($logOutput, "Running 'scripts_genomes/genome.install_2.php'.\n");
 
 	$sizeFile_1   = "../users/".$user."/genomes/".$genome."/upload_size_1.txt";
 	$handle       = fopen($sizeFile_1,'r');
@@ -278,6 +278,6 @@
 </BODY>
 </HTML>
 <?php
-	fwrite($logOutput, "\t'php/genome_install_2.php' has completed.\n");
+	fwrite($logOutput, "\t'scripts_genomes/genome_install_2.php' has completed.\n");
 	fclose($logOutput);
 ?>
