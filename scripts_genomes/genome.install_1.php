@@ -174,7 +174,7 @@
 	fwrite($logOutput, "\tGenerating form to request centromere location and other genome specific data from the user.\n");
 ?>
 
-<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 150); <?php
+<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 150)<?php
 //	$genomePath      = "../users/".$user."/genomes/".$genome."/";
 //	$outputName      = $genomePath."upload_size_1.txt";
 //	$output          = fopen($outputName, 'w');
@@ -185,12 +185,9 @@
 	$sizeString_1 = trim(fgets($handle));
 	fclose($handle);
 	if ($sizeString_1 !== "") {
-//		echo "<script type='text/javascript'>\n";
-		echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
-//		echo "\n</script>\n";
+		echo "; parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
 	}
-?>
-" >
+?>">
 
 <font color="red" size="2">Fill in genome details:</font>
 	<form action="genome.install_2.php" method="post">
