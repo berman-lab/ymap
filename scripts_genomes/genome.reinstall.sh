@@ -85,6 +85,8 @@ else
 	echo "\tFASTA dictionary file not found for genome '$genome': Regenerating using Picard-tools." >> $logName;
 	echo "\tR="$reflocation$FASTA >> $logName;
 	echo "\tO="$reflocation$FASTAname".dict" >> $logName;
+
+#	local-specific: This call may need changed with different PicardTools installation methods.
 	java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
 fi
 
