@@ -38,7 +38,7 @@ class UploadHandler {
 
     function __construct($target, $script, $key, $options = null, $initialize = true, $error_messages = null) {
 		global $key;
-		$target_path = $target;
+		$target_path = "../../".$target;
 		$target_url  = $url.$target;
 
         $this->options = array(
@@ -847,4 +847,5 @@ class UploadHandler {
     }
 
 }
-?>
+
+

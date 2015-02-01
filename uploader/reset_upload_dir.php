@@ -21,7 +21,7 @@ foreach($files as $file){ // iterate files
     unlink($file); // delete file
 }
 
-header("Location: resetter.html");
+header("Location: ../resetter.html");
 exit;
 
 ?>

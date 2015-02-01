@@ -230,6 +230,6 @@
 </BODY>
 </HTML>
 <?php
-	fwrite($logOutput, "\t'php/genome.install_1.php' has completed.\n");
+	fwrite($logOutput, "\t'scripts_genomes/genome.install_1.php' has completed.\n");
 	fclose($logOutput);
 ?>
