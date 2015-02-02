@@ -10,7 +10,7 @@ umask 007;
 ## define script file locations.
 user=$1;
 genome=$2;
-main_dir=$(pwd)"/";
+main_dir=$(pwd)"/../";
 
 #user="darren";
 #genome="Candida_albicans_SC5314_verA21-s02-m09-r07";
@@ -26,7 +26,7 @@ standard_bin_FASTA=$FASTAname".standard_bins.fasta";					# Name of reference gen
 logName=$reflocation"process_log.txt";
 condensedLog=$reflocation"condensed_log.txt";
 #chmod 0755 $logName;
-echo "\n\nRunning 'sh/genome.install_6.sh'" >> $logName;
+echo "\n\nRunning 'scripts_genomes/genome.install_6.sh'" >> $logName;
 echo "\tInput to shell script:" >> $logName;
 echo "\t\t\$1 (user)         = $1" >> $logName;
 echo "\t\t\$2 (genome)       = $2" >> $logName;
@@ -123,14 +123,14 @@ else
 
 	echo "function [] = processing1()" > $outputName;
 	echo "\tdiary('"$reflocation"matlab.repetitiveness_analysis.log');" >> $outputName;
-	echo "\tcd "$main_dir"Matlab/genome_install;" >> $outputName;
+	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
 	echo "\trepetitiveness_1('$user','$genome');" >> $outputName;
 	echo "\texit;" >> $outputName;
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing1()" >> $logName;
 	echo "\t|\t\tdiary('"$reflocation"matlab.repetitiveness_analysis.log');" >> $logName;
-	echo "\t|\t\tcd "$main_dir"Matlab/genome_install;" >> $logName;
+	echo "\t|\t\tcd "$main_dir"scripts_genomes/;" >> $logName;
 	echo "\t|\t\trepetitiveness_1('$user','$genome');" >> $logName;
 	echo "\t|\t\texit;" >> $logName;
 	echo "\t|\tend" >> $logName;
@@ -156,14 +156,14 @@ else
 
     echo "function [] = processing3()" > $outputName;
     echo "\tdiary('"$reflocation"matlab.standard_fragmentation_of_reference.log');" >> $outputName;
-    echo "\tcd "$main_dir"Matlab/genome_install;" >> $outputName;
+    echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
     echo "\tgenome_process_for_standard_bins_1('$user','$genome');" >> $outputName;
     echo "\texit;" >> $outputName;
     echo "end" >> $outputName;
 
 	echo "\t|function [] = processing3()" >> $logName;
 	echo "\t|\tdiary('"$reflocation"matlab.standard_fragmentation_of_reference.log');" >> $logName;
-	echo "\t|\tcd "$main_dir"Matlab/genome_install;" >> $logName;
+	echo "\t|\tcd "$main_dir"scripts_genomes/;" >> $logName;
 	echo "\t|\tgenome_process_for_standard_bins_1('$user','$genome');" >> $logName;
 	echo "\t|\texit;" >> $logName;
 	echo "\t|end" >> $logName;
@@ -189,14 +189,14 @@ else
 
 	echo "function [] = processing2()" > $outputName;
 	echo "\tdiary('"$reflocation"matlab.simulated_digest_of_reference.log');" >> $outputName;
-	echo "\tcd "$main_dir"Matlab/genome_install;" >> $outputName;
+	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
 	echo "\tgenome_process_for_RADseq_1('$user','$genome');" >> $outputName;
 	echo "\texit;" >> $outputName;
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing2()" >> $logName;
     echo "\t|\t\tdiary('"$reflocation"matlab.simulated_digest_of_reference.log');" >> $logName;
-    echo "\t|\t\tcd "$main_dir"Matlab/genome_install;" >> $logName;
+    echo "\t|\t\tcd "$main_dir"scripts_genomes/;" >> $logName;
     echo "\t|\t\tgenome_process_for_RADseq_1('$user','$genome');" >> $logName;
     echo "\t|\t\texit;" >> $logName;
     echo "\t|\tend" >> $logName;
@@ -240,14 +240,14 @@ else
 
 		echo "function [] = processing3()" > $outputName;
 		echo "\tdiary('"$reflocation"matlab.expression_digest_of_reference.log');" >> $outputName;
-		echo "\tcd "$main_dir"Matlab/genome_install;" >> $outputName;
+		echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
 		echo "\tgenome_process_for_expression_1('$user','$genome');" >> $outputName;
 		echo "\texit;" >> $outputName;
 		echo "end" >> $outputName;
 
 		echo "\t|\tfunction [] = processing3()" >> $logName;
 		echo "\t|\t\tdiary('"$reflocation"matlab.expression_digest_of_reference.log');" >> $logName;
-		echo "\t|\t\tcd "$main_dir"Matlab/genome_install;" >> $logName;
+		echo "\t|\t\tcd "$main_dir"scripts_genomes/;" >> $logName;
 		echo "\t|\t\tgenome_process_for_expression_1('$user','$genome');" >> $logName;
 		echo "\t|\t\texit;" >> $logName;
 		echo "\t|\tend" >> $logName;
@@ -263,7 +263,7 @@ echo "\n\t======================================================================
 ## Reformat standard-bin fragmented FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting standard genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$standard_bin_FASTA;
+sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$standard_bin_FASTA;
 
 outputFile=$reflocation$FASTAname".GC_ratios.standard_bins.txt";
 if [ -e $outputFile ]
@@ -300,7 +300,7 @@ echo "\n\t----------------------------------------------------------------------
 ## Reformat digested FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting digested genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$ddRADseq_FASTA;
+sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$ddRADseq_FASTA;
 
 outputFile=$reflocation$FASTAname".GC_ratios.MfeI_MboI.txt";
 if [ -e $outputFile ]
@@ -339,7 +339,7 @@ then
 	## Reformat digested FASTA file to have single-line entries for each sequence fragment.
 	echo "Reformatting expression genome fragments FASTA file." >> $condensedLog;
 	echo "\tReformatting expression FASTA file => single-line per sequence fragment." >> $logName;
-	sh $main_dir"sh/FASTA_reformat_1.sh" $reflocation$RNAseq_FASTA;
+	sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$RNAseq_FASTA;
 
 	outputFile=$reflocation$FASTAname".GC_ratios.expression.txt";
 	if [ -e $outputFile ]
@@ -377,4 +377,4 @@ echo "\n\t======================================================================
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"sh/cleaning_genome.sh" $user $genome $main_dir;
+sh $main_dir"scripts_genome/cleaning_genome.sh" $user $genome $main_dir;

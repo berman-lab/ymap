@@ -66,9 +66,6 @@
 	fwrite($output, $startTimeString);
 	fclose($output);
 
-// process_log.txt output.
-	fwrite($logOutput, "\t'scripts_genomes/genome.install_5.php' has completed.\n");
-
 // Standardize name of uploaded file.
 	if ($fileName == '') {
 	} else {
@@ -128,3 +125,15 @@
 	</script>
 </BODY>
 </HTML>
+<?php
+// process_log.txt output.
+	fwrite($logOutput, "\t'scripts_genomes/genome.install_5.php' has completed.\n");
+	fclose($logOutput);
+
+// Initialize 'condensed_log.txt' file.
+	$condensedLogOutputName = "../users/".$user."/genomes/".$genome."/condensed_log.txt";
+	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
+	fwrite($condensedLogOutput, "Process started.\n");
+	fclose($condensedLogOutput);
+	chmod($outputName,0755);
+?>
