@@ -121,8 +121,9 @@
 		echo "    <input type='hidden' id='key' name='key' value='".$key."'>\n";
 		echo "    </form>\n";
 		echo "</BODY>\n";
+		echo "</HTML>";
+		fwrite($logOutput, "\t'scripts_genomes/genome_install_3.php' has completed.\n");
 	} else {
-		fwrite($logOutput, "skipping 'scripts_genomes/genome.install_4.php'.\n");
 		//
 		// Chromosome features file is not available, so go directly to "genome.install_5.php".
 		//
@@ -134,9 +135,9 @@
 		echo "    </form>\n";
 		echo "    <font color='red'>[Installation in process.]</font><br>\n";
 		echo "</BODY>\n";
+		echo "</HTML>";
+		fwrite($logOutput, "\t'scripts_genomes/genome_install_3.php' has completed.\n");
+		fwrite($logOutput, "Skipping 'scripts_genomes/genome.install_4.php'.\n");
 	}
-	echo "</HTML>";
-
-	fwrite($logOutput, "\t'scripts_genomes/genome_install_3.php' has completed.\n");
 	fclose($logOutput);
 ?>
