@@ -13,9 +13,9 @@
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTA_reformat_1.sh [dataset]'";
+	echo "# Command syntax is : 'sh FASTA_reformat_1.sh [FASTA seq file]'";
 	echo "# ";
-	echo "#        [dataset] : File containing FASTA entries.";
+	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
 	echo "# ";
 	echo "# This script will take a file containing multi-line FASTA entries and reformat";
 	echo "# them to have only one line for the header and for the sequence for each entry."; 
@@ -24,8 +24,8 @@ then
 	exit 1;
 else
 	# 1) For lines that start with ">", convert the ending "\n" into "\t".
-    TAB=$'\t' # Mac's sed is really old and doesn't understan \t, thus we must resort to trickery. Also not giving -i an extesion doesn't work for some reason. Also
-    sed -e '/^[>]/{' -e "N;s/\n/${TAB}/" -e '}' -i .temp.bak $1
+    TAB=$'\t'                                                           # Mac's sed is really old and doesn't understan "\t", thus we must resort to trickery. Also not giving -i an extesion doesn't work for some reason.
+    sed -e '/^[>]/{' -e "N;s/\n/${TAB}/" -e '}' -i .temp.bak $1         # The Mac hack seems to result in an error output on Ubuntu, but the script functions as expected anyhow.
     rm $1.temp.bak
 
 	# 2) Removes all newline characters.
