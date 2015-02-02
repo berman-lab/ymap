@@ -9,7 +9,10 @@ fprintf(['\nLoad_genome_information_1.m : Genome in use : [' genome ']\n']);
 centromeres = [];
 centromere_file_name = [genomeDir '/centromere_locations.txt'];
 centromere_fid = fopen(centromere_file_name, 'r');
-fprintf(['\n' genomeDir '\n' genome '\n']);
+fprintf(['Current directory = "' pwd '"\n']);
+fprintf(['Genome directory  = "' genomeDir '"\n']);
+fprintf(['Genome name       = "' genome    '"\n']);
+
 discard = fgetl(centromere_fid);
 clear discard; %discard header line.
 lines_analyzed = 0;

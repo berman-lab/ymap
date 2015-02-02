@@ -5,7 +5,7 @@ function results = genome_process_for_RADseq_1_BamHI_BclI(user,genome)
 % log file start, for in-process analysis.
 fprintf(['Genome : [[[' genome '[[[\n']);
 
-workingDir             = ['../../users/' user '/genomes/' genome '/'];
+workingDir             = ['../users/' user '/genomes/' genome '/'];
 nmer_length            = 10;
 
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(workingDir,genome);
