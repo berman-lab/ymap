@@ -169,25 +169,30 @@ while True:
 		chr_name   = line_parts[0];
 		chr_name   = chr_name.replace(">","");
 
-		# Run along chromosome, adding to k-mer count vector "nmer_counts".
-		string_start = 0;
-		string_end   = len(line2)-nmer_length;  # for a string of length 5, a nmer_length of 3 will have an end coordinate of 2 in [0, 1, 2].
-		for index in range(string_end+1):
-			test_string      = line2[index:(index+nmer_length)];
-			results_1        = find_nmer(test_string);
-			results_2        = find_nmer(rev_com(test_string));
-			forward_nmer_num = results_1[0];
-			forward_nmer_err = results_1[1];
-			reverse_nmer_num = results_2[0];
-			# If string is a valid DNA sequence:
-			if forward_nmer_err == 'false':
-				nmer_counts[forward_nmer_num] += 1;
-				nmer_counts[reverse_nmer_num] += 1;
+		# If the current chromosome is one of those in use...
+		if chr_name in chrName:
+			# Run along chromosome coordinates, from start(0) to end (len(line2)-nmer_length+1), such that a nmer can be examined starting at each coordinate.
+			# For each coordinate, add to k-mer count vector "nmer_counts".
+			for index in range(0, len(line2)-nmer_length+1):
+				# current nmer string.
+				test_string      = line2[index:(index+nmer_length)];
+				# determine nmer_counts vector position for the test_string and its reverse complement.
+				results_1        = find_nmer(test_string);
+				results_2        = find_nmer(rev_com(test_string));
+				forward_nmer_num = results_1[0];
+				forward_nmer_err = results_1[1];
+				reverse_nmer_num = results_2[0];
+				if forward_nmer_err == 'false':
+					# If test_string is a valid DNA sequence, increment the nmer_counts vector position for the string and its reverse complement.
+					nmer_counts[forward_nmer_num] += 1;
+					nmer_counts[reverse_nmer_num] += 1;
+FASTA_data.close();
 
 
 #============================================================================================================
 # Process k-mer array into repetitiveness scores for each coordinate.
 #------------------------------------------------------------------------------------------------------------
+FASTA_data = open(FASTA_file,'r');
 # chrName[] contains names of used chromosomes.
 while True:
 	# FASTA entries are pairs of lines with the following structure.
@@ -205,21 +210,30 @@ while True:
 		chr_name   = line_parts[0];
 		chr_name   = chr_name.replace(">","");
 
-		# Run along chromosome, adding to k-mer count vector "nmer_counts".
-		string_start = 0;
-		string_end   = len(line2)-nmer_length;  # for a string of length 5, a nmer_length of 3 will have an end coordinate of 2 in [0, 1, 2].
-		for index in range(string_end+1):
-			test_string      = line2[index:(index+nmer_length)];
-			results_1        = find_nmer(test_string);
-			results_2        = find_nmer(rev_com(test_string));
-			forward_nmer_num = results_1[0];
-			forward_nmer_err = results_1[1];
-			reverse_nmer_num = results_2[0];
-			# If string is a valid DNA sequence:
-			if forward_nmer_err == 'false':
-				nmer_counts[forward_nmer_num] += 1;
-				nmer_counts[reverse_nmer_num] += 1;
-
+		# If the current chromosome is one of those in use...
+		if chr_name in chrName:
+			# Run along start of chromosome, from index [0] to [nmer_length-2].
+			for index in range(0, nmer_length-2):
+				score_sum = 0;
+				# Output repetitiveness score line to file.
+			# Run along chromosome coordinates, from start(nmer_length-1) to end (len(line2)-nmer_length+1), such that all nmers overlapping the coordinate can be examined.
+			for index in range(nmer_length-1, len(line2)-nmer_length+1):
+				score_sum = 0;
+				for index_offset in range(-nmer_length+1,0):
+					# current nmer string.
+					test_string      = line2[index:(index+nmer_length)];
+					# determine nmer_counts vector position for the test_string. The reverse-complement was dealt with in the tallying step previous.
+					results_1        = find_nmer(test_string);
+					forward_nmer_num = results_1[0];
+					forward_nmer_err = results_1[1];
+					if forward_nmer_err == 'false':
+						# If test_string is a valid DNA sequence, add to score_sum.
+						score_sum += nmer_counts[forward_nmer_num];
+				# Output repetitiveness score line to file.
+			# Run along end of chromosome, from index [len(line2)-nmer_length+2] to [len(line2)-1].
+			for index in range(len(line2)-nmer_length+2,len(line2)-1):
+				score_sum = 0;
+				# Output repetitiveness score line to file.
 
 #============================================================================================================
 # 
