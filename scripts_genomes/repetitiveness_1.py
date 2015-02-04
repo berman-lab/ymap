@@ -276,8 +276,8 @@ while True:
 						if forward_nmer_err == 'false':
 							# If test_string is a valid DNA sequence, add to score_sum.
 							score_sum += nmer_counts[forward_nmer_num];
-						# Output repetitiveness score line to file: [chrName, bpCoordinate, repetitivenessScore]
-						print chr_name + '\t' + str(index) + '\t' + str(score_sum);
+					# Output repetitiveness score line to file: [chrName, bpCoordinate, repetitivenessScore]
+					print chr_name + '\t' + str(index) + '\t' + str(score_sum);
 		old_chr_name = chr_name;
 
 
