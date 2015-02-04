@@ -13,6 +13,4 @@
 	$bugtrackDir  = "bugtracker/";
 	$bugtrackFile = "bugs.txt";
 	$bugNumFile   = "numBugs.txt";
-	
-	$directory = ".";
 ?>

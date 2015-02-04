@@ -50,8 +50,8 @@
 					<div id="hiddenFormSection1" style="display:inline">
 <?php
 // figure out which hapmaps have been defined for this species, if any.
-$projectsDir1       = $directory."users/default/projects/";
-$projectsDir2       = $directory."users/".$user."/projects/";
+$projectsDir1       = "users/default/projects/";
+$projectsDir2       = "users/".$user."/projects/";
 $projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 $projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 $projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
