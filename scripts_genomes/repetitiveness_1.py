@@ -220,7 +220,7 @@ with open(logName, "a") as myfile:
 	if old_chr_name in chrName:
 		myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds for this chr.\n");
 	myfile.write("\t\t\t####\n");
-	myfile.write("\t\t\t#### " + str(time.clock() - t0a) + "seconds to talley incidence of nmers across genome.\n");
+	myfile.write("\t\t\t#### " + str(time.clock() - t0a) + " seconds to talley incidence of nmers across genome.\n");
 	myfile.write("\t\t\t####\n");
 t0b = time.clock();
 t1  = t0b;
