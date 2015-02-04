@@ -273,7 +273,7 @@ while True:
 			for index in range(0, len(line2)-1):
 				count += 1;
 				score_sum = 0;
-				for index_offset in range(1-nmer_length,0):
+				for index_offset in range(-nmer_length,0):
 					# current nmer string.
 					if (index+index_offset >= 0) and (index+index_offset+nmer_length-1 <= len(line2)-1):
 						test_string      = line2[(index+index_offset):(index+index_offset+nmer_length)];
