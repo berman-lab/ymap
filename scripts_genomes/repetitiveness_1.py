@@ -186,10 +186,8 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				if old_chr_name in chrName:
-					myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds for this chr.\n");
-			t1 = time.clock();
-			with open(logName, "a") as myfile:
+				myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds for this chr.\n");
+				t1 = time.clock();
 				if chr_name in chrName:
 					myfile.write("\t\t\t#### Tallying nmers of: " + chr_name + "\n");
 				else:
@@ -273,7 +271,7 @@ while True:
 			for index in range(0, len(line2)-1):
 				count += 1;
 				score_sum = 0;
-				for index_offset in range(-nmer_length,0):
+				for index_offset in range(-nmer_length+1,1):
 					# current nmer string.
 					if (index+index_offset >= 0) and (index+index_offset+nmer_length-1 <= len(line2)-1):
 						test_string      = line2[(index+index_offset):(index+index_offset+nmer_length)];
