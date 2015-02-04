@@ -3,7 +3,7 @@
 #	2) genome  : Name of the genome.
 #	3) logfile : Path and file name of output log file.
 #
-nmer_length = 2;
+nmer_length = 10;
 
 
 #------------------------------------------------------------------------------------------------------------
