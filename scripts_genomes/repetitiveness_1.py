@@ -3,12 +3,12 @@
 #	2) genome  : Name of the genome.
 #	3) logfile : Path and file name of output log file.
 #
-# Output:
+nmer_length = 2;
 
 
 #------------------------------------------------------------------------------------------------------------
+# Calculates position in nmer count vector and generates an error condition if the test sequence contains non-ATCG characters.
 def find_nmer(seq):
-	# Calculates position in nmer count vector and generates an error condition if the test sequence contains non-ATCG characters.
 	steps = len(seq);
 	nt    = [0]*steps;
 	err   = 'false';
@@ -24,35 +24,45 @@ def find_nmer(seq):
 			nt[index] = 3;
 		else:
 			err = 'true';
-	nmer = 1;
+	nmer = 0;  # vectors in python are 0-rooted.
 	for index in range(steps):
 		nmer += nt[index]*4**index;
 	return [nmer,err];
+
 #------------------------------------------------------------------------------------------------------------
+# Recursively reverse the input string.
+def reverse(text):
+	if len(text) <= 1:
+		return text;
+	return reverse(text[1:]) + text[0];
+
+#------------------------------------------------------------------------------------------------------------
+# Generate the reverse complement sequence of an input DNA sequence string.
 def rev_com(seq):
-	# Generate the reverse complement sequence of an input DNA sequence string.
 	seq         = seq.upper();
-	rev_seq     = reversed(seq);
-	rev_com_seq = rev_seq;
+	rev_seq     = reverse(seq);
+	rev_com_seq = '';
 	for index in range(len(seq)):
-		if   rev_com_seq[index] == 'A':
-			rev_com_seq[index] = 'T';
-		elif rev_com_seq[index] == 'T':
-			rev_com_seq[index] = 'A';
-		elif rev_com_seq[index] == 'C':
-			rev_com_seq[index] = 'G';
-		elif rev_com_seq[index] == 'G':
-			rev_com_seq[index] = 'C';
+		if   rev_seq[index] == 'A':
+			rev_com_seq += 'T';
+		elif rev_seq[index] == 'T':
+			rev_com_seq += 'A';
+		elif rev_seq[index] == 'C':
+			rev_com_seq += 'G';
+		elif rev_seq[index] == 'G':
+			rev_com_seq += 'C';
 		else:
-			rev_com_seq[index] = 'n';
+			rev_com_seq += 'n';
 	return rev_com_seq;
+
 #------------------------------------------------------------------------------------------------------------
 
 
-import string, sys, re, time;
+import string, sys, re, time, os;
 userName    = sys.argv[1];
 genomeName  = sys.argv[2];
 logName     = sys.argv[3];
+
 
 # Initialize time counter and log file section.
 t0 = time.clock();
@@ -65,16 +75,16 @@ with open(logName, "a") as myfile:
 #============================================================================================================
 # Determine name of reformatted reference FASTA file.
 #------------------------------------------------------------------------------------------------------------
-
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "Ymap_root/users/[userName]/genomes/[genomeName]/[genome]/reference.txt"
-reference_file = workingDir + '/reference.txt';
+workingDir     = os.getcwd() + '/../users/' + userName + '/genomes/' + genomeName + '/';
+reference_file = workingDir + 'reference.txt';
 refFile        = open(reference_file,'r');
 refFASTA       = refFile.read().strip();
 refFile.close();
 
 # Generate the name of the reformatted FASTA file: "test.fasta" => "test.2.fasta"
-refFASTA       = refFASTA.replace("fasta","2.fasta");
+refFASTA       = refFASTA.replace(".fasta",".2.fasta");
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tFASTA reformatted to single-line entries : " + refFASTA);
 
@@ -82,17 +92,16 @@ with open(logName, "a") as myfile:
 #============================================================================================================
 # Determine which chromosomes from reference FASTA are being examined.
 #------------------------------------------------------------------------------------------------------------
-
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "Ymap_root/users/[userName]/genomes/[genomeName]/figure_definitions.txt"
 figureDefinition_file  = workingDir + '/figure_definitions.txt';
 figureDefinitionFile   = open(figureDefinition_file,'r');
 figureDefinitionData   = figureDefinitionFile.readlines();
-#		Example lines in figureDefinition_file:
-#			Chr  Use   Label   Name                         posX   posY   width   height
-#			1    1     Chr1    Ca21chr1_C_albicans_SC5314   0.15   0.8    0.8     0.0625
-#			2    1     Chr2    Ca21chr2_C_albicans_SC5314   0.15   0.7    *       0.0625
-#			0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
+#	Example lines in figureDefinition_file:
+#		Chr  Use   Label   Name                         posX   posY   width   height
+#		1    1     Chr1    Ca21chr1_C_albicans_SC5314   0.15   0.8    0.8     0.0625
+#		2    1     Chr2    Ca21chr2_C_albicans_SC5314   0.15   0.7    *       0.0625
+#		0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t\tDetermining number of chromosomes of interest in genome.");
@@ -143,14 +152,18 @@ chrCount = chrName_maxcount;
 #============================================================================================================
 # Process used chromosomes into k-mer counts array.
 #------------------------------------------------------------------------------------------------------------
-
 # Initialize nmer_counts vector, zeros of length 4^nmer_length.
-nmer_length = 10;
 nmer_counts = [0]*(4**nmer_length);
 
 # Open reformatted FASTA file.
 FASTA_file = workingDir + refFASTA;
 FASTA_data = open(FASTA_file,'r');
+
+# Reset timer.
+t0a = time.clock();
+t1  = t0a;
+with open(logName, "a") as myfile:
+	myfile.write("#### Start tallying nmers.\n");
 
 # Process reformatted FASTA file, entry by entry, to collect nmer counts.
 while True:
@@ -162,12 +175,21 @@ while True:
 	if not line2:
 		break  # EOF
 	first_char = line1[:1];
+	old_chr_name = '';
 	if first_char == ">":
 		# First line is header to FASTA entry, so file contents are formatted properly.
 		# Determine chromosome/contig name by isolating the first space-delimited string, then removing the header character ">".
 		line_parts = string.split(string.strip(line1));
 		chr_name   = line_parts[0];
 		chr_name   = chr_name.replace(">","");
+
+		# If the current chromosome is different than the last one, output log entry.
+		if (chr_name <> old_chr_name):
+			with open(logName, "a") as myfile:
+				myfile.write("####\t" + str(time.clock() - t1) + " seconds.\n");
+			t1 = time.clock();
+			with open(logName, "a") as myfile:
+				myfile.write("#### Tallying nmers of: " + chr_name + "\n");;
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
@@ -186,11 +208,28 @@ while True:
 					# If test_string is a valid DNA sequence, increment the nmer_counts vector position for the string and its reverse complement.
 					nmer_counts[forward_nmer_num] += 1;
 					nmer_counts[reverse_nmer_num] += 1;
+		old_chr_name = chr_name;
 FASTA_data.close();
+
+# Reset timer.
+with open(logName, "a") as myfile:
+	myfile.write("#### " + str(time.clock() - t0a) + "seconds to talley incidence of nmers across genome.\n");
+t0b = time.clock();
+t1  = t0b;
+with open(logName, "a") as myfile:
+	myfile.write("#### Start generating repetitiveness score across genome.\n");
 
 
 #============================================================================================================
-# Process k-mer array into repetitiveness scores for each coordinate.
+# Output header lines for repetititveness file output.
+#------------------------------------------------------------------------------------------------------------
+print '## Repetitiveness score per bp location.';
+print '##';
+print '## columns = [chrName, bpCoordinate, repetitivenessScore]';
+
+
+#============================================================================================================
+# Process k-mer array into repetitiveness scores for each coordinate, then generate output lines.
 #------------------------------------------------------------------------------------------------------------
 FASTA_data = open(FASTA_file,'r');
 # chrName[] contains names of used chromosomes.
@@ -203,6 +242,7 @@ while True:
 	if not line2:
 		break  # EOF
 	first_char = line1[:1];
+	old_chr_name = '';
 	if first_char == ">":
 		# First line is header to FASTA entry, so file contents are formatted properly.
 		# Determine chromosome/contig name by isolating the first space-delimited string, then removing the header character ">".
@@ -210,12 +250,22 @@ while True:
 		chr_name   = line_parts[0];
 		chr_name   = chr_name.replace(">","");
 
+		# If the current chromosome is different than the last one, output log entry.
+		if (chr_name <> old_chr_name):
+			with open(logName, "a") as myfile:
+				myfile.write("####\t" + str(time.clock() - t1) + ' seconds.\n");
+			t1 = time.clock();
+			with open(logName, "a") as myfile:
+				myfile.write("#### Outputing repetitiveness scores for: " + chr_name + "\n");
+
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
 			# Run along chromosome coordinates, from start (0) to end (len(line2)-1), such that all nmers overlapping the coordinate can be examined.
+			count = 0;
 			for index in range(0, len(line2)-1):
+				count += 1;
 				score_sum = 0;
-				for index_offset in range(-nmer_length+1,0):
+				for index_offset in range(1-nmer_length,0):
 					# current nmer string.
 					if (index+index_offset >= 0) and (index+index_offset+nmer_length-1 <= len(line2)-1):
 						test_string      = line2[(index+index_offset):(index+index_offset+nmer_length)];
@@ -226,51 +276,15 @@ while True:
 						if forward_nmer_err == 'false':
 							# If test_string is a valid DNA sequence, add to score_sum.
 							score_sum += nmer_counts[forward_nmer_num];
-					# Output repetitiveness score line to file.
-					#	## Repetitiveness score per bp location.
-					#	##
-					#	## columns = [chrName, bpCoordinate, repetitivenessScore]
-					#	Ca22chr1A_C_albicans_SC5314	1	4
-					#	Ca22chr1A_C_albicans_SC5314	2	18
-					#	Ca22chr1A_C_albicans_SC5314	3	38
-					#	Ca22chr1A_C_albicans_SC5314	4	80			
-
-#============================================================================================================
-# 
-#------------------------------------------------------------------------------------------------------------
+						# Output repetitiveness score line to file: [chrName, bpCoordinate, repetitivenessScore]
+						print chr_name + '\t' + str(index) + '\t' + str(score_sum);
+		old_chr_name = chr_name;
 
 
 #============================================================================================================
-# 
-#------------------------------------------------------------------------------------------------------------
-
-
-#============================================================================================================
-# Code section to output information about genome restriction fragments.
+# Conclude log outputs.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tOutputting repetitiveness data of standard-bin fragmented genome.")
-
-for fragment in range(1,numFragments):
-	# Output a line for each fragment.
-	#     fragments[fragment-1] = [chr_num,bp_start,bp_end, data_count,data_max,length]
-	#     0) chr_num
-	#     1) bp_start
-	#     2) bp_end
-	#     3) repetitiveness_max
-	#     4) repetitiveness_ave
-	#     5) length = bp_end-bp_start+1
-
-	chr_num         = fragments[fragment-1][0]
-	bp_start        = fragments[fragment-1][1]
-	bp_end          = fragments[fragment-1][2]
-
-	repet_max       = fragments[fragment-1][4]
-	repet_ave       = fragments[fragment-1][5]
-	fragment_length = bp_end - bp_start + 1
-
-	print str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(repet_max) + '\t' + str(repet_ave) + '\t' + str(fragment_length)
-
-#------------------------------------------------------------------------------------------------------------
-# End of code section to output information about fragments. 
-#============================================================================================================
+	myfile.write("####\n");
+	myfile.write("#### Total time for computation of genome repetitiveness = " + str(time.clock() - t0) + "\n");
+	myfile.write("####\n");
