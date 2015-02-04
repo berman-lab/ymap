@@ -212,28 +212,28 @@ while True:
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
-			# Run along start of chromosome, from index [0] to [nmer_length-2].
-			for index in range(0, nmer_length-2):
-				score_sum = 0;
-				# Output repetitiveness score line to file.
-			# Run along chromosome coordinates, from start(nmer_length-1) to end (len(line2)-nmer_length+1), such that all nmers overlapping the coordinate can be examined.
-			for index in range(nmer_length-1, len(line2)-nmer_length+1):
+			# Run along chromosome coordinates, from start (0) to end (len(line2)-1), such that all nmers overlapping the coordinate can be examined.
+			for index in range(0, len(line2)-1):
 				score_sum = 0;
 				for index_offset in range(-nmer_length+1,0):
 					# current nmer string.
-					test_string      = line2[index:(index+nmer_length)];
-					# determine nmer_counts vector position for the test_string. The reverse-complement was dealt with in the tallying step previous.
-					results_1        = find_nmer(test_string);
-					forward_nmer_num = results_1[0];
-					forward_nmer_err = results_1[1];
-					if forward_nmer_err == 'false':
-						# If test_string is a valid DNA sequence, add to score_sum.
-						score_sum += nmer_counts[forward_nmer_num];
-				# Output repetitiveness score line to file.
-			# Run along end of chromosome, from index [len(line2)-nmer_length+2] to [len(line2)-1].
-			for index in range(len(line2)-nmer_length+2,len(line2)-1):
-				score_sum = 0;
-				# Output repetitiveness score line to file.
+					if (index+index_offset >= 0) and (index+index_offset+nmer_length-1 <= len(line2)-1):
+						test_string      = line2[(index+index_offset):(index+index_offset+nmer_length)];
+						# determine nmer_counts vector position for the test_string. The reverse-complement was dealt with in the tallying step previous.
+						results_1        = find_nmer(test_string);
+						forward_nmer_num = results_1[0];
+						forward_nmer_err = results_1[1];
+						if forward_nmer_err == 'false':
+							# If test_string is a valid DNA sequence, add to score_sum.
+							score_sum += nmer_counts[forward_nmer_num];
+					# Output repetitiveness score line to file.
+					#	## Repetitiveness score per bp location.
+					#	##
+					#	## columns = [chrName, bpCoordinate, repetitivenessScore]
+					#	Ca22chr1A_C_albicans_SC5314	1	4
+					#	Ca22chr1A_C_albicans_SC5314	2	18
+					#	Ca22chr1A_C_albicans_SC5314	3	38
+					#	Ca22chr1A_C_albicans_SC5314	4	80			
 
 #============================================================================================================
 # 
