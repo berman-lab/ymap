@@ -105,8 +105,8 @@
 				</td></tr><tr bgcolor="#CCCCFF"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
-					$hapmapsDir1       = $directory."users/default/hapmaps/";
-					$hapmapsDir2       = $directory."users/".$user."/hapmaps/";
+					$hapmapsDir1       = "users/default/hapmaps/";
+					$hapmapsDir2       = "users/".$user."/hapmaps/";
 					$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
 					$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
 					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
@@ -127,8 +127,8 @@
 				</td></tr><tr bgcolor="#CCCCFF"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
-					$hapmapsDir1       = $directory."users/default/hapmaps/";
-					$hapmapsDir2       = $directory."users/".$user."/hapmaps/";
+					$hapmapsDir1       = "users/default/hapmaps/";
+					$hapmapsDir2       = "users/".$user."/hapmaps/";
 					$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
 					$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
 					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
@@ -158,8 +158,8 @@
 				</td></tr><tr bgcolor="#CCFFCC"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
-					$projectsDir1       = $directory."users/default/projects/";
-					$projectsDir2       = $directory."users/".$user."/projects/";
+					$projectsDir1       = "users/default/projects/";
+					$projectsDir2       = "users/".$user."/projects/";
 					$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 					$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
