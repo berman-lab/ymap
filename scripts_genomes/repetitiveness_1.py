@@ -189,7 +189,7 @@ while True:
 				myfile.write("####\t" + str(time.clock() - t1) + " seconds.\n");
 			t1 = time.clock();
 			with open(logName, "a") as myfile:
-				myfile.write("#### Tallying nmers of: " + chr_name + "\n");;
+				myfile.write("#### Tallying nmers of: " + chr_name + "\n");
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
@@ -253,7 +253,7 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("####\t" + str(time.clock() - t1) + ' seconds.\n");
+				myfile.write("####\t" + str(time.clock() - t1) + " seconds.\n");
 			t1 = time.clock();
 			with open(logName, "a") as myfile:
 				myfile.write("#### Outputing repetitiveness scores for: " + chr_name + "\n");
