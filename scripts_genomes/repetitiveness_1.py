@@ -163,7 +163,7 @@ FASTA_data = open(FASTA_file,'r');
 t0a = time.clock();
 t1  = t0a;
 with open(logName, "a") as myfile:
-	myfile.write("#### Start tallying nmers.\n");
+	myfile.write("\n\t\t\t#### Start tallying nmers.\n");
 
 # Process reformatted FASTA file, entry by entry, to collect nmer counts.
 while True:
@@ -186,10 +186,10 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("####\t" + str(time.clock() - t1) + " seconds.\n");
+				myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds.\n");
 			t1 = time.clock();
 			with open(logName, "a") as myfile:
-				myfile.write("#### Tallying nmers of: " + chr_name + "\n");
+				myfile.write("\t\t\t#### Tallying nmers of: " + chr_name + "\n");
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
@@ -213,11 +213,11 @@ FASTA_data.close();
 
 # Reset timer.
 with open(logName, "a") as myfile:
-	myfile.write("#### " + str(time.clock() - t0a) + "seconds to talley incidence of nmers across genome.\n");
+	myfile.write("\t\t\t#### " + str(time.clock() - t0a) + "seconds to talley incidence of nmers across genome.\n");
 t0b = time.clock();
 t1  = t0b;
 with open(logName, "a") as myfile:
-	myfile.write("#### Start generating repetitiveness score across genome.\n");
+	myfile.write("\t\t\t#### Start generating repetitiveness score across genome.\n");
 
 
 #============================================================================================================
@@ -253,10 +253,10 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("####\t" + str(time.clock() - t1) + " seconds.\n");
+				myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds.\n");
 			t1 = time.clock();
 			with open(logName, "a") as myfile:
-				myfile.write("#### Outputing repetitiveness scores for: " + chr_name + "\n");
+				myfile.write("\t\t\t#### Outputing repetitiveness scores for: " + chr_name + "\n");
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
@@ -285,6 +285,6 @@ while True:
 # Conclude log outputs.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("####\n");
-	myfile.write("#### Total time for computation of genome repetitiveness = " + str(time.clock() - t0) + "\n");
-	myfile.write("####\n");
+	myfile.write("\t\t\t####\n");
+	myfile.write("\t\t\t#### Total time for computation of genome repetitiveness = " + str(time.clock() - t0) + "\n");
+	myfile.write("\t\t\t####\n");
