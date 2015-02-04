@@ -189,7 +189,10 @@ while True:
 				myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds.\n");
 			t1 = time.clock();
 			with open(logName, "a") as myfile:
-				myfile.write("\t\t\t#### Tallying nmers of: " + chr_name + "\n");
+				if chr_name in chrName:
+					myfile.write("\t\t\t#### Tallying nmers of: " + chr_name + "\n");
+				else:
+					myfile.write("\t\t\t#### Tallying nmers of: " + chr_name + " [not examined]\n");
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
@@ -276,8 +279,8 @@ while True:
 						if forward_nmer_err == 'false':
 							# If test_string is a valid DNA sequence, add to score_sum.
 							score_sum += nmer_counts[forward_nmer_num];
-					# Output repetitiveness score line to file: [chrName, bpCoordinate, repetitivenessScore]
-					print chr_name + '\t' + str(index) + '\t' + str(score_sum);
+				# Output repetitiveness score line to file: [chrName, bpCoordinate, repetitivenessScore]
+				print chr_name + '\t' + str(index) + '\t' + str(score_sum);
 		old_chr_name = chr_name;
 
 
