@@ -109,17 +109,6 @@ end;
 
 
 %% ====================================================================
-% Output nmer_counts data as text file.
-% ---------------------------------------------------------------------
-outFile = [workingDir 'nmer_counts.txt'];
-fid = fopen(outFile,'w');
-fprintf(fid,['## nmer_length = ' num2str(nmer_length) '\n']);
-fprintf(fid, '## Repetitiveness score per bp location.\n');
-fprintf(fid,num2str(nmer_counts));
-fclose(fid);
-
-
-%% ====================================================================
 % Determine distribution of repeats across genome.
 % ---------------------------------------------------------------------
 if (exist([workingDir FastaName '.nmerDists_' num2str(nmer_length) '.mat'],'file') == 0)
