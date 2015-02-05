@@ -125,22 +125,22 @@ echo "\n\t======================================================================
 
 if [ -e $reflocation$standard_bin_FASTA ]
 then
-    echo "\tGenome already fragmented into standard bins." >> $logName;
+	echo "\tGenome already fragmented into standard bins." >> $logName;
 else
-    echo "Performing standard-bin fragmentation of genome." >> $condensedLog;
-    echo "\tGenome being fragmentated into standard bins." >> $logName;
+	echo "Performing standard-bin fragmentation of genome." >> $condensedLog;
+	echo "\tGenome being fragmentated into standard bins." >> $logName;
 
-    ## Perform sim.
-    outputName=$reflocation"processing3.m";
-    echo "\t\tWriting MATLAB function file to perform processing step." >> $logName;
-    echo "\t\toutputName = "$outputName >> $logName;
+	## Perform sim.
+	outputName=$reflocation"processing3.m";
+	echo "\t\tWriting MATLAB function file to perform processing step." >> $logName;
+	echo "\t\toutputName = "$outputName >> $logName;
 
-    echo "function [] = processing3()" > $outputName;
-    echo "\tdiary('"$reflocation"matlab.standard_fragmentation_of_reference.log');" >> $outputName;
-    echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
-    echo "\tgenome_process_for_standard_bins_1('$user','$genome');" >> $outputName;
-    echo "\texit;" >> $outputName;
-    echo "end" >> $outputName;
+	echo "function [] = processing3()" > $outputName;
+	echo "\tdiary('"$reflocation"matlab.standard_fragmentation_of_reference.log');" >> $outputName;
+	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
+	echo "\tgenome_process_for_standard_bins_1('$user','$genome');" >> $outputName;
+	echo "\texit;" >> $outputName;
+	echo "end" >> $outputName;
 
 	echo "\t|function [] = processing3()" >> $logName;
 	echo "\t|\tdiary('"$reflocation"matlab.standard_fragmentation_of_reference.log');" >> $logName;
@@ -149,9 +149,9 @@ else
 	echo "\t|\texit;" >> $logName;
 	echo "\t|end" >> $logName;
 
-    echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-    matlab -nosplash -r "run "$outputName";";
-    sed 's/^/\t\t\t|/;' $reflocation"matlab.standard_fragmentation_of_reference.log" >> $logName;
+	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
+	matlab -nosplash -r "run "$outputName";";
+	sed 's/^/\t\t\t|/;' $reflocation"matlab.standard_fragmentation_of_reference.log" >> $logName;
 fi
 
 echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
@@ -176,11 +176,11 @@ else
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing2()" >> $logName;
-    echo "\t|\t\tdiary('"$reflocation"matlab.simulated_digest_of_reference.log');" >> $logName;
-    echo "\t|\t\tcd "$main_dir"scripts_genomes/;" >> $logName;
-    echo "\t|\t\tgenome_process_for_RADseq_1('$user','$genome');" >> $logName;
-    echo "\t|\t\texit;" >> $logName;
-    echo "\t|\tend" >> $logName;
+	echo "\t|\t\tdiary('"$reflocation"matlab.simulated_digest_of_reference.log');" >> $logName;
+	echo "\t|\t\tcd "$main_dir"scripts_genomes/;" >> $logName;
+	echo "\t|\t\tgenome_process_for_RADseq_1('$user','$genome');" >> $logName;
+	echo "\t|\t\texit;" >> $logName;
+	echo "\t|\tend" >> $logName;
 
 	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 	matlab -nosplash -r "run "$outputName";";
