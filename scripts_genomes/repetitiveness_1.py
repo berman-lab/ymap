@@ -197,7 +197,9 @@ while True:
 		if chr_name in chrName:
 			# Run along chromosome coordinates, from start(0) to end (len(line2)-nmer_length+1), such that a nmer can be examined starting at each coordinate.
 			# For each coordinate, add to k-mer count vector "nmer_counts".
+			count = 0;
 			for index in range(0, len(line2)-nmer_length+1):
+				count += 1;
 				# current nmer string.
 				test_string      = line2[index:(index+nmer_length)];
 				# determine nmer_counts vector position for the test_string and its reverse complement.
@@ -224,6 +226,17 @@ t0b = time.clock();
 t1  = t0b;
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t#### Start generating repetitiveness score across genome.\n");
+
+
+#============================================================================================================
+# Save nmer_counts to text file: "nmer_counts.2.txt"
+#------------------------------------------------------------------------------------------------------------
+nmerFile =  workingDir + "nmer_counts.2.txt";
+with open(nmerFile, "a") as myfile:
+	myfile.write("## nmer_length = " + str(nmer_length) + "\n");
+	myfile.write("## Repetitiveness score per bp location.\n");
+	myfile.write(str(nmer_counts));
+print '## nmer_counts output "to nmer_counts.2.txt".';
 
 
 #============================================================================================================
@@ -267,9 +280,7 @@ while True:
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
 			# Run along chromosome coordinates, from start (0) to end (len(line2)-1), such that all nmers overlapping the coordinate can be examined.
-			count = 0;
 			for index in range(0, len(line2)-1):
-				count += 1;
 				score_sum = 0;
 				for index_offset in range(-nmer_length+1,1):
 					# current nmer string.
@@ -283,7 +294,7 @@ while True:
 							# If test_string is a valid DNA sequence, add to score_sum.
 							score_sum += nmer_counts[forward_nmer_num];
 				# Output repetitiveness score line to file: [chrName, bpCoordinate, repetitivenessScore]
-				print chr_name + '\t' + str(index) + '\t' + str(score_sum);
+				print chr_name + '\t' + str(index+1) + '\t' + str(score_sum);
 		old_chr_name = chr_name;
 
 
