@@ -1,7 +1,8 @@
 # Input arguments:
-#	1) user    : Name of user account installing the genome file.
-#	2) genome  : Name of the genome.
-#	3) logfile : Path and file name of output log file.
+#	1) user     : Name of user account installing the genome file.
+#	2) genome   : Name of the genome.
+#	3) main_dir : Root directory.
+#	4) logfile  : Path and file name of output log file.
 #
 nmer_length = 10;
 
@@ -58,10 +59,11 @@ def rev_com(seq):
 #------------------------------------------------------------------------------------------------------------
 
 
-import string, sys, re, time, os;
+import string, sys, re, time;
 userName    = sys.argv[1];
 genomeName  = sys.argv[2];
-logName     = sys.argv[3];
+main_dir    = sys.argv[3];
+logName     = sys.argv[4];
 
 
 # Initialize time counter and log file section.
@@ -77,7 +79,7 @@ with open(logName, "a") as myfile:
 #------------------------------------------------------------------------------------------------------------
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "Ymap_root/users/[userName]/genomes/[genomeName]/[genome]/reference.txt"
-workingDir     = os.getcwd() + '/../users/' + userName + '/genomes/' + genomeName + '/';
+workingDir     = main_dir + 'users/' + userName + '/genomes/' + genomeName + '/';
 reference_file = workingDir + 'reference.txt';
 refFile        = open(reference_file,'r');
 refFASTA       = refFile.read().strip();

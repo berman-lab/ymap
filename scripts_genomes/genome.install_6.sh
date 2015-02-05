@@ -103,41 +103,17 @@ fi
 
 echo "\n\t============================================================================================== 5" >> $logName;
 
-echo "\tRepetitiveness calculations have been removed from pipeline." >> $logName;
-echo "\tThey are very time-consuming and have been found to have little utility at present." >> $logName;
-
 ## Check if repetitiveness analysis has been done for genome.
 repetgenome=$reflocation$FASTAname".repetitiveness.txt";
-
 if [ -e $repetgenome ]
 then
 	echo "\tRepetitiveness file for genome '$genome' found." >> $logName;
 else
-	echo "Calculating repetitiveness of FASTA file for genome. (slow)" >> $condensedLog;
-	echo "\tRepetitiveness file not found for genome '$genome': Regenerating using MatLab." >> $logName;
+	echo "Calculating repetitiveness of FASTA file for genome." >> $condensedLog;
+	echo "\tRepetitiveness file not found for genome '$genome': Regenerating using Python script." >> $logName;
 
 	## Perform repetitiveness analysis on reference file for genome.
-	outputName=$reflocation"processing1.m";
-	echo "\tWriting MATLAB function file to perform processing step." >> $logName;
-	echo "\t\toutputName = "$outputName >> $logName;
-
-	echo "function [] = processing1()" > $outputName;
-	echo "\tdiary('"$reflocation"matlab.repetitiveness_analysis.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
-	echo "\trepetitiveness_1('$user','$genome');" >> $outputName;
-	echo "\texit;" >> $outputName;
-	echo "end" >> $outputName;
-
-	echo "\t|\tfunction [] = processing1()" >> $logName;
-	echo "\t|\t\tdiary('"$reflocation"matlab.repetitiveness_analysis.log');" >> $logName;
-	echo "\t|\t\tcd "$main_dir"scripts_genomes/;" >> $logName;
-	echo "\t|\t\trepetitiveness_1('$user','$genome');" >> $logName;
-	echo "\t|\t\texit;" >> $logName;
-	echo "\t|\tend" >> $logName;
-
-	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-	matlab -nosplash -r "run "$outputName";";
-	sed 's/^/\t\t\t|/;' $reflocation"matlab.repetitiveness_analysis.log" >> $logName;
+        python $main_dir"scripts_genomes/repetitiveness_1.py" $user $genome $main_dir $logName >> $repetgenome;
 fi
 
 echo "\n\t============================================================================================== 6" >> $logName;
