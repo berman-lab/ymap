@@ -24,9 +24,10 @@ then
 	exit 1;
 else
 	# 1) For lines that start with ">", convert the ending "\n" into "\t".
-    TAB=$'\t'                                                           # Mac's sed is really old and doesn't understan "\t", thus we must resort to trickery. Also not giving -i an extesion doesn't work for some reason.
-    sed -e '/^[>]/{' -e "N;s/\n/${TAB}/" -e '}' -i .temp.bak $1         # The Mac hack seems to result in an error output on Ubuntu, but the script functions as expected anyhow.
-    rm $1.temp.bak
+	cp $1 $1.temp.bak
+	TAB=$'\t'                                                           # Mac's sed is really old and doesn't understan "\t", thus we must resort to trickery. Also not giving -i an extesion doesn't work for some reason.
+	sed -e '/^[>]/{' -e "N;s/\n/${TAB}/" -e '}' -i $1.temp.bak $1
+	rm $1.temp.bak
 
 	# 2) Removes all newline characters.
 	perl -pi -e 's/\n//g' $1
