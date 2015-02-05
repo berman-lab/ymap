@@ -18,8 +18,8 @@ main_dir=$(pwd)"/../";
 
 reflocation=$main_dir"users/"$user"/genomes/"$genome"/";				# Directory where FASTA file is kept.
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;					# Name of FASTA file.
-FASTAname=$(echo $FASTA | sed 's/.fasta//g');						# Name of genome file, without file type.
-FASTA2=$(echo $FASTA | sed 's/.fasta/.2.fasta/g');					# Name of reformatted genome file, to single-line entries.
+FASTAname=$(echo $FASTA | sed 's/\.fasta//g');						# Name of genome file, without file type.
+FASTA2=$(echo $FASTA | sed 's/\.fasta/\.2\.fasta/g');					# Name of reformatted genome file, to single-line entries.
 ddRADseq_FASTA=$FASTAname".MfeI_MboI.fasta";						# Name of digested reference for ddRADseq analysis.
 RNAseq_FASTA=$FASTAname".expression.fasta";						# Name of digested reference for expression analysis.
 standard_bin_FASTA=$FASTAname".standard_bins.fasta";					# Name of reference genome broken up into standard bins.
