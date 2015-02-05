@@ -236,7 +236,8 @@ with open(nmerFile, "a") as myfile:
 	myfile.write("## nmer_length = " + str(nmer_length) + "\n");
 	myfile.write("## Repetitiveness score per bp location.\n");
 	myfile.write(str(nmer_counts));
-print '## nmer_counts output "to nmer_counts.2.txt".';
+with open(logName, "a") as myfile:
+	myfile.write('\t\t\t#### nmer_counts output "to nmer_counts.2.txt".\n';
 
 
 #============================================================================================================
