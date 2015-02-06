@@ -6,11 +6,6 @@
 #   3) main_dir   : '/home/bermanj/shared/links/'
 #   4) logName    :
 #
-# Generate output file:
-#   1) a simplified pileup file containing average read counts per RADseq feature.   [chr_num,bp_start,bp_end, data_ave]
-#       0) chr_num   : Numerical chromosome identifier, defined for each genome in "figure_details.txt".
-#       1) bp_start  : Start bp coordinate along chromosome.
-#       2) bp_end    : End bp coordinate along chromosome.
 #
 
 import string, sys, re, time
@@ -89,9 +84,9 @@ with open(logName, "a") as myfile:
 numFeatures = feature_counter
 
 # Sort collected data by start coordinate, then by chromosome name.  Because sorts are 'guaranteed to be stable', this will result in the proper overall arrangement.
-## print "### Sort 1 of feature list."
+## print "### Sort 1 of feature list: start_bp"
 features = sorted(features, key = lambda x: x[1] )
-## print "### Sort 2 of feature list."
+## print "### Sort 2 of feature list: chrID_string"
 features = sorted(features, key = lambda x: x[0] )
 #------------------------------------------------------------------------------------------------------------
 # End of code section to parse chromosome features file.

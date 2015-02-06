@@ -104,6 +104,13 @@ fi
 
 echo "\n\t============================================================================================== 5" >> $logName;
 
+## Generate version of FASTA genome file to have single-line entries.
+echo "\tReformatting genome FASTA file into single-line entries." >> $logName;
+cp $reflocation$FASTA $reflocation$FASTA2;
+sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$FASTA2;
+
+echo "\n\t============================================================================================== 5" >> $logName;
+
 ## Check if repetitiveness analysis has been done for genome.
 repetgenome=$reflocation$FASTAname".repetitiveness.txt";
 if [ -e $repetgenome ]
@@ -112,10 +119,6 @@ then
 else
 	echo "Calculating repetitiveness of FASTA file for genome." >> $condensedLog;
 	echo "\tRepetitiveness file not found for genome '$genome': Regenerating using Python script." >> $logName;
-
-	## Generate version of FASTA genome file to have single-line entries.
-	cp $reflocation$FASTA $reflocation$FASTA2;
-	sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$FASTA2;
 
 	## Perform repetitiveness analysis on reference file for genome.
         python $main_dir"scripts_genomes/repetitiveness_1.py" $user $genome $main_dir $logName >> $repetgenome;
@@ -130,61 +133,21 @@ else
 	echo "Performing standard-bin fragmentation of genome." >> $condensedLog;
 	echo "\tGenome being fragmentated into standard bins." >> $logName;
 
-	## Perform sim.
-	outputName=$reflocation"processing3.m";
-	echo "\t\tWriting MATLAB function file to perform processing step." >> $logName;
-	echo "\t\toutputName = "$outputName >> $logName;
-
-	echo "function [] = processing3()" > $outputName;
-	echo "\tdiary('"$reflocation"matlab.standard_fragmentation_of_reference.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
-	echo "\tgenome_process_for_standard_bins_1('$user','$genome');" >> $outputName;
-	echo "\texit;" >> $outputName;
-	echo "end" >> $outputName;
-
-	echo "\t|function [] = processing3()" >> $logName;
-	echo "\t|\tdiary('"$reflocation"matlab.standard_fragmentation_of_reference.log');" >> $logName;
-	echo "\t|\tcd "$main_dir"scripts_genomes/;" >> $logName;
-	echo "\t|\tgenome_process_for_standard_bins_1('$user','$genome');" >> $logName;
-	echo "\t|\texit;" >> $logName;
-	echo "\t|end" >> $logName;
-
-	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-	matlab -nosplash -r "run "$outputName";";
-	sed 's/^/\t\t\t|/;' $reflocation"matlab.standard_fragmentation_of_reference.log" >> $logName;
+	## Perform reference genome fragmentation.
+	python $main_dir"scripts_genomes/genome_process_for_standard_bins_1.py" $user $genome $main_dir $logName >> $standard_bin_FASTA;
 fi
 
 echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
 if [ -e $reflocation$ddRADseq_FASTA ]
 then
-	echo "\tSimulated digest of genome already complete." >> $logName;
+	echo "\tSimulated restriction digest (MfeI & MboI) of genome already complete." >> $logName;
 else
-	echo "Performing simulated restriction digest of genome." >> $condensedLog;
+	echo "Performing simulated restriction digest (MfeI & MboI) of genome." >> $condensedLog;
 	echo "\tSimulated restriction digest of genome being performed." >> $logName;
 
 	## Perform simulated digest of genome.
-	outputName=$reflocation"processing2.m";
-	echo "\t\tWriting MATLAB function file to perform processing step." >> $logName;
-	echo "\t\toutputName = "$outputName >> $logName;
-
-	echo "function [] = processing2()" > $outputName;
-	echo "\tdiary('"$reflocation"matlab.simulated_digest_of_reference.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
-	echo "\tgenome_process_for_RADseq_1('$user','$genome');" >> $outputName;
-	echo "\texit;" >> $outputName;
-	echo "end" >> $outputName;
-
-	echo "\t|\tfunction [] = processing2()" >> $logName;
-	echo "\t|\t\tdiary('"$reflocation"matlab.simulated_digest_of_reference.log');" >> $logName;
-	echo "\t|\t\tcd "$main_dir"scripts_genomes/;" >> $logName;
-	echo "\t|\t\tgenome_process_for_RADseq_1('$user','$genome');" >> $logName;
-	echo "\t|\t\texit;" >> $logName;
-	echo "\t|\tend" >> $logName;
-
-	echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-	matlab -nosplash -r "run "$outputName";";
-	sed 's/^/\t\t\t|/;' $reflocation"matlab.simulated_digest_of_reference.log" >> $logName;
+	python $main_dir"scripts_genomes/genome_process_for_RADseq_1.py" $user $genome $main_dir $logName >> $ddRADseq_FASTA;
 fi
 
 echo "\n\t============================================================================================== 7" >> $logName;
@@ -213,6 +176,9 @@ else
 	then
 		echo "Performing simulated digest of genome into expression units." >> $condensedLog;
 		echo "\tExpression digest of genome being performed." >> $logName;
+
+#		## Perform expression digest of genome.
+#		python $main_dir"scripts_genomes/genome_process_for_RNAseq_1.py" $user $genome $main_dir $logName >> $ddRADseq_FASTA;
 
 		## Perform expression digest of genome.
 		outputName=$reflocation"processing3.m";

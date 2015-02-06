@@ -1,4 +1,4 @@
-function results = genome_process_for_standard_bins1(user,genome)
+function results = genome_process_for_standard_bins_1(user,genome)
 % This script attempts to reformat a FASTA genome file into a new FASTA genome fragmented by restriction digest sites.
 %     for use in ddRADseq analysis.
 

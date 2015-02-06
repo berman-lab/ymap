@@ -4,6 +4,13 @@
 #	3) main_dir : Root directory.
 #	4) logfile  : Path and file name of output log file.
 #
+import string, sys, re, time;
+userName    = sys.argv[1];
+genomeName  = sys.argv[2];
+main_dir    = sys.argv[3];
+logName     = sys.argv[4];
+
+
 nmer_length = 10;
 
 
@@ -57,13 +64,6 @@ def rev_com(seq):
 	return rev_com_seq;
 
 #------------------------------------------------------------------------------------------------------------
-
-
-import string, sys, re, time;
-userName    = sys.argv[1];
-genomeName  = sys.argv[2];
-main_dir    = sys.argv[3];
-logName     = sys.argv[4];
 
 
 # Initialize time counter and log file section.
