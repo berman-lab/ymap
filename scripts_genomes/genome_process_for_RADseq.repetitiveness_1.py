@@ -40,6 +40,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tReference FASTA : " + refFASTA)
 
 # Open restriction-digested genome FASTQ file.
+digestedGenome      = refFASTA.replace(".fasta",".MfeI_MboI.fasta");
 ddRADseq_FASTA_file = workingDir + digestedGenome
 ddRADseq_FASTA_data = open(ddRADseq_FASTA_file,'r')
 
