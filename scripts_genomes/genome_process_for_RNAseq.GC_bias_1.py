@@ -21,8 +21,10 @@
 #
 
 import string, sys, re, time
-workingDir  = sys.argv[1]
-logName     = sys.argv[2]
+genome         = sys.argv[1]
+workingDir     = sys.argv[2]
+digestedGenome = sys.argv[3]
+logName        = sys.argv[4]
 
 t0 = time.clock()
 

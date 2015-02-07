@@ -20,12 +20,13 @@ reflocation=$main_dir"users/"$user"/genomes/"$genome"/";				# Directory where FA
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;					# Name of FASTA file.
 FASTAname=$(echo $FASTA | sed 's/\.fasta//g');						# Name of genome file, without file type.
 FASTA2=$(echo $FASTA | sed 's/\.fasta/\.2\.fasta/g');					# Name of reformatted genome file, to single-line entries.
-ddRADseq_FASTA=$FASTAname".MfeI_MboI.fasta";						# Name of digested reference for ddRADseq analysis.
-RNAseq_FASTA=$FASTAname".expression.fasta";						# Name of digested reference for expression analysis.
-standard_bin_FASTA=$FASTAname".standard_bins.fasta";					# Name of reference genome broken up into standard bins.
-
+repetgenome=$reflocation$FASTAname".repetitiveness.txt";				# Name of repetitiveness profile for genome.
+standard_bin_FASTA=$reflocation$FASTAname".standard_bins.fasta";			# Name of reference genome broken up into standard bins.
+ddRADseq_FASTA=$reflocation$FASTAname".MfeI_MboI.fasta";				# Name of digested reference for ddRADseq analysis.
+RNAseq_FASTA=$reflocation$FASTAname".expression.fasta";					# Name of digested reference for expression analysis.
 logName=$reflocation"process_log.txt";
 condensedLog=$reflocation"condensed_log.txt";
+
 #chmod 0755 $logName;
 echo "\n\nRunning 'scripts_genomes/genome.install_6.sh'" >> $logName;
 echo "\tInput to shell script:" >> $logName;
@@ -88,6 +89,7 @@ else
 
 #       local-specific: This call may need changed with different PicardTools installation methods.
 	java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
+#	picard-tools CreateSequenceDictionary R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
 fi
 
 echo "\n\t============================================================================================== 4" >> $logName;
@@ -112,7 +114,6 @@ sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$FASTA2;
 echo "\n\t============================================================================================== 5" >> $logName;
 
 ## Check if repetitiveness analysis has been done for genome.
-repetgenome=$reflocation$FASTAname".repetitiveness.txt";
 if [ -e $repetgenome ]
 then
 	echo "\tRepetitiveness file for genome '$genome' found." >> $logName;
@@ -126,7 +127,7 @@ fi
 
 echo "\n\t============================================================================================== 6" >> $logName;
 
-if [ -e $reflocation$standard_bin_FASTA ]
+if [ -e $standard_bin_FASTA ]
 then
 	echo "\tGenome already fragmented into standard bins." >> $logName;
 else
@@ -139,7 +140,7 @@ fi
 
 echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
-if [ -e $reflocation$ddRADseq_FASTA ]
+if [ -e $ddRADseq_FASTA ]
 then
 	echo "\tSimulated restriction digest (MfeI & MboI) of genome already complete." >> $logName;
 else
@@ -168,7 +169,7 @@ fi
 
 echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
-if [ -e $reflocation$RNAseq_FASTA ]
+if [ -e $RNAseq_FASTA ]
 then
 	echo "\tExpression digest of genome already complete." >> $logName;
 else
@@ -210,7 +211,7 @@ echo "\n\t======================================================================
 ## Reformat standard-bin fragmented FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting standard genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$standard_bin_FASTA;
+sh $main_dir"scripts_general/FASTA_reformat_1.sh" $standard_bin_FASTA;
 
 outputFile=$reflocation$FASTAname".GC_ratios.standard_bins.txt";
 if [ -e $outputFile ]
@@ -247,7 +248,7 @@ echo "\n\t----------------------------------------------------------------------
 ## Reformat digested FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting digested genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$ddRADseq_FASTA;
+sh $main_dir"scripts_general/FASTA_reformat_1.sh" $ddRADseq_FASTA;
 
 outputFile=$reflocation$FASTAname".GC_ratios.MfeI_MboI.txt";
 if [ -e $outputFile ]
@@ -286,7 +287,7 @@ then
 	## Reformat digested FASTA file to have single-line entries for each sequence fragment.
 	echo "Reformatting expression genome fragments FASTA file." >> $condensedLog;
 	echo "\tReformatting expression FASTA file => single-line per sequence fragment." >> $logName;
-	sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$RNAseq_FASTA;
+	sh $main_dir"scripts_general/FASTA_reformat_1.sh" $RNAseq_FASTA;
 
 	outputFile=$reflocation$FASTAname".GC_ratios.expression.txt";
 	if [ -e $outputFile ]
@@ -298,7 +299,7 @@ then
 		echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
 		echo "\n\t\treflocation = "$reflocation >> $logName;
 		echo "" > $outputFile;
-		python $main_dir"scripts_genomes/genome_process_for_RNAseq.GC_bias_1.py" $reflocation $RNAseq_FASTA $logName >> $outputFile;
+		python $main_dir"scripts_genomes/genome_process_for_RNAseq.GC_bias_1.py" $FASTAname $reflocation $RNAseq_FASTA $logName >> $outputFile;
 	fi
 
 	if [ -e $repetgenome ]
