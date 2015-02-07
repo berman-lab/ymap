@@ -160,7 +160,7 @@ if (isset($_SESSION['logged_on'])) {
 		$genome   = $genomeFolders[$key];
 		echo "\n\t// javascript for genome #".$key.", '".$genome."'\n\t";
 		echo "var el_g               = document.getElementById('frameContainer.g3_".$key."');\n\t";
-		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:28px\" ";
+		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:38px\" ";
 		echo     "src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
 		echo "var g_iframe           = document.getElementById('g_".$key."');\n\t";
 	    echo "var g_js               = g_iframe.contentWindow;\n\t";
