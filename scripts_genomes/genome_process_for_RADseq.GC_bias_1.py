@@ -52,6 +52,7 @@ refFASTA       = refFile.read().strip()
 refFile.close()
 
 # Open restriction-digested genome FASTQ file.
+digestedGenome      = refFASTA.replace(".fasta",".MfeI_MboI.fasta");
 ddRADseq_FASTA_file = workingDir + digestedGenome
 ddRADseq_FASTA_data = open(ddRADseq_FASTA_file,'r')
 
