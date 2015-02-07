@@ -33,6 +33,7 @@ with open(logName, "a") as myfile:
 
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
+workingDir     = main_dir + 'users/' + userName + '/genomes/' + genomeName + '/';
 reference_file = workingDir + '/reference.txt'
 refFile        = open(reference_file,'r')
 refFASTA       = refFile.read().strip()
