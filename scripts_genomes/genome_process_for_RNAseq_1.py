@@ -177,8 +177,8 @@ while True:
 				feature       = chrFeatures[j];
 				feature_chrID = feature[0];
 				if (feature_chrID == chr_name):
-					fragment_start  = feature[1];
-					fragment_end    = feature[2];
+					fragment_start  = int(feature[1].strip());
+					fragment_end    = int(feature[2].strip());
 					fragment_string = line2[(fragment_start-1):(fragment_end-1)];
 					fragment_length = fragment_end - fragment_start + 1;
 					print ">" + genomeName + ".chr" + str(chr_num) + " (" + str(fragment_start) + ".." + str(fragment_end) + ") (" + str(fragment_length) + "bp) [*]";
