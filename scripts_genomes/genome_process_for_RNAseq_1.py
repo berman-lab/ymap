@@ -173,7 +173,7 @@ while True:
 			line2upcase = line2.upper();
 
 			# Sort lists to have order consistent with order found in chrName. Previous processing sorted chrID alphabetically, which can cause problems.
-			for j = range(0,len(chrFeatures)):
+			for j in range(0,len(chrFeatures)):
 				feature       = chrFeatures[j];
 				feature_chrID = feature[0];
 				if (feature_chrID == chr_name):
