@@ -179,30 +179,7 @@ else
 		echo "\tExpression digest of genome being performed." >> $logName;
 
 #		## Perform expression digest of genome.
-#		python $main_dir"scripts_genomes/genome_process_for_RNAseq_1.py" $user $genome $main_dir $logName >> $ddRADseq_FASTA;
-
-		## Perform expression digest of genome.
-		outputName=$reflocation"processing3.m";
-		echo "\t\tWriting MATLAB function file to perform processing step." >> $logName;
-		echo "\t\toutputName = "$outputName >> $logName;
-
-		echo "function [] = processing3()" > $outputName;
-		echo "\tdiary('"$reflocation"matlab.expression_digest_of_reference.log');" >> $outputName;
-		echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
-		echo "\tgenome_process_for_expression_1('$user','$genome');" >> $outputName;
-		echo "\texit;" >> $outputName;
-		echo "end" >> $outputName;
-
-		echo "\t|\tfunction [] = processing3()" >> $logName;
-		echo "\t|\t\tdiary('"$reflocation"matlab.expression_digest_of_reference.log');" >> $logName;
-		echo "\t|\t\tcd "$main_dir"scripts_genomes/;" >> $logName;
-		echo "\t|\t\tgenome_process_for_expression_1('$user','$genome');" >> $logName;
-		echo "\t|\t\texit;" >> $logName;
-		echo "\t|\tend" >> $logName;
-
-		echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-		matlab -nosplash -r "run "$outputName";";
-		sed 's/^/\t\t\t|/;' $reflocation"matlab.expression_digest_of_reference.log" >> $logName;
+		python $main_dir"scripts_genomes/genome_process_for_RNAseq_1.py" $user $genome $main_dir $logName >> $ddRADseq_FASTA;
 	fi
 fi
 
@@ -223,7 +200,7 @@ else
 	echo "\n\tCalculating GC-ratios per each standard bin fragment." >> $logName;
 	echo "\n\t\treflocation = "$reflocation >> $logName;
 	echo "" > $outputFile;
-	python $main_dir"scripts_genomes/genome_process_for_standard_bins.GC_bias_1.py" $reflocation $logName >> $outputFile;
+	python $main_dir"scripts_genomes/genome_process_for_standard_bins.GC_bias_1.py" $user $genome $main_dir $logName >> $outputFile;
 fi
 
 if [ -e $repetgenome ]
@@ -239,7 +216,7 @@ then
 		echo "\tCalculating repetitiveness per each digestion fragment." >> $logName;
 		inputFile=$reflocation$FASTAname".repetitiveness.txt";
 		echo "" > $outputFile;
-		python $main_dir"scripts_genomes/genome_process_for_standard_bins.repetitiveness_1.py" $inputFile $reflocation $logName >> $outputFile;
+		python $main_dir"scripts_genomes/genome_process_for_standard_bins.repetitiveness_1.py" $user $genome $main_dir $logName >> $outputFile;
 	fi
 fi
 
@@ -260,7 +237,7 @@ else
 	echo "\n\tCalculating GC-ratios per each restriction digestion fragment." >> $logName;
 	echo "\n\t\treflocation = "$reflocation >> $logName;
 	echo "" > $outputFile;
-	python $main_dir"scripts_genomes/genome_process_for_RADseq.GC_bias_1.py" $reflocation $ddRADseq_FASTA $logName >> $outputFile;
+	python $main_dir"scripts_genomes/genome_process_for_RADseq.GC_bias_1.py" $user $genome $main_dir $logName >> $outputFile;
 fi
 
 if [ -e $repetgenome ]
@@ -276,7 +253,7 @@ then
 		echo "\n\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
 #		inputFile=$reflocation$FASTAname".repetitiveness.txt";
 		echo "" > $outputFile;
-		python $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_1.py" $FASTAname $reflocation $ddRADseq_FASTA $logName >> $outputFile;
+		python $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_1.py" $user $genome $main_dir $logName >> $outputFile;
 	fi
 fi
 
@@ -299,7 +276,7 @@ then
 		echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
 		echo "\n\t\treflocation = "$reflocation >> $logName;
 		echo "" > $outputFile;
-		python $main_dir"scripts_genomes/genome_process_for_RNAseq.GC_bias_1.py" $FASTAname $reflocation $RNAseq_FASTA $logName >> $outputFile;
+		python $main_dir"scripts_genomes/genome_process_for_RNAseq.GC_bias_1.py" $user $genome $main_dir $logName >> $outputFile;
 	fi
 
 	if [ -e $repetgenome ]
@@ -315,7 +292,7 @@ then
 			echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
 			inputFile=$reflocation$FASTAname".repetitiveness.txt";
 			echo "" > $outputFile;
-			python $main_dir"scripts_genomes/genome_process_for_RNAseq.repetitiveness_1.py" $inputFile $reflocation $RNAseq_FASTA $logName >> $outputFile;
+			python $main_dir"scripts_genomes/genome_process_for_RNAseq.repetitiveness_1.py" $user $genome $main_dir $logName >> $outputFile;
 		fi
 	fi
 fi
