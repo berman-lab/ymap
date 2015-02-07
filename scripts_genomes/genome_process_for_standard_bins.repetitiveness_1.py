@@ -29,7 +29,7 @@ with open(logName, "a") as myfile:
 # Lines ending in '[*]' are usable.   Other lines aren't usable.
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tProcessing restriction-digested genome file -> fragment coordinates.")
+	myfile.write("\n\t\t\tProcessing standard-bin fragmented genome file -> fragment coordinates.")
 
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
@@ -43,10 +43,11 @@ with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tReference FASTA : " + refFASTA)
 
 # Open restriction-digested genome FASTQ file.
+inputFile               = workingDir + string.replace(refFASTA, '.fasta','.repetitiveness.txt')
+datafile                = inputFile;
 standardBins_FASTA_file = workingDir + string.replace(refFASTA, '.fasta','.standard_bins.fasta')
 standardBins_FASTA_data = open(standardBins_FASTA_file,'r')
 
-inputFile               = workingDir + string.replace(refFASTA, '.fasta','.repetitiveness.txt')
 
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tStandard bin fragmented reference FASTA : " + standardBins_FASTA_file)
@@ -171,11 +172,8 @@ with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t\tOpen genome repetitiveness file.")
 
 # Open genome repetitiveness file.
-# datafile    = workingDir + genome + '_repetitiveness.txt'
 print '### InputFile = ' + inputFile
-#datafile      = workingDir + inputFile
-datafile      = inputFile;
-data          = open(datafile,'r')
+data = open(datafile,'r')
 
 #............................................................................................................
 
@@ -222,7 +220,7 @@ for line in data:
 				chr = x+1
 
 		# Convert to integers.
-		pos_point  = int(position)   
+		pos_point  = int(position)
 		data_point = float(repetScore)
 
 		if old_chr != chr:
@@ -266,17 +264,14 @@ for line in data:
 					with open(logName, "a") as myfile:
 						myfile.write(".")
 
-				# Adds current coordinate repetitiveness score to fragment total count : fragments[frag-1] = [chr_num,bp_start,bp_end,
-				#       repetDataCount,repetMax,repetAve]
+				# Adds current coordinate repetitiveness score to fragment total count : fragments[frag-1] = [chr_num,bp_start,bp_end, repetDataCount,repetMax,repetAve]
 				fragments[current_fragment-1][3] += data_point
 
-				# If current coordinate read count is highest so far for fragment, update max : fragments[frag-1] = [chr_num,bp_start,bp_end,
-				#       repetDataSum,repetMax,repetAve]
+				# If current coordinate read count is highest so far for fragment, update max : fragments[frag-1] = [chr_num,bp_start,bp_end, repetDataSum,repetMax,repetAve]
 				if data_point > fragments[current_fragment-1][4]:
 					fragments[current_fragment-1][4] = data_point
 
-				# If current coordinate is at (or after) the end of a fragment, update fragment_found to 0 : fragments[frag-1] = [chr_num,bp_start,bp_end,
-				#       repetDataSum,repetMax,repetAve]
+				# If current coordinate is at (or after) the end of a fragment, update fragment_found to 0 : fragments[frag-1] = [chr_num,bp_start,bp_end, repetDataSum,repetMax,repetAve]
 				if pos_point >= fragments[current_fragment-1][2]:
 					fragment_found = 0
 

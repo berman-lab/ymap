@@ -15,7 +15,6 @@ main_dir    = sys.argv[3];
 logName     = sys.argv[4];
 
 t0 = time.clock()
-
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t*================================================================*\n")
 	myfile.write("\t\t\t| Log of 'genome_process_for_RADseq.repetitiveness_1.py'         |\n")
@@ -28,6 +27,9 @@ with open(logName, "a") as myfile:
 # Example FASTQ header line.
 #     >Ca_a.chr1 (9638..10115) (478bp) [*]
 # Lines ending in '[*]' are usable.   Other lines aren't usable.
+
+with open(logName, "a") as myfile:
+	myfile.write("\n\t\t\tProcessing restriction-digest fragmented genome file -> fragment coordinates.")
 
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
@@ -171,7 +173,6 @@ with open(logName, "a") as myfile:
 
 # Open genome repetitiveness file.
 print '### datafile = ' + datafile
-
 data = open(datafile,'r')
 
 #............................................................................................................
@@ -219,8 +220,8 @@ for line in data:
 				chr = x+1
 
 		# Convert to integers.
-		pos  = int(position)   
-		data = float(repetScore)
+		pos_point  = int(position)
+		data_point = float(repetScore)
 
 		if old_chr != chr:
 			print '### chr change : ' + str(old_chr) + ' -> ' + str(chr)
@@ -238,14 +239,13 @@ for line in data:
 				count = 1
 				fragment_found = 0
 				current_fragment = 0
-				log_offset_string = " "*((current_fragment-1)%100)
 
 			# If (fragment_found == 0), look to see if current coordinate matches any defined fragments.
 			if fragment_found == 0:
 				for frag in range(current_fragment,numFragments):
 					# Check if current coordinte is consistent with this fragment : fragments[frag-1] = [chr_num,bp_start,bp_end,
 					#       data_count,data_max,ave_read_count, repetDataCount,repetMax,repetAve]
-					if chr == fragments[frag-1][0] and pos >= fragments[frag-1][1] and pos <= fragments[frag-1][2]:
+					if chr == fragments[frag-1][0] and pos_point >= fragments[frag-1][1] and pos_point <= fragments[frag-1][2]:
 						fragment_found   = 1
 						current_fragment = frag
 						break
@@ -265,14 +265,14 @@ for line in data:
 						myfile.write(".")
 
 				# Adds current coordinate repetitiveness score to fragment total count : fragments[frag-1] = [chr_num,bp_start,bp_end,data_count,data_max,ave_read_count, repetDataCount,repetMax,repetAve]
-				fragments[current_fragment-1][3] += data
+				fragments[current_fragment-1][3] += data_point
 
 				# If current coordinate read count is highest so far for fragment, update max : fragments[frag-1] = [chr_num,bp_start,bp_end,data_count,data_max,ave_read_count, repetDataCount,repetMax,repetAve]
-				if data > fragments[current_fragment-1][4]:
-					fragments[current_fragment-1][4] = data
+				if data_point > fragments[current_fragment-1][4]:
+					fragments[current_fragment-1][4] = data_point
 
 				# If current coordinate is at (or after) the end of a fragment, update fragment_found to 0 : fragments[frag-1] = [chr_num,bp_start,bp_end,data_count,data_max,ave_read_count, repetDataCount,repetMax,repetAve]
-				if pos >= fragments[current_fragment-1][2]:
+				if pos_point >= fragments[current_fragment-1][2]:
 					fragment_found = 0
 
 		# Reset old_chr to current coordinate chromosome before moving to next line in pileup. 
