@@ -9,9 +9,10 @@
 #
 
 import string, sys, re, time
-inputFile   = sys.argv[1]
-workingDir  = sys.argv[2]
-logName     = sys.argv[3]
+userName    = sys.argv[1];
+genomeName  = sys.argv[2];
+main_dir    = sys.argv[3];
+logName     = sys.argv[4];
 
 t0 = time.clock()
 
@@ -43,6 +44,8 @@ with open(logName, "a") as myfile:
 # Open restriction-digested genome FASTQ file.
 standardBins_FASTA_file = workingDir + string.replace(refFASTA, '.fasta','.standard_bins.fasta')
 standardBins_FASTA_data = open(standardBins_FASTA_file,'r')
+
+inputFile               = workingDir + string.replace(refFASTA, '.fasta','.repetitiveness.txt')
 
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tStandard bin fragmented reference FASTA : " + standardBins_FASTA_file)
