@@ -15,11 +15,11 @@ main_dir    = sys.argv[3];
 logName     = sys.argv[4];
 
 t0 = time.clock()
-
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t-----------------------------------------------------------")
-	myfile.write("\n\t\tLog of genome_process_for_standard_bins.repetitiveness_1.py")
-	myfile.write("\n\t\t-----------------------------------------------------------")
+	myfile.write("\t\t\t*================================================================*\n")
+	myfile.write("\t\t\t| Log of 'genome_process_for_standard_bins.repetitiveness_1.py'  |\n")
+	myfile.write("\t\t\t*----------------------------------------------------------------*\n")
+
 
 #============================================================================================================
 # Process restriction-digested genome file.

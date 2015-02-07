@@ -10,8 +10,12 @@ genomeName  = sys.argv[2];
 main_dir    = sys.argv[3];
 logName     = sys.argv[4];
 
-
 nmer_length = 10;
+
+with open(logName, "a") as myfile:
+	myfile.write("\t\t\t*================================================================*\n")
+	myfile.write("\t\t\t| Log of 'repetitiveness_1.py'                                   |\n")
+	myfile.write("\t\t\t*----------------------------------------------------------------*\n")
 
 
 #------------------------------------------------------------------------------------------------------------

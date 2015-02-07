@@ -18,9 +18,9 @@ logName     = sys.argv[4];
 # Initialize time counter and log file section.
 t0 = time.clock();
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t-----------------------------------------------------------");
-	myfile.write("\n\t\t Log of genome_process_for_RNAseq_1.py");
-	myfile.write("\n\t\t-----------------------------------------------------------");
+	myfile.write("\t\t\t*================================================================*\n")
+	myfile.write("\t\t\t| Log of 'genome_process_for_RNAseq_1.py'                        |\n")
+	myfile.write("\t\t\t*----------------------------------------------------------------*\n")
 
 
 #============================================================================================================
