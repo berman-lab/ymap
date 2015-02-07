@@ -41,7 +41,8 @@ with open(logName, "a") as myfile:
 
 # Open restriction-digested genome FASTQ file.
 digestedGenome      = refFASTA.replace(".fasta",".MfeI_MboI.fasta");
-datafile            = refFASTA.replace(".fasta",".repetitiveness.txt");
+datafile_name       = refFASTA.replace(".fasta",".repetitiveness.txt");
+datafile            = workingDir + datafile_name;
 ddRADseq_FASTA_file = workingDir + digestedGenome
 ddRADseq_FASTA_data = open(ddRADseq_FASTA_file,'r')
 
@@ -169,7 +170,8 @@ with open(logName, "a") as myfile:
 
 # Open genome repetitiveness file.
 print '### datafile = ' + datafile
-data          = open(datafile,'r')
+
+data = open(datafile,'r')
 
 #............................................................................................................
 
