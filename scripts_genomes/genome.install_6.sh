@@ -179,7 +179,7 @@ else
 		echo "\tExpression digest of genome being performed." >> $logName;
 
 #		## Perform expression digest of genome.
-		python $main_dir"scripts_genomes/genome_process_for_RNAseq_1.py" $user $genome $main_dir $logName >> $ddRADseq_FASTA;
+		python $main_dir"scripts_genomes/genome_process_for_RNAseq_1.py" $user $genome $main_dir $logName >> $RNAseq_FASTA;
 	fi
 fi
 
