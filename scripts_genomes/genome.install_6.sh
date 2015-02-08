@@ -305,4 +305,4 @@ echo "\n\t======================================================================
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-# sh $main_dir"scripts_genomes/cleaning_genome.sh" $user $genome $main_dir;
+sh $main_dir"scripts_genomes/cleaning_genome.sh" $user $genome $main_dir;
