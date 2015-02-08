@@ -76,7 +76,7 @@
 			$handle       = fopen($sizeFile_1,'r');
 			$sizeString_1 = trim(fgets($handle));
 			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
 			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
 
 			echo "</font></span>\n\t\t\t\t";
@@ -97,7 +97,7 @@
 			$handle       = fopen($sizeFile_1,'r');
 			$sizeString_1 = trim(fgets($handle));
 			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
 			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
 
 			echo "</font></span>\n\t\t\t\t";
@@ -118,7 +118,7 @@
 			$handle       = fopen($sizeFile_1,'r');
 			$sizeString_1 = trim(fgets($handle));
 			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
 			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
 
 			echo "</font></span>\n\t\t\t\t";
