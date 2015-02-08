@@ -30,7 +30,8 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-    require_once '../constants.php';
+	require_once '../constants.php';
+	include_once 'process_input_files.genome.php';
 
 	$user             = $_SESSION['user'];
 	$key              = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
@@ -66,17 +67,27 @@
 	fwrite($output, $startTimeString);
 	fclose($output);
 
-// Standardize name of uploaded file.
-	if ($fileName == '') {
-	} else {
-		$oldName    = $fileName;
+// Process uploaded file.
+		$genomePath  = "../users/".$user."/genomes/".$genome."/";
+		$name        = str_replace("\\", ",", $fileName);
+		rename($genomePath.$name,$genomePath.strtolower($name));
+		$name        = strtolower($name);
+		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
 		$newName    = "chromosome_features.txt";
-		$currentDir = getcwd();
-		$genomePath = "../users/".$user."/genomes/".$genome."/";
-		chdir($genomePath);
-		rename($oldName, $newName);
-		chdir($currentDir);
-	}
+
+		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
+		$output2Name    = $genomePath."upload_size_2.txt";
+		$output2        = fopen($output2Name, 'w');
+		$fileSizeString = filesize($genomePath.$name);
+		fwrite($output2, $fileSizeString);
+		fclose($output2);
+		chmod($output2Name,0755);
+		fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
+
+		// Process the uploaded file.
+		process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $newName);
+		$fileName = $newName;
 
 // Final install functions are in shell script.
 	$system_call_string = "sh genome.install_6.sh ".$user." ".$genome." > /dev/null &";

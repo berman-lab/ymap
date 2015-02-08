@@ -61,22 +61,15 @@
 // process_log.txt output.
 	fwrite($logOutput, "\t'scripts_genomes/genome.install_4.php' has completed'.\n");
 
-	// Final install functions are in shell script.
-//	$system_call_string = "sh ../sh/genome.install_6.plus_RNAseq.sh ".$user." ".$genome." > /dev/null &";
-//	system($system_call_string);
 ?>
 <BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 40);">
 	<div id='frameContainer'></div>
 	<script type="text/javascript">
-		console.log("genome.install_4.php : user       = '<?php echo $user;    ?>'");
-		console.log("genome.install_4.php : genome     = '<?php echo $genome;  ?>'");
-		console.log("genome.install_4.php : key        = '<?php echo $key;     ?>'");
-		console.log("genome.install_4.php : currentDir = '<?php echo getcwd(); ?>'");
 		<?php
 		echo "var el_g = document.getElementById('frameContainer');\n\t\t";
 		echo "el_g.innerHTML='<iframe id=\"g_new\" name=\"g_new\" class=\"upload\" style=\"height:38px\" src=\"../uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
-		echo "frames['g_new'].display_string = new Array();\n\t\t";
-		echo "frames['g_new'].display_string[0] = \"Add : chromosome feature file...\";\n\t\t";
+		echo "frames['g_new'].display_string    = new Array();\n\t\t";
+		echo "frames['g_new'].display_string[0] = \"Add : chromosome feature TAB file...\";\n\t\t";
 		echo "frames['g_new'].target_dir        = \"../../users/".$user."/genomes/".$genome."/\";\n\t\t";
 		echo "frames['g_new'].conclusion_script = \"scripts_genomes/genome.install_5.php\";\n\t\t";
 		echo "frames['g_new'].user              = \"".$user."\";\n\t\t";

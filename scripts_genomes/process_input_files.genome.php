@@ -122,7 +122,7 @@ if (strcmp($ext,"zip") == 0) {
 	// extension indicates the file is not a compressed archive.
 	$ext_new  = $ext;
 	$name_new = $name;
-	
+
 	$rename = $output_fileName;
 	$currentDir = getcwd();
 	chdir($genomePath);
@@ -166,6 +166,9 @@ fwrite($logOutput, "\t| genomePath  = ".$genomePath."\n");
 // Deal with raw/decompressed files.
 if ((strcmp($ext_new,"fasta") == 0) || (strcmp($ext_new,"fa") == 0)) {
 	fwrite($logOutput, "\t| This is an uncompressed FASTA file, no further pre-processing is needed.\n");
+	fwrite($output, $name_new."\n");
+} elseif (strcmp($ext_new,"tab") == 0) {
+	fwrite($logOutput, "\t| This is an uncompressed TAB file, no further pre-processing is needed.\m");
 	fwrite($output, $name_new."\n");
 } elseif (strcmp($ext_new,"none1") == 0) {
 	fwrite($logOutput, "\t| This archive contained a file with no extension and the file type could not be determined.\n");

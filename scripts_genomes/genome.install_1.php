@@ -12,7 +12,7 @@
 </HEAD>
 <?php
 // current directory
-    require_once '../constants.php';
+	require_once '../constants.php';
 	include_once 'process_input_files.genome.php';
 
 	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
