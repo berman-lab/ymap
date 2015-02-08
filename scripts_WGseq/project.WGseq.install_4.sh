@@ -9,15 +9,14 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$(pwd)"/";
+main_dir=$(pwd)"/../";
 
-#user="darren";
-#project="SC5314";
-#main_dir="/heap/hapmap/bermanlab/";
-
-#user="morlurie";
-#project="BG2";
-#main_dir="/heap/hapmap/bermanlab/";
+echo "";
+echo "Input to : project.WGseq.install_4.sh";
+echo "\tuser     = "$user;
+echo "\tproject  = "$project;
+echo "\tmain_dir = "$main_dir;
+echo "";
 
 
 ##==============================================================================
@@ -80,10 +79,10 @@ echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $con
 
 if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
 then
-	echo "\t\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.py'" >> $logName;
+	echo "\t\tCNV data already preprocessed with python script : 'scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
-	echo "\t\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.py'" >> $logName;
-	python $main_dir"py/dataset_process_for_CNV_analysis.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
+	echo "\t\tPreprocessing CNV data with python script : 'scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
+	python $main_dir"scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -166,12 +165,9 @@ fi
 
 if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
 then
-	echo "\t\tSNP data already preprocessed with python script : 'py/dataset_process_for_SNP_analysis.3.py'" >> $logName;
+	echo "\t\tSNP data already preprocessed with python script : 'scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
-#	echo "\t\tPreprocessing SNP data with python script : 'py/dataset_process_for_SNP_analysis.1.py'" >> $logName;
-#	python $main_dir"py/dataset_process_for_SNP_analysis.1.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName  > $projectDirectory"preprocessed_SNPs.txt";
-#	echo "\t\tpre-processing complete." >> $logName;
-	echo "\t\tPreprocessing SNP data with python script : 'py/dataset_process_for_SNP_analysis.3.py'" >> $logName;
+	echo "\t\tPreprocessing SNP data with python script : 'scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 	if [ -f $projectParentDirectory"putative_SNPs_v4.txt" ]
 	then
 		echo "\t\tParent SNP data already decompressed." >> $logName;
@@ -185,12 +181,12 @@ else
 	fi
 
 	# preprocess parent for comparison. abbey
-	python $main_dir"py/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
+	python $main_dir"scripts_WGseq/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
 
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
-	python $main_dir"py/dataset_process_for_SNP_analysis.3.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt";
+	python $main_dir"scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -256,4 +252,4 @@ sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"sh/cleaning_WGseq.sh" $user $project $main_dir;
+sh $main_dir"scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir;

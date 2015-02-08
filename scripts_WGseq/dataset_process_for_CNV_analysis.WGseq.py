@@ -35,7 +35,7 @@ t0 = time.clock()
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t*======================================================================*\n")
-	myfile.write("\t\t\t| Log of 'dataset_process_for_CNV_analysis.py'                         |\n")
+	myfile.write("\t\t\t| Log of 'dataset_process_for_CNV_analysis.WGseq.py'                   |\n")
 	myfile.write("\t\t\t*----------------------------------------------------------------------*\n")
 
 #============================================================================================================
@@ -357,7 +357,7 @@ print "### ", time.clock() - t0, "seconds to complete processing of fragment def
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t|\tTime to process = " + str(time.clock()-t0) +"\n")
-	myfile.write("\t\t\t|\t'py/dataset_process_for_CNV_analysis.py' completed.\n")
-	myfile.write("\t\t\t*----------------------------------------------------------------*\n")
-	myfile.write("\t\t\t| End of Log from 'dataset_process_for_CNV_analysis.py'          |\n")
-	myfile.write("\t\t\t*================================================================*\n")
+	myfile.write("\t\t\t|\t'scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py' completed.\n")
+	myfile.write("\t\t\t*----------------------------------------------------------------------*\n")
+	myfile.write("\t\t\t| End of Log from 'dataset_process_for_CNV_analysis.WGseq,py'          |\n")
+	myfile.write("\t\t\t*======================================================================*\n")

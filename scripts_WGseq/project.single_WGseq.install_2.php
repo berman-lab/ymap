@@ -25,8 +25,8 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
-	include_once 'process_input_files.php';
+	require_once '../constants.php';
+	include_once '../process_input_files.php';
 
 // Deal with passed variables.
 	$fileName = $argv[1];
@@ -37,8 +37,8 @@
 	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "#..............................................................................\n");
-	fwrite($logOutput, "Running 'php/project.single_WGseq.install_2.php'.\n");
-	fwrite($logOutput, "Variables passed via command-line from 'php/project.single_WGseq.install_1.php' :\n");
+	fwrite($logOutput, "Running 'scripts_WGseq/project.single_WGseq.install_2.php'.\n");
+	fwrite($logOutput, "Variables passed via command-line from 'scripts_WGseq/project.single_WGseq.install_1.php' :\n");
 	fwrite($logOutput, "\tfileName = '".$fileName."'\n");
 	fwrite($logOutput, "\tuser     = '".$user."'\n");
 	fwrite($logOutput, "\tproject  = '".$project."'\n");
@@ -91,15 +91,15 @@
 
 	// Final install functions are in shell script.
     if ($paired == 1) {
-		fwrite($logOutput, "Passing control to : 'sh/project.paired_WGseq.install_3.sh'\n");
+		fwrite($logOutput, "Passing control to : 'scripts_WGseq/project.paired_WGseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tPaired-end reads being processed.\n");
 		fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-		$system_call_string = "sh ../sh/project.paired_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
+		$system_call_string = "sh ../scripts_WGseq/project.paired_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	} else {
-		fwrite($logOutput, "Passing control to : 'sh/project.single_WGseq.install_3.sh'\n");
+		fwrite($logOutput, "Passing control to : 'scripts_WGseq/project.single_WGseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tSingle-end reads being processed.\n");
 		fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-		$system_call_string = "sh ../sh/project.single_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
+		$system_call_string = "sh ../scripts_WGseq/project.single_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	}
 
 	system($system_call_string);

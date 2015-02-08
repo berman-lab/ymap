@@ -38,9 +38,9 @@ logName          = sys.argv[8]
 runMode          = sys.argv[9]  # 'hapmap' or 'LOH' modes.
 
 with open(logName, "a") as myfile:
-	myfile.write("*--------------------------------------------------*\n")
-	myfile.write("| Log of 'dataset_process_for_SNP_analysis.3.py'   |\n")
-	myfile.write("*--------------------------------------------------*\n")
+	myfile.write("*------------------------------------------------------*\n")
+	myfile.write("| Log of 'dataset_process_for_SNP_analysis.WGseq.py'   |\n")
+	myfile.write("*------------------------------------------------------*\n")
 
 # Figure out if input name 'hapmap' corresponds to a project or an actual hapmap.
 if (runMode == 'hapmap'):
@@ -534,6 +534,6 @@ print "### ", time.clock() - t0, "seconds to complete processing of fragment def
 
 with open(logName, "a") as myfile:
 	myfile.write("|\tTime to process = " + str(time.clock()-t0) +"\n")
-	myfile.write("*-------------------------------------------------------*\n")
-	myfile.write("| 'py/dataset_process_for_SNP_analysis.3.py' completed. |\n")
-	myfile.write("*-------------------------------------------------------*\n")
+	myfile.write("*----------------------------------------------------------------------*\n")
+	myfile.write("| 'scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py' completed. |\n")
+	myfile.write("*----------------------------------------------------------------------*\n")

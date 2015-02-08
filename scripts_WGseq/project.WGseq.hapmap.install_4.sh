@@ -9,13 +9,8 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-hapmap=$3
-main_dir=$(pwd)"/";
-
-#user="darren";
-#project="test_12353_vs_hapmap_2a";
-#hapmap="test";
-#main_dir="/heap/hapmap/bermanlab/"
+hapmap=$3;
+main_dir=$(pwd)"/../";
 
 echo "";
 echo "Input to : project.WGseq.hapmap.install_4.sh";
@@ -24,6 +19,7 @@ echo "\tproject  = "$project;
 echo "\thapmap   = "$hapmap;
 echo "\tmain_dir = "$main_dir;
 echo "";
+
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -86,10 +82,10 @@ echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $con
 
 if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
 then
-	echo "\t\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.py'" >> $logName;
+	echo "\t\tCNV data already preprocessed with python script : 'scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
-	echo "\t\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.py'" >> $logName;
-	python $main_dir"py/dataset_process_for_CNV_analysis.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
+	echo "\t\tPreprocessing CNV data with python script : 'scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
+	python $main_dir"scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -174,10 +170,10 @@ fi;
 
 if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
 then
-	echo "\t\tSNP data already preprocessed with python script : 'py/dataset_process_for_SNP_analysis.3.py'" >> $logName;
+	echo "\t\tSNP data already preprocessed with python script : 'scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
-	echo "\t\tPreprocessing SNP data with python script : 'py/dataset_process_for_SNP_analysis.3.py'" >> $logName;
-	python $main_dir"py/dataset_process_for_SNP_analysis.3.py" $genome $genomeUser $hapmap $hapmapUser $project $user $main_dir $logName hapmap  > $projectDirectory"preprocessed_SNPs.txt";
+	echo "\t\tPreprocessing SNP data with python script : 'scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
+	python $main_dir"scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $hapmap $hapmapUser $project $user $main_dir $logName hapmap  > $projectDirectory"preprocessed_SNPs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -247,4 +243,4 @@ rm $projectDirectory"matlab.final_figs.log"
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"sh/cleaning_WGseq.sh" $user $project $main_dir;
+sh $main_dir"scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir;
