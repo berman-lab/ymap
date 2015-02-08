@@ -182,8 +182,10 @@ for line in data:
 	#     chromosome                    bpCoordinate    repetitivenessScore
 	#     Ca21chr1_C_albicans_SC5314    2388924         123
 	#     Ca21chr1_C_albicans_SC5314    2388925         135
-	if line[0] == "#":
+	if (line[0] == "#"):
 		print "### comment in repet file :'" + line.strip() + "'";
+	elif (line.strip() == ''):
+		print "###";
 	else:
 		line_parts = (line.strip()).split();
 		chr_name   = line_parts[0];        # chr name of bp.
