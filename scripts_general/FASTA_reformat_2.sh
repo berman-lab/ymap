@@ -23,10 +23,10 @@ else
 	# 1) Adds newlines in front of ">"s to split FASTA entries onto separate lines.
 	perl -pi -e 's/>/\n>/g' $1
 
-	# 2) Adds a newline after every 100bp of sequence.
-	perl -pi -e 's/.{100}/$&\n/g' $1
+	# 1) For lines that don't start with ">", add a newline after every 100 characters.
+	perl -pi -e 'if (/!^[>]/) { s/.{100}/$&\n/g }' $1;
 
-	# 3) Remove initial blank lines...  added above as artifact of adding lines between entries.
+	# 3) Remove initial blank line added above as artifact of adding lines between entries.
 	awk 'NR > 1 { print }' < $1 > $1.temp
 	rm $1;
 	mv $1.temp $1;
