@@ -8,6 +8,6 @@ set -e;
 umask 007;
 
 user="darren1";
-genome="test";
+genome="test_Ca22";
 
 sh genome.install_6.sh $user $genome;
