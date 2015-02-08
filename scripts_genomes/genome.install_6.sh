@@ -251,9 +251,7 @@ then
 		echo "Calculating repetitiveness for digested genome fragments." >> $condensedLog;
 		## Calculating repetitiveness of ddRADseq (MfeI & MboI) fragments.
 		echo "\n\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
-#		inputFile=$reflocation$FASTAname".repetitiveness.txt";
-		echo "" > $outputFile;
-		python $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_1.py" $user $genome $main_dir $logName >> $outputFile;
+		python $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile;
 	fi
 fi
 
@@ -292,7 +290,7 @@ then
 			echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
 			inputFile=$reflocation$FASTAname".repetitiveness.txt";
 			echo "" > $outputFile;
-			python $main_dir"scripts_genomes/genome_process_for_RNAseq.repetitiveness_1.py" $user $genome $main_dir $logName >> $outputFile;
+			python $main_dir"scripts_genomes/genome_process_for_RNAseq.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile;
 		fi
 	fi
 fi

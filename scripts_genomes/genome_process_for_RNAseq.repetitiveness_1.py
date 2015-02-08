@@ -334,4 +334,4 @@ print "### ", time.clock() - t0, "seconds to complete processing of pileup file 
 
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tTime to process = " + str(time.clock()-t0) )
-	myfile.write("\n\t\t* 'py/genome_process_for_RNAseq.repetitiveness_1.py' completed. *\n")
+	myfile.write("\n\t\t* 'scripts_genomes/genome_process_for_RNAseq.repetitiveness_1.py' completed. *\n")
