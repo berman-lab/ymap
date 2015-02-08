@@ -153,6 +153,7 @@ while True:
 		if chr_name in chrName:
 			# Make sure chromosome string is all upper-case.
 			line2upcase = line2.upper();
+
 			# Digest chromosome by first restriction enzyme, [C:AATTG].
 			fragments1 = line2upcase.split('CAATTG');
 			# Split function breaks string by chosen string by removing the string.
@@ -161,20 +162,24 @@ while True:
 				for x in range(0, len(fragments1)-1):
 					fragments1[x]   = fragments1[x] + 'C';
 					fragments1[x+1] = 'AATTG' + fragments1[x+1];
+
 			# Digest fragments by second restriction enzyme, [:GATC].
 			fragments2_2d = [];
 			for x in range(0, len(fragments1)):
 				broken = fragments1[x].split('GATC');
 				# New fragments need to be repaired: [GATC] on the right side of each break.
 				if (len(broken) > 1):
-					for x in range(0, len(broken)-1):
-						broken[x+1] = 'GATC' + broken[x+1];
+					for y in range(0, len(broken)-1):
+						broken[y+1] = 'GATC' + broken[y+1];
 				fragments2_2d.append(broken);
+
 			# Flatten the list of lists generated in previous for loop.
 			fragments2 = sum(fragments2_2d,[]);
-			# Output fragments as FASTA entries.
-			fragment_start = 1;
 
+			# print line1.strip() + " : chr_num = " + str(chr_num) + " : " + chr_name + " : num fragments = " + str(len(fragments2)-1);
+
+			# Iterate through fragments to output new FASTA entries.
+			fragment_start = 1;
 			# First fragment on chromosome; can't be bound by both restriction sites, but needs to be processed for consistency.
 			fragment        = fragments2[0];
 			fragment_length = len(fragment);
