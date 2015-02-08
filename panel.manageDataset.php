@@ -22,7 +22,8 @@
 		<b><font size='2'>Datasets Pending</font></b><br>
 		<div class='tab' style='color:#CC0000; font-size:10pt;' id='newly_installed_list' name='newly_installed_list'></div><br>
 		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:left;' id='pending_comment' name='pending_comment'>Reload page after any current uploads have completed to prepare pending datasets
-		for upload.<br><br>Additional datasets can be defined with the 'Install New Dataset' button while files upload.</div>
+		for upload.<br><br>Additional datasets can be defined with the 'Install New Dataset' button while files upload.<br></div>
+		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:center;' id='name_error_comment' name='name_error_comment'>(Entered dataset name is already in use.)</div>
 		<?php
 	}
 	?>

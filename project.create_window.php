@@ -17,7 +17,7 @@
 		<div id="loginControls"><p>
 		</p></div>
 		<div id="projectCreationInformation"><p>
-			<form action="project.create_server.test.php" method="post">
+			<form action="project.create_server.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project">
 				</td><td>

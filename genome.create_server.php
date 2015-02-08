@@ -27,33 +27,54 @@
 	if (file_exists($dir2) || file_exists($dir3)) {
 		// Directory already exists
 		echo "Genome '".$genomeName."' directory already exists.";
+?>
+	<html>
+	<body>
+	<script type="text/javascript">
+	var el1 = parent.document.getElementById('Hidden_InstallNewGenome');
+	el1.style.display = 'none';
+
+	var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('name_error_comment');
+	el2.style.visibility = 'visible';
+
+	window.location = "genome.create_window.php";
+	</script>
+	</body>
+	</html>
+<?php
 	} else {
 		// Create the genome folder inside the user's genomes directory
 		mkdir($dir2);
 		chmod($dir2,0777);
 
 		// Generate 'name.txt' file containing:
-	    //      one line; name of genome.
-	    $outputName       = "users/".$user."/genomes/".$genomeName."/name.txt";
+		//      one line; name of genome.
+		$outputName   = "users/".$user."/genomes/".$genomeName."/name.txt";
 		$output       = fopen($outputName, 'w');
 		fwrite($output, str_replace("_"," ",$genomeName));
-	    fclose($output);
-	}
-	$_SESSION['pending_install_genome_count'] += 1;
+		fclose($output);
+
+		$_SESSION['pending_install_genome_count'] += 1;
 ?>
-<html>
-<body>
-<script type="text/javascript">
-var el1 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('newly_installed_list');
-el1.innerHTML += "<?php echo $_SESSION['pending_install_genome_count']; ?>. <?php echo $genomeName; ?><br>";
+	<html>
+	<body>
+	<script type="text/javascript">
+	var el1 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('newly_installed_list');
+	el1.innerHTML += "<?php echo $_SESSION['pending_install_genome_count']; ?>. <?php echo $genomeName; ?><br>";
 
-var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('pending_comment');
-el2.style.visibility = 'visible';
+	var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('pending_comment');
+	el2.style.visibility = 'visible';
 
-var el3 = parent.document.getElementById('Hidden_InstallNewGenome');
-el3.style.display = 'none';
+	var el3 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('name_error_comment');
+	el3.style.visibility = 'hidden';
 
-window.location = "genome.create_window.php";
-</script>
-</body>
-</html>
+	var el4 = parent.document.getElementById('Hidden_InstallNewGenome');
+	el4.style.display = 'none';
+
+	window.location = "genome.create_window.php";
+	</script>
+	</body>
+	</html>
+<?php
+	}
+?>
