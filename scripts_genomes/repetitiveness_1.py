@@ -72,10 +72,6 @@ def rev_com(seq):
 
 # Initialize time counter and log file section.
 t0 = time.clock();
-with open(logName, "a") as myfile:
-	myfile.write("\n\t\t-----------------------------------------------------------");
-	myfile.write("\n\t\t Log of repetitiveness_1.py");
-	myfile.write("\n\t\t-----------------------------------------------------------");
 
 
 #============================================================================================================
@@ -197,7 +193,7 @@ while True:
 				if chr_name in chrName:
 					myfile.write("\t\t\t#### Tallying nmers of: " + chr_name + "\n");
 				else:
-					myfile.write("\t\t\t#### Tallying nmers of: " + chr_name + " [not examined]\n");
+					myfile.write("\t\t\t#### Skipping '" + chr_name + "' because it was deselected.\n");
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
