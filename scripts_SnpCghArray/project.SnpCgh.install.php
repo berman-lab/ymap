@@ -67,7 +67,7 @@
 
 // Call Matlab to process SnpCgh data file into final figure.
 	$designDefinition   = "design1";
-	$inputFile          = "../../users/".$user."/projects/".$project."/".$fileName;
+	$inputFile          = "../users/".$user."/projects/".$project."/".$fileName;
 	$headerRows         = 46;
 	$colNames           = 1;
 	$colCh1             = 4;
@@ -82,7 +82,7 @@
 
 	$imageFormat        = "png";
 	$projectName        = $project;
-	$workingDir         = "../../users/".$user."/projects/".$project."/";
+	$workingDir         = "../users/".$user."/projects/".$project."/";
 	$show_MRS           = file_get_contents("../users/".$user."/projects/".$project."/showAnnotations.txt");
 
 	$outputName         = "../users/".$user."/projects/".$project."/processing.m";
@@ -90,10 +90,7 @@
 	$output             = fopen($outputName, 'w');
 	$outputString       =  "function [] = processing()\n";
 	$outputString      .= "\tdiary('matlab.process_log.txt');\n";
-	$outputString      .= "\tcd ../../../../Matlab/SnpCgh_array;\n";
-//	$outputString      .= "\tprocess_main_2('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','".$colLog2ratio."','";
-//	$outputString      .=    $phasingData."','".$ploidyEstimate."','".$ploidyBase."','".$imageFormat."','".$projectName."','".$workingDir."','".$show_MRS."');\n";
-
+	$outputString      .= "\tcd ../../../../scripts_SnpCghArray;\n";
 	$outputString      .= "\tprocess_main('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','".$colLog2ratio."','";
 	$outputString      .=    $phasingData."','".$ploidyEstimate."','".$ploidyBase."','".$imageFormat."','".$projectName."','".$workingDir."','".$show_MRS."');\n";
 	$outputString      .= "\tprocess_main_CNV_only('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','";
