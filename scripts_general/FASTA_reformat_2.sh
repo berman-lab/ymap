@@ -24,7 +24,7 @@ else
 	perl -pi -e 's/>/\n>/g' $1
 
 	# 1) For lines that don't start with ">", add a newline after every 100 characters.
-	perl -pi -e 'if (/!^[>]/) { s/.{100}/$&\n/g }' $1;
+	perl -pi -e 'if (!/^[>]/) { s/.{100}/$&\n/g }' $1;
 
 	# 3) Remove initial blank line added above as artifact of adding lines between entries.
 	awk 'NR > 1 { print }' < $1 > $1.temp
