@@ -28,7 +28,7 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
+    require_once '../constants.php';
 	$fileName        = filter_input(INPUT_POST, "fileName",        FILTER_SANITIZE_STRING);
 	$user            = filter_input(INPUT_POST, "user",            FILTER_SANITIZE_STRING);
 	$project         = filter_input(INPUT_POST, "project",         FILTER_SANITIZE_STRING);
@@ -122,10 +122,10 @@
 	var project = "<?php echo $project; ?>";
 	var key     = "<?php echo $key;     ?>";
 	var status  = "0";
-	// construct and submit form to move on to "project.working_server.2.php";
+	// construct and submit form to move on to "project.working_server.php";
 	var autoSubmitForm = document.createElement("form");
 		autoSubmitForm.setAttribute("method","post");
-		autoSubmitForm.setAttribute("action","project.working_server.2.php");
+		autoSubmitForm.setAttribute("action","../project.working_server.php");
 	var input2 = document.createElement("input");
 		input2.setAttribute("type","hidden");
 		input2.setAttribute("name","key");

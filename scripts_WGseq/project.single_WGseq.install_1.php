@@ -65,7 +65,7 @@
  	$system_call_string = "php project.single_WGseq.install_2.php ".$fileName." ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 
-	fwrite($logOutput, "Loading 'project.working_server.2.php' into iframe.\n");
+	fwrite($logOutput, "Loading 'project.working_server.php' into iframe.\n");
 	fclose($logOutput);
 ?>
 <font size="2" color="red">Upload complete; processing...</font><br>
@@ -74,10 +74,10 @@
 	var project = "<?php echo $project; ?>";
 	var key     = "<?php echo $key;     ?>";
 	var status  = "0";
-	// construct and submit form to move on to "project.working_server.2.php";
+	// construct and submit form to move on to "project.working_server.php";
 	var autoSubmitForm = document.createElement("form");
 		autoSubmitForm.setAttribute("method","post");
-		autoSubmitForm.setAttribute("action","project.working_server.2.php");
+		autoSubmitForm.setAttribute("action","../project.working_server.php");
 	var input2 = document.createElement("input");
 		input2.setAttribute("type","hidden");
 		input2.setAttribute("name","key");
