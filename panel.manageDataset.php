@@ -248,7 +248,7 @@ if (isset($_SESSION['logged_on'])) {
 		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
 		echo "p_js.display_string = new Array();\n";
-		echo "p_js.target_dir     = 'users/".$user."/projects/".$project."/';\n";
+		echo "p_js.target_dir     = '../../users/".$user."/projects/".$project."/';\n";
 		echo "p_js.user           = '".$user."';\n";
 		echo "p_js.project        = '".$project."';\n";
 		echo "p_js.key            = 'p_".$key."';\n";

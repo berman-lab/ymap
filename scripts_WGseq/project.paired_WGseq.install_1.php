@@ -32,7 +32,7 @@
 	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
 
-// Initialize log file.
+	// Initialize log file.
 	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
@@ -51,7 +51,7 @@
 	fclose($condensedLogOutput);
 	chmod($outputName,0755);
 
-// Generate 'working.txt' file to let pipeline know processing is started.
+	// Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = "../users/".$user."/projects/".$project."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
@@ -60,7 +60,7 @@
 	chmod($outputName,0755);
 	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
-// Installation continues with next php script... strings recieved as POST are forwarded to next script.
+	// Installation continues with next php script... strings recieved as POST are forwarded to next script.
 	fwrite($logOutput, "Passing control to : 'scripts_WGseq/project.paired_WGseq.install_2.php'\n");
  	$system_call_string = "php project.paired_WGseq.install_2.php ".$fileName." ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
