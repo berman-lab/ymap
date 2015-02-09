@@ -45,22 +45,36 @@ for usedChr = [8 1:7]
 		else
 			segment_CGHdata = segment_CGHdata*flow_ploidy;
 		end;
+
 		% make smoothed histogram of CGH data for this segment.
-		segment_CGHdata(segment_CGHdata==0) = [];
+		segment_CGHdata(segment_CGHdata==0)        = [];
 		segment_CGHdata(length(segment_CGHdata)+1) = 0;   % endpoints added to ensure histogram bounds.
 		segment_CGHdata(length(segment_CGHdata)+1) = maxY;
-		segment_CGHdata(segment_CGHdata<0) = [];
-		segment_CGHdata(segment_CGHdata>maxY) = [];
-		histogram_width = 200;
-		smoothed = smooth_gaussian(hist(segment_CGHdata,histogram_width),5,20);
+		segment_CGHdata(segment_CGHdata<0)         = [];
+		segment_CGHdata(segment_CGHdata>maxY)      = [];
+		histogram_width                            = 200;
+		smoothed                                   = smooth_gaussian(hist(segment_CGHdata,histogram_width),5,20);
+
+		% make smoothed histogram of endpoint data.
+		end_points                                 = [0, maxY];
+		end_points_smoothed                        = smooth_gaussian(hist(end_points,histogram_width),5,20);
+
+		% remove smoothed endpoint data from smoothed histogram.
+		smoothed2                                  = smoothed - end_points_smoothed;
+		smoothed                                   = smoothed2;
+
 		% find initial estimage of peak location from smoothed segment CGH data.
-		peakLocation = find(smoothed==max(smoothed));
-		% fit Gaussian to segment CGH data.
-		show_fitting = 0;
+		peakLocation                               = find(smoothed==max(smoothed));
+
+		% fit a single Gaussian to CNV data, to estimate copy number for each segment.
+		show_fitting                               = 0;
+		fprintf(['smoothed_data_length = [' num2str(length(smoothed)) ']\n']);
+		fprintf(['smoothed_data        = [' num2str(smoothed) ']\n']);
 		[CGHsegment_height, CGHsegment_location, CGHsegment_width] = fit_Gaussian_model2(smoothed, peakLocation, 'cubic',show_fitting);
+
 		% calculate copy number from Gaussian location.
-		chrCopyNum{usedChr}(segment) = round(CGHsegment_location/(histogram_width/maxY)*10)/10;
-		chrCopyNum_vector = [chrCopyNum_vector chrCopyNum{usedChr}(segment)];
+		chrCopyNum{usedChr}(segment)               = round(CGHsegment_location/(histogram_width/maxY)*10)/10;
+		chrCopyNum_vector                          = [chrCopyNum_vector chrCopyNum{usedChr}(segment)];
 	end;
 end;
 % Adjustment of ploidy estimate.

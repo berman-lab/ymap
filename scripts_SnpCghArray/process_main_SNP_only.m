@@ -469,7 +469,7 @@ fprintf(['\n']);
 
 % Finds real peak locations.
 [monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = ...
-    FindPeaks(realHomozygous_peak);
+    find_theoretical_peaks(realHomozygous_peak);
 % Determine cutoffs between peaks for each datasets:chromosome:segment.
 for chr = chromosomes_to_analyze;
     for segment = 1:length(chrCopyNum{chr})
@@ -881,10 +881,12 @@ for chr = 1:num_chrs
 			histAll{segment}(histAll{segment}<0) = [];
 			histAll{segment}(histAll{segment}>15) = 15;
 			smoothed{segment} = smooth_gaussian(hist(histAll{segment},300),5,20);
+
 			% make a smoothed version of just the endpoints used to ensure histogram bounds.
 			histAll2{segment}(1) = 0;
 			histAll2{segment}(2) = 15;
 			smoothed2{segment} = smooth_gaussian(hist(histAll2{segment},300),5,20)*4;
+
 			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
 			smoothed{segment} = (smoothed{segment}-smoothed2{segment});
 			smoothed{segment} = smoothed{segment}/max(smoothed{segment});
@@ -893,7 +895,11 @@ for chr = 1:num_chrs
 			hold on;
 			plot([0; 1],[100; 100],'color',[0.50 0.50 0.50]);
 			plot([0; 1],[150; 150],'color',[0.75 0.75 0.75]);
-			area(smoothed{segment},1:length(smoothed{segment}),'FaceColor',[0 0 0]);
+	
+			area(smoothed{segment},'FaceColor',[0 0 0]);
+			view(-90,90);
+			set(gca,'YDir','Reverse');
+
 			hold off;
 			set(gca,'YTick',[]);    set(gca,'XTick',[]);
 			xlim([0,1]);            ylim([0,200]);

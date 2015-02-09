@@ -52,7 +52,7 @@ elseif (LOWESS_method == 2)
 	end;
 elseif (LOWESS_method == 3)
 	% Attempts LOWESS fitting with [numFits] smoothing values evenly spaced from 0.01 to 0.99, using 10-fold cross-validation of randomly partitioned data.
-	fprintf(['\t\t10-fold cross validation, with squared-error minimization:\n']);
+	fprintf(['\n\t\t10-fold cross validation, with squared-error minimization:\n']);
 
 	fitCurves = cell(1,numFits);
 	for j = 1:numFits

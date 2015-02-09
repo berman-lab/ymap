@@ -1,6 +1,6 @@
 function [monosomy_cutoff,disomy_cutoff,trisomy_cutoff,tetrasomy_cutoff,pentasomy_cutoff,hexasomy_cutoff ] = ...
-    FindCutoffs( monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak )
-% FindPeaks determines peak locations when given the homozygous peak location.
+    find_theoretical_cutoffs( monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak )
+% find_theoretical_cutoffs.m determines peak locations when given the homozygous peak location.
 
 %% used for drawing locations of cutoffs in SNP histograms.
 monosomy_cutoff(1)  = (monosomy_peak(1)+monosomy_peak(2))/2;   % 'a':'b'

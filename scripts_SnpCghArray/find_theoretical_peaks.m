@@ -1,9 +1,10 @@
 function [monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = ...
-    FindPeaks(realHomozygous_peak)
-% FindPeaks determines peak locations when given the homozygous peak
+    find_theoretical_peaks(realHomozygous_peak)
+% find_theoretical_peaks.m determines peak locations when given the homozygous peak
 % location.
 
 %% used for drawing locations of peaks in SNP histograms.
+fprintf(['realHomozygous_peak = [' num2str(realHomozygous_peak) ']\n']);
 monosomy_peak(1)  = realHomozygous_peak;         % 'a'
 monosomy_peak(2)  = 1-monosomy_peak(1);          % 'b'
 disomy_peak(1)    = realHomozygous_peak;         % 'aa'

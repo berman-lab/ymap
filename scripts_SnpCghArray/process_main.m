@@ -487,7 +487,7 @@ fprintf(['\n']);
 [realHomozygous_peak, disomy_fit,skew_factor] = FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir);
 
 % Finds real peak locations.
-[monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = FindPeaks(realHomozygous_peak);
+[monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = find_theoretical_peaks(realHomozygous_peak);
 
 % Determine cutoffs between peaks for each datasets:chromosome:segment.
 for chr = chromosomes_to_analyze;
@@ -896,28 +896,41 @@ for chr = 1:num_chrs
 			fprintf(['\nchr = ' num2str(chr) '; segment = ' num2str(segment) '; ']);
 			fprintf(['length(histAll{segment}) = ' num2str(length(histAll{segment})) '\n']);
 
-			histAll{segment}(histAll{segment}==0) = [];
+			histAll{segment}(histAll{segment}==0)        = [];
 			histAll{segment}(length(histAll{segment})+1) = 0;   % endpoints added to ensure histogram bounds.
 			histAll{segment}(length(histAll{segment})+1) = 15;
-			histAll{segment}(histAll{segment}<0) = [];
-			histAll{segment}(histAll{segment}>15) = 15;
-			smoothed{segment} = smooth_gaussian(hist(histAll{segment},300),5,20);
-			% make a smoothed version of just the endpoints used to ensure histogram bounds.
-			histAll2{segment}(1) = 0;
-			histAll2{segment}(2) = 15;
-			smoothed2{segment} = smooth_gaussian(hist(histAll2{segment},300),5,20)*4;
-			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-			smoothed{segment} = (smoothed{segment}-smoothed2{segment});
-			smoothed{segment} = smoothed{segment}/max(smoothed{segment});
+			histAll{segment}(histAll{segment}<0)         = [];
+			histAll{segment}(histAll{segment}>15)        = 15;
+			smoothed{segment}                            = smooth_gaussian(hist(histAll{segment},300),5,20);
 
-			plot([0; 1],[50; 50],'color',[0.75 0.75 0.75]);
+			% make a smoothed version of just the endpoints used to ensure histogram bounds.
+			histAll2{segment}(1)                         = 0;
+			histAll2{segment}(2)                         = 15;
+			smoothed2{segment}                           = smooth_gaussian(hist(histAll2{segment},300),5,20)*4;
+
+			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+			smoothed{segment}                            = smoothed{segment} - smoothed2{segment};
+			smoothed{segment}                            = smoothed{segment}/max(smoothed{segment});
+
+			plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
 			hold on;
-			plot([0; 1],[100; 100],'color',[0.50 0.50 0.50]);
-			plot([0; 1],[150; 150],'color',[0.75 0.75 0.75]);
-			area(smoothed{segment},1:length(smoothed{segment}),'FaceColor',[0 0 0]);
+			plot([maxY*5;  maxY*5 ],[0; 1],'color',[0.75 0.75 0.75]);
+			plot([maxY*10; maxy*10],[0; 1],'color',[0.50 0.50 0.50]);
+			plot([maxY*15; maxY*15],[0; 1],'color',[0.75 0.75 0.75]);
+
+			area(smoothed{segment},'FaceColor',[0 0 0]);
+			view(-90,90);
+			set(gca,'YDir','Reverse');
+
 			hold off;
+			axis off;
 			set(gca,'YTick',[]);    set(gca,'XTick',[]);
-			xlim([0,1]);            ylim([0,200]);
+			ylim([0,1]);            xlim([0,maxY*20]);
+			if (show_MRS == true)
+				xlim([-maxY*20/10*1.5,maxY*20]);
+			else
+				xlim([0,maxY*20]);
+			end;
 		end;
 	end;
 
@@ -1399,9 +1412,6 @@ for chr = 1:num_chrs
 			if (segmental_aneuploidy(i).chr == chr)
 				EDGEloc = segmental_aneuploidy(i).break*chr_size(chr)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
 				plot([EDGEloc EDGEloc], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
-
-% darren : adding annotations for ChARM edges.
-
 			end;
 		end;
 		hold off;

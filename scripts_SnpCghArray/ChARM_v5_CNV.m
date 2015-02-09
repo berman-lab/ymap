@@ -1,4 +1,4 @@
-function [] = ChARM_v4(projectName, workingDir)
+function [] = ChARM_v5_CNV(projectName, workingDir)
 %% =========================================================================================
 % Analyze CNV information for copy number changes.
 % Code based on algorithms described in:
@@ -209,8 +209,14 @@ for chr = 1:num_chr
 	%% move last peak to the end of the chromosome.
 	locs{chr}(end) = length(CNV_differentiated_smoothed{chr});
 
+	%% If there is only one edge, fix so end edges are present.
+	if (length(locs{chr}) == 1)
+		locs{chr}(1) = 1;
+		locs{chr}(2) = length(CNV_differentiated_smoothed{chr});
+	end;
+
 	fprintf(['\nInternal peak positions on chr : "' num2str(chr) '"\n']);
-	fprintf(['\t[' num2str(locs{chr}(1)) ', ']);
+	fprintf(['\t{' num2str(locs{chr}(1)) ', ']);
 	num_edges = length(locs{chr});
 	if (num_edges > 2)
 		for edge = 2:(length(locs{chr})-1)
@@ -220,7 +226,7 @@ for chr = 1:num_chr
 			end;
 		end;
 	end;
-	fprintf([num2str(locs{chr}(end)) ']\n']);
+	fprintf([num2str(locs{chr}(end)) '}\n']);
 end;
 
 %=====================================================================================================

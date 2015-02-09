@@ -266,7 +266,7 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 	save([output_file_dir '/' strrep(experiment_name,' ','_') '.' design '.CGH_data.mat'],'probeset2');
 else
 	fprintf('\n## Input data file already processed into CGH and SNP data structures.\n');
-	fprintf(['##\t' output_file_dir '/' strrep(experiment_name,' ','_') '.' design '.SNP_data.mat\n']);
-	fprintf(['##\t' output_file_dir '/' strrep(experiment_name,' ','_') '.' design '.CGH_data.mat\n\n']);
+	fprintf(['##\t' output_file_dir strrep(experiment_name,' ','_') '.' design '.SNP_data.mat\n']);
+	fprintf(['##\t' output_file_dir strrep(experiment_name,' ','_') '.' design '.CGH_data.mat\n\n']);
 end;
 end

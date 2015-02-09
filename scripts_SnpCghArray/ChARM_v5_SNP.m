@@ -293,8 +293,14 @@ for chr = 1:num_chr
 	%% move last peak to the end of the chromosome.
 	locs{chr}(end) = length(CNV_differentiated_smoothed{chr});
 
+	%% If there is only one edge, fix so end edges are present.
+	if (length(locs{chr}) == 1)
+		locs{chr}(1) = 1;
+		locs{chr}(2) = length(CNV_differentiated_smoothed{chr});
+	end;
+
 	fprintf(['\nInternal peak positions on chr : "' num2str(chr) '"\n']);
-	fprintf(['\t[' num2str(locs{chr}(1)) ', ']);
+	fprintf(['\t{' num2str(locs{chr}(1)) ', ']);
 	num_edges = length(locs{chr});
 	if (num_edges > 2)
 		for edge = 2:(length(locs{chr})-1)
@@ -304,8 +310,7 @@ for chr = 1:num_chr
 			end;
 		end;
 	end;
-	right_edge = length(locs{chr});
-	fprintf([num2str(locs{chr}(right_edge)) ']\n']);
+	fprintf([num2str(locs{chr}(end)) '}\n']);
 end;
 
 %=====================================================================================================
@@ -446,30 +451,32 @@ for chr = 1:num_chr
 	position  = locs{chr};       % locations of edges for this chromosome.
 	num_edges = length(position);
 	data      = examined_data{chr};
-	for edge = 1
-		pos                = position(edge);
-		R_windowSize(edge) = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
-		pP_dist_is_L{edge} = zeros(1,length(data));
-		pP_dist_is_R{edge} = zeros(1,length(data));
-		pP_dist_is_R{edge}((pos):(pos+R_windowSize(edge))) = 1;
-	end;
-	if (num_edges > 2)
-		for edge = 2:(num_edges-1)
+	if (num_edges > 1)
+		for edge = 1
 			pos                = position(edge);
-			L_windowSize(edge) = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
 			R_windowSize(edge) = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
 			pP_dist_is_L{edge} = zeros(1,length(data));
 			pP_dist_is_R{edge} = zeros(1,length(data));
-			pP_dist_is_L{edge}((pos-L_windowSize(edge)):(pos)) = 1;
 			pP_dist_is_R{edge}((pos):(pos+R_windowSize(edge))) = 1;
 		end;
-	end;
-	for edge = num_edges
-		pos                = position(edge);
-		L_windowSize(edge) = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
-		pP_dist_is_L{edge} = zeros(1,length(data));
-		pP_dist_is_R{edge} = zeros(1,length(data));
-		pP_dist_is_L{edge}((pos-L_windowSize(edge)):(pos)) = 1;
+		if (num_edges > 2)
+			for edge = 2:(num_edges-1)
+				pos                = position(edge);
+				L_windowSize(edge) = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
+				R_windowSize(edge) = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
+				pP_dist_is_L{edge} = zeros(1,length(data));
+				pP_dist_is_R{edge} = zeros(1,length(data));
+				pP_dist_is_L{edge}((pos-L_windowSize(edge)):(pos)) = 1;
+				pP_dist_is_R{edge}((pos):(pos+R_windowSize(edge))) = 1;
+			end;
+		end;
+		for edge = num_edges
+			pos                = position(edge);
+			L_windowSize(edge) = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
+			pP_dist_is_L{edge} = zeros(1,length(data));
+			pP_dist_is_R{edge} = zeros(1,length(data));
+			pP_dist_is_L{edge}((pos-L_windowSize(edge)):(pos)) = 1;
+		end;
 	end;
 	old_Ppost_dist_is_L{chr} = pP_dist_is_L;
 	old_Ppost_dist_is_R{chr} = pP_dist_is_R;

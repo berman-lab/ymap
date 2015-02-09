@@ -264,9 +264,9 @@ while (calibration_complete == 0)
         [realHomozygous_peak{dataset}, disomy_fit{dataset}] = ...
 			FindRealHomozygousPeaks_2(chrCopyNum{dataset},SNP_probeset_length,probeset1,dataset,chr_breaks{dataset},chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir);
         [monosomy_peak{dataset},disomy_peak{dataset},trisomy_peak{dataset},tetrasomy_peak{dataset},pentasomy_peak{dataset},hexasomy_peak{dataset} ] = ...
-            FindPeaks(realHomozygous_peak{dataset});
+            find_theoretical_peaks(realHomozygous_peak{dataset});
         [monosomy_cutoff{dataset},disomy_cutoff{dataset},trisomy_cutoff{dataset},tetrasomy_cutoff{dataset},pentasomy_cutoff{dataset},hexasomy_cutoff{dataset} ] = ...
-            FindCutoffs(monosomy_peak{dataset},disomy_peak{dataset},trisomy_peak{dataset},tetrasomy_peak{dataset},pentasomy_peak{dataset},hexasomy_peak{dataset});
+            find_theoretical_cutoffs(monosomy_peak{dataset},disomy_peak{dataset},trisomy_peak{dataset},tetrasomy_peak{dataset},pentasomy_peak{dataset},hexasomy_peak{dataset});
     end;
     
     % Reset probe assignments only on the first dataset.
