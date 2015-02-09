@@ -915,7 +915,7 @@ for chr = 1:num_chrs
 			plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
 			hold on;
 			plot([maxY*5;  maxY*5 ],[0; 1],'color',[0.75 0.75 0.75]);
-			plot([maxY*10; maxy*10],[0; 1],'color',[0.50 0.50 0.50]);
+			plot([maxY*10; maxY*10],[0; 1],'color',[0.50 0.50 0.50]);
 			plot([maxY*15; maxY*15],[0; 1],'color',[0.75 0.75 0.75]);
 
 			area(smoothed{segment},'FaceColor',[0 0 0]);
