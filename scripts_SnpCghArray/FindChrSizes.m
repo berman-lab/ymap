@@ -68,8 +68,9 @@ for usedChr = [8 1:7]
 
 		% fit a single Gaussian to CNV data, to estimate copy number for each segment.
 		show_fitting                               = 0;
-		fprintf(['smoothed_data_length = [' num2str(length(smoothed)) ']\n']);
-		fprintf(['smoothed_data        = [' num2str(smoothed) ']\n']);
+% Troubleshooting outputs.
+%		fprintf(['smoothed_data_length = [' num2str(length(smoothed)) ']\n']);
+%		fprintf(['smoothed_data        = [' num2str(smoothed) ']\n']);
 		[CGHsegment_height, CGHsegment_location, CGHsegment_width] = fit_Gaussian_model2(smoothed, peakLocation, 'cubic',show_fitting);
 
 		% calculate copy number from Gaussian location.
