@@ -11,13 +11,6 @@ user=$1;
 project=$2;
 main_dir=$(pwd)"/../";
 
-echo "";
-echo "Input to : project.single_WGseq.install_3.sh";
-echo "\tuser     = "$user;
-echo "\tproject  = "$project;
-echo "\tmain_dir = "$main_dir;
-echo "";
-
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -28,9 +21,15 @@ projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 echo "#.............................................................................." >> $logName;
+echo "" >> $logName;
+echo "Input to : project.single_WGseq.install_3.sh" >> $logName;
+echo "\tuser     = "$user >> $logName;
+echo "\tproject  = "$project >> $logName;
+echo "\tmain_dir = "$main_dir >> $logName;
+echo "" >> $logName;
 
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"scripts_WGseq/local_installed_programs.sh";
+. $main_dir"scripts_general/local_installed_programs.sh";
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
@@ -54,13 +53,13 @@ echo "Setting up for processing." >> $condensedLog;
 #    second line => hapmap
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
-echo "\t'genome.txt' file entry." >> $logName;
-echo "\t\tgenome = '"$genome"'" >> $logName;
+echo "Location variables from 'genome.txt' file entry." >> $logName;
+echo "\tgenome   = '"$genome"'" >> $logName;
 if [ "$genome" = "$hapmap" ]
 then
 	hapmapInUse=0;
 else
-	echo "\t\thapmap = '"$hapmap"'" >> $logName;
+	echo "\thapmap   = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
 fi
 
@@ -142,6 +141,7 @@ else
 		echo "\tBowtie : single-end reads aligning into SAM file." >> $logName;
 		## Bowtie 2 command for single reads:
 		echo "\nRunning bowtie2.\n";
+		echo "\tbowtie2 --very-sensitive -p "$threads" "$genomeDirectory"bowtie_index -U "$projectDirectory$datafile" -S "$projectDirectory"data.sam;" >> $logName;
 		bowtie2 --very-sensitive -p $threads $genomeDirectory"bowtie_index" -U $projectDirectory$datafile -S $projectDirectory"data.sam";
 			# -S : SAM output mode.
 			# -p : number of threads to use.

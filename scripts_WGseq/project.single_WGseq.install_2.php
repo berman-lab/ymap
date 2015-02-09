@@ -93,14 +93,15 @@
     if ($paired == 1) {
 		fwrite($logOutput, "Passing control to : 'scripts_WGseq/project.paired_WGseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tPaired-end reads being processed.\n");
-		fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-		$system_call_string = "sh ../scripts_WGseq/project.paired_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
+		fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
+		$system_call_string = "sh project.paired_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	} else {
 		fwrite($logOutput, "Passing control to : 'scripts_WGseq/project.single_WGseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tSingle-end reads being processed.\n");
-		fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-		$system_call_string = "sh ../scripts_WGseq/project.single_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
+		fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
+		$system_call_string = "sh project.single_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	}
+	fwrite($logOutput, "\t\tSystem call string = '".$system_call_string."'\n");
 
 	system($system_call_string);
 	fclose($condensedLogOutput);
