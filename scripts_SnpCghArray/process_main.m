@@ -348,79 +348,86 @@ end;
 % Apply GC bias correction to the CGH data.
 %----------------------------------------------------------------------
 if (performGCbiasCorrection)
-	% Load standard bin GC_bias data from : standard_bins.GC_ratios.txt
-	standard_bins_GC_ratios_fid = fopen('standard_bins.GC_ratios.txt', 'r');
-	lines_analyzed = 0;
-	for chr = 1:num_chrs   % eight chromosomes.
-		chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
-	end;
-	while not (feof(standard_bins_GC_ratios_fid))
-		dataLine = fgetl(standard_bins_GC_ratios_fid);
-		if (dataLine(1) ~= '#')
-			lines_analyzed = lines_analyzed+1;
-			chr            = str2num(sscanf(dataLine, '%s',1));
-			fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-			fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1) = [];   end;    fragment_end   = str2num(fragment_end);
-			GCratio        = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      GCratio(1) = [];        end;    GCratio        = str2num(GCratio);
-			position       = ceil(fragment_start/4555);
-			chr_GCratioData{chr}(position) = GCratio;
+	if (exist([workingDir 'GC_bias_corrected.mat'],'file') ~= 0)
+		% Load standard bin GC_bias data from : standard_bins.GC_ratios.txt
+		standard_bins_GC_ratios_fid = fopen('standard_bins.GC_ratios.txt', 'r');
+		lines_analyzed = 0;
+		for chr = 1:num_chrs   % eight chromosomes.
+			chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
 		end;
-	end;
-	fclose(standard_bins_GC_ratios_fid);
+		while not (feof(standard_bins_GC_ratios_fid))
+			dataLine = fgetl(standard_bins_GC_ratios_fid);
+			if (dataLine(1) ~= '#')
+				lines_analyzed = lines_analyzed+1;
+				chr            = str2num(sscanf(dataLine, '%s',1));
+				fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
+				fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1) = [];   end;    fragment_end   = str2num(fragment_end);
+				GCratio        = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      GCratio(1) = [];        end;    GCratio        = str2num(GCratio);
+				position       = ceil(fragment_start/4555);
+				chr_GCratioData{chr}(position) = GCratio;
+			end;
+		end;
+		fclose(standard_bins_GC_ratios_fid);
 
-	% Gather CGH and GCratio data for LOWESS fitting.
-	CGHdata_all          = [];
-	GCratioData_all      = [];
-	for chr = 1:num_chrs
-		CGHdata_all          = [CGHdata_all     chr_CGHdata{chr,2}  ];
-		GCratioData_all      = [GCratioData_all chr_GCratioData{chr}];
-	end;
+		% Gather CGH and GCratio data for LOWESS fitting.
+		CGHdata_all          = [];
+		GCratioData_all      = [];
+		for chr = 1:num_chrs
+			CGHdata_all          = [CGHdata_all     chr_CGHdata{chr,2}  ];
+			GCratioData_all      = [GCratioData_all chr_GCratioData{chr}];
+		end;
 
-	% Perform LOWESS fitting.
-	rawData_X1        = GCratioData_all;
-	rawData_Y1        = CGHdata_all;
-	numFits           = 10;
-	[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0);
+		% Perform LOWESS fitting.
+		rawData_X1        = GCratioData_all;
+		rawData_Y1        = CGHdata_all;
+		numFits           = 10;
+		[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0);
 
-	% Correct data using normalization to LOWESS fitting
-	Y_target = 1;
-	for chr = 1:num_chrs
-		rawData_chr_X             = chr_GCratioData{chr};
-		rawData_chr_Y             = chr_CGHdata{chr,2};
-		fitData_chr_Y             = interp1(fitX1,fitY1,rawData_chr_X,'spline');
-		normalizedData_chr_Y{chr} = rawData_chr_Y./fitData_chr_Y*Y_target;
-	end;
+		% Correct data using normalization to LOWESS fitting
+		Y_target = 1;
+		for chr = 1:num_chrs
+			rawData_chr_X             = chr_GCratioData{chr};
+			rawData_chr_Y             = chr_CGHdata{chr,2};
+			fitData_chr_Y             = interp1(fitX1,fitY1,rawData_chr_X,'spline');
+			normalizedData_chr_Y{chr} = rawData_chr_Y./fitData_chr_Y*Y_target;
+		end;
 
-	% Gather corrected CGH data after normalization to the LOWESS fitting.
-	correctedCGHdata_all = [];
-	for chr = 1:num_chrs
-		correctedCGHdata_all = [correctedCGHdata_all normalizedData_chr_Y{chr}];
-	end;
+		% Gather corrected CGH data after normalization to the LOWESS fitting.
+		correctedCGHdata_all = [];
+		for chr = 1:num_chrs
+			correctedCGHdata_all = [correctedCGHdata_all normalizedData_chr_Y{chr}];
+		end;
 
-	%% Generate figure showing subplots of LOWESS fittings.
-	GCfig = figure();
-	subplot(1,2,1);
-		plot(GCratioData_all,CGHdata_all,'k.');
-		hold on;
-			plot(fitX1,fitY1,'r','LineWidth',2);
-		hold off;
-		xlabel('GC ratio');
-		ylabel('CGH data');
-		axis square;
-	subplot(1,2,2);
-		plot(GCratioData_all,correctedCGHdata_all,'k.');
-		hold on;
-			plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);
-		hold off;
-		xlabel('GC ratio');
-		ylabel('corrected CGH data');
-		axis square;
-	saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.png'], 'png');
+		%% Generate figure showing subplots of LOWESS fittings.
+		GCfig = figure();
+		subplot(1,2,1);
+			plot(GCratioData_all,CGHdata_all,'k.');
+			hold on;
+				plot(fitX1,fitY1,'r','LineWidth',2);
+			hold off;
+			xlabel('GC ratio');
+			ylabel('CGH data');
+			axis square;
+		subplot(1,2,2);
+			plot(GCratioData_all,correctedCGHdata_all,'k.');
+			hold on;
+				plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);
+			hold off;
+			xlabel('GC ratio');
+			ylabel('corrected CGH data');
+			axis square;
+		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.png'], 'png');
 
+		% Move LOWESS-normalizd CGH data into display pipeline.
+		for chr = 1:num_chrs
+			chr_CGHdata{chr,2} = normalizedData_chr_Y{chr};
+		end;
 
-	% Move LOWESS-normalizd CGH data into display pipeline.
-	for chr = 1:num_chrs
-		chr_CGHdata{chr,2} = normalizedData_chr_Y{chr};
+		% Save GC-bias corrected data from earlier.
+		save([workingDir 'GC_bias_corrected.mat'], 'chr_CGHdata');
+	else
+		% Load GC-bias corrected data from earlier.
+		load([workingDir 'GC_bias_corrected.mat']);
 	end;
 end;
 
@@ -474,40 +481,48 @@ datasetDetails.chrCopyNum = chrCopyNum;
 % Determine cutoffs for experimental dataset chromosome segments
 %----------------------------------------------------------------------
 fprintf('\nDetermining SNP interpretation cutoffs for microarray.');
-% Finds initial homozygous peak locations.
-fprintf(['\n chr1 breaks = ' num2str(chr_breaks{1})]);
-fprintf(['\n chr2 breaks = ' num2str(chr_breaks{2})]);
-fprintf(['\n chr3 breaks = ' num2str(chr_breaks{3})]);
-fprintf(['\n chr4 breaks = ' num2str(chr_breaks{4})]);
-fprintf(['\n chr5 breaks = ' num2str(chr_breaks{5})]);
-fprintf(['\n chr6 breaks = ' num2str(chr_breaks{6})]);
-fprintf(['\n chr7 breaks = ' num2str(chr_breaks{7})]);
-fprintf(['\n chr8 breaks = ' num2str(chr_breaks{8})]);
-fprintf(['\n']);
-[realHomozygous_peak, disomy_fit,skew_factor] = FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir);
+if (exist([workingDir 'SNP_cutoffs.mat'],'file') ~= 0)
+	% Finds initial homozygous peak locations.
+	fprintf(['\n chr1 breaks = ' num2str(chr_breaks{1})]);
+	fprintf(['\n chr2 breaks = ' num2str(chr_breaks{2})]);
+	fprintf(['\n chr3 breaks = ' num2str(chr_breaks{3})]);
+	fprintf(['\n chr4 breaks = ' num2str(chr_breaks{4})]);
+	fprintf(['\n chr5 breaks = ' num2str(chr_breaks{5})]);
+	fprintf(['\n chr6 breaks = ' num2str(chr_breaks{6})]);
+	fprintf(['\n chr7 breaks = ' num2str(chr_breaks{7})]);
+	fprintf(['\n chr8 breaks = ' num2str(chr_breaks{8})]);
+	fprintf(['\n']);
+	[realHomozygous_peak, disomy_fit,skew_factor] = FindRealHomozygousPeaks_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir);
 
-% Finds real peak locations.
-[monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = find_theoretical_peaks(realHomozygous_peak);
+	% Finds real peak locations.
+	[monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak ] = find_theoretical_peaks(realHomozygous_peak);
 
-% Determine cutoffs between peaks for each datasets:chromosome:segment.
-for chr = chromosomes_to_analyze;
-    for segment = 1:length(chrCopyNum{chr})
-        chrCopyNum = datasetDetails.chrCopyNum;
-        chr_breaks = datasetDetails.chr_breaks;
-        % Determins cutoffs for a single chr segment, using intersections of Gaussian fit curves.
-        MakeFigure = Gaussian_fit_display;
-        [raw,smoothed,peaks,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = ...
-			FindGaussianCutoffs_2(probeset1,chrCopyNum,chr_breaks,chr_size,chr,...
-			segment,monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,...
-			hexasomy_peak,skew_factor,experiment_name,raw_data_dir,Gaussian_fit_display,show_fitting,...
-			DataTypeToUse, workingDir);
-        datasetDetails.histogram_raw{chr,segment}      = raw;
-        datasetDetails.histogram_smooth{chr,segment}   = smoothed;
-        datasetDetails.peaks{chr,segment}              = peaks/200;
-        datasetDetails.cutoffs{chr,segment}            = actual_cutoffs/200;
-        datasetDetails.importantGaussians{chr,segment} = mostLikelyGaussians;
-        datasetDetails.chrCopyNum                      = chrCopyNum;
-    end;
+	% Determine cutoffs between peaks for each datasets:chromosome:segment.
+	for chr = chromosomes_to_analyze;
+	    for segment = 1:length(chrCopyNum{chr})
+	        chrCopyNum = datasetDetails.chrCopyNum;
+	        chr_breaks = datasetDetails.chr_breaks;
+	        % Determins cutoffs for a single chr segment, using intersections of Gaussian fit curves.
+	        MakeFigure = Gaussian_fit_display;
+	        [raw,smoothed,peaks,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = ...
+				FindGaussianCutoffs_2(probeset1,chrCopyNum,chr_breaks,chr_size,chr,...
+				segment,monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,...
+				hexasomy_peak,skew_factor,experiment_name,raw_data_dir,Gaussian_fit_display,show_fitting,...
+				DataTypeToUse, workingDir);
+	        datasetDetails.histogram_raw{chr,segment}      = raw;
+	        datasetDetails.histogram_smooth{chr,segment}   = smoothed;
+	        datasetDetails.peaks{chr,segment}              = peaks/200;
+	        datasetDetails.cutoffs{chr,segment}            = actual_cutoffs/200;
+	        datasetDetails.importantGaussians{chr,segment} = mostLikelyGaussians;
+	        datasetDetails.chrCopyNum                      = chrCopyNum;
+	    end;
+	end;
+
+	% Save SNP interpretation cutoff data.
+	save([workingDir 'SNP_cutoffs.mat'], 'realHomozygous_peak','disomy_fit','skew_factor','monosomy_peak','disomy_peak','trisomy_peak','tetrasomy_peak','pentasomy_peak','hexasomy_peak','datasetDetails');
+else
+	% Load SNP interpretation cutoff data.
+	load([workingDir 'SNP_cutoffs.mat']);
 end;
 
     
@@ -898,7 +913,7 @@ for chr = 1:num_chrs
 
 			histAll{segment}(histAll{segment}==0)        = [];
 			histAll{segment}(length(histAll{segment})+1) = 0;   % endpoints added to ensure histogram bounds.
-			histAll{segment}(length(histAll{segment})+1) = 15;
+			histAll{segment}(length(histAll{segment})+1) = 15;  % these values represent copy numbers, 15 is way outside expected range.
 			histAll{segment}(histAll{segment}<0)         = [];
 			histAll{segment}(histAll{segment}>15)        = 15;
 			smoothed{segment}                            = smooth_gaussian(hist(histAll{segment},300),5,20);
@@ -1682,9 +1697,9 @@ fprintf('\n');
 
 result_image_location1 = [workingDir 'fig_1.' experiment_name '.png'];
 result_image_location2 = [workingDir 'fig_2.' experiment_name '.png'];
-archive_data_location = {	[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.SNP_data.mat'], ...
-							[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.CGH_data.mat'], ...
-							[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.datasetDetails.mat']};
+archive_data_location  = {	[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.SNP_data.mat'], ...
+				[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.CGH_data.mat'], ...
+				[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.datasetDetails.mat']};
 
 %% Let the processing pipeline know that the analysis has completed.
 % new_fid        = fopen([workingDir 'complete.txt'],'w');
