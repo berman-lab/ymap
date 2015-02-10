@@ -325,7 +325,7 @@ end;
 %----------------------------------------------------------------------
 datafile = [workingDir 'dataBiases.txt'];
 if (exist(datafile,'file') == 0)
-    performGCbiasCorrection     = true;
+	performGCbiasCorrection     = true;
 else
 	biases_fid = fopen(datafile, 'r');
 	bias1      = fgetl(biases_fid);
@@ -345,7 +345,7 @@ end;
 % Apply GC bias correction to the CGH data.
 %----------------------------------------------------------------------
 if (performGCbiasCorrection)
-	if (exist([workingDir 'GC_bias_corrected.mat'],'file') ~= 0)
+	if (exist([workingDir 'GC_bias_corrected.mat'],'file') == 0)
 		% Load standard bin GC_bias data from : standard_bins.GC_ratios.txt
 		standard_bins_GC_ratios_fid = fopen('standard_bins.GC_ratios.txt', 'r');
 		lines_analyzed = 0;
@@ -462,7 +462,7 @@ datasetDetails.chrCopyNum = chrCopyNum;
 % Determine cutoffs for experimental dataset chromosome segments
 %----------------------------------------------------------------------
 fprintf('\nDetermining SNP interpretation cutoffs for microarray.');
-if (exist([workingDir 'SNP_cutoffs.mat'],'file') ~= 0)
+if (exist([workingDir 'SNP_cutoffs.mat'],'file') == 0)
 	% Finds initial homozygous peak locations.
 	fprintf(['\n chr1 breaks = ' num2str(chr_breaks{1})]);
 	fprintf(['\n chr2 breaks = ' num2str(chr_breaks{2})]);

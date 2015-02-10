@@ -1,4 +1,4 @@
-function [segmental_aneuploidy] = Load_dataset_information_1(projectName,workingDir)
+function [segmental_aneuploidy] = Load_dataset_information_2(projectName,workingDir)
 % Load centromere definition file.
 %    This is text file containing one header line and two columns.
 %    The two columns hold the start and end bp for the centromeres, with

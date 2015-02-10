@@ -46,9 +46,10 @@ fprintf(['[process_main.m] : current folder.\n']);
 
 fprintf('\n');
 fprintf('[process_main.m] : Data file parts:\n');
-fprintf(['    dir  : ''' raw_data_dir '''\n']);
-fprintf(['    file : ''' raw_data_file '''\n']);
-fprintf(['    ext  : ''' raw_data_ext '''\n']);
+fprintf(['    dir         : ''' raw_data_dir '''\n']);
+fprintf(['    file        : ''' raw_data_file '''\n']);
+fprintf(['    ext         : ''' raw_data_ext '''\n']);
+fprintf(['    working dir : ''' workingDir '''\n']);
 raw_data_file = [raw_data_file raw_data_ext];
 
 %% initial test case.
@@ -66,9 +67,6 @@ raw_data_file = [raw_data_file raw_data_ext];
 % ploidy_estimate    = 2.0;
 % image_format       = 'png';
 % experiment_name    = 'test case 1';
-
-figureDir           = workingDir;
-matlab_save_dir     = workingDir;
 
 ploidy_estimate     = str2num(ploidy_estimate);
 ploidyBase          = round(str2num(ploidyBase));
@@ -257,10 +255,10 @@ end;
 %% ====================================================================
 % Process raw data file into structures containing CGH and SNP information (if not already done).
 %----------------------------------------------------------------------
-data_file_load_online(matlab_save_dir,raw_data_dir,raw_data_file, microarray_design, experiment_name);
+data_file_load_online(workingDir,raw_data_dir,raw_data_file, microarray_design, experiment_name);
 % load experimental values for all the probes.
-load([matlab_save_dir '/' experiment_name '.' microarray_design '.SNP_data.mat']);
-load([matlab_save_dir '/' experiment_name '.' microarray_design '.CGH_data.mat']);
+load([workingDir '/' experiment_name '.' microarray_design '.SNP_data.mat']);
+load([workingDir '/' experiment_name '.' microarray_design '.CGH_data.mat']);
 SNP_probeset_length = length(probeset1);
 CGH_probeset_length = length(probeset2);
 
@@ -268,7 +266,7 @@ CGH_probeset_length = length(probeset2);
 %% ====================================================================
 % Apply probe polarity assignment from calibration data to experimental data.
 %----------------------------------------------------------------------
-fprintf(['\nPhasing experimental SNP data from: ' strrep(raw_data_dir,'\','\\')]);
+fprintf(['\nPhasing experimental SNP data from: ' strrep(raw_data_dir,'\','\\') '\n']);
 for i = 1:SNP_probeset_length
     if (no_calibration == 1)
         probeset1(i).probe_polarity = 0;
@@ -328,7 +326,7 @@ end;
 %----------------------------------------------------------------------
 datafile = [workingDir 'dataBiases.txt'];
 if (exist(datafile,'file') == 0)
-    performGCbiasCorrection     = true;
+	performGCbiasCorrection     = true;
 else
 	biases_fid = fopen(datafile, 'r');
 	bias1      = fgetl(biases_fid);
@@ -348,7 +346,7 @@ end;
 % Apply GC bias correction to the CGH data.
 %----------------------------------------------------------------------
 if (performGCbiasCorrection)
-	if (exist([workingDir 'GC_bias_corrected.mat'],'file') ~= 0)
+	if (exist([workingDir 'GC_bias_corrected.mat'],'file') == 0)
 		% Load standard bin GC_bias data from : standard_bins.GC_ratios.txt
 		standard_bins_GC_ratios_fid = fopen('standard_bins.GC_ratios.txt', 'r');
 		lines_analyzed = 0;
@@ -463,7 +461,7 @@ save([workingDir 'Common_SNPratio.mat'], 'chr_SNPdata_ratios');
 % Integrate ChARM results together.
 %----------------------------------------------------------------------
 ChARM_v5_CNV(experiment_name, workingDir);
-ChARM_v5_SNP(experiment_name, workingDir); %% the algorithm doesn't work very well for SNP ratio data and data gaps.
+% ChARM_v5_SNP(experiment_name, workingDir); %% the algorithm doesn't work very well for SNP ratio data and data gaps.
 [segmental_aneuploidy] = Load_dataset_information_2(experiment_name,workingDir);
 
 
@@ -472,7 +470,7 @@ ChARM_v5_SNP(experiment_name, workingDir); %% the algorithm doesn't work very we
 %----------------------------------------------------------------------
 datasetDetails = [];
 fprintf('\nDetermining chromsome copy numbers for microarray.');
-[chr_breaks, chrCopyNum] = FindChrSizes(segmental_aneuploidy,CGH_probeset_length,probeset2,chr_size,ploidy_estimate);
+[chr_breaks, chrCopyNum]  = FindChrSizes(segmental_aneuploidy,CGH_probeset_length,probeset2,chr_size,ploidy_estimate);
 datasetDetails.chr_breaks = chr_breaks;
 datasetDetails.chrCopyNum = chrCopyNum;
 
@@ -481,7 +479,7 @@ datasetDetails.chrCopyNum = chrCopyNum;
 % Determine cutoffs for experimental dataset chromosome segments
 %----------------------------------------------------------------------
 fprintf('\nDetermining SNP interpretation cutoffs for microarray.');
-if (exist([workingDir 'SNP_cutoffs.mat'],'file') ~= 0)
+if (exist([workingDir 'SNP_cutoffs.mat'],'file') == 0)
 	% Finds initial homozygous peak locations.
 	fprintf(['\n chr1 breaks = ' num2str(chr_breaks{1})]);
 	fprintf(['\n chr2 breaks = ' num2str(chr_breaks{2})]);
@@ -529,7 +527,7 @@ end;
 %% ====================================================================
 % Save datasetDetails.
 %----------------------------------------------------------------------
-save([matlab_save_dir '/' experiment_name '.' microarray_design '.datasetDetails.mat'], 'datasetDetails');
+save([workingDir '/' experiment_name '.' microarray_design '.datasetDetails.mat'], 'datasetDetails');
 
     
 %% ========================================================================
