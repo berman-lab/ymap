@@ -158,11 +158,8 @@ else
 
 		echo "\tPicard : Adding headers to Bowtie-BAM file." >> $logName;
 		echo "Standardizing BAM read group headers." >> $condensedLog;
-		currentDir=$(pwd);
-		cd $picardDirectory;
 		echo "\nRunning picard:AddOrReplaceReadGroups.\n";
-		java -Xmx2g -jar AddOrReplaceReadGroups.jar INPUT=$projectDirectory"data.temp.bam" OUTPUT=$projectDirectory"data.bam" RGID=1 RGLB=1 RGPL=ILLUMINA RGPU=1 RGSM=SM;
-		cd $currentDir;
+		java -Xmx2g -jar $picardDirectory"AddOrReplaceReadGroups.jar" INPUT=$projectDirectory"data.temp.bam" OUTPUT=$projectDirectory"data.bam" RGID=1 RGLB=1 RGPL=ILLUMINA RGPU=1 RGSM=SM;
 		rm $projectDirectory"data.temp.bam";
 		echo "\tPicard : Headers added to Bowtie-BAM file." >> $logName;
 
