@@ -97,13 +97,13 @@ echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing1()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $outputName;
-echo "\tcd "$main_dir"Matlab/WGseq;" >> $outputName;
+echo "\tcd "$main_dir"scripts_WGseq;" >> $outputName;
 echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing1()" >> $logName;
 echo "\t|\t\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"Matlab/WGseq;" >> $logName;
+echo "\t|\t\tcd "$main_dir"scripts_WGseq;" >> $logName;
 echo "\t|\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
@@ -184,13 +184,13 @@ echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing3()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
-echo "\tcd "$main_dir"Matlab/WGseq;" >> $outputName;
+echo "\tcd "$main_dir"scripts_WGseq;" >> $outputName;
 echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing3()" >> $logName;
 echo "\t|\t\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"Matlab/WGseq;" >> $logName;
+echo "\t|\t\tcd "$main_dir"scripts_WGseq;" >> $logName;
 echo "\t|\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
@@ -219,13 +219,13 @@ echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing4()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $outputName;
-echo "\tcd "$main_dir"Matlab/WGseq;" >> $outputName;
+echo "\tcd "$main_dir"scripts_WGseq;" >> $outputName;
 echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing4()" >> $logName;
 echo "\t|\t\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"Matlab/WGseq;" >> $logName;
+echo "\t|\t\tcd "$main_dir"scripts_WGseq;" >> $logName;
 echo "\t|\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
