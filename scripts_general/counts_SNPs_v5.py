@@ -57,19 +57,26 @@ def dump_startend(astr):
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
-	line                      = string.split(string.strip(i), ' ')
-	chrom                     = line[0]				# chromosome label for locus.
-	pos                       = line[1]				# coordinate for locus (in bp).
-	ref_base                  = line[2]				# reference base at this locus.
-	total                     = line[3]				# total count of reads at locus.
-	reads                     = string.upper(line[4])		# string defining locus => capitalized.
-	reads_noStartEnd          = dump_startend(reads)		# locus string without indels.
-	reads_noIndels_noStartEnd = dump_indels(reads_noStartEnd)	# locus string without indels or end/start/quality.
-	A                         = len(re.findall("A", reads_noIndels_noStartEnd))
-	T                         = len(re.findall("T", reads_noIndels_noStartEnd))
-	G                         = len(re.findall("G", reads_noIndels_noStartEnd))
-	C                         = len(re.findall("C", reads_noIndels_noStartEnd))
-	ref_count                 = len(re.findall("\.", reads_noIndels_noStartEnd)) + len(re.findall("\,", reads_noIndels_noStartEnd))
+	line                              = string.split(string.strip(i), ' ')
+	chrom                             = line[0]				# chromosome label for locus.
+	pos                               = line[1]				# coordinate for locus (in bp).
+	ref_base                          = line[2]				# reference base at this locus.
+	total                             = line[3]				# total count of reads at locus.
+	if (len(line) > 4):
+		reads                     = string.upper(line[4])		# string defining locus => capitalized.
+		reads_noStartEnd          = dump_startend(reads)		# locus string without indels.
+		reads_noIndels_noStartEnd = dump_indels(reads_noStartEnd)	# locus string without indels or end/start/quality.
+		A                         = len(re.findall("A", reads_noIndels_noStartEnd))
+		T                         = len(re.findall("T", reads_noIndels_noStartEnd))
+		G                         = len(re.findall("G", reads_noIndels_noStartEnd))
+		C                         = len(re.findall("C", reads_noIndels_noStartEnd))
+		ref_count                 = len(re.findall("\.", reads_noIndels_noStartEnd)) + len(re.findall("\,", reads_noIndels_noStartEnd))
+	else:
+		A                         = 0;
+		T                         = 0;
+		G                         = 0;
+		C                         = 0;
+		ref_count                 = 0;
 		# count of reads identical to reference at this locus.
 
 	#print chrom + '\t' + pos + '\t' + ref_base + '\t' + str(A) + '\t' + str(T) + '\t' +  str(G) + '\t' +  str(C) + '\t' +  str(ref_count)

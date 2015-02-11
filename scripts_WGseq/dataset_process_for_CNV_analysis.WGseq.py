@@ -29,7 +29,7 @@ genome     = sys.argv[3]
 genomeUser = sys.argv[4]
 main_dir   = sys.argv[5]
 logName    = sys.argv[6]
-inputFile  = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
+inputFile  = main_dir+"/users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
 
 t0 = time.clock()
 
@@ -41,7 +41,7 @@ with open(logName, "a") as myfile:
 #============================================================================================================
 # Find location of genome being used.
 #------------------------------------------------------------------------------------------------------------
-genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/"
+genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/"
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t|\n")
@@ -52,7 +52,7 @@ with open(logName, "a") as myfile:
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t|\tIdentifying name of reference FASTA file.\n")
-reference_file = genomeDirectory + '/reference.txt'
+reference_file = genomeDirectory + 'reference.txt'
 refFile        = open(reference_file,'r')
 FastaName      = refFile.read().strip()
 refFile.close()
@@ -233,6 +233,7 @@ for line in data:
 	#     chromosomeNam                 pos             totalReads        0
 	#     Ca21chr1_C_albicans_SC5314    2388924         123               0
 	#     Ca21chr1_C_albicans_SC5314    2388925         135               0
+	print "@@ " + line;
 	count += 1
 	line_parts = string.split(string.strip(line))
 	chr_name   = line_parts[0]   # chr name of bp.		: Ca21chrR_C_albicans_SC5314
