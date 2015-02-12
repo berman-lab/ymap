@@ -407,16 +407,13 @@ for chr = 1:num_chrs
 	end;
 end;
 
-% Troubleshooting lines.
-% test_all_data = all_data;
-% median_val    = median(all_data(:));
-% mean_val      = mean(all_data(:));
-% mode_val      = mode(all_data(:));
-% min_val       = min(all_data(:));
-% max_val       = max(all_data(:));
-% test_hist_010 = hist(all_data(:),10);
-% test_hist_020 = hist(all_data(:),20);
-% test_hist_100 = hist(all_data(:),100);
+% value statistics.
+median_val    = median(all_data(:));
+mean_val      = mean(all_data(:));
+mode_val      = mode(all_data(:));
+min_val       = min(all_data(:));
+max_val       = max(all_data(:));
+
 
 %% Generate chromosome figures.
 for chr = 1:num_chrs
