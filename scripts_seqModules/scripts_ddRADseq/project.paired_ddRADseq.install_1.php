@@ -32,11 +32,11 @@
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
 
 // Initialize log file.
-	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";
+	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
 	fwrite($logOutput, "#..............................................................................\n");
-	fwrite($logOutput, "Running 'php/project.paired_ddRADseq.install_1.php'.\n");
+	fwrite($logOutput, "Running 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_1.php'.\n");
 	fwrite($logOutput, "Variables passed via POST :\n");
 	fwrite($logOutput, "\tfileName = '".$fileName."'\n");
 	fwrite($logOutput, "\tuser     = '".$user."'\n");
@@ -44,14 +44,14 @@
 	fwrite($logOutput, "\tkey      = '".$key."'\n");
 	fwrite($logOutput, "#============================================================================== 1\n");
 
-	$condensedLogOutputName = "../users/".$user."/projects/".$project."/condensed_log.txt";
+	$condensedLogOutputName = "../../users/".$user."/projects/".$project."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
 	chmod($outputName,0755);
 
 // Generate 'working.txt' file to let pipeline know processing is started.
-	$outputName      = "../users/".$user."/projects/".$project."/working.txt";
+	$outputName      = "../../users/".$user."/projects/".$project."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
@@ -76,7 +76,7 @@
 	// construct and submit form to move on to "project.working_server.php";
 	var autoSubmitForm = document.createElement("form");
 		autoSubmitForm.setAttribute("method","post");
-		autoSubmitForm.setAttribute("action","../project.working_server.php");
+		autoSubmitForm.setAttribute("action","../../project.working_server.php");
 	var input2 = document.createElement("input");
 		input2.setAttribute("type","hidden");
 		input2.setAttribute("name","key");
