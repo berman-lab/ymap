@@ -9,7 +9,7 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$(pwd)"/../";
+main_dir=$(pwd)"/../../";
 
 
 ##==============================================================================
@@ -29,13 +29,13 @@ echo "\tmain_dir = "$main_dir >> $logName;
 echo "" >> $logName;
 
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"scripts_general/local_installed_programs.sh";
+. $main_dir"scripts_seqModules/local_installed_programs.sh";
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 
-echo "Running 'scripts_WGseq/project.single_WGseq.install_3.sh'" >> $logName;
-echo "Variables passed via command-line from 'scripts_WGseq/project.single_WGseq.install_2.php' :" >> $logName;
+echo "Running 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_3.sh'" >> $logName;
+echo "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_2.php' :" >> $logName;
 echo "\tuser     = '"$user"'" >> $logName;
 echo "\tproject  = '"$project"'" >> $logName;
 echo "\tmain_dir = '"$main_dir"'" >> $logName;
@@ -117,7 +117,7 @@ else
 
 	currdir=$(pwd);
 	cd $projectDirectory;
-	sh $main_dir"scripts_general/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
+	sh $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
 	cd $currdir;
 	echo "\tFASTQ files trimmed using : 'FASTQ_trimming.sh'" >> $logName;
 
@@ -276,19 +276,19 @@ else
 	fi
 
 	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
-	# python $main_dir"scripts_general/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
+	# python $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
 	# echo "\tPython : Pileup processed for CNVs." >> $logName; ) &
 	#
 	# ( echo "\tPython : Processing pileup for INDELs." >> $logName;
-	# python $main_dir"scripts_general/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
+	# python $main_dir"scripts_seqModules/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
 	# echo "\tPython : Pileup processed for INDELs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
-	python $main_dir"scripts_general/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
+	python $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNP-CNV." >> $logName;
-	python $main_dir"scripts_general/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
+	python $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
@@ -300,17 +300,17 @@ echo   "========================================================================
 
 if [ $hapmapInUse = 0 ]
 then
-	echo "Passing processing on to 'scripts_WGseq/project.WGseq.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_WGseq/project.WGseq.install_4.sh "$user" "$project" "$main_dir >> $logName;
+	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh' for final analysis." >> $logName;
+	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh "$user" "$project" "$main_dir >> $logName;
 	echo "Script executed from: ${PWD}" >> $logName;
 
 	echo   "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_WGseq/project.WGseq.install_4.sh" $user $project $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project $main_dir;
 else
-	echo "Passing processing on to 'scripts_WGseq/project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$main_dir >> $logName;
+	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
+	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$main_dir >> $logName;
 	echo "Script executed from: ${PWD}" >> $logName;
 
 	echo "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
 fi

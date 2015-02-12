@@ -25,7 +25,7 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-	require_once '../constants.php';
+	require_once '../../constants.php';
 
 	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
@@ -33,11 +33,11 @@
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
 
 	// Initialize log file.
-	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";
+	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
 	fwrite($logOutput, "#..............................................................................\n");
-	fwrite($logOutput, "Running 'scripts_WGseq/project.paired_WGseq.install_1.php'.\n");
+	fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php'.\n");
 	fwrite($logOutput, "Variables passed via POST :\n");
 	fwrite($logOutput, "\tfileName = '".$fileName."'\n");
 	fwrite($logOutput, "\tuser     = '".$user."'\n");
@@ -45,14 +45,14 @@
 	fwrite($logOutput, "\tkey      = '".$key."'\n");
 	fwrite($logOutput, "#============================================================================== 1\n");
 
-	$condensedLogOutputName = "../users/".$user."/projects/".$project."/condensed_log.txt";
+	$condensedLogOutputName = "../../users/".$user."/projects/".$project."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
 	chmod($outputName,0755);
 
 	// Generate 'working.txt' file to let pipeline know processing is started.
-	$outputName      = "../users/".$user."/projects/".$project."/working.txt";
+	$outputName      = "../../users/".$user."/projects/".$project."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
@@ -61,7 +61,7 @@
 	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
 	// Installation continues with next php script... strings recieved as POST are forwarded to next script.
-	fwrite($logOutput, "Passing control to : 'scripts_WGseq/project.paired_WGseq.install_2.php'\n");
+	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_2.php'\n");
  	$system_call_string = "php project.paired_WGseq.install_2.php ".$fileName." ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 
@@ -77,7 +77,7 @@
 	// construct and submit form to move on to "project.working_server.php";
 	var autoSubmitForm = document.createElement("form");
 		autoSubmitForm.setAttribute("method","post");
-		autoSubmitForm.setAttribute("action","../project.working_server.php");
+		autoSubmitForm.setAttribute("action","../../project.working_server.php");
 	var input2 = document.createElement("input");
 		input2.setAttribute("type","hidden");
 		input2.setAttribute("name","key");
