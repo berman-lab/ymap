@@ -99,7 +99,7 @@
 				$sizeString_1 = trim(fgets($handle));
 				fclose($handle);
 			}
-			
+
 			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
 			$sizeString_2 = "";
 			if (file_exists($sizeFile_2))
@@ -108,7 +108,7 @@
 				$sizeString_2 = trim(fgets($handle));
 				fclose($handle);
 			}
-			
+
 			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
 			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
 			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
@@ -204,8 +204,11 @@
 			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
 
 			echo "</span> : ";
-			echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></span> ";
-			echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span>\n\t\t\t\t";
+			if ($dataType <> '0') {
+				// valid output for sequence data types, but not array data type.
+				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></span> ";
+				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span>\n\t\t\t\t";
+			}
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p1_".$key."'></div>\n";
 		}
