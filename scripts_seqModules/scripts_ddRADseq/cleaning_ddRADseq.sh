@@ -129,11 +129,6 @@ then
 #	rm $projectDirectory"data_forIndelRealigner.intervals";
 	echo "\tdata_forIndelRealigner.intervals" >> $logName;
 fi
-if [ -f $projectDirectory"data.bam" ]
-then
-#	rm $projectDirectory"data.bam";
-	echo "\tdata.bam" >> $logName;
-fi
 if [ -f $projectDirectory"corrected_CNV.project.mat" ]
 then
 #	rm $projectDirectory"corrected_CNV.project.mat";
