@@ -181,7 +181,7 @@ else
 	fi
 
 	# preprocess parent for comparison. abbey
-	python $main_dir"scripts_seqModules/scripts_WGseq/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
+	python $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
 
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
