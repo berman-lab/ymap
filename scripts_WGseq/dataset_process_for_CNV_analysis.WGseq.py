@@ -233,7 +233,6 @@ for line in data:
 	#     chromosomeNam                 pos             totalReads        0
 	#     Ca21chr1_C_albicans_SC5314    2388924         123               0
 	#     Ca21chr1_C_albicans_SC5314    2388925         135               0
-	print "@@ " + line;
 	count += 1
 	line_parts = string.split(string.strip(line))
 	chr_name   = line_parts[0]   # chr name of bp.		: Ca21chrR_C_albicans_SC5314
