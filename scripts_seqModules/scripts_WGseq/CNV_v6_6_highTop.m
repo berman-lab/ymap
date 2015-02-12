@@ -446,6 +446,71 @@ for chr = 1:num_chrs
 		end;
 		%end show annotation locations.
 
+		 % make CGH histograms to the right of the main chr cartoons.
+		if (HistPlot == true)
+			width     = 0.020;
+			height    = chr_height(chr);
+			bottom    = chr_posY(chr);
+			chr_CNVdata;
+			histAll   = [];
+			histAll2  = [];
+			smoothed  = [];
+			smoothed2 = [];
+			fprintf(['chr = ' num2str(chr) '\n']);
+			for segment = 1:length(chrCopyNum{chr})
+				subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom width height]);
+
+				% The CNV-histogram values were normalized to a median value of 1.
+				for i = round(1+length(CNVplot2{chr})*chr_breaks{chr}(segment)):round(length(CNVplot2{chr})*chr_breaks{chr}(segment+1))
+					if (Low_quality_ploidy_estimate == true)
+						histAll{segment}(i) = CNVplot2{chr}(i)*ploidy*ploidyAdjust;
+					else
+						histAll{segment}(i) = CNVplot2{chr}(i)*ploidy;
+					end;
+				end;
+
+				% make a histogram of CGH data, then smooth it for display.
+				histogram_end                                    = 24;
+				histAll{segment}(histAll{segment}<=0)            = [];
+				histAll{segment}(length(histAll{segment})+1)     = 0;   % endpoints added to ensure histogram bounds.
+				histAll{segment}(length(histAll{segment})+1)     = histogram_end;  % these values represent copy numbers, 15 is way outside expected range.
+				histAll{segment}(histAll{segment}>histogram_end) = 0;   % crop off any higher copy data.
+				smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),5,20);
+
+				% make a smoothed version of just the endpoints used to ensure histogram bounds.
+				histAll2{segment}(1)                             = 0;
+				histAll2{segment}(2)                             = histogram_end;
+				smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),5,20)*4;
+
+				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+				smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
+				smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
+
+				% draw lines to mark whole copy number changes.
+				plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
+				hold on;
+				for i = 1:histogram_end
+					plot([maxY*5*i;  maxY*5*i],[0; 1],'color',[0.75 0.75 0.75]);
+				end;
+
+				% draw histogram, then flip around the origin.
+				area(smoothed{segment},'FaceColor',[0 0 0]);
+				view(-90,90);
+				set(gca,'YDir','Reverse');
+
+				% ensure subplot axes are consistent with main chr plots.
+				hold off;
+				axis off;
+				set(gca,'YTick',[]);    set(gca,'XTick',[]);
+				ylim([0,1]);            xlim([0,maxY*20]);
+				if (show_annotations == true)
+					xlim([-maxY*20/10*1.5,maxY*20]);
+				else
+					xlim([0,maxY*20]);
+				end;
+			end;
+		end;
+
 		%% Linear figure draw section.
 		if (Linear_display == true)
 			figure(Linear_fig);

@@ -574,20 +574,22 @@ else
 					end;
 
 					% make a histogram of CGH data, then smooth it for display.
-					histAll{segment}(histAll{segment}<=0)        = [];
-					histAll{segment}(length(histAll{segment})+1) = 0;   % endpoints added to ensure histogram bounds.
-					histAll{segment}(length(histAll{segment})+1) = 15;  % these values represent copy numbers, 15 is way outside expected range.
-					histAll{segment}(histAll{segment}>15)        = 0;   % crop off any higher copy data.
-					smoothed{segment}                            = smooth_gaussian(hist(histAll{segment},300),5,20);
+					histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
+					histAll{segment}(histAll{segment}<=0)            = [];
+					histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
+					histAll{segment}(length(histAll{segment})+1)     = histogram_end;  
+					histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
+					histAll{segment}(histAll{segment}>histogram_end) = [];
+					smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),5,20);
 
 					% make a smoothed version of just the endpoints used to ensure histogram bounds.
-					histAll2{segment}(1)                         = 0;
-					histAll2{segment}(2)                         = 15;
-					smoothed2{segment}                           = smooth_gaussian(hist(histAll2{segment},300),5,20)*4;
+					histAll2{segment}(1)                             = 0;
+					histAll2{segment}(2)                             = histogram_end;
+					smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),5,20)*4;
 
 					% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-					smoothed{segment}                            = (smoothed{segment}-smoothed2{segment});
-					smoothed{segment}                            = smoothed{segment}/max(smoothed{segment});
+					smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
+					smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
 
 					% draw lines to mark whole copy number changes.
 					plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
