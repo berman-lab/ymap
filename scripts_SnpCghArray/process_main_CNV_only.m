@@ -886,6 +886,7 @@ for chr = 1:num_chrs
 				end;
 				histAll{segment}(i) = y_;
 			end;
+
 			% make a histogram of CGH data, then smooth it for display.
 			fprintf(['\nchr = ' num2str(chr) '; segment = ' num2str(segment) '; ']);
 			fprintf(['length(histAll{segment}) = ' num2str(length(histAll{segment})) '\n']);
@@ -893,6 +894,7 @@ for chr = 1:num_chrs
 			histAll{segment}(histAll{segment}==0)        = [];
 			histAll{segment}(length(histAll{segment})+1) = 0;   % endpoints added to ensure histogram bounds.
 			histAll{segment}(length(histAll{segment})+1) = 15;  % these values represent copy numbers, 15 is way outside expected range.
+			histAll{segment}(histAll{segment}>15)        = 0;   % crop off any higher copy data.
 			histAll{segment}(histAll{segment}<0)         = [];
 			histAll{segment}(histAll{segment}>15)        = 15;
 			smoothed{segment}                            = smooth_gaussian(hist(histAll{segment},300),5,20);
@@ -906,16 +908,19 @@ for chr = 1:num_chrs
 			smoothed{segment}                            = smoothed{segment} - smoothed2{segment};
 			smoothed{segment}                            = smoothed{segment}/max(smoothed{segment});
 
+			% draw lines to mark whole copy number changes.
 			plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
 			hold on;
 			plot([maxY*5;  maxY*5 ],[0; 1],'color',[0.75 0.75 0.75]);
 			plot([maxY*10; maxY*10],[0; 1],'color',[0.50 0.50 0.50]);
 			plot([maxY*15; maxY*15],[0; 1],'color',[0.75 0.75 0.75]);
 
+			% draw histogram, then flip around the origin.
 			area(smoothed{segment},'FaceColor',[0 0 0]);
 			view(-90,90);
 			set(gca,'YDir','Reverse');
 
+			% ensure subplot axes are consistent with main chr plots.
 			hold off;
 			axis off;
 			set(gca,'YTick',[]);    set(gca,'XTick',[]);
