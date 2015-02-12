@@ -1,5 +1,5 @@
 function [centromeres, chrSize, figure_details, annotations, figInfo_ploidy_default] = ...
-					Load_genome_information_1(projectDir,genomeDir,genome)
+					Load_genome_information_1(genomeDir,genome)
 fprintf(['\nLoad_genome_information_1.m : Genome in use : [' genome ']\n']);
 
 % Load centromere definition file.
