@@ -15,7 +15,7 @@ show_annotations            = true;
 Yscale_nearest_even_ploidy  = true;
 Linear_display              = true;
 
-projectDir = [main_dir '/users/' user '/projects/' project '/'];
+projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
 
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir, genome);
