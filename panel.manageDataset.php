@@ -167,6 +167,11 @@
 </script>
 <?php
 		foreach($projectFolders_complete as $key_=>$project) {
+			// Load data type for project.
+			$handle   = fopen("users/".$user."/projects/".$project."/dataType.txt", "r");
+			$dataType = fgets($handle);
+			fclose($handle);
+
 			// Load colors for project.
 			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
 			if (file_exists($colorFile)) {
@@ -203,9 +208,10 @@
 			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
 			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
 
-			echo "</span> : ";
+			echo "</span>";
 			if ($dataType <> '0') {
 				// valid output for sequence data types, but not array data type.
+				echo "<font size='1'> : </font>";
 				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></span> ";
 				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span>\n\t\t\t\t";
 			}
