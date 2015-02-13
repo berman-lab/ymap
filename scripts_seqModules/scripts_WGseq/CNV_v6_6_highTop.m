@@ -451,7 +451,6 @@ for chr = 1:num_chrs
 			width     = 0.020;
 			height    = chr_height(chr);
 			bottom    = chr_posY(chr);
-			chr_CNVdata;
 			histAll   = [];
 			histAll2  = [];
 			smoothed  = [];

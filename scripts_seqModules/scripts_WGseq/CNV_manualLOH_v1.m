@@ -608,7 +608,7 @@ else
 					axis off;
 					set(gca,'YTick',[]);    set(gca,'XTick',[]);
 					ylim([0,1]);            xlim([0,maxY*20]);
-					if (show_MRS == true)
+					if (show_annotations == true)
 						xlim([-maxY*20/10*1.5,maxY*20]);
 					else
 						xlim([0,maxY*20]);

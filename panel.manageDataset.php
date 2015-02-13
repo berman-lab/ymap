@@ -213,7 +213,8 @@
 				// valid output for sequence data types, but not array data type.
 				echo "<font size='1'> : </font>";
 				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></span> ";
-				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span>\n\t\t\t\t";
+				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span> ";
+				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/data.bam\")'><font size='1'>[BAM]</font></span>\n\t\t\t\t";
 			}
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p1_".$key."'></div>\n";
