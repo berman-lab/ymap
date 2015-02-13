@@ -875,12 +875,12 @@ for chr = 1:num_chrs
 				histAll{segment}(length(histAll{segment})+1)     = histogram_end;
 				histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
 				histAll{segment}(histAll{segment}>histogram_end) = [];
-				smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),5,20);
+				smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
 
 				% make a smoothed version of just the endpoints used to ensure histogram bounds.
 				histAll2{segment}(1)                             = 0;
 				histAll2{segment}(2)                             = histogram_end;
-				smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),5,20)*4;
+				smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),2,10);
 
 				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
 				smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
