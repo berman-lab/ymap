@@ -899,7 +899,7 @@ for chr = 1:num_chrs
 			% make a smoothed version of just the endpoints used to ensure histogram bounds.
 			histAll2{segment}(1) = 0;
 			histAll2{segment}(2) = 15;
-			smoothed2{segment} = smooth_gaussian(hist(histAll2{segment},300),5,20)*4;
+			smoothed2{segment} = smooth_gaussian(hist(histAll2{segment},300),5,20);
 
 			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
 			smoothed{segment} = (smoothed{segment}-smoothed2{segment});
