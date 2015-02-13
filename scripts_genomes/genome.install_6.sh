@@ -21,6 +21,7 @@ FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;					# Name of FASTA file.
 FASTAname=$(echo $FASTA | sed 's/\.fasta//g');						# Name of genome file, without file type.
 FASTA2=$(echo $FASTA | sed 's/\.fasta/\.2\.fasta/g');					# Name of reformatted genome file, to single-line entries.
 repetgenome=$reflocation$FASTAname".repetitiveness.txt";				# Name of repetitiveness profile for genome.
+repetgenome_smoothed=$reflocation$FASTAname".repetitiveness_smoothed.txt";		# Name of Gaussian smoothed repetitiveness profile for genome.
 standard_bin_FASTA=$reflocation$FASTAname".standard_bins.fasta";			# Name of reference genome broken up into standard bins.
 ddRADseq_FASTA=$reflocation$FASTAname".MfeI_MboI.fasta";				# Name of digested reference for ddRADseq analysis.
 RNAseq_FASTA=$reflocation$FASTAname".expression.fasta";					# Name of digested reference for expression analysis.
@@ -124,6 +125,7 @@ else
 	## Perform repetitiveness analysis on reference file for genome.
 	echo "" > $repetgenome;
         python $main_dir"scripts_genomes/repetitiveness_1.py" $user $genome $main_dir $logName >> $repetgenome;
+	python $main_dir"scripts_genomes/repetitiveness_smooth.py" $user $genome $main_dir $logName >> $repetgenome_smoothed;
 fi
 
 echo "\n\t============================================================================================== 6" >> $logName;
