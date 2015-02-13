@@ -356,11 +356,11 @@ end;
 
 % Initializes vectors used to hold number of SNPs in each interpretation catagory for each chromosome region.
 for chr = 1:length(chr_sizes)
-	% 4 SNP interpretation catagories tracked.
+	%	4 SNP interpretation catagories tracked.
 	%	1 : phased ratio data.
 	%	2 : unphased ratio data.
-	%   3 : phased coordinate data.
-	%   4 : unphased coordinate data.
+	%	3 : phased coordinate data.
+	%	4 : unphased coordinate data.
 	chr_length = ceil(chr_size(chr)/bases_per_bin);
 	for j = 1:4
 		chr_SNPdata{chr,j} = cell(1,chr_length);
@@ -519,10 +519,12 @@ end;
 % Apply GC bias correction to SNP data.
 %   Number of putative SNPs vs. GCbias per standard bin.
 %----------------------------------------------------------------------
+fprintf( 'Attempting to illsutrate correlation between %GC and number of SNPs in standard genome bins.\n');
+
+
 % Load standard bin GC_bias data from : standard_bins.GC_ratios.txt
-fprintf(['standard_bins_GC_ratios_file :\n\t' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.standard_bins.txt\n']);
+fprintf(['\tstandard_bins_GC_ratios_file : ' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.standard_bins.txt\n']);
 standard_bins_GC_ratios_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.standard_bins.txt'], 'r');
-fprintf(['\t' num2str(standard_bins_GC_ratios_fid) '\n']);
 lines_analyzed = 0;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
@@ -545,35 +547,51 @@ while not (feof(standard_bins_GC_ratios_fid))
 end;
 fclose(standard_bins_GC_ratios_fid);
 
-% Gather SNP and GCratio data for LOWESS fitting.
-GCratioData_all = [];
+
+%% Collect number of SNPs per each standard genome bin.
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-		GCratioData_all = [GCratioData_all chr_GCratioData{chr}];
+		for bin = 1:length(chr_SNPdata{chr,1})
+			chr_SNPcountData{chr}{bin} = length(chr_SNPdata{chr,1}{bin});   % count of phased ratio data.
+		end;
 	end;
 end;
-medianRawY = median(SNPdata_all);
-fprintf(['medianRawY = ' num2str(medianRawY) '\n']);
-fprintf(['SNPdata_all     => ' num2str(length(SNPdata_all)    ) '\n']);
-fprintf(['GCratioData_all => ' num2str(length(GCratioData_all)) '\n']);
+
+
+%% Gather SNP and GCratio data for LOWESS fitting.
+GCratioData_all  = [];
+SNPcountData_all = [];
+for chr = 1:num_chrs
+	if (chr_in_use(chr) == 1)
+		GCratioData_all  = [GCratioData_all  chr_GCratioData{chr} ];
+		SNPcountData_all = [SNPcountData_all chr_SNPcountData{chr}];
+	end;
+end;
+medianRawY = median(SNPcountData_all);
+fprintf(['\tmedianRawY               = ' num2str(medianRawY)               '\n']);
+fprintf(['\tlength(SNPcountData_all) = ' num2str(length(SNPcountData_all)) '\n']);
+fprintf(['\tlength(GCratioData_all)  = ' num2str(length(GCratioData_all))  '\n']);
+
 
 %% Clean up data by:
 %%    deleting GC ratio data near zero.
 %%    deleting CGH data beyond 3* the median value.  (rDNA, etc.)
-SNPdata_clean                                            = SNPdata_all;
-GCratioData_clean                                        = GCratioData_all;
-SNPdata_clean(     GCratioData_clean < 0.01            ) = [];
-GCratioData_clean( GCratioData_clean < 0.01            ) = [];
-GCratioData_clean( SNPdata_clean > max(medianRawY*3,3) ) = [];
-SNPdata_clean(     SNPdata_clean > max(medianRawY*3,3) ) = [];
-GCratioData_clean( SNPdata_clean == 0                  ) = [];
-SNPdata_clean(     SNPdata_clean == 0                  ) = [];
+SNPcountData_clean                                            = SNPcountData_all;
+GCratioData_clean                                             = GCratioData_all;
+SNPcountData_clean(GCratioData_clean < 0.01                 ) = [];
+GCratioData_clean( GCratioData_clean < 0.01                 ) = [];
+GCratioData_clean( SNPcountData_clean > max(medianRawY*3,3) ) = [];
+SNPcountData_clean(SNPcountData_clean > max(medianRawY*3,3) ) = [];
+GCratioData_clean( SNPcountData_clean == 0                  ) = [];
+SNPcountData_clean(SNPcountData_clean == 0                  ) = [];
 
-% Perform LOWESS fitting.
+
+%% Perform LOWESS fitting.
 rawData_X1     = GCratioData_clean;
-rawData_Y1     = SNPdata_clean;
+rawData_Y1     = SNPcountData_clean;
 fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 [fitX1, fitY1] = optimize_mylowess_SNP(rawData_X1,rawData_Y1);
+
 
 % Correct data using normalization to LOWESS fitting
 Y_target = 1;
@@ -606,71 +624,27 @@ for chr = 1:num_chrs
 	end;
 end;
 
-% Move LOWESS-normalizd SNP data back into display pipeline.
-SNPdata_all    = [];
-SNPdata_all_1  = [];
-SNPdata_all_2  = [];
-cSNPdata_all   = [];
-cSNPdata_all_1 = [];
-cSNPdata_all_2 = [];
-GCdata_all     = [];
-GCdata_all_1   = [];
-GCdata_all_2   = [];
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		TOTplot{chr}        = rawDataAll_chr_Y{chr};
-		cTOTplot{chr}       = normalizedDataAll_chr_Y{chr};
-		SNPdata_all         = [SNPdata_all    TOTplot{chr}              ];
-		cSNPdata_all        = [cSNPdata_all   cTOTplot{chr}             ];
-		GCdata_all          = [GCdata_all     rawData_chr_X{chr}        ];
-
-		for chr_bin = 1:length(SNPplot{chr,1})
-% darren : attempt at data normalization is failing, introduces major bug due to data compaction.
-%			chr_SNPdata{chr,1}{chr_bin}  = rawData_chr_Y{chr,1}{chr_bin};
-%			chr_SNPdata{chr,2}{chr_bin}  = rawData_chr_Y{chr,2}{chr_bin};
-			cchr_SNPdata{chr,1}{chr_bin} = normalizedData_chr_Y{chr,1}{chr_bin};
-			cchr_SNPdata{chr,2}{chr_bin} = normalizedData_chr_Y{chr,2}{chr_bin};
-			SNPdata_all_1                = [SNPdata_all_1  length(chr_SNPdata{chr,1}{chr_bin})  ];
-			SNPdata_all_2                = [SNPdata_all_2  length(chr_SNPdata{chr,2}{chr_bin})  ];
-			cSNPdata_all_1               = [cSNPdata_all_1 length(cchr_SNPdata{chr,1}{chr_bin}) ];
-			cSNPdata_all_2               = [cSNPdata_all_2 length(cchr_SNPdata{chr,2}{chr_bin}) ];
-		end;
-	end;
-end;
-
 
 %% Generate figure showing subplots of LOWESS fittings.
 GCfig = figure(3);
 subplot(2,3,1);
-    plot(GCratioData_all,SNPdata_all,'k.','markersize',1);
-    hold on;	plot(fitX1,fitY1,'r','LineWidth',2);   hold off;
-    xlabel('GC ratio');   ylabel('SNP data');
-    xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
+	hold on;
+		plot(rawData_X1,rawData_Y1,'k.','markersize',1);
+		plot(fitX1     ,fitY1     ,'r' ,'LineWidth' ,2);
+	hold off;
+	xlabel('GC ratio');   ylabel('SNP data');
+	xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
 subplot(2,3,2);
-	plot(GCdata_all,SNPdata_all_1,'r.','markersize',1);
-	hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('SNP data');
-	xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
 subplot(2,3,3);
-	plot(GCdata_all,SNPdata_all_2,'g.','markersize',1);
-	hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('SNP data');
-	xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
 subplot(2,3,4);
-	plot(GCratioData_all,cSNPdata_all,'k.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);   hold off;
+	hold on;
+		plot(GCratioData_all                            ,SNPcountData_all   ,'k.','markersize',1);
+		plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r' ,'LineWidth' ,2);
+	hold off;
 	xlabel('GC ratio');   ylabel('corrected SNP data');
 	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
 subplot(2,3,5);
-	plot(GCdata_all,cSNPdata_all_1,'r.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('corrected SNP data');
-	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
 subplot(2,3,6);
-	plot(GCdata_all,cSNPdata_all_1,'g.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('corrected SNP data');
-	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
 saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
 saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.eps'], 'epsc');
 delete(GCfig);
