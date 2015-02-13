@@ -504,7 +504,7 @@ for chr = 1:num_chrs
 				set(gca,'YTick',[]);    set(gca,'XTick',[]);
 				ylim([0,1]);            xlim([0,maxY_highTop*20]);
 				if (show_annotations == true)
-					xlim([-maxY_highTop*20/10*1.5,maxY_highTop*20]);
+					xlim([-maxY*20/10*1.5,maxY_highTop*20]);
 				else
 					xlim([0,maxY_highTop*20]);
 				end;
