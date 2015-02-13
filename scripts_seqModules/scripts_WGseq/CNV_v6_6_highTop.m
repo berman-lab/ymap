@@ -469,11 +469,12 @@ for chr = 1:num_chrs
 				end;
 
 				% make a histogram of CGH data, then smooth it for display.
-				histogram_end                                    = 24;
+				histogram_end                                    = maxY_highTop+4;
 				histAll{segment}(histAll{segment}<=0)            = [];
 				histAll{segment}(length(histAll{segment})+1)     = 0;   % endpoints added to ensure histogram bounds.
 				histAll{segment}(length(histAll{segment})+1)     = histogram_end;  % these values represent copy numbers, 15 is way outside expected range.
-				histAll{segment}(histAll{segment}>histogram_end) = 0;   % crop off any higher copy data.
+				histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
+				histAll{segment}(histAll{segment}>histogram_end) = [];
 				smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),5,20);
 
 				% make a smoothed version of just the endpoints used to ensure histogram bounds.
@@ -489,7 +490,7 @@ for chr = 1:num_chrs
 				plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
 				hold on;
 				for i = 1:histogram_end
-					plot([maxY*5*i;  maxY*5*i],[0; 1],'color',[0.75 0.75 0.75]);
+					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
 				end;
 
 				% draw histogram, then flip around the origin.
@@ -501,11 +502,11 @@ for chr = 1:num_chrs
 				hold off;
 				axis off;
 				set(gca,'YTick',[]);    set(gca,'XTick',[]);
-				ylim([0,1]);            xlim([0,maxY*20]);
+				ylim([0,1]);            xlim([0,maxY_highTop*20]);
 				if (show_annotations == true)
-					xlim([-maxY*20/10*1.5,maxY*20]);
+					xlim([-maxY_highTop*20/10*1.5,maxY_highTop*20]);
 				else
-					xlim([0,maxY*20]);
+					xlim([0,maxY_highTop*20]);
 				end;
 			end;
 		end;

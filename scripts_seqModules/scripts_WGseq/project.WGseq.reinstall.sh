@@ -3,6 +3,6 @@
 # project.WGseq.install_4.sh
 #
 user="darren1";
-project="Fig_10.FH9";
+project="test_WGseq_single";
 
 sh project.WGseq.install_4.sh $user $project;

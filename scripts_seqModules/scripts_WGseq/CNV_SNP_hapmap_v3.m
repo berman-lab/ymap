@@ -1548,7 +1548,7 @@ for chr = 1:num_chrs
 				plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
 				hold on;
 				for i = 1:15
-					plot([maxY*5*i;  maxY*5*i],[0; 1],'color',[0.75 0.75 0.75]);
+					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
 				end;
 
 				% draw histogram, then flip around the origin.
