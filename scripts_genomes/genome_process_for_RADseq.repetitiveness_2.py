@@ -13,9 +13,9 @@ logName     = sys.argv[4];
 
 t0 = time.clock();
 with open(logName, "a") as myfile:
-	myfile.write("\t\t\t*================================================================*\n");
-	myfile.write("\t\t\t| Log of 'genome_process_for_RADseq.repetitiveness_2.py'         |\n");
-	myfile.write("\t\t\t*----------------------------------------------------------------*\n");
+	myfile.write("\t\t\t*================================================================================*\n");
+	myfile.write("\t\t\t| Log of 'scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py'         |\n");
+	myfile.write("\t\t\t*--------------------------------------------------------------------------------*\n");
 
 
 #============================================================================================================
@@ -187,7 +187,7 @@ for line in data:
 		line_parts = (line.strip()).split();
 		chr_name   = line_parts[0];        # chr name of bp.
 		position   = int(line_parts[1]);   # chr position of bp.
-		repetScore = int(line_parts[2]);   # repetitiveness score at bp.
+		repetScore = float(line_parts[2]);   # repetitiveness score at bp.
 
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
@@ -243,5 +243,7 @@ with open(logName, "a") as myfile:
 print "### ", time.clock() - t0, "seconds to complete processing of pileup file and fragment definitions."
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tTime to process = " + str(time.clock()-t0) )
-	myfile.write("\n\t\t* 'py/genome_process_for_RADseq.repetitiveness_1.py' completed. *\n")
+	myfile.write("\n\t\t| Time to process = " + str(time.clock()-t0) )
+	myfile.write("\t\t\t*--------------------------------------------------------------------------------*\n");
+	myfile.write("\t\t\t| 'scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py' completed      |\n");
+	myfile.write("\t\t\t*================================================================================*\n");
