@@ -617,7 +617,6 @@ for chr = 1:num_chrs
         if (chr_in_use(chr) == 1)
                 for chr_bin = 1:length(SNPplot{chr,1})
                         SNPcorrectedCountData1_all  = [SNPcorrectedCountData1_all SNPcorrectedCountData1_chr{chr}(chr_bin)];
-                        SNPcorrectedCountData2_all  = [SNPcorrectedCountData2_all SNPcorrectedCountData2_chr{chr}(chr_bin)];
                 end;
         end;
 end;
