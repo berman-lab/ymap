@@ -6,10 +6,11 @@
 #	1) test.repetitiveness.MfeI_MboI.txt	(Ymap_root/users/[user]/genomes/[genome]/)
 #
 import string, sys, re, time, math, numpy;
-userName    = sys.argv[1];
-genomeName  = sys.argv[2];
-main_dir    = sys.argv[3];
-logName     = sys.argv[4];
+userName        = sys.argv[1];
+genomeName      = sys.argv[2];
+main_dir        = sys.argv[3];
+logName         = sys.argv[4];
+Smoothing_sigma = int(sys.argv[5]);
 
 #------------------------------------------------------------------------------------------------------------
 def gauss(n,sigma):
@@ -110,9 +111,9 @@ for line in data:
 		print "###";
 	else:
 		line_parts = (line.strip()).split();
-		chr_name   = line_parts[0];        # chr name of bp.
-		position   = int(line_parts[1]);   # chr position of bp.
-		repetScore = int(line_parts[2]);   # repetitiveness score at bp.
+		chr_name   = line_parts[0];          # chr name of bp.
+		position   = int(line_parts[1]);     # chr position of bp.
+		repetScore = float(line_parts[2]);   # repetitiveness score at bp.
 
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
@@ -138,8 +139,10 @@ data.close();
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tGaussian smoothing repetitiveness data.");
+	myfile.write("\n\t\t\tGaussian smoothing kernel sigma = " + str(int(Smoothing_sigma)));
+	myfile.write("\n\t\t\tGaussian smoothing kernel width = " + str(int(Smoothing_sigma*3+1)));
 # Generate Gaussian kernel filter: gauss(width,sigma);
-kernel_sigma = 1;
+kernel_sigma = Smoothing_sigma;
 kernel_width = kernel_sigma*3+1;
 filter = gauss(kernel_width,kernel_sigma);
 print "### Gaussian smoothed repetitiveness being calculated.";

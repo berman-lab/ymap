@@ -236,7 +236,7 @@ with open(logName, "a") as myfile:
 print "### ", time.clock() - t0, "seconds to complete processing of pileup file and fragment definitions."
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t| Time to process = " + str(time.clock()-t0) )
+	myfile.write("\n\t\t\t| Time to process = " + str(time.clock()-t0) + "\n")
 	myfile.write("\t\t\t*--------------------------------------------------------------------------------*\n");
 	myfile.write("\t\t\t| 'scripts_genomes/genome_process_for_RNAseq.repetitiveness_2.py' completed      |\n");
 	myfile.write("\t\t\t*================================================================================*\n");

@@ -519,176 +519,129 @@ end;
 % Apply GC bias correction to SNP data.
 %   Number of putative SNPs vs. GCbias per standard bin.
 %----------------------------------------------------------------------
-fprintf( 'Attempting to illsutrate correlation between \%GC and number of SNPs in standard genome bins.\n');
-
+fprintf( 'Attempting to illustrate correlation between percent GC and number of SNPs in standard genome bins.\n');
 
 % Load standard bin GC_bias data from : standard_bins.GC_ratios.txt
 fprintf(['\tstandard_bins_GC_ratios_file : ' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.standard_bins.txt\n']);
 standard_bins_GC_ratios_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.standard_bins.txt'], 'r');
 lines_analyzed = 0;
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
-	end;
-end;
-while not (feof(standard_bins_GC_ratios_fid))
-	dataLine = fgetl(standard_bins_GC_ratios_fid);
-	if (length(dataLine) > 0)
-		if (dataLine(1) ~= '#')
-			lines_analyzed = lines_analyzed+1;
-			chr            = str2num(sscanf(dataLine, '%s',1));
-			fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-			fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1) = [];   end;    fragment_end   = str2num(fragment_end);
-			GCratio        = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      GCratio(1) = [];        end;    GCratio        = str2num(GCratio);
-			position       = ceil(fragment_start/bases_per_bin);
-			chr_GCratioData{chr}(position) = GCratio;
-		end;
-	end;
-end;
-fclose(standard_bins_GC_ratios_fid);
-
-
-% Load standard bin repetitiveness data from : standard_bins.repetitiveness.txt
-fprintf(['\tstandard_bins_repetitiveness_file : ' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.standard_bins.txt\n']);
-standard_bins_repetitiveness_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.standard_bins.txt'], 'r');
-lines_analyzed = 0;
-for chr = 1:num_chrs
         if (chr_in_use(chr) == 1)
-                chr_RepetitivenessData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+                chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
         end;
 end;
-while not (feof(standard_bins_repetitiveness_fid))
-        dataLine = fgetl(standard_bins_repetitiveness_fid);
+while not (feof(standard_bins_GC_ratios_fid))
+        dataLine = fgetl(standard_bins_GC_ratios_fid);
         if (length(dataLine) > 0)
                 if (dataLine(1) ~= '#')
                         lines_analyzed = lines_analyzed+1;
                         chr            = str2num(sscanf(dataLine, '%s',1));
                         fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-                        fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
-                        repetitiveness = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      repetitiveness(1) = []; end;    repetitiveness = str2num(repetitiveness);
+                        fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1) = [];   end;    fragment_end   = str2num(fragment_end);
+                        GCratio        = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      GCratio(1) = [];        end;    GCratio        = str2num(GCratio);
                         position       = ceil(fragment_start/bases_per_bin);
-                        chr_RepetitivenessData{chr}(position) = repetitiveness;
+                        chr_GCratioData{chr}(position) = GCratio;
                 end;
         end;
 end;
-fclose(standard_bins_repetitiveness_fid);
-
+fclose(standard_bins_GC_ratios_fid);
 
 %% Collect number of SNPs per each standard genome bin.
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		for bin = 1:length(chr_SNPdata{chr,1})
-			chr_SNPcountData{chr}{bin} = length(chr_SNPdata{chr,1}{bin});   % count of phased ratio data.
-		end;
-	end;
+        if (chr_in_use(chr) == 1)
+                for bin = 1:length(chr_SNPdata{chr,1})
+                        chr_SNPcountData{chr}{bin} = length(chr_SNPdata{chr,1}{bin});   % count of phased ratio data.
+                end;
+        end;
 end;
-
 
 %% Gather SNP and GCratio data for LOWESS fitting.
 GCratioData_all        = [];
-RepetitivenessData_all = [];
 SNPcountData_all       = [];
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		GCratioData_all        = [GCratioData_all        chr_GCratioData{chr}       ];
-		RepetitivenessData_all = [RepetitivenessData_all chr_RepetitivenessData{chr}];
-	end;
+        if (chr_in_use(chr) == 1)
+                GCratioData_all        = [GCratioData_all        chr_GCratioData{chr}       ];
+        end;
 end;
 SNPcountData_all = SNPdata_all;
 medianRawY       = median(SNPcountData_all);
-fprintf(['\tmedianRawY               = ' num2str(medianRawY)               '\n']);
-fprintf(['\tlength(SNPcountData_all) = ' num2str(length(SNPcountData_all)) '\n']);
-fprintf(['\tlength(GCratioData_all)  = ' num2str(length(GCratioData_all))  '\n']);
+fprintf(['\tmedianRawY                     = ' num2str(medianRawY)                     '\n']);
+fprintf(['\tlength(SNPcountData_all)       = ' num2str(length(SNPcountData_all))       '\n']);
+fprintf(['\tlength(GCratioData_all)        = ' num2str(length(GCratioData_all))        '\n']);
 
 
 %% Clean up data by:
 %%    deleting GC ratio data near zero.
 %%    deleting CGH data beyond 3* the median value.  (rDNA, etc.)
-SNPcountData_clean                                            = SNPcountData_all;
-GCratioData_clean                                             = GCratioData_all;
-SNPcountData_clean(GCratioData_clean < 0.01                 ) = [];
-GCratioData_clean( GCratioData_clean < 0.01                 ) = [];
-SNPcountData_clean(GCratioData_clean > 0.99                 ) = [];
-GCratioData_clean( GCratioData_clean > 0.99                 ) = [];
-% GCratioData_clean( SNPcountData_clean > max(medianRawY*3,3) ) = [];
-% SNPcountData_clean(SNPcountData_clean > max(medianRawY*3,3) ) = [];
-% GCratioData_clean( SNPcountData_clean == 0                  ) = [];
-% SNPcountData_clean(SNPcountData_clean == 0                  ) = [];
+SNPcountData_clean       = SNPcountData_all;
+GCratioData_clean        = GCratioData_all;
+SNPcountData_clean(      GCratioData_clean < 0.01) = [];
+GCratioData_clean(       GCratioData_clean < 0.01) = [];
+SNPcountData_clean(      GCratioData_clean > 0.99) = [];
+GCratioData_clean(       GCratioData_clean > 0.99) = [];
+GCratioData_clean(       SNPcountData_clean == 0) = [];
+SNPcountData_clean(      SNPcountData_clean == 0) = [];
 
 
-%% Perform LOWESS fitting.
+%% Perform LOWESS fittings.
 rawData_X1     = GCratioData_clean;
 rawData_Y1     = SNPcountData_clean;
-fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
+fprintf(['Lowess X1:Y1 size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 [fitX1, fitY1] = optimize_mylowess_SNP(rawData_X1,rawData_Y1);
 
 
 % Correct data using normalization to LOWESS fitting
-% Initialize data structures, to simplify debugging.   These nested loops can be deleted without problems arising.
 Y_target = medianRawY;
 for chr = 1:num_chrs
-	for j = 1:2
-		rawData_chr_Y{chr,j}             = [];
-		SNPcorrectedCountData_chr{chr,j} = [];
-		rawData_chr_X{chr}               = [];
-		rawDataAll_chr_Y{chr}            = [];
-		fitDataAll_chr_Y{chr}            = [];
-		fitData_chr_Y{chr}               = [];
-	end;
+        rawData1_chr_Y{chr}             = [];
+        SNPcorrectedCountData1_chr{chr} = [];
+        rawData1_chr_X{chr}             = [];
+        fitData1_chr_Y{chr}             = [];
 end;
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		rawData_chr_X{chr}             = chr_GCratioData{chr};
-		rawData_chr_Y{chr}             = cell2mat(TOTplot{chr});
-		fitData_chr_Y{chr}             = interp1(fitX1,fitY1,rawData_chr_X{chr},'spline');
-		SNPcorrectedCountData_chr{chr} = rawData_chr_Y{chr}./fitData_chr_Y{chr}*Y_target;
-	end;
+        if (chr_in_use(chr) == 1)
+                % GC ratio.
+                rawData1_chr_X{chr}             = chr_GCratioData{chr};
+                rawData1_chr_Y{chr}             = cell2mat(TOTplot{chr});
+                fitData1_chr_Y{chr}             = interp1(fitX1,fitY1,rawData1_chr_X{chr},'spline');
+%               SNPcorrectedCountData1_chr{chr} = rawData1_chr_Y{chr}./fitData1_chr_Y{chr}*Y_target;
+                SNPcorrectedCountData1_chr{chr} = rawData1_chr_Y{chr} - fitData1_chr_Y{chr} + Y_target;
+        end;
 end;
+
 
 % Gathering all the corrected SNP count data for display.
-SNPcorrectedCountData_all = [];
+SNPcorrectedCountData1_all = [];
+SNPcorrectedCountData2_all = [];
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		for chr_bin = 1:length(SNPplot{chr,1})
-			SNPcorrectedCountData_all  = [SNPcorrectedCountData_all SNPcorrectedCountData_chr{chr}(chr_bin)];
-		end;
-	end;
+        if (chr_in_use(chr) == 1)
+                for chr_bin = 1:length(SNPplot{chr,1})
+                        SNPcorrectedCountData1_all  = [SNPcorrectedCountData1_all SNPcorrectedCountData1_chr{chr}(chr_bin)];
+                        SNPcorrectedCountData2_all  = [SNPcorrectedCountData2_all SNPcorrectedCountData2_chr{chr}(chr_bin)];
+                end;
+        end;
 end;
-
-test = SNPcorrectedCountData_chr{2}
-
-
-%% analyze_SNPs_hapmap('/var/www/html/Ymap/scripts_seqModules/scripts_WGseq/../../','darren1','darren1','test_WGseq_single','test_WGseq_single','test_Ca21','2.0','2.0');
 
 
 %% Generate figure showing subplots of LOWESS fittings.
 GCfig = figure(3);
 subplot(2,2,1);
-	hold on;
-		plot(rawData_X1,rawData_Y1,'k.','markersize',1);
-		plot(fitX1     ,fitY1     ,'r' ,'LineWidth' ,2);
-	hold off;
-	xlabel('GC ratio');   ylabel('SNP count per standard bin.');
-	xlim([0.0 1.0]);      ylim([0 max(5,5*medianRawY)]);   axis square;
+        hold on;
+                plot(rawData_X1,rawData_Y1,'k.','markersize',1);   % X1 = percent GC.
+                plot(fitX1     ,fitY1     ,'r' ,'LineWidth' ,2);
+        hold off;
+        xlabel('GC ratio');   ylabel('SNP count per standard bin.');
+        xlim([0.0 1.0]);      ylim([0 max(5,5*medianRawY)]);
+        axis square;
 subplot(2,2,2);
-	hold on;
-		plot(GCratioData_all                            ,SNPcorrectedCountData_all,'k.','markersize',1);
-		plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target]      ,'r' ,'LineWidth' ,2);
-	hold off;
-	xlabel('GC ratio');   ylabel('Corrected SNP count per standard bin.');
-	xlim([0.0 1.0]);      ylim([0 max(5,5*medianRawY)]);   axis square;
-subplot(2,2,3);
-	hold on;
-		plot(RepetitivenessData_all                     ,SNPcorrectedCountData_all,'k.','markersize',1);
-	hold off;
-	xlabel('Repetitiveness');   ylabel('SNP count per standard bin.');
-%        xlim([0.0 1.0]);      ylim([0 max(5,5*medianRawY)]);
-	axis square;
-subplot(2,2,4);
-	hold on;
-	hold off;
-saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
-saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.eps'], 'epsc');
+        hold on;
+                plot(GCratioData_all                            ,SNPcorrectedCountData1_all,'k.','markersize',1);
+                plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target]       ,'r' ,'LineWidth' ,2);
+        hold off;
+        xlabel('GC ratio');   ylabel('Corrected SNP count per standard bin.');
+        xlim([0.0 1.0]);      ylim([0 max(5,5*medianRawY)]);
+        axis square;
+saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.' Smoothing_Level '.png'], 'png');
 delete(GCfig);
 
 
@@ -710,8 +663,9 @@ for chr = 1:num_chrs
 				% the number of heterozygous data points in this bin.
 				SNPs_count{chr}(chr_bin)                                     = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});
 
-				% Reintroduce LOWESS-normalized SNP counts into processing.
-				SNPs_count{chr}(chr_bin)                                     = SNPcorrectedCountData_chr{chr}(chr_bin);
+% Not validated for use yet.
+%				% Reintroduce LOWESS-normalized SNP counts into processing.
+%				SNPs_count{chr}(chr_bin)                                     = SNPcorrectedCountData1_chr{chr}(chr_bin);
 
 				% divide by the threshold for full color saturation in SNP/LOH figure.
 				SNPs_to_fullData_ratio{chr}(chr_bin)                         = SNPs_count{chr}(chr_bin)/full_data_threshold;

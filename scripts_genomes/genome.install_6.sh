@@ -89,8 +89,8 @@ else
 	echo "\tO="$reflocation$FASTAname".dict" >> $logName;
 
 #       local-specific: This call may need changed with different PicardTools installation methods.
-	java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
-#	picard-tools CreateSequenceDictionary R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
+#	java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
+	picard-tools CreateSequenceDictionary R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
 fi
 
 echo "\n\t============================================================================================== 4" >> $logName;
@@ -122,10 +122,12 @@ else
 	echo "Calculating repetitiveness of FASTA file for genome." >> $condensedLog;
 	echo "\tRepetitiveness file not found for genome '$genome': Regenerating using Python script." >> $logName;
 
-	## Perform repetitiveness analysis on reference file for genome.
+	## Perform repetitiveness analysis on reference file for genome, then smooth the profile.
 	echo "" > $repetgenome;
-        python $main_dir"scripts_genomes/repetitiveness_1.py" $user $genome $main_dir $logName >> $repetgenome;
-	python $main_dir"scripts_genomes/repetitiveness_smooth.py" $user $genome $main_dir $logName >> $repetgenome_smoothed;
+        python $main_dir"scripts_genomes/repetitiveness_1.py"      $user $genome $main_dir $logName     >> $repetgenome;
+	echo "" > $repetgenome_smoothed;
+	python $main_dir"scripts_genomes/repetitiveness_smooth.py" $user $genome $main_dir $logName 128 >> $repetgenome_smoothed;
+	mv $repetgenome_smoothed $repetgenome;
 fi
 
 echo "\n\t============================================================================================== 6" >> $logName;
@@ -219,7 +221,7 @@ then
 	else
 		echo "Calculating repetitiveness of genome standard-bin fragments." >> $condensedLog;
 		## Calculating repetitiveness of standard bin fragments.
-		echo "\tCalculating repetitiveness per each digestion fragment." >> $logName;
+		echo "\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
 		inputFile=$reflocation$FASTAname".repetitiveness.txt";
 		echo "" > $outputFile;
 		python $main_dir"scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile;
