@@ -640,7 +640,7 @@ subplot(2,2,2);
         xlabel('GC ratio');   ylabel('Corrected SNP count per standard bin.');
         xlim([0.0 1.0]);      ylim([0 max(5,5*medianRawY)]);
         axis square;
-saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.' Smoothing_Level '.png'], 'png');
+saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
 delete(GCfig);
 
 
