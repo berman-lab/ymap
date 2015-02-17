@@ -388,7 +388,7 @@ if (performGCbiasCorrection)
 			fitData_chr_Y             = interp1(fitX1,fitY1,rawData_chr_X,'spline');
 			normalizedData_chr_Y{chr} = rawData_chr_Y./fitData_chr_Y*Y_target;
 		end;
-		aveData_Y = ave(rawData_Y1);
+		aveData_Y = mean(rawData_Y1);
 
 		% Gather corrected CGH data after normalization to the LOWESS fitting.
 		correctedCGHdata_all = [];
