@@ -558,7 +558,7 @@ for t = 1:1; % num_permutations
 			old_Ppost_dist_is_R{chr} = Ppost_dist_is_R{chr};
 		end;
 	end;
-	fprintf(['\n\tave : ' num2str(mean(abs([pos_change{1} pos_change{2} pos_change{3}]))) ]);
+%	fprintf(['\n\tave : ' num2str(mean(abs([pos_change{1} pos_change{2} pos_change{3}]))) ]);
     
 	%% Update positions of edges.
 	locs = new_locs;
