@@ -388,6 +388,7 @@ if (performGCbiasCorrection)
 			fitData_chr_Y             = interp1(fitX1,fitY1,rawData_chr_X,'spline');
 			normalizedData_chr_Y{chr} = rawData_chr_Y./fitData_chr_Y*Y_target;
 		end;
+		aveData_Y = ave(rawData_Y1);
 
 		% Gather corrected CGH data after normalization to the LOWESS fitting.
 		correctedCGHdata_all = [];
@@ -404,6 +405,7 @@ if (performGCbiasCorrection)
 			hold off;
 			xlabel('GC ratio');
 			ylabel('CGH data');
+			xlim([0 1.0]);   ylim([0 aveData_Y*5]);
 			axis square;
 		subplot(1,2,2);
 			plot(GCratioData_all,correctedCGHdata_all,'k.');
@@ -412,6 +414,7 @@ if (performGCbiasCorrection)
 			hold off;
 			xlabel('GC ratio');
 			ylabel('corrected CGH data');
+			xlim([0 1.0]);   ylim([0 5]);
 			axis square;
 		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.png'], 'png');
 
