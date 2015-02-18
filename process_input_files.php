@@ -232,8 +232,10 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	$paired = 1;
 } elseif (strcmp($ext_new,"txt") == 0) {
 	fwrite($logOutput, "\t| This is a txt file.\n");
+	fwrite($logOutput, "\t|\tCurrentDir = ".getcwd()."\n");
+	fwrite($logOutput, "\t|\tshell_exec string = 'sh ../Gareth2pileups.sh ".$user." ".$project." ".$name_new."'\n");
 	$currentDir = getcwd();
-	$null       = shell_exec("sh scripts_seqModules/Gareth2pileups.sh ".$user." ".$project." ".$name_new);
+	$null       = shell_exec("sh ../Gareth2pileups.sh ".$user." ".$project." ".$name_new);
 	// sam2fastq.sh user project main_dir inputFile;
 	fwrite($output, "null1\n");
 	fwrite($output, "null2\n");

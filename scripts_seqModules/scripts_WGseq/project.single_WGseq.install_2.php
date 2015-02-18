@@ -90,7 +90,7 @@
 	fwrite($logOutput, "Completed 'datafiles.txt' file.\n");
 
 	// Final install functions are in shell script.
-    if ($paired == 1) {
+	if ($paired == 1) {
 		fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tPaired-end reads being processed.\n");
 		fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );

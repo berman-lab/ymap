@@ -59,6 +59,8 @@
 	foreach ($fileNames as $key=>$name) {
 		$projectPath = "../../users/".$user."/projects/".$project."/";
 		$name        = str_replace("\\", ",", $name);
+		rename($projectPath.$name,$projectPath.strtolower($name));
+		$name        = strtolower($name);
 		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
 		fwrite($logOutput, "\tFile ".$key."\n");
@@ -91,14 +93,16 @@
 	if ($paired == 1) {
 		fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tPaired-end reads being processed.\n");
-		fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
+		fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
 		$system_call_string = "sh project.paired_ddRADseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	} else {
 		fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tSingle-end reads being processed.\n");
-		fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
+		fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
 	 	$system_call_string = "sh project.single_ddRADseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	}
+	fwrite($logOutput, "\t\tSystem call string = '".$system_call_string."'\n");
+
 	system($system_call_string);
 	fclose($condensedLogOutput);
 	fclose($logOutput);

@@ -106,7 +106,7 @@
 				</td><td valign="top">
 					<div id="hiddenFormSection11" style="display:none">
 						Analysis of ddRADseq data is limited to restriction fragments bound by both restriction enzymes.<br>
-						If your restriction enzyme pair is not listed, you can request it be added by commenting to the admin in the "System" tab.
+						If your restriction enzyme pair is not listed, you can contact the system administrators about developing the option as a collaboration.
 					</div>
 				</td></tr><tr bgcolor="#CCCCFF"><td>
 					<?php

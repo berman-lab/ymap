@@ -1,3 +1,10 @@
+###
+### Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75].
+###
+### Uses genome definition files to only output data lines for chromosomes of interest.
+###
+
+
 def process_ParentLine(entry_line):
 	global chrNums
 	global chrName
@@ -27,12 +34,6 @@ def process_ParentLine(entry_line):
 	P_chrName = chrName[P_chr-1]
 	return P_chr,P_chrName,P_position,P_countA,P_countT,P_countG,P_countC
 
-###
-### Preprocesses parent 'putative_SNPs_v4' and child 'SNP_CNV_v1.txt' files to output child lines corresponding
-###     to putative_SNP lines near 1:1 in parent file into 'SNP_CNV_v1.txt' file.
-### Uses genome definition files to only output data lines for chromosomes of interest.
-###
-
 import string, sys, time
 
 genome            = sys.argv[ 1]
@@ -50,9 +51,9 @@ inputFile_C       = main_dir+"users/"+projectChildUser+"/projects/"+projectChild
 t0 = time.clock()
 
 with open(logName, "a") as myfile:
-	myfile.write("*===================================================*\n")
-	myfile.write("| Log of 'py/putative_SNPs_from_parent.py'          |\n")
-	myfile.write("*---------------------------------------------------*\n")
+	myfile.write("\t\t*===================================================*\n")
+	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py'          |\n")
+	myfile.write("\t\t*---------------------------------------------------*\n")
 
 
 #============================================================================================================
@@ -64,7 +65,7 @@ genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/"
 # Load FastaName from 'reference.txt' for genome in use.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("|\tIdentifying name of reference FASTA file.\n")
+	myfile.write("\t\t|\tIdentifying name of reference FASTA file.\n")
 reference_file = genomeDirectory + '/reference.txt'
 refFile        = open(reference_file,'r')
 FastaName      = refFile.read().strip()
@@ -75,7 +76,7 @@ FastaName      = FastaName.replace(".fasta", "")
 # Process 'preprocessed_SNPs.txt' file for projectParent to determine initial SNP loci.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("|\tProcessing parent 'putative_SNPs_v4' file -> het loci.\n")
+	myfile.write("\t\t|\tProcessing parent 'putative_SNPs_v4' file -> het loci.\n")
 
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
@@ -89,7 +90,7 @@ figureDefinitionData   = figureDefinitionFile.readlines()
 #     2    1     Chr2    Ca21chr2_C_albicans_SC5314   0.15   0.7    *       0.0625
 #     0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 with open(logName, "a") as myfile:
-	myfile.write("|\tDetermining number of chromosomes of interest in genome.\n")
+	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
 
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
@@ -112,7 +113,7 @@ for x in range(0, chrName_maxcount):
 	chrName.append([])
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tGathering name strings for chromosomes.\n")
+	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
 
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r')
@@ -138,17 +139,17 @@ for line in figureDefinitionData:
 		if chr_num != 0:
 			chrName[int(float(chr_num))-1] = chr_name
 			with open(logName, "a") as myfile:
-				myfile.write("|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
+				myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
 figureDefinitionFile.close()
 
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount
 with open(logName, "a") as myfile:
-	myfile.write("|\t\tMax chr string : "+str(chrCount)+"\n")
+	myfile.write("\t\t|\t\tMax chr string : "+str(chrCount)+"\n")
 #............................................................................................................
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tOpen parent 'putative_SNPs_v4.txt' file.\n")
+	myfile.write("\t\t|\tOpen parent 'putative_SNPs_v4.txt' file.\n")
 
 #............................................................................................................
 
@@ -166,7 +167,7 @@ for x in range(0,chrCount):
 		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tGathering read coverage data for each fragment.\n")
+	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n")
 
 # Open dataset 'putative_CNVs_v1.txt' file.
 data_P = open(inputFile_P,"r")
@@ -199,7 +200,7 @@ data_P.close()
 print '### End of preprocessed parental SNP, child SNP data.'
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tTime to process = " + str(time.clock()-t0) + "\n")
-	myfile.write("*---------------------------------------------------*\n")
-	myfile.write("| End of 'py/putative_SNPs_from_parent.py'          |\n")
-	myfile.write("*===================================================*\n")
+	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")
+	myfile.write("\t\t*---------------------------------------------------*\n")
+	myfile.write("\t\t| End of 'py/putative_SNPs_from_parent.py'          |\n")
+	myfile.write("\t\t*===================================================*\n")

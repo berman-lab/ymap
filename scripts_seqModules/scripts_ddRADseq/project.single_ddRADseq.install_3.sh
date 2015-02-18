@@ -11,13 +11,22 @@ user=$1;
 project=$2;
 main_dir=$(pwd)"/../../";
 
-#user='darren'
-#project='Meleah_SC5314'
-#main_dir='/heap/hapmap/bermanlab/'
 
 ##==============================================================================
 ## Define locations and names to be used later.
 ##------------------------------------------------------------------------------
+
+# Setup process_log.txt file.
+projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
+logName=$projectDirectory"process_log.txt";
+condensedLog=$projectDirectory"condensed_log.txt";
+echo "#.............................................................................." >> $logName;
+echo "" >> $logName;
+echo "Input to : project.single_ddRADseq.install_3.sh" >> $logName;
+echo "\tuser     = "$user >> $logName;
+echo "\tproject  = "$project >> $logName;
+echo "\tmain_dir = "$main_dir >> $logName;
+echo "" >> $logName;
 
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"scripts_seqModules/local_installed_programs.sh";
@@ -25,10 +34,6 @@ main_dir=$(pwd)"/../../";
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 
-# Setup process_log.txt file.
-logName=$projectDirectory"process_log.txt";
-condensedLog=$projectDirectory"condensed_log.txt";
-echo "#.............................................................................." >> $logName;
 echo "Running 'scripts_seqModules/scripts_ddRADseq/project.paired_WGseq.install_3.sh'" >> $logName;
 echo "Variables passed via command-line from 'scripts_seqModules/scripts_ddRADseq/project.paired_WGseq.install_2.php' :" >> $logName;
 echo "\tuser     = '"$user"'" >> $logName;
@@ -74,7 +79,7 @@ echo "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
 echo "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
 
-# Get first data file name from "datafiles.txt";
+# Get data file name from "datafiles.txt";
 datafile=$(head -n 1 $projectDirectory"datafiles.txt");
 echo "\tdatafile = '"$datafile"'" >> $logName;
 
@@ -94,6 +99,8 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
 
+echo "#============================================================================== 2" >> $logName;
+
 
 reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.
@@ -102,12 +109,11 @@ RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   #
 ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        # Name of digested reference for ddRADseq analysis, using chosen restriction enzymes.
 
 
-echo "#============================================================================== 2" >> $logName;
-
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
 	echo "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
-	echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
+	echo "\tDone: BAM.indelrealignment." >> $logName;
+	echo "\tDone: Samtools.pileup." >> $logName;
 else
 	##==============================================================================
 	## Trimming/cleanup of FASTQ files.
@@ -307,9 +313,22 @@ else
 
 	wait;
 fi
+if [ -f $projectDirectory"trimmed_SNPs_v4.parent.txt" ]
+then
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
+	echo "\t\tDone." >> $logName;
+	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
+	echo "\t\tDone." >> $logName;
+else
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
+	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+
+	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
+	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"          $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
+fi
 
 echo "Pileup processing is complete." >> $condensedLog;
-echo "\nPileup processing complete." >> $logName;
+echo "\n\tPileup processing complete." >> $logName;
 
 if [ $hapmapInUse = 0 ]
 then

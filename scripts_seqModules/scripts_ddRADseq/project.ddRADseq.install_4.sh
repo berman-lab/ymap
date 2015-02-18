@@ -9,14 +9,7 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$(pwd)"/";
-
-#user='darren'
-#project='RADseq_test_AF-B4_a'
-#main_dir='/heap/hapmap/bermanlab/'
-
-
-
+main_dir=$(pwd)"/../../";
 
 
 ##==============================================================================

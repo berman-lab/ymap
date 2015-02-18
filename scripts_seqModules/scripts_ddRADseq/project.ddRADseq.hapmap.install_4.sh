@@ -10,14 +10,7 @@ umask 007;
 user=$1;
 project=$2;
 hapmap=$3;
-main_dir=$(pwd)"/";
-
-#user='darren'
-#project='RADseq_SC5314'
-#hapmap='test'
-#main_dir='/heap/hapmap/bermanlab/'
-
-
+main_dir=$(pwd)"/../../";
 
 
 ##==============================================================================

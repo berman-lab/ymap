@@ -11,9 +11,6 @@ user=$1;
 project=$2;
 main_dir=$(pwd)"/../../";
 
-#user='darren'
-#project='ddRADseq_parent'
-#main_dir='/heap/hapmap/bermanlab/'
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -124,7 +121,8 @@ echo "#=========================================================================
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
 	echo "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
-	echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
+	echo "\tDone: BAM.indelrealignment." >> $logName;
+	echo "\tDone: Samtools.pileup." >> $logName;
 else
 	##==============================================================================
 	## Trimming/cleanup of FASTQ files.
@@ -325,12 +323,16 @@ else
 fi
 if [ -f $projectDirectory"trimmed_SNPs_v4.parent.txt" ]
 then
-	echo "\tDone: processing child and parent pileup for SNP coordinate data." >> $logName;
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
+	echo "\t\tDone." >> $logName;
+	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
+	echo "\t\tDone." >> $logName;
 else
-	echo "\tPython : Processing child pileup for parent putatitve_SNP loci." >> $logName;
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
 	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+
+	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
 	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"          $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
-	echo "\tPython : Child pileup processed." >> $logName;
 fi
 
 echo "Pileup processing is complete." >> $condensedLog;

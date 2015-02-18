@@ -6,16 +6,15 @@
 user=$1;
 project=$2;
 inputFile=$3;
-main_dir=$(pwd)"/";
-
-#user="darren";
-#project="Meleah_SC5314";
-#main_dir="/heap/hapmap/bermanlab/";
-#inputFile="SC5314_alleles.txt";
+main_dir=$(pwd)"/../../";
 
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 tempDir=$projectDirectory"temp_dir/";
 logFile=$projectDirectory"process_log.txt";
+
+echo "projectDirectory   = '"$projectDirectory"'";
+echo "tempDir            = '"$tempDir"'";
+echo "logFile            = '"$logFile"'";
 
 echo "#|---- Gareth2pileups.sh ---- begin." >> $logFile;
 echo "#| Arguments:" >> $logFile;

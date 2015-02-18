@@ -25,7 +25,8 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
+	require_once '../../constants.php';
+
 	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
@@ -36,7 +37,7 @@
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
 	fwrite($logOutput, "#..............................................................................\n");
-	fwrite($logOutput, "Running 'php/project.single_ddRADseq.install_1.php'.\n");
+	fwrite($logOutput, "Running 'scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_1.php'.\n");
 	fwrite($logOutput, "Variables passed via POST :\n");
 	fwrite($logOutput, "\tfileName = '".$fileName."'\n");
 	fwrite($logOutput, "\tuser     = '".$user."'\n");
@@ -60,7 +61,7 @@
 	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
 // Installation continues with next php script... strings recieved as POST are forwarded to next script.
-	fwrite($logOutput, "Passing control to : 'php/project.single_ddRADseq.install_2.php'\n");
+	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_2.php'\n");
  	$system_call_string = "php project.single_ddRADseq.install_2.php ".$fileName." ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 
