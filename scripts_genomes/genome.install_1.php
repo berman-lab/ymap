@@ -123,7 +123,7 @@
 	fwrite($logOutput, "\tCurrDir     : '$currentdir'.\n");
 	$file_path  = "../users/".$user."/genomes/".$genome."/".$fileName;
 	fwrite($logOutput, "\tfile_path   : '$file_path'.\n");
-	$system_call_string = "sh ../scripts_general/FASTA_reformat_1.sh ".$file_path;
+	$system_call_string = "sh ../scripts_seqModules/FASTA_reformat_1.sh ".$file_path;
 	exec($system_call_string, $result);
 
 	// Process FASTA file for chromosome count, names, and lengths.
@@ -135,12 +135,14 @@
 	$chr_lengths = array();
 	for ($i = 0; $i < $num_lines; $i += 1) {
 		if ($file_lines[$i][0] == '>') {
+			// chromosome name is the header string (starting with ">"), after trimming trailing whitespace characters.
 			$line_parts = explode(" ",$file_lines[$i]);
 			$chr_name   = str_replace(array("\r","\n"),"",$line_parts[0]);
 			$chr_name   = substr($chr_name,1,strlen($chr_name)-1);
 			array_push($chr_names, $chr_name);
 			$chr_count  += 1;
 		} else {
+			// chromosome length is determined by the length of sequence strings.
 			$chr_length = strlen($file_lines[$i]);
 			array_push($chr_lengths, $chr_length);
 		}
@@ -155,7 +157,7 @@
 
 	// Reformat FASTA file from multiple lines per text block to single line.
 	fwrite($logOutput, "\tReformatting genome FASTA to multi-line entries.\n");
-	$system_call_string = "sh ../scripts_general/FASTA_reformat_2.sh ".$file_path;
+	$system_call_string = "sh ../scripts_seqModules/FASTA_reformat_2.sh ".$file_path;
 	exec($system_call_string,$result);
 
 	// Store variables of interest into $_SESSION.
