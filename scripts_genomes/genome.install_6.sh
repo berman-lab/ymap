@@ -106,7 +106,7 @@ echo "\n\t======================================================================
 ## Generate version of FASTA genome file to have single-line entries.
 echo "\tReformatting genome FASTA file into single-line entries." >> $logName;
 cp $reflocation$FASTA $reflocation$FASTA2;
-sh $main_dir"scripts_general/FASTA_reformat_1.sh" $reflocation$FASTA2;
+sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $reflocation$FASTA2;
 
 echo "\n\t============================================================================================== 5" >> $logName;
 
@@ -192,7 +192,7 @@ echo "\n\t======================================================================
 ## Reformat standard-bin fragmented FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting standard genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"scripts_general/FASTA_reformat_1.sh" $standard_bin_FASTA;
+sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_FASTA;
 
 outputFile=$reflocation$FASTAname".GC_ratios.standard_bins.txt";
 if [ -e $outputFile ]
@@ -229,7 +229,7 @@ echo "\n\t----------------------------------------------------------------------
 ## Reformat digested FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting digested genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"scripts_general/FASTA_reformat_1.sh" $ddRADseq_FASTA;
+sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $ddRADseq_FASTA;
 
 outputFile=$reflocation$FASTAname".GC_ratios.MfeI_MboI.txt";
 if [ -e $outputFile ]
@@ -267,7 +267,7 @@ then
 	## Reformat digested FASTA file to have single-line entries for each sequence fragment.
 	echo "Reformatting expression genome fragments FASTA file." >> $condensedLog;
 	echo "\tReformatting expression FASTA file => single-line per sequence fragment." >> $logName;
-	sh $main_dir"scripts_general/FASTA_reformat_1.sh" $RNAseq_FASTA;
+	sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $RNAseq_FASTA;
 
 	outputFile=$reflocation$FASTAname".GC_ratios.expression.txt";
 	if [ -e $outputFile ]
