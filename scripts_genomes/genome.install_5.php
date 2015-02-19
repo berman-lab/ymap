@@ -52,14 +52,18 @@
 //	$ploidyDefault    = $_SESSION['ploidyDefault_'.$key];
 //	$annotation_count = $_SESSION['annotation_count_'.$key];
 
-// Open 'process_log.txt' file.
+	// Open 'process_log.txt' file.
 	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "Running 'scripts_genomes/genome.install_5.php'.\n");
 	fwrite($logOutput, "\tkey     :'".$key."'\n");
-	fwrite($logOutput, "\tfileName:'".$fileName."'\n");
+	if ($filename == '') {
+		fwrite($logOutput, "\tfileName: [No chromosome features file loaded].\n");
+	} else {
+		fwrite($logOutput, "\tfileName:'".$fileName."'\n");
+	}
 
-// Generate 'working.txt' to tell main page that genome installation is in process.
+	// Generate 'working.txt' to tell main page that genome installation is in process.
 	fwrite($logOutput, "\tGenerating 'working.txt' file.\n");
 	$outputName      = "../users/".$user."/genomes/".$genome."/working.txt";
 	$output          = fopen($outputName, 'w');
@@ -67,7 +71,11 @@
 	fwrite($output, $startTimeString);
 	fclose($output);
 
-// Process uploaded file.
+	if ($fileName == '') {
+		// No uploaded chromosome features file.
+		fwrite($logOutput, "\tNo chromosome features file uploaded.\n");
+	} else {
+		// Process uploaded file.
 		$genomePath  = "../users/".$user."/genomes/".$genome."/";
 		$name        = str_replace("\\", ",", $fileName);
 		rename($genomePath.$name,$genomePath.strtolower($name));
@@ -88,8 +96,10 @@
 		// Process the uploaded file.
 		process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $newName);
 		$fileName = $newName;
+		fwrite($logOutput, "\tProcessed chromosome features file.\n");
+	}
 
-// Final install functions are in shell script.
+	// Final install functions are in shell script.
 	$system_call_string = "sh genome.install_6.sh ".$user." ".$genome." > /dev/null &";
 	system($system_call_string);
 	fwrite($logOutput, "\tCurrent Directory  = '".getcwd()."'\n");

@@ -12,10 +12,6 @@ user=$1;
 genome=$2;
 main_dir=$(pwd)"/../";
 
-#user="darren";
-#genome="Candida_albicans_SC5314_verA21-s02-m09-r07";
-#main_dir="/heap/hapmap/bermanlab/";
-
 reflocation=$main_dir"users/"$user"/genomes/"$genome"/";				# Directory where FASTA file is kept.
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;					# Name of FASTA file.
 FASTAname=$(echo $FASTA | sed 's/\.fasta//g');						# Name of genome file, without file type.
@@ -45,7 +41,7 @@ echo "" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 
 # load local installed program location variables.
-. $main_dir/scripts_general/local_installed_programs.sh;
+. $main_dir"local_installed_programs.sh";
 
 ##============================================#
 # Initialization of various programs below.   #

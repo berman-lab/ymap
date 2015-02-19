@@ -29,7 +29,7 @@ echo "\tmain_dir = "$main_dir >> $logName;
 echo "" >> $logName;
 
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"scripts_seqModules/local_installed_programs.sh";
+. $main_dir"local_installed_programs.sh";
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";

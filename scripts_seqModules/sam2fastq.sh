@@ -11,7 +11,7 @@ logFile=$projectDirectory"process_log.txt";
 echo "#|---- sam2fastw.sh ---- begin." >> $logFile;
 
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"sh/local_installed_programs.sh";
+. $main_dir"local_installed_programs.sh";
 
 # #===================================================================================================================================
 # # Run picard-tools SamToFastq : This method requires large amounts of memory and will crash when it runs out of memory.

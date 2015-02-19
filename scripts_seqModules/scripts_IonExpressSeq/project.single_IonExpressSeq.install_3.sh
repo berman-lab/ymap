@@ -26,7 +26,7 @@ condensedLog=$projectDirectory"condensed_log.txt";
 echo "#.............................................................................." >> $logName;
 
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"sh/local_installed_programs.sh";
+. $main_dir"local_installed_programs.sh";
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";

@@ -17,7 +17,7 @@ main_dir=$(pwd)"/../../";
 ##------------------------------------------------------------------------------
 
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"scripts_seqModules/local_installed_programs.sh";
+. $main_dir"local_installed_programs.sh";
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
@@ -336,7 +336,7 @@ else
 fi
 
 echo "Pileup processing is complete." >> $condensedLog;
-echo "\nPileup processing complete.\n" >> $logName;
+echo "\n\tPileup processing complete.\n" >> $logName;
 
 if [ $hapmapInUse = 0 ]
 then

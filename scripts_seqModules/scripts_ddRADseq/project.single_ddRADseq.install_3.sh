@@ -29,7 +29,7 @@ echo "\tmain_dir = "$main_dir >> $logName;
 echo "" >> $logName;
 
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"scripts_seqModules/local_installed_programs.sh";
+. $main_dir"local_installed_programs.sh";
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
@@ -53,7 +53,7 @@ echo "Setting up for processing." >> $condensedLog;
 #    second line => hapmap
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
-echo "\t'genome.txt' file entry." >> $logName;
+echo "\tLocation variables from 'genome.txt' file entry." >> $logName;
 echo "\t\tgenome = '"$genome"'" >> $logName;
 if [ "$genome" = "$hapmap" ]
 then
@@ -328,7 +328,7 @@ else
 fi
 
 echo "Pileup processing is complete." >> $condensedLog;
-echo "\n\tPileup processing complete." >> $logName;
+echo "\n\tPileup processing complete.\n" >> $logName;
 
 if [ $hapmapInUse = 0 ]
 then
