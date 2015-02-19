@@ -13,9 +13,9 @@ logName     = sys.argv[4];
 nmer_length = 10;
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t\t*================================================================*\n")
-	myfile.write("\t\t\t| Log of 'repetitiveness_1.py'                                   |\n")
-	myfile.write("\t\t\t*----------------------------------------------------------------*\n")
+	myfile.write("\t\t\t*================================================================*\n");
+	myfile.write("\t\t\t| Log of 'scripts_genomes/repetitiveness_1.py'                   |\n");
+	myfile.write("\t\t\t*----------------------------------------------------------------*\n");
 
 
 #------------------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ refFile.close();
 # Generate the name of the reformatted FASTA file: "test.fasta" => "test.2.fasta"
 refFASTA       = refFASTA.replace(".fasta",".2.fasta");
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tFASTA reformatted to single-line entries : " + refFASTA);
+	myfile.write("\n\t\t\t| FASTA reformatted to single-line entries : " + refFASTA);
 
 
 #============================================================================================================
@@ -106,7 +106,7 @@ figureDefinitionData   = figureDefinitionFile.readlines();
 #		0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t\tDetermining number of chromosomes of interest in genome.");
+	myfile.write("\n\t\t\t|\tDetermining number of chromosomes of interest in genome.");
 
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0;
@@ -129,7 +129,7 @@ for x in range(0, chrName_maxcount):
 	chrName.append([]);
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t\tGathering name strings for chromosomes.");
+	myfile.write("\n\t\t\t|\tGathering name strings for chromosomes.");
 
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r');
@@ -144,7 +144,7 @@ for line in figureDefinitionData:
 		if chr_num != 0:
 			chrName[int(float(chr_num))-1] = chr_name;
 			with open(logName, "a") as myfile:
-				myfile.write("\n\t\t\t\t\tChr" + str(chr_num) + " = " + chr_name);
+				myfile.write("\n\t\t\t|\t\tChr" + str(chr_num) + " = " + chr_name);
 figureDefinitionFile.close();
 
 # Put the chromosome count into a smaller name for later use.
@@ -165,7 +165,7 @@ FASTA_data = open(FASTA_file,'r');
 t0a = time.clock();
 t1  = t0a;
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t#### Start tallying nmers.\n");
+	myfile.write("\n\t\t\t| Start tallying nmers.\n");
 
 # Process reformatted FASTA file, entry by entry, to collect nmer counts.
 while True:
@@ -188,12 +188,12 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds for this chr.\n");
+				myfile.write("\t\t\t|\t" + str(time.clock() - t1) + " seconds for this chr.\n");
 				t1 = time.clock();
 				if chr_name in chrName:
-					myfile.write("\t\t\t#### Tallying nmers of: " + chr_name + "\n");
+					myfile.write("\t\t\t| Tallying nmers of: " + chr_name + "\n");
 				else:
-					myfile.write("\t\t\t#### Skipping '" + chr_name + "' because it was deselected.\n");
+					myfile.write("\t\t\t| Skipping '" + chr_name + "' because it was deselected.\n");
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
@@ -220,14 +220,14 @@ FASTA_data.close();
 # Reset timer.
 with open(logName, "a") as myfile:
 	if old_chr_name in chrName:
-		myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds for this chr.\n");
-	myfile.write("\t\t\t####\n");
-	myfile.write("\t\t\t#### " + str(time.clock() - t0a) + " seconds to talley incidence of nmers across genome.\n");
-	myfile.write("\t\t\t####\n");
+		myfile.write("\t\t\t|\t" + str(time.clock() - t1) + " seconds for this chr.\n");
+	myfile.write("\t\t\t|\n");
+	myfile.write("\t\t\t| " + str(time.clock() - t0a) + " seconds to talley incidence of nmers across genome.\n");
+	myfile.write("\t\t\t|\n");
 t0b = time.clock();
 t1  = t0b;
 with open(logName, "a") as myfile:
-	myfile.write("\t\t\t#### Start generating repetitiveness score across genome.\n");
+	myfile.write("\t\t\t| Start generating repetitiveness score across genome.\n");
 
 
 #============================================================================================================
@@ -263,10 +263,10 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds for this chr.\n");
+				myfile.write("\t\t\t|\t" + str(time.clock() - t1) + " seconds for this chr.\n");
 			t1 = time.clock();
 			with open(logName, "a") as myfile:
-				myfile.write("\t\t\t#### Outputing repetitiveness scores for: " + chr_name + "\n");
+				myfile.write("\t\t\t| Outputing repetitiveness scores for: " + chr_name + "\n");
 
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
@@ -293,7 +293,8 @@ while True:
 # Conclude log outputs.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds for this chr.\n");
-	myfile.write("\t\t\t####\n");
-	myfile.write("\t\t\t#### Total time for computation of genome repetitiveness = " + str(time.clock() - t0) + "\n");
-	myfile.write("\t\t\t####\n");
+	myfile.write("\t\t\t|\t" + str(time.clock() - t1) + " seconds for this chr.\n");
+	myfile.write("\t\t\t| Total time for computation of genome repetitiveness = " + str(time.clock() - t0) + "\n");
+	myfile.write("\t\t\t*----------------------------------------------------------------*\n");
+	myfile.write("\t\t\t| 'scripts_genomes/repetitiveness_1.py' has completed            |\n");
+	myfile.write("\t\t\t*================================================================*\n");
