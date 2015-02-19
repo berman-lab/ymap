@@ -88,7 +88,7 @@ refFile.close();
 # Generate the name of the reformatted FASTA file: "test.fasta" => "test.2.fasta"
 refFASTA       = refFASTA.replace(".fasta",".2.fasta");
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t| FASTA reformatted to single-line entries : " + refFASTA);
+	myfile.write("\t\t\t| FASTA reformatted to single-line entries : " + refFASTA);
 
 
 #============================================================================================================
