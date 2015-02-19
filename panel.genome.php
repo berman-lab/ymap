@@ -19,7 +19,7 @@
 
 		$_SESSION['pending_install_genome_count'] = 0;
 		?>
-		<b><font size='2'>Genomes Pending</font></b><br>
+		<b><font size='2'>Genomes Pending:</font></b><br>
 		<div class='tab' style='color:#CC0000; font-size:10pt;' id='newly_installed_list' name='newly_installed_list'></div><br>
 		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:center;' id='pending_comment' name='pending_comment'>(Reload page after current uploads have completed to prepare these
 		for upload.)</div>
@@ -141,7 +141,7 @@
 	// Trim path from each folder string.
 	foreach($systemGenomeFolders as $key=>$folder) {   $systemGenomeFolders[$key] = str_replace($genomesDir,"",$folder);   }
 	$systemGenomeCount = count($systemGenomeFolders);
-	echo "<b><font size='2'>Installed Reference Genomes:</font></b>\n";
+	echo "<b><font size='2'>Installed Reference Genomes:</font></b><br>\n";
 	foreach ($systemGenomeFolders as $key=>$genome) {
 		$genomeNameString = file_get_contents("users/default/genomes/".$genome."/name.txt");
 		$genomeNameString = trim($genomeNameString);
