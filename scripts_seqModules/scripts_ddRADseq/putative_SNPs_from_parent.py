@@ -167,7 +167,7 @@ for x in range(0,chrCount):
 		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n")
+	myfile.write("\t\t|\tGathering data from putative SNP loci in parent.\n")
 
 # Open dataset 'putative_CNVs_v1.txt' file.
 data_P = open(inputFile_P,"r")

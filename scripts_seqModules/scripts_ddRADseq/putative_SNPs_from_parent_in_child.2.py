@@ -35,35 +35,6 @@ def process_ChildLine(entry_line):
 	C_chrName = chrName[C_chr-1]
 	return C_chr,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC
 
-def process_ParentLine(entry_line):
-	global chrNums
-	global chrName
-	global chrCount
-	# Process 'putative_SNPs_v4.txt' file line.
-	# example lines:
-	#       chromosome                   coord   ref   A    T     G   C
-	#       Ca21chr1_C_albicans_SC5314   13988   T     1    12    0   0
-	#       Ca21chr1_C_albicans_SC5314   13993   A     12   0     0   1
-	#       Ca21chr1_C_albicans_SC5314   14003   T     1    412   0   0
-	#       Ca21chr1_C_albicans_SC5314   14004   T     1    413   0   0
-	parent_line = string.strip(entry_line)
-	parent_line = parent_line.split('\t')
-	P_chr_name  = parent_line[0]   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
-	P_position  = parent_line[1]   # chr position of bp.      : 2286371
-	P_refBase   = parent_line[2]   # reference base at bp.    : T
-	P_countA    = parent_line[3]   # count of A.              : 100
-	P_countT    = parent_line[4]   # count of T.              : 0
-	P_countG    = parent_line[5]   # count of G.              : 0
-	P_countC    = parent_line[6]   # count of C.              : 1
-	# Determine chrID associated with chromosome name.
-	P_chr = 0
-	for x in range(0,chrCount):
-		if (chrNums[x] != 0):
-			if chrName[x] == P_chr_name:
-				P_chr = x+1
-	P_chrName = chrName[P_chr-1]
-	return P_chr,P_chrName,P_position,P_countA,P_countT,P_countG,P_countC
-
 def process_trimmedParentLine(entry_line):
 	global chrNums
 	global chrName
@@ -79,10 +50,6 @@ def process_trimmedParentLine(entry_line):
 	parent_line = parent_line.split('\t')
 	P_chr_name  = parent_line[0]   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
 	P_position  = parent_line[1]   # chr position of bp.      : 2286371
-	P_countA    = parent_line[2]   # count of A.              : 100
-	P_countT    = parent_line[3]   # count of T.              : 0
-	P_countG    = parent_line[4]   # count of G.              : 0
-	P_countC    = parent_line[5]   # count of C.              : 1
 	# Determine chrID associated with chromosome name.
 	P_chr = 0
 	for x in range(0,chrCount):
@@ -90,7 +57,7 @@ def process_trimmedParentLine(entry_line):
 			if chrName[x] == P_chr_name:
 				P_chr = x+1
 	P_chrName = chrName[P_chr-1]
-	return P_chr,P_chrName,P_position,P_countA,P_countT,P_countG,P_countC
+	return P_chr,P_chrName,P_position
 
 import string, sys, time
 
@@ -98,12 +65,9 @@ genome             = sys.argv[1];
 genomeUser         = sys.argv[2];
 projectChild       = sys.argv[3];
 projectChildUser   = sys.argv[4];
-projectParent      = sys.argv[5];
-projectParentUser  = sys.argv[6];
-main_dir           = sys.argv[7];
+main_dir           = sys.argv[5];
 
 logName            = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt";
-inputFile_P        = main_dir+"users/"+projectParentUser+"/projects/"+projectParent+"/putative_SNPs_v4.txt";
 inputFile_trimmedP = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/trimmed_SNPs_v4.parent.txt";
 inputFile_C        = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt";
 
@@ -111,7 +75,7 @@ t0 = time.clock()
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*===================================================*\n")
-	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.py' |\n")
+	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.2.py' |\n")
 	myfile.write("\t\t*---------------------------------------------------*\n")
 
 
@@ -132,10 +96,10 @@ refFile.close()
 FastaName      = FastaName.replace(".fasta", "")
 
 #============================================================================================================
-# Process 'preprocessed_SNPs.txt' file for projectParent to determine initial SNP loci.
+# Process 'preprocessed_SNPs.ddRADseq.txt' file for project to determine initial SNP loci.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tProcessing parent 'putative_SNPs_v4' file -> het loci.\n")
+	myfile.write("\t\t|\tProcessing 'putative_SNPs_v4' file -> het loci.\n")
 
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
@@ -208,7 +172,7 @@ with open(logName, "a") as myfile:
 #............................................................................................................
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tOpen parent 'putative_SNPs_v4.txt' file.\n")
+	myfile.write("\t\t|\tOpen 'trimmed_SNPs_v4.parent.txt' file.\n")
 
 #............................................................................................................
 
@@ -228,44 +192,40 @@ for x in range(0,chrCount):
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tCollecting data in child from putatitve SNP loci in parent.\n")
 
-# Open dataset 'putative_CNVs_v1.txt' file.
-data_P = open(inputFile_P,"r")
+# Open dataset 'trimmed_SNPs_v4.parent.txt' file.
+data_P = open(inputFile_trimmedP,"r")
 
 print '### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, countA, countT, countG, countC]'
 
-# Process 'SNP_CNV_v1.txt' file for both parents, line by line... while checking for missing data.
+# Process "trimmed_SNPs_v4.parent.txt" file containing SNP position data from the parent, as well as "SNP_CNV_v1.txt" for the data from the child.
 line_P = data_P.readline();
 error_endOfFile = False;
 old_P_chrID = 0;
 while (error_endOfFile == False):
-	P_chrID,P_chrName,P_position,P_countA,P_countT,P_countG,P_countC = process_ParentLine(line_P)
-	P_list = [int(float(P_countA)), int(float(P_countT)), int(float(P_countG)), int(float(P_countC))]
+	P_chrID,P_chrName,P_position = process_trimmedParentLine(line_P);
 	if P_chrID <> old_P_chrID:
 		with open(logName, "a") as myfile:
 			myfile.write("\t\t|\t\tchr = "+str(P_chrName)+"\n");
-	if (sum(P_list) == 0):
-		P_allelicRatio = 0
-	else:
-		P_allelicRatio = max(P_list)/float(sum(P_list))
-	if ((P_allelicRatio < 0.75) and (P_allelicRatio > 0.25) and (sum(P_list) > 20)):
-		data_C = open(inputFile_C,"r")
+
+	data_C = open(inputFile_C,"r")
+	line_C = data_C.readline()
+	error_endOfFile = False
+	while (error_endOfFile == False):
+		C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
+		if (C_chrID == P_chrID) and (C_position == P_position):
+			print C_chrName+"\t"+str(C_position)+"\t"+str(C_countA)+"\t"+str(C_countT)+"\t"+str(C_countG)+"\t"+str(C_countC)
+			data_C.close()
+			break;
 		line_C = data_C.readline()
-		error_endOfFile = False
-		while (error_endOfFile == False):
-			C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
-			if (C_chrID == P_chrID) and (C_position == P_position):
-				print C_chrName+"\t"+str(C_position)+"\t"+str(C_countA)+"\t"+str(C_countT)+"\t"+str(C_countG)+"\t"+str(C_countC)
-				data_C.close()
-				break;
-			line_C = data_C.readline()
-			if not line_C: # EOF 2
-				error_endOfFile = True
-				data_C.close()
-				break;
-		if (error_endOfFile == True):
-			# data line corresponding to parent SNP was not found in child "SNP_CNV_v1.txt" file.
-			print P_chrName+"\t"+str(P_position)+"\t0\t0\t0\t0"
-		data_C.close()
+		if not line_C: # EOF 2
+			error_endOfFile = True
+			data_C.close()
+			break;
+	if (error_endOfFile == True):
+		# data line corresponding to parent SNP was not found in child "SNP_CNV_v1.txt" file.
+		print P_chrName+"\t"+str(P_position)+"\t0\t0\t0\t0"
+	data_C.close()
+
 	error_endOfFile = False
 	line_P = data_P.readline()
 	if not line_P: # EOF 1
@@ -283,5 +243,5 @@ print '### End of preprocessed parental SNP, child SNP data.'
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")
 	myfile.write("\t\t*---------------------------------------------------*\n")
-	myfile.write("\t\t| End of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.py' |\n")
+	myfile.write("\t\t| End of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.2.py' |\n")
 	myfile.write("\t\t*===================================================*\n")

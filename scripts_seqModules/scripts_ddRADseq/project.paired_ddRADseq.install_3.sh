@@ -328,11 +328,14 @@ then
 	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
 	echo "\t\tDone." >> $logName;
 else
-	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
-	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+#	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
+#	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
 
 	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
 	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"          $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
+
+	echo "\tPython : Simplify child putative_SNP list to contain only those simplified loci from the parent dataset." >> $logName;
+        python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.2.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
 fi
 
 echo "Pileup processing is complete." >> $condensedLog;
