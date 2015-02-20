@@ -223,6 +223,7 @@ for chr = 1:num_chrs
 			chr_breaks_new{chr}(breakCount_new+1) = 1.0;
 			% copy new lists to old.
 			chr_breaks{chr} = chr_breaks_new{chr};
+			chrCopyNum{chr} = [];
 			chrCopyNum{chr} = chrCopyNum_new{chr};
 
 			%% Merge any adjacent segments with the same copy number.
@@ -231,15 +232,19 @@ for chr = 1:num_chrs
 			chr_breaks_new{chr}    = [];
 			chrCopyNum_new{chr}    = [];
 			chr_breaks_new{chr}(1) = 0.0;
-			chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
-			for segment = 1:(length(chrCopyNum{chr})-1)
-				if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
-					% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
-				else
-					% two adjacent segments have different copyNum; add boundry to new list.
-					breakCount_new                      = breakCount_new + 1;
-					chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
-					chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
+			fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
+			if (length(chrCopyNum{chr}) > 0)
+				fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
+				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
+				for segment = 1:(length(chrCopyNum{chr})-1)
+					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
+						% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
+					else
+						% two adjacent segments have different copyNum; add boundry to new list.
+						breakCount_new                      = breakCount_new + 1;
+						chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
+						chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
+					end;
 				end;
 			end;
 			% add break representing right end of chromosome.
@@ -252,6 +257,7 @@ for chr = 1:num_chrs
 			fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
 			% copy new lists to old.
 			chr_breaks{chr} = chr_breaks_new{chr};
+			chrCopyNum{chr} = [];
 			chrCopyNum{chr} = chrCopyNum_new{chr};
 		end;
 	end;

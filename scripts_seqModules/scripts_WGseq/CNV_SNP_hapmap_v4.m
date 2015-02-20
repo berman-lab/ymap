@@ -199,10 +199,12 @@ for chr = 1:num_chrs
 				end;
 			end;
 			% If the last segment has a zero copy number, trim off the last added edge.
-			if (round(chrCopyNum{chr}(length(chrCopyNum{chr}))) <= 0)
-				chr_breaks_new{chr}(breakCount_new+1) = [];
-				chrCopyNum_new{chr}(breakCount_new  ) = [];
-				breakCount_new = breakCount_new-1;
+			if (breakCount_new > 0)
+				if (round(chrCopyNum{chr}(length(chrCopyNum{chr}))) <= 0)
+					chr_breaks_new{chr}(breakCount_new+1) = [];
+					chrCopyNum_new{chr}(breakCount_new  ) = [];
+					breakCount_new = breakCount_new-1;
+				end;
 			end;
 			% add break representing right end of chromosome.
 			breakCount_new = breakCount_new+1;
@@ -211,7 +213,6 @@ for chr = 1:num_chrs
 			chr_breaks{chr} = chr_breaks_new{chr};
 			chrCopyNum{chr} = [];
 			chrCopyNum{chr} = chrCopyNum_new{chr};
-
 
 			%% Merge any adjacent segments with the same copy number.
 			% add break representing left end of chromosome.
