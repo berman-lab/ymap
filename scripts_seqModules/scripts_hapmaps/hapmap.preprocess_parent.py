@@ -33,25 +33,26 @@ hapmapUser  = sys.argv[6]
 main_dir    = sys.argv[7]
 runMode     = sys.argv[8]
 
+
+with open(logName, "a") as myfile:
+	myfile.write("\t\t*==========================================================================*\n");
+	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'  |\n");
+	myfile.write("\t\t*--------------------------------------------------------------------------*\n");
+
 if (runMode == 'hapmap'):
 	logName     = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/process_log.txt"
 	inputFile1  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt"
 	with open(logName, "a") as myfile:
-		myfile.write("|\trunMode = 'hapmap'\n")
-		myfile.write("|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n")
+		myfile.write("\t\t|\trunMode = 'hapmap'\n")
+		myfile.write("\t\t|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n")
 elif (runMode == 'LOH'):
 	logName     = main_dir+"users/"+projectUser+"/projects/"+project+"/process_log.txt"
 	inputFile1  = main_dir+"users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt"
 	with open(logName, "a") as myfile:
-		myfile.write("|\trunMode = 'LOH'\n")
-		myfile.write("|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n")
+		myfile.write("\t\t|\trunMode = 'LOH'\n")
+		myfile.write("\t\t|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n")
 
 t0 = time.clock()
-
-with open(logName, "a") as myfile:
-	myfile.write("*==================================================*\n")
-	myfile.write("| Log of 'py/hapmap.preprocess_parent.py'          |\n")
-	myfile.write("*--------------------------------------------------*\n")
 
 
 #============================================================================================================
@@ -60,13 +61,13 @@ with open(logName, "a") as myfile:
 genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/"
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tProcessing standard bin fragmented genome file.\n")
+	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n")
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("|\tIdentifying name of reference FASTA file.\n")
+	myfile.write("\t\t|\tIdentifying name of reference FASTA file.\n")
 reference_file = genomeDirectory + '/reference.txt'
 refFile        = open(reference_file,'r')
 FastaName      = refFile.read().strip()
@@ -77,7 +78,7 @@ FastaName      = FastaName.replace(".fasta", "")
 # Process 'preprocessed_SNPs.txt' file for projectParent to determine initial SNP loci.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("|\tProcessing parent 'preprocessed_SNPs.txt' file -> het loci.\n")
+	myfile.write("\t\t|\tProcessing parent 'preprocessed_SNPs.txt' file -> het loci.\n")
 
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
@@ -91,7 +92,7 @@ figureDefinitionData   = figureDefinitionFile.readlines()
 #     2    1     Chr2    Ca21chr2_C_albicans_SC5314   0.15   0.7    *       0.0625
 #     0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 with open(logName, "a") as myfile:
-	myfile.write("|\tDetermining number of chromosomes of interest in genome.\n")
+	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
 
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
@@ -114,7 +115,7 @@ for x in range(0, chrName_maxcount):
 	chrName.append([])
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tGathering name strings for chromosomes.\n")
+	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
 
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r')
@@ -140,17 +141,17 @@ for line in figureDefinitionData:
 		if chr_num != 0:
 			chrName[int(float(chr_num))-1] = chr_name
 			with open(logName, "a") as myfile:
-				myfile.write("|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
+				myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
 figureDefinitionFile.close()
 
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount
 with open(logName, "a") as myfile:
-	myfile.write("|\t\tMax chr string : "+str(chrCount)+"\n")
+	myfile.write("\t\t|\t\tMax chr string : "+str(chrCount)+"\n")
 #............................................................................................................
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tOpen parent 'putative_SNPs_v4.txt' file.\n")
+	myfile.write("\t\t|\tOpen parent 'putative_SNPs_v4.txt' file.\n")
 
 #............................................................................................................
 
@@ -168,7 +169,7 @@ for x in range(0,chrCount):
 		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tGathering read coverage data for each fragment.\n")
+	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n")
 
 # Open dataset 'putative_CNVs_v1.txt' file.
 data = open(inputFile1,"r")
@@ -221,15 +222,15 @@ for line in data:
 		if old_chr != chr:
 			print '### chr change : ' + str(old_chr) + ' -> ' + str(chr)
 			with open(logName, "a") as myfile:
-				myfile.write("|\t    " + str(old_chr) + " -> " + str(chr) + " = " + P_chr_name + "\n")
-				myfile.write("|\t\t1........01........01........01........01........01........01........01........01........01........0\n")
+				myfile.write("\t\t|\t    " + str(old_chr) + " -> " + str(chr) + " = " + P_chr_name + "\n")
+				myfile.write("\t\t|\t\t1........01........01........01........01........01........01........01........01........01........0\n")
 		if chr!=0:
 			# Reset for each new chromosome examined.
 			if old_chr != chr:
 				if log_offset != 0:
 					log_offset_string = " "*((log_offset)%100)
 					with open(logName, "a") as myfile:
-						myfile.write("|\t\t" + log_offset_string)
+						myfile.write("\t\t|\t\t" + log_offset_string)
 				count = 1
 			else:
 				count += 1
@@ -241,10 +242,10 @@ for line in data:
 				if (log_count%100) == 0:
 					if (log_count-1) == 0:
 						with open(logName, "a") as myfile:
-							myfile.write("|\t\t")
+							myfile.write("\t\t|\t\t")
 					else:
 						with open(logName, "a") as myfile:
-							myfile.write(" " + str(log_count-1) + "\n|\t\t")
+							myfile.write(" " + str(log_count-1) + "\n\t\t|\t\t")
 				with open(logName, "a") as myfile:
 					myfile.write(".")
 
@@ -265,7 +266,7 @@ for line in data:
 print '### End of preprocessed parental SNP data.'
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tTime to process = " + str(time.clock()-t0) + "\n")
-	myfile.write("*--------------------------------------------------*\n")
-	myfile.write("| End of 'py/hapmap.preprocess_parent.py'          |\n")
-	myfile.write("*=================================================-*\n")
+	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")
+	myfile.write("\t\t*--------------------------------------------------------------------------*\n")
+	myfile.write("\t\t| End of 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'  |\n")
+	myfile.write("\t\t*==========================================================================*\n")

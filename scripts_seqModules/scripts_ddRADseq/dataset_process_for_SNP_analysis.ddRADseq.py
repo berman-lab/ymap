@@ -37,21 +37,21 @@ logName            = sys.argv[ 9]
 runMode            = sys.argv[10]  # 'hapmap' or 'LOH' modes.
 
 with open(logName, "a") as myfile:
-	myfile.write("*=========================================================*\n")
-	myfile.write("| Log of 'dataset_process_for_SNP_analysis.ddRADseq.py'   |\n")
-	myfile.write("*---------------------------------------------------------*\n")
+	myfile.write("\t\t*=============================================================================================*\n")
+	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'   |\n")
+	myfile.write("\t\t*---------------------------------------------------------------------------------------------*\n")
 
 # Figure out if input name 'hapmap' corresponds to a project or an actual hapmap.
 if (runMode == 'hapmap'):
 	parentDatafile  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt"
 	with open(logName, "a") as myfile:
-		myfile.write("|\trunMode = 'hapmap'\n")
-		myfile.write("|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n")
+		myfile.write("\t\t|\trunMode = 'hapmap'\n")
+		myfile.write("\t\t|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n")
 elif (runMode == 'LOH'):
 	parentDatafile = main_dir+"users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt"
 	with open(logName, "a") as myfile:
-		myfile.write("|\trunMode = 'LOH'\n")
-		myfile.write("|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n")
+		myfile.write("\t\t|\trunMode = 'LOH'\n")
+		myfile.write("\t\t|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n")
 
 childDatafile = main_dir+"users/"+projectUser+"/projects/"+project+"/SNP_CNV_v1.txt"
 
@@ -64,21 +64,21 @@ t0 = time.clock()
 genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/"
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tProcessing standard bin fragmented genome file.\n")
+	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n")
 
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("|\tIdentifying name of reference FASTA file.\n")
+	myfile.write("\t\t|\tIdentifying name of reference FASTA file.\n")
 reference_file = genomeDirectory + '/reference.txt'
 refFile        = open(reference_file,'r')
 FastaName      = refFile.read().strip()
 refFile.close()
 FastaName      = FastaName.replace(".fasta", "")
 with open(logName, "a") as myfile:
-	myfile.write("|\t\t'"+FastaName+"'\n")
+	myfile.write("\t\t|\t\t'"+FastaName+"'\n")
 
 
 #============================================================================================================
@@ -87,7 +87,7 @@ with open(logName, "a") as myfile:
 # Example FASTQ header line.
 #     >Ca_a.chr1 (9638..10115) (478bp) [*]
 with open(logName, "a") as myfile:
-    myfile.write("\t\t\t|\tLoading ddRADseq fragmented genome FASTA file.\n")
+    myfile.write("\t\t|\tLoading ddRADseq fragmented genome FASTA file.\n")
 # Open restriction-digested genome FASTA file.
 ddRADseq_FASTA_file = genomeDirectory + FastaName + "." + restrictionEnzymes + ".fasta"
 ddRADseq_FASTA_data = open(ddRADseq_FASTA_file,'r')
@@ -132,7 +132,7 @@ while True:
 				fragment_counter += 1
 ddRADseq_FASTA_data.close()
 with open(logName, "a") as myfile:
-	myfile.write("|\tThe ddRADseq fragmented genome FASTA file has been loaded.\n")
+	myfile.write("\t\t|\tThe ddRADseq fragmented genome FASTA file has been loaded.\n")
 # Put fragment counter into a general use variable.
 numFragments = fragment_counter
 #------------------------------------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ print "### Starting read count data processing."
 # Process hapmap 'SNPdata_parent.txt' file to determine initial SNP loci.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("|\tProcessing 'SNPdata_parent.txt' file -> het loci.\n")
+	myfile.write("\t\t|\tProcessing 'SNPdata_parent.txt' file -> het loci.\n")
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
 figureDefinition_file  = genomeDirectory + 'figure_definitions.txt'
@@ -162,7 +162,7 @@ figureDefinitionData   = figureDefinitionFile.readlines()
 #     0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 # Determine the number of chromosomes of interest in genome.
 with open(logName, "a") as myfile:
-	myfile.write("|\tDetermining number of chromosomes of interest in genome.\n")
+	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
 chrName_maxcount = 0
 for line in figureDefinitionData:
 	line_parts = string.split(string.strip(line))
@@ -180,7 +180,7 @@ chrName = []
 for x in range(0, chrName_maxcount+10):
 	chrName.append([])
 with open(logName, "a") as myfile:
-	myfile.write("|\tGathering name strings for chromosomes.\n")
+	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r')
 chrCounter = 0;
@@ -203,14 +203,14 @@ for line in figureDefinitionData:
 		chrShorts.append(chr_nameShort);
 		chrName[chrCounter] = chr_name
 		with open(logName, "a") as myfile:
-			myfile.write("|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
+			myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
 		chrCounter += 1
 figureDefinitionFile.close()
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount
 with open(logName, "a") as myfile:
-	myfile.write("|\t\tMax chr string : "+str(chrCount)+"\n")
-	myfile.write("|\tProcessing datasetParent 'SNPdata_parent.txt' file => het loci.\n")
+	myfile.write("\t\t|\t\tMax chr string : "+str(chrCount)+"\n")
+	myfile.write("\t\t|\tProcessing datasetParent 'SNPdata_parent.txt' file => het loci.\n")
 count            = 0
 old_chr          = 0
 fragment_found   = 0
@@ -225,9 +225,9 @@ for x in range(0,chrCount):
 		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
 print "###" + str(numFragments)
 with open(logName, "a") as myfile:
-	myfile.write("|\tGathering read coverage data for each fragment.\n")
-	myfile.write("|\tparent data file = '"+parentDatafile+"'\n")
-	myfile.write("|\tchild data file  = '"+childDatafile+"'\n")
+	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n")
+	myfile.write("\t\t|\tparent data file = '"+parentDatafile+"'\n")
+	myfile.write("\t\t|\tchild data file  = '"+childDatafile+"'\n\t\t|")
 # Open hapmap 'SNPdata_parent.txt' file, which only contains lines for heterozygous SNP loci in the parent dataset.
 print '### parentDatafile = ' + parentDatafile
 data         = open(parentDatafile,'r')
@@ -281,7 +281,7 @@ for line in data:
 				if log_offset != 0:
 					log_offset_string = " "*((log_offset)%100)
 					with open(logName, "a") as myfile:
-						myfile.write("\n|\t\t" + log_offset_string)
+						myfile.write("\n\t\t|\t\t" + log_offset_string)
 				count            = 1
 				fragment_found   = 0
 				current_fragment = 0
@@ -303,7 +303,7 @@ for line in data:
 					if (log_count%100) == 0:
 						if (log_count-1) == 0:
 							with open(logName, "a") as myfile:
-								myfile.write("\n|\t")
+								myfile.write("\n\t\t|\t")
 						else:
 							with open(logName, "a") as myfile:
 								myfile.write(" " + str(log_count-1))
@@ -439,14 +439,14 @@ for line in data:
 			if old_chr != P_chr:
 				print '### chr change : ' + str(old_chr) + ' -> ' + str(P_chr)
 				with open(logName, "a") as myfile:
-					myfile.write("\n|\t    " + str(old_chr) + " -> " + str(P_chr) + " = " + P_chr_name + "\n")
-					myfile.write(  "|\t1........01........01........01........01........01........01........01........01........01........0")
+					myfile.write("\n\t\t|\t    " + str(old_chr) + " -> " + str(P_chr) + " = " + P_chr_name + "\n")
+					myfile.write(  "\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
 			# Reset for each new chromosome examined.
 			if old_chr != P_chr:
 				if log_offset != 0:
 					log_offset_string = " "*(log_offset%100)
 					with open(logName, "a") as myfile:
-						myfile.write("\n|\t" + log_offset_string)
+						myfile.write("\n\t\t|\t" + log_offset_string)
 			# If (fragment_found == 1), add current bp coordinate data to fragment data.
 			if fragment_found == 1:
 				# display status updates to log file.
@@ -456,10 +456,10 @@ for line in data:
 					if ((log_count-1)%100) == 0:
 						if (log_count-1) == 0:
 							with open(logName, "a") as myfile:
-								myfile.write("\n|\t")
+								myfile.write("\n\t\t|\t")
 						else:
 							with open(logName, "a") as myfile:
-								myfile.write(" " + str(log_count-1) + "\n|\t")
+								myfile.write(" " + str(log_count-1) + "\n\t\t|\t")
 					with open(logName, "a") as myfile:
 						myfile.write(".")
 
@@ -482,7 +482,7 @@ print '### Data from each fragment: [chrNum, bpStart, bpEnd, Max, Ave, Length]'
 # Code section to output data per ddRADseq fragment.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\n|\tOutputting LOH status counts of standard-bin fragmented genome.\n")
+	myfile.write("\n\t\t|\tOutputting LOH status counts of standard-bin fragmented genome.\n")
 print '### chr_num\tbp_start\tbp_end\tHOM_count\tHET_count\toddHET_count'
 for fragment in range(1,numFragments):
 	# Output a line for each fragment.
@@ -524,7 +524,7 @@ print "### ", time.clock() - t1, "seconds to output basic stats of each restrict
 print "### ", time.clock() - t0, "seconds to complete processing of fragment definitions."
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tTime to process = " + str(time.clock()-t0) +"\n")
-	myfile.write("*--------------------------------------------------------------*\n")
-	myfile.write("| 'py/dataset_process_for_SNP_analysis.ddRADseq.py' completed. |\n")
-	myfile.write("*==============================================================*\n")
+	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) +"\n")
+	myfile.write("\t\t*-----------------------------------------------------------------------------------------------*\n")
+	myfile.write("\t\t| 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py' completed. |\n")
+	myfile.write("\t\t*===============================================================================================*\n")
