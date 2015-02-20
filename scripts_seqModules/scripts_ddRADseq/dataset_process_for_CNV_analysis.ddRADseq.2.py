@@ -35,9 +35,9 @@ inputFile          = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.tx
 t0 = time.clock()
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*================================================================*\n")
-	myfile.write("\t\t| Log of 'dataset_process_for_CNV_analysis.ddRADseq.py'          |\n")
-	myfile.write("\t\t*----------------------------------------------------------------*\n")
+	myfile.write("\t\t\t*================================================================*\n")
+	myfile.write("\t\t\t| Log of 'dataset_process_for_CNV_analysis.ddRADseq.py'          |\n")
+	myfile.write("\t\t\t*----------------------------------------------------------------*\n")
 
 
 #============================================================================================================
@@ -46,15 +46,15 @@ with open(logName, "a") as myfile:
 genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/"
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\n")
-	myfile.write("\t\t|\tProcessing ddRADseq fragmented genome file.\n")
+	myfile.write("\t\t\t|\n")
+	myfile.write("\t\t\t|\tProcessing ddRADseq fragmented genome file.\n")
 
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tIdentifying name of reference FASTA file.\n")
+	myfile.write("\t\t\t|\tIdentifying name of reference FASTA file.\n")
 reference_file = genomeDirectory + '/reference.txt'
 refFile        = open(reference_file,'r')
 FastaName      = refFile.read().strip()
@@ -68,7 +68,7 @@ FastaName      = FastaName.replace(".fasta", "")
 # Example FASTQ header line.
 #     >Ca_a.chr1 (9638..10115) (478bp) [*]
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tLoading ddRADseq fragmented genome FASTA file.\n")
+	myfile.write("\t\t\t|\tLoading ddRADseq fragmented genome FASTA file.\n")
 # Open restriction-digested genome FASTA file.
 ddRADseq_FASTA_file = genomeDirectory + FastaName + "." + restrictionEnzymes + ".fasta"
 ddRADseq_FASTA_data = open(ddRADseq_FASTA_file,'r')
@@ -111,7 +111,7 @@ while True:
 				fragment_counter += 1
 ddRADseq_FASTA_data.close()
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tThe ddRADseq fragmented genome FASTA file has been loaded.\n")
+	myfile.write("\t\t\t|\tThe ddRADseq fragmented genome FASTA file has been loaded.\n")
 # Put fragment counter into a general use variable.
 numFragments = fragment_counter
 #------------------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ print "### Starting read count data processing."
 # Process 'SNP_CNV_v1.txt' file to determine read count max and average.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tProcessing dataset 'SNP_CNV_v1.txt' file -> max and average read counts per fragment.\n")
+	myfile.write("\t\t\t|\tProcessing dataset 'SNP_CNV_v1.txt' file -> max and average read counts per fragment.\n")
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
 figureDefinition_file  = genomeDirectory + 'figure_definitions.txt'
@@ -140,7 +140,7 @@ figureDefinitionData   = figureDefinitionFile.readlines()
 #     2    1     Chr2    Ca21chr2_C_albicans_SC5314   0.15   0.7    *       0.0625
 #     0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
+	myfile.write("\t\t\t|\tDetermining number of chromosomes of interest in genome.\n")
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
 for line in figureDefinitionData:
@@ -160,7 +160,7 @@ chrName = []
 for x in range(0, chrName_maxcount):
 	chrName.append([])
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
+	myfile.write("\t\t\t|\tGathering name strings for chromosomes.\n")
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r')
 chrCounter = 0;
@@ -185,16 +185,16 @@ for line in figureDefinitionData:
 		if chr_num != 0:
 			chrName[int(float(chr_num))-1] = chr_name
 			with open(logName, "a") as myfile:
-				myfile.write("\t\t|\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
+				myfile.write("\t\t\t|\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
 figureDefinitionFile.close()
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tMax chr string : "+str(chrCount)+"\n")
+	myfile.write("\t\t\t|\tMax chr string : "+str(chrCount)+"\n")
 #............................................................................................................
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tOpen dataset 'SNP_CNV_v1.txt' file.\n")
+	myfile.write("\t\t\t|\tOpen dataset 'SNP_CNV_v1.txt' file.\n")
 
 # Open dataset 'SNP_CNV_v1.txt' file.
 print '### InputFile = ' + inputFile
@@ -218,7 +218,7 @@ for x in range(0,chrCount):
 print "###" + str(numFragments)
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tGathering read coverage data for each fragment.")
+	myfile.write("\t\t\t|\tGathering read coverage data for each fragment.")
 
 # Process 'SNP_CNV_v1.txt' file, line by line.
 for line in data:
@@ -251,15 +251,15 @@ for line in data:
 	if old_chr != chr:
 		print '### chr change : ' + str(old_chr) + ' -> ' + str(chr)
 		with open(logName, "a") as myfile:
-			myfile.write("\n\t\t|\t" + str(old_chr) + " -> " + str(chr) + " = " + chr_name + "\n")
-			myfile.write(  "\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
+			myfile.write("\n\t\t\t|\t" + str(old_chr) + " -> " + str(chr) + " = " + chr_name + "\n")
+			myfile.write(  "\t\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
 	if chr!=0:
 		# Reset for each new chromosome examined.
 		if old_chr != chr:
 			if log_offset != 0:
 				log_offset_string = " "*((log_offset)%100)
 				with open(logName, "a") as myfile:
-					myfile.write("\n\t\t|\t" + log_offset_string)
+					myfile.write("\n\t\t\t|\t" + log_offset_string)
 			count            = 1
 			fragment_found   = 0
 			current_fragment = 0
@@ -282,10 +282,10 @@ for line in data:
 				if ((log_count-1)%100) == 0:
 					if (log_count-1) == 0:
 						with open(logName, "a") as myfile:
-							myfile.write("\n\t\t|\t")
+							myfile.write("\n\t\t\t|\t")
 					else:
 						with open(logName, "a") as myfile:
-							myfile.write(" " + str(log_count-1) + "\n\t\t|\t")
+							myfile.write(" " + str(log_count-1) + "\n\t\t\t|\t")
 				with open(logName, "a") as myfile:
 					myfile.write(".")
 
@@ -303,7 +303,7 @@ for line in data:
 	old_chr       = chr
 	last_fragment = current_fragment
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t|\tCalculating average read coverage per fragment.\n")
+	myfile.write("\n\t\t\t|\tCalculating average read coverage per fragment.\n")
 # Calculate average read coverage per each fragment.
 for fragment in range(1,numFragments):
 	# Calculate average read coverage for this fragment.
@@ -324,7 +324,7 @@ print '### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]'
 # Code section to output information about read average per ddRADseq genome fragment.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tOutput condensed CNV per fragment information.\n")
+	myfile.write("\t\t\t|\tOutput condensed CNV per fragment information.\n")
 for fragment in range(1,numFragments):
 	# Output a line for each fragment.
 	#     fragments[fragment-1] = [chr_num,bp_start,bp_end, aveDepth]
@@ -346,6 +346,6 @@ print "### ", time.clock() - t2, "seconds to output basic stats of each restrict
 print "### ", time.clock() - t0, "seconds to complete processing of pileup file and fragment definitions."
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*----------------------------------------------------------------*\n")
-	myfile.write("\t\t| End of Log from 'dataset_process_for_CNV_analysis.ddRADseq.py' |\n")
-	myfile.write("\t\t*================================================================*\n")
+	myfile.write("\t\t\t*----------------------------------------------------------------*\n")
+	myfile.write("\t\t\t| End of Log from 'dataset_process_for_CNV_analysis.ddRADseq.py' |\n")
+	myfile.write("\t\t\t*================================================================*\n")

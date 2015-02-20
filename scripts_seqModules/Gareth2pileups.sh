@@ -16,30 +16,34 @@ echo "projectDirectory   = '"$projectDirectory"'";
 echo "tempDir            = '"$tempDir"'";
 echo "logFile            = '"$logFile"'";
 
-echo "#|---- Gareth2pileups.sh ---- begin." >> $logFile;
-echo "#| Arguments:" >> $logFile;
-echo "#|     user      = "$user >> $logFile;
-echo "#|     project   = "$project >> $logFile;
-echo "#|     main_dir  = "$main_dir >> $logFile;
-echo "#|     inputFile = "$inputFile >> $logFile;
-echo "#| " >> $logFile;
-echo "#| inputFile is a tab-delimited-text file, with optional collumns in parentheses. " >> $logFile;
-echo "#|         1\tChromosome name string." >> $logFile;
-echo "#|         2\tBp coordinate." >> $logFile;
-echo "#|         3\tPrimary base call." >> $logFile;
-echo "#|         4\tNumber of reads with primary base call." >> $logFile;
-echo "#|         (5)\tSecondary base call." >> $logFile;
-echo "#|         (6)\tNumber of reads with secondary base call." >> $logFile;
-echo "#|         (7)\tTertiary base call." >> $logFile;
-echo "#|         (8)\tNumber of reads with tertiary base call." >> $logFile;
-echo "#|         (9)\tQuaternary base call." >> $logFile;
-echo "#|         (10)\tNumber of reads with quaternary base call." >> $logFile;
-echo "#| " >> $logFile;
-echo "#| Output files are placed in the project directory:" >> $logFile;
-echo "#|        putative_SNPs_v4.txt" >> $logFile;
-echo "#|        SNP_CNV_v1.txt" >> $logFile;
-echo "#| " >> $logFile;
-echo "#| Making temp dir in project folder." >> $logFile;
+
+echo "\tShell : Convert the uploaded tab-delimited text data to pileup formats used in the pipeline." >> $logFile;
+echo "\t\t*===========================================================*" >> $logFile;
+echo "\t\t| Log of 'scripts_seqModules/Gareth2pileups.sh'             |" >> $logFile;
+echo "\t\t*-----------------------------------------------------------*" >> $logFile;
+echo "\t\t| Arguments:" >> $logFile;
+echo "\t\t|     user      = "$user >> $logFile;
+echo "\t\t|     project   = "$project >> $logFile;
+echo "\t\t|     main_dir  = "$main_dir >> $logFile;
+echo "\t\t|     inputFile = "$inputFile >> $logFile;
+echo "\t\t| " >> $logFile;
+echo "\t\t| inputFile is a tab-delimited-text file, with optional collumns in parentheses. " >> $logFile;
+echo "\t\t|         1\tChromosome name string." >> $logFile;
+echo "\t\t|         2\tBp coordinate." >> $logFile;
+echo "\t\t|         3\tPrimary base call." >> $logFile;
+echo "\t\t|         4\tNumber of reads with primary base call." >> $logFile;
+echo "\t\t|         (5)\tSecondary base call." >> $logFile;
+echo "\t\t|         (6)\tNumber of reads with secondary base call." >> $logFile;
+echo "\t\t|         (7)\tTertiary base call." >> $logFile;
+echo "\t\t|         (8)\tNumber of reads with tertiary base call." >> $logFile;
+echo "\t\t|         (9)\tQuaternary base call." >> $logFile;
+echo "\t\t|         (10)\tNumber of reads with quaternary base call." >> $logFile;
+echo "\t\t| " >> $logFile;
+echo "\t\t| Output files are placed in the project directory:" >> $logFile;
+echo "\t\t|        putative_SNPs_v4.txt" >> $logFile;
+echo "\t\t|        SNP_CNV_v1.txt" >> $logFile;
+echo "\t\t| " >> $logFile;
+echo "\t\t| Making temp dir in project folder." >> $logFile;
 
 mkdir $tempDir;
 outputFile1=$projectDirectory"putative_SNPs_v4.txt";
@@ -47,7 +51,7 @@ outputFile2=$projectDirectory"SNP_CNV_v1.txt";
 tempFile1=$tempDir"temp.putative_SNPs_v4.txt";
 tempFile2=$tempDir"temp.SNP_CNV_v1.txt";
 
-echo "#| Processing txt file to produce pileups." >> $logFile;
+echo "\t\t| Processing txt file to produce pileups." >> $logFile;
 # Loop through the file, line by line.
 while read line
 do
@@ -168,10 +172,12 @@ do
 	previous_chr=$chromosome;
 done < $projectDirectory$inputFile
 
-echo "#| Moving temp files to final location." >> $logFile;
+echo "\t\t| Moving temp files to final location." >> $logFile;
 mv $tempFile1 $outputFile1;
 mv $tempFile2 $outputFile2;
 
 rm -rf $tempDir;
 
-echo "#|---- Gareth2pileups.sh ---- end." >> $logFile;
+echo "\t\t*-----------------------------------------------------------*" >> $logFile;
+echo "\t\t| 'scripts_seqModules/Gareth2pileups.sh' has completed.     |" >> $logFile;
+echo "\t\t*===========================================================*" >> $logFile;

@@ -34,21 +34,22 @@ main_dir    = sys.argv[7]
 runMode     = sys.argv[8]
 
 
-with open(logName, "a") as myfile:
-	myfile.write("\t\t*==========================================================================*\n");
-	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'  |\n");
-	myfile.write("\t\t*--------------------------------------------------------------------------*\n");
-
 if (runMode == 'hapmap'):
 	logName     = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/process_log.txt"
 	inputFile1  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt"
 	with open(logName, "a") as myfile:
+		myfile.write("\t\t*==========================================================================*\n");
+		myfile.write("\t\t| Log of 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'  |\n");
+		myfile.write("\t\t*--------------------------------------------------------------------------*\n");
 		myfile.write("\t\t|\trunMode = 'hapmap'\n")
 		myfile.write("\t\t|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n")
 elif (runMode == 'LOH'):
 	logName     = main_dir+"users/"+projectUser+"/projects/"+project+"/process_log.txt"
 	inputFile1  = main_dir+"users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt"
 	with open(logName, "a") as myfile:
+		myfile.write("\t\t*==========================================================================*\n");
+		myfile.write("\t\t| Log of 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'  |\n");
+		myfile.write("\t\t*--------------------------------------------------------------------------*\n");
 		myfile.write("\t\t|\trunMode = 'LOH'\n")
 		myfile.write("\t\t|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n")
 

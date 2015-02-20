@@ -7,7 +7,7 @@ function [] = CNV_v6_fragmentLengthCorrected_9(main_dir,user,genomeUser,project,
 %==========================================================================
 Centromere_format_default   = 0;
 Yscale_nearest_even_ploidy  = true;
-HistPlot                    = true;
+HistPlot                    = false;
 ChrNum                      = true;
 show_annotations            = true;
 Linear_display              = true;

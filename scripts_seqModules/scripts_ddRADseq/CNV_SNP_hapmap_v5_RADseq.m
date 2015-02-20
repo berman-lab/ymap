@@ -705,15 +705,17 @@ for chr = 1:num_chrs
 			axis off square;
 			set(gca,'YTick',[]);
 			set(gca,'XTick',[]);
-			if (length(chrCopyNum{chr}) == 1)
-				chr_string = num2str(chrCopyNum{chr}(1));
-			else
-				chr_string = num2str(chrCopyNum{chr}(1));
-				for i = 2:length(chrCopyNum{chr})
-					chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
+			if (length(chrCopyNum{chr}) > 0)
+				if (length(chrCopyNum{chr}) == 1)
+					chr_string = num2str(chrCopyNum{chr}(1));
+				else
+					chr_string = num2str(chrCopyNum{chr}(1));
+					for i = 2:length(chrCopyNum{chr})
+						chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
+					end;
 				end;
+				text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24);
 			end;
-			text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24);
 		end;
 		%% END standard draw section.
 

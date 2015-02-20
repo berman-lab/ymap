@@ -1573,8 +1573,8 @@ for chr = 1:num_chrs
 						chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
 					end;
 				end;
+				text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24);
 			end;
-			text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24);
 		end;
 		% standard : end of chr copy number at right of the main chr cartons.
 

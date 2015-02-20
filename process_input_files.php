@@ -1,13 +1,17 @@
 <?php
 function process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput) {
-fwrite($logOutput, "Before archive decompression.\n");
-fwrite($logOutput, "\t| ext         = ".$ext."\n");
-fwrite($logOutput, "\t| name        = ".$name."\n");
-fwrite($logOutput, "\t| projectPath = ".$projectPath."\n");
+fwrite($logOutput, "\tPHP : Process uploaded data files into standard forms for pipeline use.\n");
+fwrite($logOutput, "\t\t*========================================================*\n");
+fwrite($logOutput, "\t\t| Log of 'process_input_files.php'                       |\n");
+fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
+fwrite($logOutput, "\t\t| Before archive decompression.\n");
+fwrite($logOutput, "\t\t|\text         = ".$ext."\n");
+fwrite($logOutput, "\t\t|\tname        = ".$name."\n");
+fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 // Deal with compressed archives.
 if (strcmp($ext,"zip") == 0) {
 	fwrite($condensedLogOutput, "Decompressing ZIP file : ".$name."\n");
-	fwrite($logOutput, "\t| This is a ZIP archive of : ");
+	fwrite($logOutput, "\t\t| This is a ZIP archive of : ");
 	$currentDir = getcwd();                             // get script's path.
 	// figure out filename contained in zip archive.
 	$null               = shell_exec("unzip -l ".$projectPath.$name." > ".$projectPath."zipTemp.txt");   // generate txt file containing archive contents.
@@ -15,9 +19,9 @@ if (strcmp($ext,"zip") == 0) {
 	$zipTempArchiveLine = trim($zipTempLines[3]);
 	$columns            = preg_split('/\s+/', $zipTempArchiveLine);
 	$oldName            = $columns[3];
-	fwrite($logOutput, " '$oldName'.\n");
+	fwrite($logOutput, "\t\t|\t'$oldName'.\n");
 	$fileName_parts     = preg_split('/[.]/', $oldName);
-	fwrite($logOutput,"\t| number of fileName parts = ".count($fileName_parts)."\n");
+	fwrite($logOutput,"\t\t| The number of fileName parts = ".count($fileName_parts)."\n");
 	// extract archive.
 	chdir($projectPath);                   // move to projectDirectory.
 	$null = shell_exec("unzip -j ".$name); // unzip archive.
@@ -31,11 +35,11 @@ if (strcmp($ext,"zip") == 0) {
 		// A file extension is not found.
 		// determine if it is a FASTQ file by looking at first four lines of text.
 		$currentDir = getcwd();
-		//fwrite($logOutput, "Current directory = '$currentDir'.\n");
+		//fwrite($logOutput, "\t\t| Current directory = '$currentDir'.\n");
 		$file_name = $currentDir."/".$projectPath.$oldName;
-		//fwrite($logOutput, "Open file '".$file_name."'.\n");
+		//fwrite($logOutput, "\t\t| Open file '".$file_name."'.\n");
 		$file_handle = fopen($file_name,'r');
-		//fwrite($logOutput, "file_handle = '".$file_handle."'\n");
+		//fwrite($logOutput, "\t\t| file_handle = '".$file_handle."'\n");
 		$line_1      = fgets($file_handle);
 		$line_2      = fgets($file_handle);
 		$line_3      = fgets($file_handle);
@@ -71,7 +75,7 @@ if (strcmp($ext,"zip") == 0) {
 	$name_new    = $rename;
 } else if (strcmp($ext,"gz") == 0) {
 	fwrite($condensedLogOutput, "Decompressing GZ file : ".$name_new."\n");
-	fwrite($logOutput, "\t| This is a GZ archive of : ");
+	fwrite($logOutput, "\t\t| This is a GZ archive of : ");
 	// figure out filename contained in zip archive.
 	$null               = shell_exec("gzip -l ".$projectPath.$name." > ".$projectPath."gzTemp.txt");   // generate txt file containing archive contents.
 	$gzTempLines        = file($projectPath."gzTemp.txt");
@@ -79,8 +83,8 @@ if (strcmp($ext,"zip") == 0) {
 	$columns            = preg_split('/\s+/', $gzTempArchiveLine);
 	$oldName            = $columns[3];
 	$fileName_parts     = preg_split('/[.]/', $oldName);
-	fwrite($logOutput, " '$oldName'.\n");
-	fwrite($logOutput,"\t| number of fileName parts = ".count($fileName_parts)."\n");
+	fwrite($logOutput,"\t\t|\t'$oldName'.\n");
+	fwrite($logOutput,"\t\t| The number of fileName parts = ".count($fileName_parts)."\n");
 	// extract archive.
 	$currentDir = getcwd();                // get script's path.
 	chdir($projectPath);                   // move to projectDirectory.
@@ -107,11 +111,11 @@ if (strcmp($ext,"zip") == 0) {
 		$oldName         = end($fileName_parts2);
 		// determine if it is a FASTQ file by looking at first four lines of text.
 		$currentDir      = getcwd();
-		// fwrite($logOutput, "Current directory = '$currentDir'.\n");
+		// fwrite($logOutput, "\t\t| Current directory = '$currentDir'.\n");
 		$file_name       = $currentDir."/".$projectPath.$oldName;
-		// fwrite($logOutput, "Open file '".$file_name."'.\n");
+		// fwrite($logOutput, "\t\t| Open file '".$file_name."'.\n");
 		$file_handle     = fopen($file_name,'r');
-		// fwrite($logOutput, "file_handle = '".$file_handle."'\n");
+		// fwrite($logOutput, "\t\t| file_handle = '".$file_handle."'\n");
 		$line_1          = fgets($file_handle);
 		$line_2          = fgets($file_handle);
 		$line_3          = fgets($file_handle);
@@ -138,7 +142,7 @@ if (strcmp($ext,"zip") == 0) {
 			}
 		}
 	}
-	fwrite($logOutput, "\t| Original name within archive = '".$oldName."'.\n");
+	fwrite($logOutput, "\t\t| Original name within archive = '".$oldName."'.\n");
 	$name_new    = $oldName;
 	// rename decompressed file.
 	$rename      = "datafile_".$key.".".$ext_new;
@@ -155,11 +159,11 @@ if (strcmp($ext_new,"") == 0) {
 	// A file extension is not found.
 	// determine if it is a FASTQ file by looking at first four lines of text.
 	$currentDir = getcwd();
-	fwrite($logOutput, "Current directory = '$currentDir'.\n");
+	fwrite($logOutput, "\t\t| Current directory = '$currentDir'.\n");
 	$file_name = $currentDir."/".$projectPath.$name;
-	fwrite($logOutput, "Open file '".$file_name."'.\n");
+	fwrite($logOutput, "\t\t| Open file '".$file_name."'.\n");
 	$file_handle = fopen($file_name,'r');
-	fwrite($logOutput, "file_handle = '".$file_handle."'\n");
+	fwrite($logOutput, "\t\t| file_handle = '".$file_handle."'\n");
 	$line_1      = fgets($file_handle);
 	$line_2      = fgets($file_handle);
 	$line_3      = fgets($file_handle);
@@ -193,24 +197,24 @@ if (strcmp($ext_new,"") == 0) {
 	chdir($currentDir);
 	$name_new    = $rename;
 }
-fwrite($logOutput, "After archive decompression.\n");
-fwrite($logOutput, "\t| ext_new     = ".$ext_new."\n");
-fwrite($logOutput, "\t| name_new    = ".$name_new."\n");
-fwrite($logOutput, "\t| projectPath = ".$projectPath."\n");
+fwrite($logOutput, "\t\t| After archive decompression.\n");
+fwrite($logOutput, "\t\t|\text_new     = ".$ext_new."\n");
+fwrite($logOutput, "\t\t|\tname_new    = ".$name_new."\n");
+fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 
 // Deal with raw/decompressed files.
 if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
-	fwrite($logOutput, "\t| This is an uncompressed FASTQ file, no further pre-processing is needed.\n");
+	fwrite($logOutput, "\t\t| This is an uncompressed FASTQ file, no further pre-processing is needed.\n");
 	fwrite($output, $name_new."\n");
 } elseif ((strcmp($ext_new,"fasta") == 0) || (strcmp($ext_new,"fa") == 0)) {
-	fwrite($logOutput, "\t| This is a FASTA file.\n");
+	fwrite($logOutput, "\t\t| This is a FASTA file.\n");
 	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : FASTA file uploaded as input. Upload FASTQ, or ZIP or GZ archives.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
 	exit;
 } elseif ((strcmp($ext_new,"sam") == 0) || (strcmp($ext_new,"bam") == 0)) {
-	fwrite($logOutput, "\t| This is a SAM/BAM file.\n");
+	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
 	// Convert BAM to SAM file, if needed.
 	if (strcmp($ext_new,"bam") == 0) {
 		fwrite($condensedLogOutput, "Decompressing BAM file to SAM.\n");
@@ -228,12 +232,12 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	fwrite($output, "data_r2.fastq\n");
 	// delete original archive.
 	unlink($projectPath.$name_new);
-	fwrite($logOutput, "\t\tFile converted to FASTQ files, original deleted.\n");
+	fwrite($logOutput, "\t\t| File converted to FASTQ files, original deleted.\n");
 	$paired = 1;
 } elseif (strcmp($ext_new,"txt") == 0) {
-	fwrite($logOutput, "\t| This is a txt file.\n");
-	fwrite($logOutput, "\t|\tCurrentDir = ".getcwd()."\n");
-	fwrite($logOutput, "\t|\tshell_exec string = 'sh ../Gareth2pileups.sh ".$user." ".$project." ".$name_new."'\n");
+	fwrite($logOutput, "\t\t| This is a txt file.\n");
+	fwrite($logOutput, "\t\t|\tCurrentDir = ".getcwd()."\n");
+	fwrite($logOutput, "\t\t|\tshell_exec string = 'sh ../Gareth2pileups.sh ".$user." ".$project." ".$name_new."'\n");
 	$currentDir = getcwd();
 	$null       = shell_exec("sh ../Gareth2pileups.sh ".$user." ".$project." ".$name_new);
 	// sam2fastq.sh user project main_dir inputFile;
@@ -241,24 +245,24 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	fwrite($output, "null2\n");
 	// delete original archive.
 	unlink($projectPath.$name_new);
-	fwrite($logOutput, "\t\tFile converted to FASTQ files, original deleted.\n");
+	fwrite($logOutput, "\t\t| File converted to FASTQ files, original deleted.\n");
 	$paired = 1;
 } elseif (strcmp($ext_new,"none1") == 0) {
-	fwrite($logOutput, "\t| This archive contained a file with no extension and the file type could not be determined.\n");
+	fwrite($logOutput, "\t\t| This archive contained a file with no extension and the file type could not be determined.\n");
 	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : Archive contained a file with no extension and the file type could not be determined.\nUpload FASTQ, or ZIP or GZ archives containing a FASTQ file.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
 	exit;
 } elseif (strcmp($ext_new,"none2") == 0) {
-	fwrite($logOutput, "\t| This file had no extension and the file type could not be determined.\n");
+	fwrite($logOutput, "\t\t| This file had no extension and the file type could not be determined.\n");
 	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : File had no extension and the file type could not be determined.\nUpload FASTQ, or ZIP or GZ archives containing a FASTQ file.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
 	exit;
 } else {
-	fwrite($logOutput, "\t| This is an unknown file type.\n");
+	fwrite($logOutput, "\t\t| This is an unknown file type.\n");
 	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : Unknown file type as input.\nUpload FASTQ, or ZIP or GZ archives containing a FASTQ file.");
 	fclose($errorFile);
@@ -266,6 +270,9 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	exit;
 }
 
+fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
+fwrite($logOutput, "\t\t| 'process_input_files.php' has completed.               |\n");
+fwrite($logOutput, "\t\t*========================================================*\n");
 return $paired;
 }
 ?>
