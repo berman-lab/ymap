@@ -58,7 +58,7 @@ else
 	end;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(main_dir,genomeDir,genome);
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir,genome);
 [Aneuploidy] = [];
 
 for i = 1:length(chr_sizes)
@@ -1975,29 +1975,45 @@ for chr = 1:num_chrs
 				end;
 
 				% make a histogram of CGH data, then smooth it for display.
-				histAll{segment}(histAll{segment}<=0)             = [];
-				histAll{segment}(histAll{segment}>ploidyBase*2+2) = ploidyBase*2+2;
-				histAll{segment}(length(histAll{segment})+1)      = 0;   % endpoints added to ensure histogram bounds.
-				histAll{segment}(length(histAll{segment})+1)      = ploidyBase*2+2;
-				smoothed{segment}    = smooth_gaussian(hist(histAll{segment},(ploidyBase*2+2)*50),5,20);
-				% make a smoothed version of just the endpoints used to ensure histogram bounds.
-				histAll2{segment}(1) = 0;
-				histAll2{segment}(2) = ploidyBase*2+2;
-				smoothed2{segment}   = smooth_gaussian(hist(histAll2{segment},(ploidyBase*2+2)*50),5,20)*4;
-				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-				smoothed{segment}    = (smoothed{segment}-smoothed2{segment});
-				smoothed{segment}    = smoothed{segment}/max(smoothed{segment});
+				histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
+				histAll{segment}(histAll{segment}<=0)            = [];
+				histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
+				histAll{segment}(length(histAll{segment})+1)     = histogram_end;
+				histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
+				histAll{segment}(histAll{segment}>histogram_end) = [];
+				smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
 
+				% make a smoothed version of just the endpoints used to ensure histogram bounds.
+				histAll2{segment}(1)                             = 0;
+				histAll2{segment}(2)                             = histogram_end;
+				smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),2,10);
+
+				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+				smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
+				smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
+
+				% draw lines to mark whole copy number changes.
+				plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
 				hold on;
-				for i = 1:(ploidyBase*2-1)
-					plot([0; 1],[i*50; i*50],'color',[0.75 0.75 0.75]);
+				for i = 1:15
+					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
 				end;
-				area(smoothed{segment},(1:length(smoothed{segment}))/ploidyBase*2,'FaceColor',[0 0 0]);
+
+				% draw histogram, then flip around the origin.
+				area(smoothed{segment},'FaceColor',[0 0 0]);
+				view(-90,90);
+				set(gca,'YDir','Reverse');
+
+				% ensure subplot axes are consistent with main chr plots.
 				hold off;
-				set(gca,'YTick',[]);
-				set(gca,'XTick',[]);
-				xlim([0,1]);
-				ylim([0,ploidyBase*2*50]);
+				axis off;
+				set(gca,'YTick',[]);    set(gca,'XTick',[]);
+				ylim([0,1]);            xlim([0,maxY*20]);
+				if (show_annotations == true)
+					xlim([-maxY*20/10*1.5,maxY*20]);
+				else
+					xlim([0,maxY*20]);
+				end;
 			end;
 		end;
             

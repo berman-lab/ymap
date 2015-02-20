@@ -60,7 +60,7 @@ else
 	parentDir = projectDir;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(projectDir,genomeDir, genome);
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir, genome);
 [Aneuploidy]                                                          = Load_dataset_information_1(projectDir, project);
 
 num_chrs = length(chr_sizes);

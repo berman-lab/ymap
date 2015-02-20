@@ -6,8 +6,8 @@ set -e;
 ## All created files will have permission 760
 umask 007;
 
-user='default';
+user='darren1';
 hapmap='C_albicans_SC5314_A21-s02-m09-r07';
-project='Fig_06C.YJB12712-d2';
+project='test_ddRADseq_hapmap';
 
-sh project.ddRADseq.hapmap.install_4.sh $user $hapmap $project;
+sh project.ddRADseq.hapmap.install_4.sh $user $project $hapmap;

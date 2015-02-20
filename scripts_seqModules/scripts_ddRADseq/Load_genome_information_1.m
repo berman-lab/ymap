@@ -1,5 +1,4 @@
-function [centromeres, chrSize, figure_details, annotations, figInfo_ploidy_default] = ...
-					Load_genome_information_1(projectDir,genomeDir,genome)
+function [centromeres, chrSize, figure_details, annotations, figInfo_ploidy_default] = Load_genome_information_1(genomeDir,genome)
 fprintf(['\nLoad_genome_information_1.m : Genome in use : [' genome ']\n']);
 
 % Load centromere definition file.
@@ -203,6 +202,14 @@ end;
 maxFigSize = 0;
 maxChrSize = 0;
 for i = 1:length(figure_details)
+    fprintf(['Fig_chr : [' num2str(figure_details(i).chr) '|']);
+    fprintf([figure_details(i).label '|']);
+    fprintf([figure_details(i).name '|']);
+    fprintf([num2str(figure_details(i).posX) '|']);
+    fprintf([num2str(figure_details(i).posY) '|']);
+    fprintf([figure_details(i).width '|']);
+    fprintf([num2str(figure_details(i).height) ']\n']);
+
     if (figure_details(i).chr > 0)
         if (strcmp(figure_details(i).width(1),'*') == 0)
             maxFigSize = str2num(figure_details(i).width);

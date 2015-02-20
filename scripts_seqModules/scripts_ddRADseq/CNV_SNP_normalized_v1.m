@@ -23,7 +23,7 @@ Linear_display              = true;
 % Defines chr sizes in bp. (diploid total=28,567,7888)
 % Defines centromere locations in bp.
 % Defines annotation locations in bp.
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(workingDir,figureDir,genome_data);            
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir, genome);
 [Aneuploidy]                                                          = Load_dataset_information_1(projectName2_child,workingDir);
 
 for i = 1:length(chr_sizes)
@@ -612,28 +612,73 @@ for chr = 1:num_chrs
 					threshold = 25;
 				end;
 
-				% make a histogram of CNV or SNP data, then smooth it for display.
-				histAll{segment}(histAll{segment}<=0) = [];
-				histAll{segment}(histAll{segment}>threshold) = threshold;
-				histAll{segment}(length(histAll{segment})+1) = 0;   % endpoints added to ensure histogram bounds.
-				histAll{segment}(length(histAll{segment})+1) = threshold;
-				smoothed{segment} = smooth_gaussian(hist(histAll{segment},300),5,20);
-				% make a smoothed version of just the endpoints used to ensure histogram bounds.
-				histAll2{segment}(1) = 0;
-				histAll2{segment}(2) = threshold;
-				smoothed2{segment} = smooth_gaussian(hist(histAll2{segment},300),5,20)*4;
-				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-				smoothed{segment} = (smoothed{segment}-smoothed2{segment});
-				smoothed{segment} = smoothed{segment}/max(smoothed{segment});
 
-				plot([0; 1],[50; 50],'color',[0.75 0.75 0.75]);
+
+				% make a histogram of CGH data, then smooth it for display.
+				histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
+				histAll{segment}(histAll{segment}<=0)            = [];
+				histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
+				histAll{segment}(length(histAll{segment})+1)     = histogram_end;
+				histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
+				histAll{segment}(histAll{segment}>histogram_end) = [];
+				smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
+
+				% make a smoothed version of just the endpoints used to ensure histogram bounds.
+				histAll2{segment}(1)                             = 0;
+				histAll2{segment}(2)                             = histogram_end;
+				smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),2,10);
+
+				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+				smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
+				smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
+
+				% draw lines to mark whole copy number changes.
+				plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
 				hold on;
-				plot([0; 1],[100; 100],'color',[0.50 0.50 0.50]);
-				plot([0; 1],[150; 150],'color',[0.75 0.75 0.75]);
-				area(smoothed{segment},1:length(smoothed{segment}),'FaceColor',[0 0 0]);
+				for i = 1:15
+					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
+				end;
+
+				% draw histogram, then flip around the origin.
+				area(smoothed{segment},'FaceColor',[0 0 0]);
+				view(-90,90);
+				set(gca,'YDir','Reverse');
+
+				% ensure subplot axes are consistent with main chr plots.
 				hold off;
+				axis off;
 				set(gca,'YTick',[]);    set(gca,'XTick',[]);
-				xlim([0,1]);            ylim([0,200]);
+				ylim([0,1]);            xlim([0,maxY*20]);
+				if (show_annotations == true)
+					xlim([-maxY*20/10*1.5,maxY*20]);
+				else
+					xlim([0,maxY*20]);
+				end;
+
+
+
+%				% make a histogram of CNV or SNP data, then smooth it for display.
+%				histAll{segment}(histAll{segment}<=0) = [];
+%				histAll{segment}(histAll{segment}>threshold) = threshold;
+%				histAll{segment}(length(histAll{segment})+1) = 0;   % endpoints added to ensure histogram bounds.
+%				histAll{segment}(length(histAll{segment})+1) = threshold;
+%				smoothed{segment} = smooth_gaussian(hist(histAll{segment},300),5,20);
+%				% make a smoothed version of just the endpoints used to ensure histogram bounds.
+%				histAll2{segment}(1) = 0;
+%				histAll2{segment}(2) = threshold;
+%				smoothed2{segment} = smooth_gaussian(hist(histAll2{segment},300),5,20)*4;
+%				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+%				smoothed{segment} = (smoothed{segment}-smoothed2{segment});
+%				smoothed{segment} = smoothed{segment}/max(smoothed{segment});
+%
+%				plot([0; 1],[50; 50],'color',[0.75 0.75 0.75]);
+%				hold on;
+%				plot([0; 1],[100; 100],'color',[0.50 0.50 0.50]);
+%				plot([0; 1],[150; 150],'color',[0.75 0.75 0.75]);
+%				area(smoothed{segment},1:length(smoothed{segment}),'FaceColor',[0 0 0]);
+%				hold off;
+%				set(gca,'YTick',[]);    set(gca,'XTick',[]);
+%				xlim([0,1]);            ylim([0,200]);
 			end;
 		end;
 
