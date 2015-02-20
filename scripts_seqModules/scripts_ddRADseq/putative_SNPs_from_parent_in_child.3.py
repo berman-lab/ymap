@@ -215,8 +215,10 @@ data_P.close();
 # Process child dataset for matches to parent.
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tScreening through child dataset for coordinates matching parental SNP coordinates.\n");
-data_C      = open(inputFile_C,"r");
-old_C_chrID = 0;
+data_C           = open(inputFile_C,"r");
+old_C_chrID      = 0;
+child_SNPs       = [];
+child_SNPs_small = [];
 for line_C in data_C:
 	if (len(line_C) > 0):
 		if (line_C[0] != "#"):
@@ -226,9 +228,20 @@ for line_C in data_C:
 					myfile.write("\t\t|\t\tchr = "+str(C_chrName)+"\n");
 			putative_SNP = [C_chrName,C_position];
 			if putative_SNP in parent_SNPs:
-				print C_chrName+"\t"+str(C_position)+"\t"+str(C_countA)+"\t"+str(C_countT)+"\t"+str(C_countG)+"\t"+str(C_countC)
+				child_SNPs.append([C_chrName,C_position,C_countA,C_countT,C_countG,C_countC]);
+				child_SNPs_small.append([C_chrName,C_position]);
 			old_C_chrID = C_chrID;
 data_C.close()
+
+# Output child lines from parent positions.
+with open(logName, "a") as myfile:
+	myfile.write("\t\t|\tOutputting lines from child dataset that match coordinates of parental SNP coordinates.\n");
+for SNP in parent_SNPs:
+	if SNP in child_SNPs_small:
+		SNP_data = child_SNPs[child_SNPs_small.index(SNP)];
+		print SNP[0]+"\t"+SNP[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5];
+	else:
+		print SNP[0]+"\t"+SNP[1]+"\t0\t0\t0\t0";
 
 
 #------------------------------------------------------------------------------------------------------------
