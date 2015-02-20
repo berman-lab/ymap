@@ -110,9 +110,9 @@ inputFile_C        = main_dir+"users/"+projectChildUser+"/projects/"+projectChil
 t0 = time.clock()
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*===================================================*\n")
+	myfile.write("\t\t*====================================================================================*\n")
 	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.py' |\n")
-	myfile.write("\t\t*---------------------------------------------------*\n")
+	myfile.write("\t\t*------------------------------------------------------------------------------------*\n")
 
 
 #============================================================================================================
@@ -282,6 +282,6 @@ print '### End of preprocessed parental SNP, child SNP data.'
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")
-	myfile.write("\t\t*---------------------------------------------------*\n")
+	myfile.write("\t\t*------------------------------------------------------------------------------------*\n")
 	myfile.write("\t\t| End of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.py' |\n")
-	myfile.write("\t\t*===================================================*\n")
+	myfile.write("\t\t*====================================================================================*\n")

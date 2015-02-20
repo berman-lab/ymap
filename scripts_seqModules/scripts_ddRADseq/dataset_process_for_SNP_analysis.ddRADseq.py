@@ -37,7 +37,7 @@ logName            = sys.argv[ 9]
 runMode            = sys.argv[10]  # 'hapmap' or 'LOH' modes.
 
 with open(logName, "a") as myfile:
-	myfile.write("*---------------------------------------------------------*\n")
+	myfile.write("*=========================================================*\n")
 	myfile.write("| Log of 'dataset_process_for_SNP_analysis.ddRADseq.py'   |\n")
 	myfile.write("*---------------------------------------------------------*\n")
 
@@ -527,4 +527,4 @@ with open(logName, "a") as myfile:
 	myfile.write("|\tTime to process = " + str(time.clock()-t0) +"\n")
 	myfile.write("*--------------------------------------------------------------*\n")
 	myfile.write("| 'py/dataset_process_for_SNP_analysis.ddRADseq.py' completed. |\n")
-	myfile.write("*--------------------------------------------------------------*\n")
+	myfile.write("*==============================================================*\n")
