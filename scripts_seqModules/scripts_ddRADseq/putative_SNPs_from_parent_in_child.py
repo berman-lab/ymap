@@ -240,7 +240,7 @@ old_P_chrID = 0;
 while (error_endOfFile == False):
 	P_chrID,P_chrName,P_position,P_countA,P_countT,P_countG,P_countC = process_ParentLine(line_P)
 	P_list = [int(float(P_countA)), int(float(P_countT)), int(float(P_countG)), int(float(P_countC))]
-	if P_chrID <> old_P_chrID:
+	if P_chrID != old_P_chrID:
 		with open(logName, "a") as myfile:
 			myfile.write("\t\t|\t\tchr = "+str(P_chrName)+"\n");
 	if (sum(P_list) == 0):

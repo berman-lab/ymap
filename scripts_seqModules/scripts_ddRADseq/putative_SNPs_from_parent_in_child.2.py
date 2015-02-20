@@ -203,7 +203,7 @@ error_endOfFile = False;
 old_P_chrID = 0;
 while (error_endOfFile == False):
 	P_chrID,P_chrName,P_position = process_trimmedParentLine(line_P);
-	if P_chrID <> old_P_chrID:
+	if P_chrID != old_P_chrID:
 		with open(logName, "a") as myfile:
 			myfile.write("\t\t|\t\tchr = "+str(P_chrName)+"\n");
 

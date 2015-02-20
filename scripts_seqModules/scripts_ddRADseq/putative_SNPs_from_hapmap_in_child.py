@@ -208,7 +208,7 @@ while (error_endOfFile == False):
 		line_H = data_H.readline()
 
 	H_chrID,H_chrName,H_position = process_HapmapLine(line_H)
-	if H_chrID <> old_H_chrID:
+	if H_chrID != old_H_chrID:
 		with open(logName, "a") as myfile:
 			myfile.write("\t\t|\t\tchr = "+str(H_chrName)+"\n");
 
