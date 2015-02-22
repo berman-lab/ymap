@@ -304,7 +304,7 @@ for chr = 1:num_chrs
 			if (displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
                                 for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length);
+                                        bP = chr_breaks{chr}(segment)*chr_length;
                                         plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
                                 end;
                         end;
@@ -433,7 +433,7 @@ for chr = 1:num_chrs
 			if (displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
                                 for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length);
+                                        bP = chr_breaks{chr}(segment)*chr_length;
                                         plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
                                 end;
                         end;
