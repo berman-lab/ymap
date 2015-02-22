@@ -653,6 +653,14 @@ for chr = 1:num_chrs
 		hold on;
 		% standard : end axes labels etc.
     
+			if (displayBREAKS == true) && (show_annotations == true)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+                                for segment = 2:length(chr_breaks{chr})-1
+                                        bP = chr_breaks{chr}(segment)*chr_length;
+                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+                                end;
+                        end;
+
 	    %show centromere outlines and horizontal marks.
 	    x1 = cen_start(chr)/bases_per_bin;
 	    x2 = cen_end(chr)/bases_per_bin;
@@ -758,16 +766,13 @@ for chr = 1:num_chrs
 	        end;
 
 	        %show segmental anueploidy breakpoints.
-	        if (displayBREAKS == true)
-	            for segment = 2:length(chr_breaks{chr})-1
-	                bP = chr_breaks{chr}(segment)*length(HETplot2{chr});
-	                c_ = [0 0 1];
-	                x_ = [bP bP bP-1 bP-1];
-	                y_ = [0 maxY maxY 0];
-	                f = fill(x_,y_,c_);   
-	                set(f,'linestyle','none');
-	            end;
-	        end;
+			if (displayBREAKS == true) && (show_annotations == true)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+                                for segment = 2:length(chr_breaks{chr})-1
+                                        bP = chr_breaks{chr}(segment)*chr_length;
+                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+                                end;
+                        end;
 
 	        %show centromere.
 	        x1 = cen_start(chr)/bases_per_bin;

@@ -670,6 +670,14 @@ for chr = 1:num_chrs
 		end;
 		% standard : end show allelic ratio data.
 
+			if (displayBREAKS == true) && (show_annotations == true)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+                                for segment = 2:length(chr_breaks{chr})-1
+                                        bP = chr_breaks{chr}(segment)*chr_length;
+                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+                                end;
+                        end;
+
 		% standard : show centromere outlines and horizontal marks.
 	    x1 = cen_start(chr)/bases_per_bin;
 	    x2 = cen_end(chr)/bases_per_bin;
@@ -752,18 +760,6 @@ for chr = 1:num_chrs
 	        Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
 	        title(chr_label{chr},'Interpreter','none','FontSize',20);
 
-	        % linear : show segmental anueploidy breakpoints.
-	        if (displayBREAKS == true)
-	            for segment = 2:length(chr_breaks{chr})-1
-	                bP = chr_breaks{chr}(segment)*length(HETplot2{chr});
-	                c_ = [0 0 1];
-	                x_ = [bP bP bP-1 bP-1];
-	                y_ = [0 maxY maxY 0];
-	                f = fill(x_,y_,c_);   
-	                set(f,'linestyle','none');
-	            end;
-	        end;
-
 			% linear : draw colorbars
 			if (useHapmap)
 				dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
@@ -803,6 +799,14 @@ for chr = 1:num_chrs
 				end;
 			end;
 			% linear : end show allelic ratio data.
+
+			if (displayBREAKS == true) && (show_annotations == true)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+                                for segment = 2:length(chr_breaks{chr})-1
+                                        bP = chr_breaks{chr}(segment)*chr_length;
+                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+                                end;
+                        end;
 
 	        % linear : show centromere.
 	        x1 = cen_start(chr)/bases_per_bin;

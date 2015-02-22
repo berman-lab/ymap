@@ -21,8 +21,11 @@ end;
 
 LOWESS_method = 3;
 
-if (LOWESS_method == 1)
-	% Attempts LOWESS fitting with [numFits] smoothing values evenly spaced from 0.01 to 0.99.
+if (LOWESS_method == 0)
+	% Performs LOWESS fitting with smoothing value defined as 0.10.
+	span = 0.10;
+elseif (LOWESS_method == 1)
+	% Attempts LOWESS fitting with [numFits] smoothing values evenly spaced from 0.01 to 0.99; attempts to calculate squared error minimization.
 	sse  = zeros(size(spans));
 	fprintf(['\t\tSquared-error minimization:\n']);
 	for j = 1:numFits
@@ -33,7 +36,7 @@ if (LOWESS_method == 1)
 		fprintf(['](error = ' num2str(sse(j)) ')\n']);
 	end;
 elseif (LOWESS_method == 2)
-	% Attempts LOWESS fitting with [numFits] smoothing values evenly spaced from 0.01 to 0.99.
+	% Attempts LOWESS fitting with [numFits] smoothing values evenly spaced from 0.01 to 0.99; attempts to calculate squared error minimization.
 	sse  = zeros(size(spans));
 	fprintf(['\t\tSquared-error minimization:\n']);
 	for j = 1:numFits
@@ -151,7 +154,7 @@ end;
 X_range       = linspace(minX,maxX,final_length);
 
 newX = X_range;
-if ((LOWESS_method == 1) || (LOWESS_method == 2))
+if ((LOWESS_method == 0) || (LOWESS_method == 1) || (LOWESS_method == 2))
 	% Generate final fit from LOWESS (on all data) with found best span.
 	newY = mylowess([X,Y],X_range,span);
 elseif (LOWESS_method == 3)

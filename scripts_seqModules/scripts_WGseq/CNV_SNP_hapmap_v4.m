@@ -1432,6 +1432,14 @@ for chr = 1:num_chrs
 	    hold on;
 	    % standard : end axes labels etc.
     
+			if (displayBREAKS == true) && (show_annotations == true)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+                                for segment = 2:length(chr_breaks{chr})-1
+                                        bP = chr_breaks{chr}(segment)*chr_length;
+                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+                                end;
+                        end;
+
 		% standard : show centromere outlines and horizontal marks.
 		x1 = cen_start(chr)/bases_per_bin;
 		x2 = cen_end(chr)/bases_per_bin;
@@ -1525,8 +1533,17 @@ for chr = 1:num_chrs
 					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
 				end;
 
-				% draw histogram, then flip around the origin.
+				% draw histogram.
 				area(smoothed{segment},'FaceColor',[0 0 0]);
+
+				% Draw red ticks between histplot segments
+				if (displayBREAKS == true) && (show_annotations == true)
+					if (segment > 1)
+						plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
+					end;
+				end;
+
+				% Flip subfigure around the origin.
 				view(-90,90);
 				set(gca,'YDir','Reverse');
 
@@ -1865,16 +1882,13 @@ for chr = 1:num_chrs
 			% linear : end cgh plot section.
 
 			% linear : show segmental anueploidy breakpoints.
-	        if (displayBREAKS == true)
-	            for segment = 2:length(chr_breaks{chr})-1
-	                bP = chr_breaks{chr}(segment)*length(unphased_plot2{chr});
-	                c_ = [0 0 1];
-	                x_ = [bP bP bP-1 bP-1];
-	                y_ = [0 maxY maxY 0];
-	                f = fill(x_,y_,c_);   
-	                set(f,'linestyle','none');
-	            end;
-	        end;
+			if (displayBREAKS == true) && (show_annotations == true)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+                                for segment = 2:length(chr_breaks{chr})-1
+                                        bP = chr_breaks{chr}(segment)*chr_length;
+                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+                                end;
+                        end;
 			% linear : end segmental aneuploidy breakpoint section.
 
 			% linear : show centromere.

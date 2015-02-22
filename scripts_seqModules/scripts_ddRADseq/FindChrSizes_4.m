@@ -70,6 +70,8 @@ end;
 
 % Adjustment of ploidy estimate.
 % assumes most common copy number to really be a whole number. (2.1 -> 2, etc.)
+% zero data indicate erroneous copy number estimates and are first excluded.
+chrCopyNum_vector(chrCopyNum_vector == 0) = [];
 common_copyNum = mode(chrCopyNum_vector);
 for chr = 1:length(chrCopyNum)
     for segment = 1:length(chrCopyNum{chr})
@@ -79,9 +81,9 @@ for chr = 1:length(chrCopyNum)
         %chrCopyNum2{chr}(segment) = floor(chrCopyNum2{chr}(segment)) + round((chrCopyNum2{chr}(segment)-floor(chrCopyNum2{chr}(segment)))/0.25)*0.25;
     end;
 end;
-chrCopyNum1 = chrCopyNum;
-chrCopyNum  = chrCopyNum2;
+chrCopyNum1  = chrCopyNum;
+chrCopyNum   = chrCopyNum2;
 
-ploidyAdjust = round(common_copyNum)/common_copyNum;
+ploidyAdjust         = round(common_copyNum)/common_copyNum;
 end
 

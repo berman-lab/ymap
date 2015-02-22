@@ -166,10 +166,10 @@ fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapma
 
 
 %% =========================================================================================
-% Load GC-bias corrected CGH data.
+% Load CGH data after correction for GC and chr-end biases.
 %-------------------------------------------------------------------------------------------
 load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_3(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use)
 largestChr = find(chr_width == max(chr_width));
 
 
@@ -264,45 +264,6 @@ for chr = 1:num_chrs
 end;
 
 
-%% =========================================================================================
-% Setup for figure generation.
-%-------------------------------------------------------------------------------------------
-fig = figure(1);
-set(gcf, 'Position', [0 70 1024 600]);
-
-
-%% =========================================================================================
-% Setup for main figure generation.
-%-------------------------------------------------------------------------------------------
-fig = figure(1);
-set(gcf, 'Position', [0 70 1024 600]);
-
-
-%% =========================================================================================
-% Setup for linear-view figure generation.
-%-------------------------------------------------------------------------------------------
-if (Linear_display == true)
-	Linear_fig = figure(2);
-	Linear_genome_size   = sum(chr_size);
-
-	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-	Linear_left_start    = 0.02;               % left margin (also right margin).
-	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-
-	Linear_height        = 0.6;
-	Linear_base          = 0.1;
-	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
-	maxY                 = ploidyBase*2;
-	Linear_left          = Linear_left_start;
-
-	axisLabelPosition_horiz = -50000/bases_per_bin;
-	axisLabelPosition_horiz = 0.01125;
-end;
-
-axisLabelPosition_vert = -50000/bases_per_bin;
-axisLabelPosition_vert = 0.01125;
-
-
 %% ====================================================================
 % Initialize CGD annotation output file.
 %----------------------------------------------------------------------
@@ -314,8 +275,8 @@ end;
 
 %% =========================================================================================
 % Blend adjacent colorbars to minimize noise :
-%		doesn't work correctly.
-%		When comparing strain to parent, it averages allelic ratios from het coordinates with adjacent hom coordinates.
+%	doesn't work correctly.
+%	When comparing strain to parent, it averages allelic ratios from het coordinates with adjacent hom coordinates.
 %-------------------------------------------------------------------------------------------
 if (blendColorBars)
 	for chr = 1:num_chrs
@@ -421,22 +382,55 @@ end;
 
 
 %% =========================================================================================
+% Setup for main figure generation.
+%-------------------------------------------------------------------------------------------
+Main_fig = figure(1);
+set(gcf, 'Position', [0 70 1024 600]);
+
+
+%% =========================================================================================
+% Setup for linear-view figure generation.
+%-------------------------------------------------------------------------------------------
+if (Linear_display == true)
+	Linear_fig = figure(2);
+	Linear_genome_size   = sum(chr_size);
+
+	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
+	Linear_left_start    = 0.02;               % left margin (also right margin).
+	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
+
+	Linear_height        = 0.6;
+	Linear_base          = 0.1;
+	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
+	maxY                 = ploidyBase*2;
+	Linear_left          = Linear_left_start;
+
+	axisLabelPosition_horiz = -50000/bases_per_bin;
+	axisLabelPosition_horiz = 0.01125;
+end;
+
+axisLabelPosition_vert = -50000/bases_per_bin;
+axisLabelPosition_vert = 0.01125;
+
+
+%% =========================================================================================
 % Make figures
 %-------------------------------------------------------------------------------------------
 first_chr = true;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-	    figure(fig);
-	    % make standard chr cartoons.
-	    left   = chr_posX(chr);
-	    bottom = chr_posY(chr);
-	    width  = chr_width(chr);
-	    height = chr_height(chr);
-	    subplot('Position',[left bottom width height]);
-	    fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
-	    hold on;
+		fprintf(['-------------------------------- drawing subfigures for [chr' num2str(chr) '] --------------------------------\n']);
+		figure(Main_fig);
+		% make standard chr cartoons.
+		left   = chr_posX(chr);
+		bottom = chr_posY(chr);
+		width  = chr_width(chr);
+		height = chr_height(chr);
+		subplot('Position',[left bottom width height]);
+		fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
+		hold on;
 
-	    % standard : draw colorbars.
+		% standard : draw colorbars.
 		if (useHapmap)
 			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
 			dataY_1    = chr_SNPdata{chr,2};
@@ -480,6 +474,7 @@ for chr = 1:num_chrs
 			end;
 		end;
 
+
 		%% standard : cgh plot section.
 		c_ = [0 0 0];
 		fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
@@ -505,6 +500,7 @@ for chr = 1:num_chrs
 			set(f,'linestyle','none');
 		end;
 
+
 		% standard : draw lines across plots for easier interpretation of CNV regions.
 		x2 = chr_size(chr)/bases_per_bin;
 		plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -528,22 +524,21 @@ for chr = 1:num_chrs
 		end;
 		% standard : end cgh plot section.
 
-	    % standard : axes labels etc.
-	    hold off;
-	    xlim([0,chr_size(chr)/bases_per_bin]);
-    
-	    % standard : modify y axis limits to show annotation locations if any are provided.
-	    if (length(annotations) > 0)
-	        ylim([-maxY/10*1.5,maxY]);
-	    else
-	        ylim([0,maxY]);
-	    end;
-	    set(gca,'YTick',[]);
-	    set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 
+		% standard : axes labels etc.
+		hold off;
+		xlim([0,chr_size(chr)/bases_per_bin]);
+		% standard : modify y axis limits to show annotation locations if any are provided.
+		if (length(annotations) > 0)
+			ylim([-maxY/10*1.5,maxY]);
+		else
+			ylim([0,maxY]);
+		end;
+		set(gca,'YTick',[]);
+		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 		text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
-	    set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-	    set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
+		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
+		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 		% This section sets the Y-axis labelling.
 		switch ploidyBase
 			case 1
@@ -571,13 +566,20 @@ for chr = 1:num_chrs
 				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
 				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
 		end;
-
 		set(gca,'FontSize',12);
 		if (chr == find(chr_posY == max(chr_posY)))
 			title([ project ' CNV map'],'Interpreter','none','FontSize',24);
 		end;
-	    hold on;
-	    % standard : end axes labels etc.
+		hold on;
+		% standard : end axes labels etc.
+
+		if ((displayBREAKS == true) && (show_annotations == true))
+			chr_length = ceil(chr_size(chr)/bases_per_bin);
+			for segment = 2:length(chr_breaks{chr})-1
+				bP = chr_breaks{chr}(segment)*chr_length;
+				plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+			end;
+		end;
     
 		% standard : show centromere outlines and horizontal marks.
 		x1 = cen_start(chr)/bases_per_bin;
@@ -598,34 +600,36 @@ for chr = 1:num_chrs
 			% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
 			plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx    rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
 			     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY     maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-			      'Color',[0 0 0]);        
+			     'Color',[0 0 0]);        
 		end;
 		% standard : end show centromere.
+
     
 		% standard : show annotation locations
-	    if (show_annotations) && (length(annotations) > 0)
-	        plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-	        hold on;
-	        annotation_location = (annotation_start+annotation_end)./2;
-	        for i = 1:length(annotation_location)
-	            if (annotation_chr(i) == chr)
-	                annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                if (strcmp(annotation_type{i},'dot') == 1)
-	                    plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-	                                                          'MarkerFaceColor',annotation_fillcolor{i}, ...
-	                                                          'MarkerSize',     annotation_size(i));
-	                elseif (strcmp(annotation_type{i},'block') == 1)
-	                    fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-	                         [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-	                         annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
-	                end;
-	            end;
-	        end;
-	        hold off;
-	    end;
+		if (show_annotations) && (length(annotations) > 0)
+			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
+			hold on;
+			annotation_location = (annotation_start+annotation_end)./2;
+			for i = 1:length(annotation_location)
+				if (annotation_chr(i) == chr)
+					annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					if (strcmp(annotation_type{i},'dot') == 1)
+						plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
+						     'MarkerFaceColor',annotation_fillcolor{i}, ...
+						     'MarkerSize',     annotation_size(i));
+					elseif (strcmp(annotation_type{i},'block') == 1)
+						fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+						      [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+						      annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+					end;
+				end;
+			end;
+			hold off;
+		end;
 		% standard : end show annotation locations.
+
 
 		% standard : make CGH histograms to the right of the main chr cartoons.
 		if (HistPlot == true)
@@ -672,8 +676,17 @@ for chr = 1:num_chrs
 					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
 				end;
 
-				% draw histogram, then flip around the origin.
+				% draw histogram.
 				area(smoothed{segment},'FaceColor',[0 0 0]);
+
+				% Draw red ticks between histplot segments
+				if (displayBREAKS == true) && (show_annotations == true)
+					if (segment > 1)
+						plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
+					end;
+				end;
+
+				% Flip subfigure around the origin.
 				view(-90,90);
 				set(gca,'YDir','Reverse');
 
@@ -690,6 +703,7 @@ for chr = 1:num_chrs
 			end;
 		end;
 		% standard : end of CGH histograms at right.
+
 
 		% standard : places chr copy number to the right of the main chr cartoons.
 		if (ChrNum == true)
@@ -720,16 +734,16 @@ for chr = 1:num_chrs
 		%% END standard draw section.
 
 
-	    %% Linear figure draw section
-	    if (Linear_display == true)
-	        figure(Linear_fig);
-	        Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
-	        subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
-	        Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
-	        hold on;
-	        title(chr_label{chr},'Interpreter','none','FontSize',20);
+		%% Linear figure draw section
+		if (Linear_display == true)
+			figure(Linear_fig);
+			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
+			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
+			Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
+			hold on;
+			title(chr_label{chr},'Interpreter','none','FontSize',20);
 
-	        % linear : draw colorbars.
+			% linear : draw colorbars.
 			if (useHapmap)
 				dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
 				dataY_1    = chr_SNPdata{chr,2};
@@ -838,16 +852,13 @@ for chr = 1:num_chrs
 			% linear : end cgh plot section.
 
 			% linear : show segmental anueploidy breakpoints.
-	        if (displayBREAKS == true)
-	            for segment = 2:length(chr_breaks{chr})-1
-	                bP = chr_breaks{chr}(segment)*length(unphased_plot2{chr});
-	                c_ = [0 0 1];
-	                x_ = [bP bP bP-1 bP-1];
-	                y_ = [0 maxY maxY 0];
-	                f = fill(x_,y_,c_);   
-	                set(f,'linestyle','none');
-	            end;
-	        end;
+			if (displayBREAKS == true) && (show_annotations == true)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+                                for segment = 2:length(chr_breaks{chr})-1
+                                        bP = chr_breaks{chr}(segment)*chr_length;
+                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+                                end;
+                        end;
 
 			% linear : show centromere.
 			x1 = cen_start(chr)/bases_per_bin;
@@ -872,30 +883,30 @@ for chr = 1:num_chrs
 			end;
 			% linear : end show centromere.
 
-	        % linear : show annotation locations
-	        if (show_annotations) && (length(annotations) > 0)
-	            plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-	            hold on;
-	            annotation_location = (annotation_start+annotation_end)./2;
-	            for i = 1:length(annotation_location)
-	                if (annotation_chr(i) == chr)
-	                    annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                    annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                    annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                    if (strcmp(annotation_type{i},'dot') == 1)
-	                        plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-	                                                              'MarkerFaceColor',annotation_fillcolor{i}, ...
-	                                                              'MarkerSize',     annotation_size(i));
-	                    elseif (strcmp(annotation_type{i},'block') == 1)
-	                        fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-	                             [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-	                             annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
-	                    end;
-	                end;
-	            end;
-	            hold off;
-	        end;
-	        % linear : end show annotation locations.
+			% linear : show annotation locations
+			if (show_annotations) && (length(annotations) > 0)
+				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
+				hold on;
+				annotation_location = (annotation_start+annotation_end)./2;
+				for i = 1:length(annotation_location)
+					if (annotation_chr(i) == chr)
+						annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+						annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+						annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+						if (strcmp(annotation_type{i},'dot') == 1)
+							plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
+							     'MarkerFaceColor',annotation_fillcolor{i}, ...
+							     'MarkerSize',     annotation_size(i));
+						elseif (strcmp(annotation_type{i},'block') == 1)
+							fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+							     [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+							     annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+						end;
+					end;
+				end;
+				hold off;
+			end;
+			% linear : end show annotation locations.
 
 			% linear : Final formatting stuff.
 			xlim([0,chr_size(chr)/bases_per_bin]);
@@ -944,7 +955,7 @@ for chr = 1:num_chrs
 			%end final reformatting.
 	        
 			% shift back to main figure generation.
-			figure(fig);
+			figure(Main_fig);
 			hold on;
 
 			first_chr = false;
@@ -956,17 +967,17 @@ end;
 %% ========================================================================
 % end stuff
 %==========================================================================
-
 %% Save figures.
-set(fig,'PaperPosition',[0 0 8 6]*2);
-saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.eps'], 'epsc');
-saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.png'], 'png');
-set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
-saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.eps'], 'epsc');
-saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.png'], 'png');
+set(Main_fig,'PaperPosition',[0 0 8 6]*2);
+saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.1.eps'], 'epsc');
+saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.1.png'], 'png');
+delete(Main_fig);
 
-%% Delete figures from memory.
-delete(fig);
-delete(Linear_fig);
+if (Linear_display == true)
+	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
+	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.eps'], 'epsc');
+	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.png'], 'png');
+	delete(Linear_fig);
+end;
 
 end
