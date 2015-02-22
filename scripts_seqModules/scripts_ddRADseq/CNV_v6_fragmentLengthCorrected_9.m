@@ -2006,11 +2006,6 @@ for chr = 1:num_chrs
 				else
 					xlim([0,maxY*20]);
 				end;
-
-				% Draw red ticks between histplot segments
-				if (displayBREAKS == true) && (show_annotations == true)
-					plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
-				end;
 			end;
 		end;
 
