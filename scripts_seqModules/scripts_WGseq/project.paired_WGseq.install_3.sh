@@ -113,15 +113,14 @@ else
 	##==============================================================================
 	## Trimming/cleanup of FASTQ files.
 	##------------------------------------------------------------------------------
-	echo "#=================================================#" >> $logName;
-	echo "# Trimming of unbalanced FASTQ entries.           #" >> $logName;
-	echo "#=================================================#" >> $logName;
+	echo "#=======================================================================================#" >> $logName;
+	echo "# Trimming of unbalanced FASTQ entries using 'scripts_seqModules/FASTQ_2_trimming.sh'.  #" >> $logName;
+	echo "#=======================================================================================#" >> $logName;
 	echo "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd $projectDirectory;
 	sh $main_dir"scripts_seqModules/FASTQ_2_trimming.sh" $projectDirectory$datafile1 $projectDirectory$datafile2 >> $logName;
 	cd $currdir;
-	echo "\tFASTQ files trimmed using : 'FASTQ_trimming.sh'" >> $logName;
 
 
 	##==============================================================================

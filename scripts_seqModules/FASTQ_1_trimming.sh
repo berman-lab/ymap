@@ -33,13 +33,13 @@ else
 		# number of lines of each file.
 		echo "#\tTotal number of lines in file:";
 		length_full1=$(wc -l $1 | awk '{print $1}');
-		echo "#\t\tFile1 : "$length_full1;
+		echo "#\t\tFile1: "$length_full1;
 
 		# modulus of the number of lines by 4, as the fastq format is in blocks of 4 lines.
 		# this will give us the number of extra lines in each file.
 		echo "#\tLines at end of each file suggestive of a cropped entry:";
 		length_extra1=$(expr $length_full1 % 4);
-		echo "#\t\tFile1 : "$length_extra1;
+		echo "#\t\tFile1: "$length_extra1;
 
 		# If the number of extra lines is zero, then nothing needs to be done.
 		# If the number of extra lines is more than zero, then create a trimmed file to replace the original.
@@ -48,13 +48,13 @@ else
 			# the number of properly formated lines per file.
 			echo "#\tNumber of properly formated lines per file:";
 			length_base1=$(expr $length_full1 - $length_extra1);
-			echo "#\t\tFile1 : "$length_base1;
+			echo "#\t\tFile1: "$length_base1;
 
 			# find the residue lengths per file.
 			# this is the number of lines of incomplete and extra reads.
 			echo "#\tNumber of lines at the end of file to be removed:";
 			length_residue1=$length_extra1;
-			echo "#\t\tFile1 : "$length_residue1;
+			echo "#\t\tFile1: "$length_residue1;
 
 			findStr=".fastq";
 			replaceStr=".trimmed.fastq";
@@ -62,14 +62,14 @@ else
 
 			# make copy of the original read file which are trimmed to valid length.
 			echo "#\tMaking trimmed valid fastq files:";
-			echo "#\t\t"$1" -> "$trimmedName1;
+			echo "#\t\tFile1: "$trimmedName1;
 			cat $1 | head -$length_base1 > $trimmedName1;
 
 			# make residue file containing any incomplete or extra read lines.
 			echo "#\tMaking file containing residual lines:";
 			if [ "$length_residue1" -gt 0 ]
 			then
-				echo "#\t\t"$1" -> "$residueName1;
+				echo "#\t\tFile1: "$residueName1;
 				cat $1 | tail -$length_residue1 > $residueName1;
 			fi
 

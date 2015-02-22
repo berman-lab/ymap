@@ -110,16 +110,14 @@ else
 	##==============================================================================
 	## Trimming/cleanup of FASTQ files.
 	##------------------------------------------------------------------------------
-	echo "#=================================================#" >> $logName;
-	echo "# Trimming of unbalanced FASTQ entries.           #" >> $logName;
-	echo "#=================================================#" >> $logName;
+	echo "#=======================================================================================#" >> $logName;
+	echo "# Trimming of unbalanced FASTQ entries using 'scripts_seqModules/FASTQ_1_trimming.sh'.  #" >> $logName;
+	echo "#=======================================================================================#" >> $logName;
 	echo "Resolving FASTQ file errors." >> $condensedLog;
-
 	currdir=$(pwd);
 	cd $projectDirectory;
 	sh $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
 	cd $currdir;
-	echo "\tFASTQ files trimmed using : 'FASTQ_trimming.sh'" >> $logName;
 
 	##==============================================================================
 	## Initial processing of single-WGseq dataset.

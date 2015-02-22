@@ -19,11 +19,9 @@ else
 	# If final files are found, don't process these data files.
 	if [ -f $residueName1 ] || [ -f $residueName2 ]
 	then
-		echo;
 		echo "# ";
 		echo "# Trimming of unbalanced read pairs has already been run on this datsaet.";
 		echo "# ";
-		echo;
 		exit 0;   # exit with no error.
 	else
 		## FASTQ format per line, repeating.
@@ -35,27 +33,24 @@ else
 		# number of lines of each file.
 		echo -e "\tTotal number of lines in each file:";
 		length_full1=$(wc -l $1 | awk '{print $1}');
-		echo -e "\t\tFile1 : "$length_full1;
+		echo -e "\t\tFile1: "$length_full1;
 		length_full2=$(wc -l $2 | awk '{print $1}');
-		echo -e "\t\tFile2 : "$length_full2;
-		echo;
+		echo -e "\t\tFile2: "$length_full2;
 
 		# modulus of the number of lines by 4, as the fastq format is in blocks of 4 lines.
 		# this will give us the number of extra lines in each file.
 		echo -e "\tLines at end of each file suggestive of a cropped entry:";
 		length_extra1=$(expr $length_full1 % 4);
-		echo -e "\t\tFile1 : "$length_extra1;
+		echo -e "\t\tFile1: "$length_extra1;
 		length_extra2=$(expr $length_full2 % 4);
-		echo -e "\t\tFile2 : "$length_extra2;
-		echo;
+		echo -e "\t\tFile2: "$length_extra2;
 
 		# the number of properly formated lines per file.
 		echo -e "\tNumber of properly formated lines per file:";
 		length_base1=$(expr $length_full1 - $length_extra1);
-		echo -e "\t\tFile1 : "$length_base1;
+		echo -e "\t\tFile1: "$length_base1;
 		length_base2=$(expr $length_full2 - $length_extra2);
-		echo -e "\t\tFile2 : "$length_base2;
-		echo;
+		echo -e "\t\tFile2: "$length_base2;
 
 		# find the lesser length of properly formated lines per file.
 		# this will be used to trim the original data files to a consistent valid length.
@@ -64,16 +59,14 @@ else
 		stringer=$(echo $stringer | tr ' ' '\n' | sort -n)
 		lesser_length_base=$(echo $stringer | awk '{print $1}');
 		echo -e "\t\t"$lesser_length_base;
-		echo;
 
 		# find the residue lengths per file.
 		# this is the number of lines of incomplete and extra reads.
 		echo -e "\tNumber of lines at the end of each file to be removed:";
 		length_residue1=$(expr $length_full1 - $lesser_length_base);
-		echo -e "\t\tFile1 : "$length_residue1;
+		echo -e "\t\tFile1: "$length_residue1;
 		length_residue2=$(expr $length_full2 - $lesser_length_base);
-		echo -e "\t\tFile2 : "$length_residue2;
-		echo;
+		echo -e "\t\tFile2: "$length_residue2;
 
 		findStr=".fastq";
 		replaceStr=".trimmed.fastq";
@@ -82,25 +75,23 @@ else
 
 		# make copies of the original read files which are trimmed to valid and the same length.
 		echo -e "\tMaking trimmed valid fastq files:";
-		echo -e "\t\t"$1" -> "$trimmedName1;
+		echo -e "\t\tFile1: "$trimmedName1;
 		cat $1 | head -$lesser_length_base > $trimmedName1;
-		echo -e "\t\t"$2" -> "$trimmedName2;
+		echo -e "\t\tFile2: "$trimmedName2;
 		cat $2 | head -$lesser_length_base > $trimmedName2;
-		echo;
 
 		# make residue files containing any incomplete or extra read lines.
 		echo -e "\tMaking files containing residual lines:";
 		if [ "$length_residue1" -gt 0 ]
 		then
-			echo -e "\t\t"$1" -> "$residueName1;
+			echo -e "\t\tFile1: "$residueName1;
 			cat $1 | tail -$length_residue1 > $residueName1;
 		fi
 		if [ "$length_residue2" -gt 0 ]
 		then
-			echo -e "\t\t"$2" -> "$residueName2;
+			echo -e "\t\tFile2: "$residueName2;
 			cat $2 | tail -$length_residue2 > $residueName2;
 		fi
-		echo;
 
 		echo -e "\tReplacing original files with trimmed versions.";
 		# cleanup original raw files.
