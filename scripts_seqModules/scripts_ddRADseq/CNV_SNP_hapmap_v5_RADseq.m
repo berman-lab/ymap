@@ -15,6 +15,7 @@ Yscale_nearest_even_ploidy  = true;
 HistPlot                    = true;
 ChrNum                      = true;
 Linear_display              = true;
+Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true;
 Output_CGD_annotations      = true;   % Generate CGD annotation files for analyzed datasets.
 
@@ -852,7 +853,7 @@ for chr = 1:num_chrs
 			% linear : end cgh plot section.
 
 			% linear : show segmental anueploidy breakpoints.
-			if (displayBREAKS == true) && (show_annotations == true)
+			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
                                 for segment = 2:length(chr_breaks{chr})-1
                                         bP = chr_breaks{chr}(segment)*chr_length;

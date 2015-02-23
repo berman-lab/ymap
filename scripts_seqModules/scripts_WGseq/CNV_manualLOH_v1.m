@@ -6,6 +6,7 @@ function [] = CNV_manualLOH_v1(main_dir,user,genomeUser,project,hapmap,genome,pl
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CGH data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
+Linear_displayBREAKS   = false;
 
 manualLOH_file = [main_dir 'users/' user '/projects/' project '/manualLOH.txt'];
 fprintf(['\nLooking for "manualLOH.txt" file at : ' manualLOH_file '\n']);
@@ -762,7 +763,7 @@ else
 				% linear : end cgh plot section.
 
 				% linear : show segmental anueploidy breakpoints.
-				if (displayBREAKS == true) && (show_annotations == true)
+				if (Linear_displayBREAKS == true) && (show_annotations == true)
 					chr_length = ceil(chr_size(chr)/bases_per_bin);
         	                        for segment = 2:length(chr_breaks{chr})-1
 	                                        bP = chr_breaks{chr}(segment)*chr_length;

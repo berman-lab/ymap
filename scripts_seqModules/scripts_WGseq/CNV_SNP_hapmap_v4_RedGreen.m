@@ -18,6 +18,7 @@ AnglePlot                   = true;   % Show histogram of alleleic fraction at t
 HistPlot                    = true;   % Show histogram of CNV at the right end of standard figure chromosomes.
 ChrNum                      = true;   % Show numerical etimates of copy number to the right of standard figure chromosomes.
 Linear_display              = true;   % Figure version with chromosomes laid out horizontally.
+Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true    % Estimate error in overall ploidy estimate, assuming most common value is actually euploid.
 Output_CGD_annotations      = false;   % Generate CGD annotation files for analyzed datasets.
 
@@ -1889,7 +1890,7 @@ for chr = 1:num_chrs
 			% linear : end cgh plot section.
 
 			% linear : show segmental anueploidy breakpoints.
-			if (displayBREAKS == true) && (show_annotations == true)
+			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
                                 for segment = 2:length(chr_breaks{chr})-1
                                         bP = chr_breaks{chr}(segment)*chr_length;

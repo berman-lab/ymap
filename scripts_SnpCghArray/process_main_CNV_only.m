@@ -918,8 +918,17 @@ for chr = 1:num_chrs
 			plot([maxY*10; maxY*10],[0; 1],'color',[0.50 0.50 0.50]);
 			plot([maxY*15; maxY*15],[0; 1],'color',[0.75 0.75 0.75]);
 
-			% draw histogram, then flip around the origin.
+			% draw histogram.
 			area(smoothed{segment},'FaceColor',[0 0 0]);
+
+			% Draw red ticks between histplot segments
+			if ((Show_ChARM_edges == true) && (show_MRS == true))
+				if (segment > 1)
+					plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
+				end;
+			end;
+
+			% Flip subfigure around the origin.
 			view(-90,90);
 			set(gca,'YDir','Reverse');
 
@@ -1390,6 +1399,17 @@ for chr = 1:num_chrs
 		hold off;
 	end;
 	% end show MRS locations.
+
+	% standard : show ChARM edges.
+	if ((Show_ChARM_edges) && (show_MRS))
+		for i = 1:length(segmental_aneuploidy)
+			if (segmental_aneuploidy(i).chr == chr)
+				EDGEloc = segmental_aneuploidy(i).break*chr_size(chr)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
+				plot([EDGEloc EDGEloc], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+			end;
+		end;
+	end;
+	% end show ChARM edges.
 
 	hold off;
 	xlim([0,chr_size(chr)*chr_length_scale_multiplier]);

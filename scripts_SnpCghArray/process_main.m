@@ -97,28 +97,28 @@ tic;
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CGH data by ploidy.
 %    Chr_max_width              : max width of chromosomes as fraction of figure width.
-SNP_Genomic_display              = true;
-    CGH_Genomic_display          = true;
-    Linear_display               = true;
-    colorBars                    = true;
-    blendColorBars               = false;
-    infillColorBars              = false;
-    AnglePlot                    = true;
-        FillColors               = true;
-    HistPlot                     = true;
-    ChrNum                       = true;
-    Yscale_nearest_even_ploidy   = true;
-    Show_Genomic_LOH_fraction    = true;
-    show_unnassigned             = false;
-    show_Xlabels                 = false;
+SNP_Genomic_display                  = true;
+	CGH_Genomic_display          = true;
+	Linear_display               = true;
+	colorBars                    = true;
+	blendColorBars               = false;
+	infillColorBars              = false;
+	AnglePlot                    = true;
+        FillColors                   = true;
+	HistPlot                     = true;
+	ChrNum                       = true;
+	Yscale_nearest_even_ploidy   = true;
+	Show_Genomic_LOH_fraction    = true;
+	show_unnassigned             = false;
+	show_Xlabels                 = false;
 	if strcmp(show_MRS_string,'1')
-	    show_MRS                 = true;
+		show_MRS             = true;
 	else
-		show_MRS				 = false;
+		show_MRS             = false;
 	end;
-    Centromere_format            = 2;
-    scale_type                   = 'Ratio';
-    Chr_max_width                = 0.8;
+	Centromere_format            = 2;
+	scale_type                   = 'Ratio';
+	Chr_max_width                = 0.8;
 	Show_ChARM_edges             = true;
 
 % not in place yet... uninformative currently looks like unnassigned to script.
@@ -936,8 +936,17 @@ for chr = 1:num_chrs
 			plot([maxY*10; maxY*10],[0; 1],'color',[0.50 0.50 0.50]);
 			plot([maxY*15; maxY*15],[0; 1],'color',[0.75 0.75 0.75]);
 
-			% draw histogram, then flip around the origin.
+			% draw histogram.
 			area(smoothed{segment},'FaceColor',[0 0 0]);
+
+			% Draw red ticks between histplot segments
+			if ((Show_ChARM_edges == true) && (show_MRS == true))
+				if (segment > 1)
+					plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
+				end;
+			end;
+
+			% Flip subfigure around the origin.
 			view(-90,90);
 			set(gca,'YDir','Reverse');
 
@@ -1426,7 +1435,7 @@ for chr = 1:num_chrs
 	% end show MRS locations.
 
 	% standard : show ChARM edges.
-	if (Show_ChARM_edges)
+	if ((Show_ChARM_edges) && (show_MRS))
 		hold on;
 		for i = 1:length(segmental_aneuploidy)
 			if (segmental_aneuploidy(i).chr == chr)

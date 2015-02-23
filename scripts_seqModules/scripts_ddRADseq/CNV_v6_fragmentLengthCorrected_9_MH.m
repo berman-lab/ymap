@@ -11,6 +11,7 @@ HistPlot                    = true;
 ChrNum                      = true;
 show_annotations            = true;
 Linear_display              = true;
+Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true;
 Smooth_place                = 1;    % 1 = smooth before reference normalization; 2 = smooth after reference normalization.
 
@@ -2135,7 +2136,7 @@ for chr = 1:num_chrs
 			%% Linear : end cgh plot section.
 
 			% Linear : show segmental anueploidy breakpoints.
-			if (displayBREAKS == true) && (show_annotations == true)
+			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
                                 for segment = 2:length(chr_breaks{chr})-1
                                         bP = chr_breaks{chr}(segment)*chr_length;

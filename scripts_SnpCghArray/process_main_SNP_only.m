@@ -914,6 +914,15 @@ for chr = 1:num_chrs
 			plot([0; 1],[150; 150],'color',[0.75 0.75 0.75]);
 	
 			area(smoothed{segment},'FaceColor',[0 0 0]);
+
+			% Draw red ticks between histplot segments
+			if ((Show_ChARM_edges == true) && (show_MRS == true))
+				if (segment > 1)
+					plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
+				end;
+			end;
+
+			% Flip subfigure around the origin.
 			view(-90,90);
 			set(gca,'YDir','Reverse');
 
@@ -1371,16 +1380,25 @@ for chr = 1:num_chrs
 	% standard : show MRS locations
 	if (show_MRS)
 		plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-		hold on;
 		for i = 1:length(MRS_location)
 			if (MRS_chr(i) == chr)
 				MRSloc = MRS_location(i)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
 				plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor','k','MarkerFaceColor','k','MarkerSize',5)
 			end;
 		end;
-		hold off;
 	end;
 	% end show MRS locations.
+
+	% standard : show ChARM edges.
+	if ((Show_ChARM_edges) && (show_MRS))
+		for i = 1:length(segmental_aneuploidy)
+			if (segmental_aneuploidy(i).chr == chr)
+				EDGEloc = segmental_aneuploidy(i).break*chr_size(chr)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
+				plot([EDGEloc EDGEloc], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+			end;
+		end;
+	end;
+	% end show ChARM edges.
 
 	hold off;
 	xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
@@ -1522,16 +1540,14 @@ for chr = 1:num_chrs
 		% linear : show MRS locations
 		if (show_MRS)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-			hold on;
 			for i = 1:length(MRS_location)
 				if (MRS_chr(i) == chr)
 					MRSloc = MRS_location(i)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
 					plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor','k','MarkerFaceColor','k','MarkerSize',5)
 				end;
 			end;
-			hold off;
 		end;
-		%end show MRS locations.
+		% end show MRS locations.
 
 		% linear : final reformatting.
 		xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
@@ -1588,6 +1604,7 @@ for chr = 1:num_chrs
 		%end final reformatting.
 
 		% shift back to main figure generation.
+		hold off;
 		figure(fig);
 		hold on;
 	end;

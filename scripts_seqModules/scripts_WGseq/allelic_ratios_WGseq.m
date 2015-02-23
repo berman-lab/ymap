@@ -14,6 +14,7 @@ blendColorBars              = false;
 show_annotations            = true;
 Yscale_nearest_even_ploidy  = true;
 Linear_display              = true;
+Linear_displayBREAKS        = false;
 
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
@@ -582,7 +583,7 @@ for chr = 1:num_chrs
 	        title(chr_label{chr},'Interpreter','none','FontSize',20);
 
 			% linear : show segmental anueploidy breakpoints.
-			if (displayBREAKS == true) && (show_annotations == true)
+			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
 				for segment = 2:length(chr_breaks{chr})-1
 					bP = chr_breaks{chr}(segment)*chr_length;

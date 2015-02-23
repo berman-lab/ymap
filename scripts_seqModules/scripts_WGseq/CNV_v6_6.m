@@ -9,6 +9,7 @@ ChrNum                      = true;
 show_annotations            = true;
 analyze_rDNA                = true;
 Linear_display              = true;
+Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true;
 
 
@@ -1022,7 +1023,7 @@ for chr = 1:num_chrs
 			%% end cgh plot section.
 
 			%show segmental anueploidy breakpoints.
-			if (displayBREAKS == true) && (show_annotations == true)
+			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
                                 for segment = 2:length(chr_breaks{chr})-1
                                         bP = chr_breaks{chr}(segment)*chr_length;

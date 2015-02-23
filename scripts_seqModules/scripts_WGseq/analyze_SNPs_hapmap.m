@@ -15,7 +15,7 @@ INDEL_verString        = 'v1';
 SNP_verString          = 'v4';
 rDNA_verString         = 'v1';
 LOH_verString          = 'v2';
-displayBREAKS          = false;
+displayBREAKS          = true;
 referenceCHR           = 1;
 
 %% Grab the first column of the first line of the putative_SNP pileup file.

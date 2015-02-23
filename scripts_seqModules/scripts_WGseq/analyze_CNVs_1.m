@@ -18,7 +18,7 @@ CNV_verString          = 'v1';
 INDEL_verString        = 'v1';
 SNP_verString          = 'v4';
 rDNA_verString         = 'v1';
-displayBREAKS          = false;
+displayBREAKS          = true;
 referenceCHR           = 1;
 
 % workingDir = projectDirectory;

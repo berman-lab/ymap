@@ -13,6 +13,7 @@ blendColorBars              = false;
 show_annotations            = true;
 Yscale_nearest_even_ploidy  = true;
 Linear_display              = true;
+Linear_displayBREAKS        = false;
 
 
 %%=========================================================================
@@ -766,7 +767,7 @@ for chr = 1:num_chrs
 	        end;
 
 	        %show segmental anueploidy breakpoints.
-			if (displayBREAKS == true) && (show_annotations == true)
+			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
                                 for segment = 2:length(chr_breaks{chr})-1
                                         bP = chr_breaks{chr}(segment)*chr_length;
