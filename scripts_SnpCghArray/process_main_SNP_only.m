@@ -99,28 +99,29 @@ tic;
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CGH data by ploidy.
 %    Chr_max_width              : max width of chromosomes as fraction of figure width.
-SNP_Genomic_display              = true;
-    CGH_Genomic_display          = false;
-    Linear_display               = true;
-    colorBars                    = true;
-    blendColorBars               = false;
-    infillColorBars              = false;
-    AnglePlot                    = true;
-        FillColors               = true;
-    HistPlot                     = false;
-    ChrNum                       = false;
-    Yscale_nearest_even_ploidy   = true;
-    Show_Genomic_LOH_fraction    = true;
-    show_unnassigned             = false;
-    show_Xlabels                 = false;
+SNP_Genomic_display                  = true;
+	CGH_Genomic_display          = false;
+	Linear_display               = true;
+	colorBars                    = true;
+	blendColorBars               = false;
+	infillColorBars              = false;
+	AnglePlot                    = true;
+        FillColors                   = true;
+	HistPlot                     = false;
+	ChrNum                       = false;
+	Yscale_nearest_even_ploidy   = true;
+	Show_Genomic_LOH_fraction    = true;
+	show_unnassigned             = false;
+	show_Xlabels                 = false;
 	if strcmp(show_MRS_string,'1')
-	    show_MRS                 = true;
+		show_MRS             = true;
 	else
-		show_MRS				 = false;
+		show_MRS             = false;
 	end;
-    Centromere_format            = 2;
-    scale_type                   = 'Ratio';
-    Chr_max_width                = 0.8;
+	Centromere_format            = 2;
+	scale_type                   = 'Ratio';
+	Chr_max_width                = 0.8;
+	Show_ChARM_edges             = true;
 
     %not in place yet... uninformative currently looks like unnassigned to script.
     show_uninformative           = false;

@@ -94,19 +94,19 @@
 
 	// Log status to process_log.txt file in project directory.
 	$outputString      .= "\tnew_fid = fopen('../users/".$user."/projects/".$project."/process_log.txt','a');\n";
-	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main.m\".');\n";
+	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main.m\".\\n');\n";
 
 	$outputString      .= "\tprocess_main('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','".$colLog2ratio."','";
 	$outputString      .=    $phasingData."','".$ploidyEstimate."','".$ploidyBase."','".$imageFormat."','".$projectName."','".$workingDir."','".$show_MRS."');\n";
 
 	// Log status to process_log.txt file in project directory.
-	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main_CNV_only.m\".');\n";
+	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main_CNV_only.m\".\\n');\n";
 
 	$outputString      .= "\tprocess_main_CNV_only('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','";
 	$outputString      .=    $colLog2ratio."','".$phasingData."','".$ploidyEstimate."','".$ploidyBase."','".$imageFormat."','".$projectName."','".$workingDir."','".$show_MRS."');\n";
 
 	// Log status to process_log.txt file in project directory.
-	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main_SNP_only.m\".');\n";
+	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main_SNP_only.m\".\\n');\n";
 
 	$outputString      .= "\tprocess_main_SNP_only('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','";
 	$outputString      .=    $colLog2ratio."','".$phasingData."','".$ploidyEstimate."','".$ploidyBase."','".$imageFormat."','".$projectName."','".$workingDir."','".$show_MRS."');\n";
