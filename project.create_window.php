@@ -180,7 +180,8 @@
 				</td></tr><tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection9a" style="display:inline">
 						<!-- SnpCgh array --!>
-						<input type="checkbox"      name="0_bias2" value="True" checked>GC-content bias
+						<input type="checkbox"      name="0_bias2" value="True" checked>GC-content bias<br>
+						<input type="checkbox"      name="0_bias4" value="True"        >chromosome-end bias
 					</div>
 					<div id="hiddenFormSection9b" style="display:none">
 						<!-- WGseq --!>
