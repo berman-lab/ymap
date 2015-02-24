@@ -1449,7 +1449,7 @@ for chr = 1:num_chrs
 				case 2
 					text(axisLabelPosition_vert, maxY/4,    '1' ,'HorizontalAlignment','right','Fontsize',5);
 					text(axisLabelPosition_vert, maxY/2,    '2' ,'HorizontalAlignment','right','Fontsize',5);
-					text(axisLabelPosition_vert, maxY/4*3   '3' ,'HorizontalAlignment','right','Fontsize',5);
+					text(axisLabelPosition_vert, maxY/4*3,  '3' ,'HorizontalAlignment','right','Fontsize',5);
 					text(axisLabelPosition_vert, maxY,      '4' ,'HorizontalAlignment','right','Fontsize',5);
 				case 3
 					text(axisLabelPosition_vert, maxY/2,    '3' ,'HorizontalAlignment','right','Fontsize',5);
@@ -1457,7 +1457,7 @@ for chr = 1:num_chrs
 				case 4
 					text(axisLabelPosition_vert, maxY/4,    '2' ,'HorizontalAlignment','right','Fontsize',5);
 					text(axisLabelPosition_vert, maxY/2,    '4' ,'HorizontalAlignment','right','Fontsize',5);
-					text(axisLabelPosition_vert, maxY/4*3   '6' ,'HorizontalAlignment','right','Fontsize',5);
+					text(axisLabelPosition_vert, maxY/4*3,  '6' ,'HorizontalAlignment','right','Fontsize',5);
 					text(axisLabelPosition_vert, maxY,      '8' ,'HorizontalAlignment','right','Fontsize',5);
 			end;
 		else
