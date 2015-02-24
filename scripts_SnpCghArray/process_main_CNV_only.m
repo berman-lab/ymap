@@ -176,18 +176,23 @@ chromosomes_to_analyze = 1:num_chrs;
 % Defines chromosome sizes in bp. (diploid total=28,567,7888)
 % Defines centromere locations in bp.
 % Defines MRS locations in bp.
-[centromeres, chr_sizes,MRSs] = Load_information();
+[centromeres, chr_sizes,MRSs,rDNA] = Load_information();
 for i = chromosomes_to_analyze
-    chr_size(i)  = chr_sizes(i).size;
-    cen_start(i) = centromeres(i).start;
-    cen_end(i)   = centromeres(i).end;
+	chr_size(i)  = chr_sizes(i).size;
+	cen_start(i) = centromeres(i).start;
+	cen_end(i)   = centromeres(i).end;
 end;
 for i = 1:length(MRSs)
-    MRS_chr(i)   = MRSs(i).chr;
-    MRS_location(i) = (MRSs(i).start+MRSs(i).end)/2;
+	MRS_chr(i)      = MRSs(i).chr;
+	MRS_location(i) = (MRSs(i).start+MRSs(i).end)/2;
+	MRS_color_1(i)  = MRSs(i).color_fill;
+	MRS_color_2(i)  = MRSs(i).color_edge;
 end;
-clear centromeres chr_sizes MRSs;
-
+rDNA_chr            = rDNA.chr;
+rDNA_location       = (rDNA.start+rDNA.end)/2;
+rDNA_color_1        = rDNA.color_fill;
+rDNA_color_2        = rDNA.color_edge;
+clear centromeres chr_sizes MRSs rDNA;
 
 
 % basic plot parameters not defined per genome.
@@ -935,8 +940,9 @@ for chr = 1:num_chrs
 			% ensure subplot axes are consistent with main chr plots.
 			hold off;
 			axis off;
-			set(gca,'YTick',[]);    set(gca,'XTick',[]);
-			ylim([0,1]);            xlim([0,maxY*20]);
+			set(gca,'YTick',[]);
+			set(gca,'XTick',[]);
+			ylim([0,1]);
 			if (show_MRS == true)
 				xlim([-maxY*20/10*1.5,maxY*20]);
 			else
@@ -1393,12 +1399,23 @@ for chr = 1:num_chrs
 		for i = 1:length(MRS_location)
 			if (MRS_chr(i) == chr)
 				MRSloc = MRS_location(i)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
-				plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor','k','MarkerFaceColor','k','MarkerSize',5)
+				plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',MRS_color_2(i),'MarkerFaceColor',MRS_color_1(i),'MarkerSize',5);
 			end;
 		end;
 		hold off;
 	end;
 	% end show MRS locations.
+
+	% standard : show rDNA location.
+	if (show_MRS)
+		hold on;
+		if (rDNA_chr == chr)
+			rDNAloc = rDNA_location*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
+			plot(rDNA_loc,-maxY/10*1.5,'k:o','MarkerEdgeColor',rDNA_color_2,'MarkerFaceColor',rDNA_color_1,'MarkerSize',5);
+		end;
+		hold off;
+	end;
+	% end show rDNA location.
 
 	% standard : show ChARM edges.
 	if ((Show_ChARM_edges) && (show_MRS))
@@ -1556,12 +1573,23 @@ for chr = 1:num_chrs
 			for i = 1:length(MRS_location)
 				if (MRS_chr(i) == chr)
 					MRSloc = MRS_location(i)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
-					plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor','k','MarkerFaceColor','k','MarkerSize',5)
+					plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',MRS_color_2(i),'MarkerFaceColor',MRS_color_1(i),'MarkerSize',5);
 				end;
 			end;
 			hold off;
 		end;
-		%end show MRS locations.
+		% end show MRS locations.
+
+		% linear : show rDNA location.
+		if (show_MRS)
+			hold on;
+			if (rDNA_chr == chr)
+				rDNAloc = rDNA_location*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
+				plot(rDNA_loc,-maxY/10*1.5,'k:o','MarkerEdgeColor',rDNA_color_2,'MarkerFaceColor',rDNA_color_1,'MarkerSize',5);
+			end;
+			hold off;
+		end;
+		% end show rDNA location.
 
 		% linear : final reformatting.
 		xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
