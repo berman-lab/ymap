@@ -272,8 +272,6 @@ else
 		rm $GATKlog1;
 		rm $GATKlog2;
 
-		cd $currentDir;
-
 		echo "#============================================================================== 3" >> $logName;
 
 		echo "[[=- In-house SNP/CNV/INDEL analysis -=]]" >> $logName;
