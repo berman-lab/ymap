@@ -1470,7 +1470,7 @@ for chr = 1:num_chrs
 					text(axisLabelPosition_vert, maxY/2,    '1' ,'HorizontalAlignment','right','Fontsize',5);
 					text(axisLabelPosition_vert, maxY,      '2' ,'HorizontalAlignment','right','Fontsize',5);
 				case 2
-					text(axisLabelPosition_vert, maxY4,     '1' ,'HorizontalAlignment','right','Fontsize',5);
+					text(axisLabelPosition_vert, maxY/4,    '1' ,'HorizontalAlignment','right','Fontsize',5);
 					text(axisLabelPosition_vert, maxY/2,    '2' ,'HorizontalAlignment','right','Fontsize',5);
 					text(axisLabelPosition_vert, maxY/4*3,  '3' ,'HorizontalAlignment','right','Fontsize',5);
 					text(axisLabelPosition_vert, maxY,      '4' ,'HorizontalAlignment','right','Fontsize',5);
