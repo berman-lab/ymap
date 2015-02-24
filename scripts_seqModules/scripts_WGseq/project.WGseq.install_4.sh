@@ -19,7 +19,7 @@ echo "\tmain_dir = "$main_dir;
 echo "";
 
 # load local installed program location variables.
-. $main_dir/sh/local_installed_programs.sh;
+. $main_dir"local_installed_programs.sh";
 
 ##==============================================================================
 ## Define locations and names to be used later.
