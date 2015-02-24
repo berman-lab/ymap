@@ -112,7 +112,7 @@ rDNA_end   = sscanf(line, '%s',3);
 for i = 1:size(sscanf(line,'%s',2),2);
 	rDNA_end(1) = [];
 end;
-DNA_name   = sscanf(line, '%s',4);
+rDNA_name   = sscanf(line, '%s',4);
 for i = 1:size(sscanf(line,'%s',3),2);
 	rDNA_name(1) = [];
 end;
