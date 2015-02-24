@@ -1447,7 +1447,7 @@ for chr = 1:num_chrs
 		hold on;
 		if (rDNA_chr == chr)
 			rDNAloc = rDNA_location*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
-			plot(rDNA_loc,-maxY/10*1.5,'k:o','MarkerEdgeColor',rDNA_color_2,'MarkerFaceColor',rDNA_color_1,'MarkerSize',5);
+			plot(rDNAloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',rDNA_color_2,'MarkerFaceColor',rDNA_color_1,'MarkerSize',5);
 		end;
 		hold off;
 	end;
@@ -1621,7 +1621,7 @@ for chr = 1:num_chrs
 			hold on;
 			if (rDNA_chr == chr)
 				rDNAloc = rDNA_location*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
-				plot(rDNA_loc,-maxY/10*1.5,'k:o','MarkerEdgeColor',rDNA_color_2,'MarkerFaceColor',rDNA_color_1,'MarkerSize',5);
+				plot(rDNAloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',rDNA_color_2,'MarkerFaceColor',rDNA_color_1,'MarkerSize',5);
 			end;
 			hold off;
 		end;
