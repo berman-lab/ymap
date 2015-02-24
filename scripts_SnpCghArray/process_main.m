@@ -334,6 +334,7 @@ end;
 datafile = [workingDir 'dataBiases.txt'];
 if (exist(datafile,'file') == 0)
 	performGCbiasCorrection     = true;
+	performEndbiasCorrection    = true;
 else
 	biases_fid = fopen(datafile, 'r');
 	bias1      = fgetl(biases_fid);
@@ -341,10 +342,11 @@ else
 	bias3      = fgetl(biases_fid);
 	bias4      = fgetl(biases_fid);
 	fclose(biases_fid);
-	if (strcmp(bias2,'True') == 1)
-		performGCbiasCorrection = true;
-	else
-		performGCbiasCorrection = false;
+	if (strcmp(bias2,'True') == 1)  performGCbiasCorrection  = true;
+	else                            performGCbiasCorrection  = false;
+	end;
+	if (strcmp(bias4,'True') == 1)  performEndbiasCorrection = true;
+	else                            performEndbiasCorrection = false;
 	end;
 end;
 
@@ -412,7 +414,7 @@ if (performGCbiasCorrection)
 				plot(fitX1,fitY1,'r','LineWidth',2);
 			hold off;
 			xlabel('GC ratio');
-			ylabel('CGH data');
+			ylabel('CNV data');
 			xlim([0 1.0]);   ylim([0 aveData_Y*5]);
 			axis square;
 		subplot(1,2,2);
@@ -421,7 +423,7 @@ if (performGCbiasCorrection)
 				plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);
 			hold off;
 			xlabel('GC ratio');
-			ylabel('corrected CGH data');
+			ylabel('corrected CNV data');
 			xlim([0 1.0]);   ylim([0 5]);
 			axis square;
 		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.png'], 'png');
@@ -436,6 +438,89 @@ if (performGCbiasCorrection)
 	else
 		% Load GC-bias corrected data from earlier.
 		load([workingDir 'GC_bias_corrected.mat']);
+	end;
+end;
+
+
+%%================================================================================================
+% Apply distance from fragment center to nearest end of chromosome bias correction
+%-------------------------------------------------------------------------------------------------
+if (performEndbiasCorrection)
+	if (exist([workingDir 'End_bias_corrected.mat'],'file') == 0)
+		for chr = 1:num_chrs
+			chr_EndDistanceData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+		end;
+		for chr = 1:num_chrs
+			for position = 1:ceil(chr_size(chr)/bases_per_bin)
+				frag_size                          = ceil(chr_size(chr)/bases_per_bin);
+				frag_center                        = position;
+				frag_nearestChrEnd                 = min(frag_center, frag_size - frag_center);
+				chr_EndDistanceData{chr}(position) = frag_nearestChrEnd;
+			end;
+		end;
+
+		% Gather CGH and GCratio data for LOWESS fitting.
+		CGHdata_all         = [];
+		EndDistanceData_all = [];
+		for chr = 1:num_chrs
+			CGHdata_all         = [CGHdata_all         chr_CGHdata{chr,2}      ];
+			EndDistanceData_all = [EndDistanceData_all chr_EndDistanceData{chr}];
+		end;
+
+		% Perform LOWESS fitting.
+		rawData_X1        = EndDistanceData_all;
+		rawData_Y1        = CGHdata_all;
+		numFits           = 10;
+		[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0);
+
+		% Correct data using normalization to LOWESS fitting
+		Y_target = 1;
+		for chr = 1:num_chrs
+			rawData_chr_X             = chr_EndDistanceData{chr};
+			rawData_chr_Y             = chr_CGHdata{chr,2};
+			fitData_chr_Y             = interp1(fitX1,fitY1,rawData_chr_X,'spline');
+			normalizedData_chr_Y{chr} = rawData_chr_Y./fitData_chr_Y*Y_target;
+		end;
+		aveData_Y = mean(rawData_Y1);
+
+		% Gather corrected CGH data after normalization to the LOWESS fitting.
+		correctedCGHdata_all = [];
+		for chr = 1:num_chrs
+			correctedCGHdata_all = [correctedCGHdata_all normalizedData_chr_Y{chr}];
+		end;
+
+		%% Generate figure showing subplots of LOWESS fittings.
+		Endfig = figure();
+		subplot(1,2,1);
+			plot(EndDistanceData_all,CGHdata_all,'k.');
+			hold on;
+				plot(fitX1,fitY1,'r','LineWidth',2);
+			hold off;
+			xlabel('Distance to chr end');
+			ylabel('CNV data');
+			xlim([0 1.0]);   ylim([0 aveData_Y*5]);
+			axis square;
+		subplot(1,2,2);
+			plot(EndDistanceData_all,correctedCGHdata_all,'k.');
+			hold on;
+				plot([min(EndDistanceData_all) max(EndDistanceData_all)],[Y_target Y_target],'r','LineWidth',2);
+			hold off;
+			xlabel('Distance to chr end');
+			ylabel('corrected CNV data');
+			xlim([0 1.0]);   ylim([0 5]);
+			axis square;
+		saveas(GCfig, [workingDir 'fig_EndDistance_vs_CGH.png'], 'png');
+
+		% Move LOWESS-normalizd CGH data into display pipeline.
+		for chr = 1:num_chrs
+			chr_CGHdata{chr,2} = normalizedData_chr_Y{chr};
+		end;
+
+		% Save GC-bias corrected data from earlier.
+		save([workingDir 'End_bias_corrected.mat'], 'chr_CGHdata');
+	else
+		% Load GC-bias corrected data from earlier.
+		load([workingDir 'End_bias_corrected.mat']);
 	end;
 end;
 
@@ -847,6 +932,9 @@ for i = 1:2:SNP_probeset_length
 		end;
 	end;
 end;
+
+% Save SNP 
+save([workingDir 'SNPdata_collected.mat'], 'chr_SNPdata','probeset1','SNPs_hom','SNPs_total');
 
 % basic plot parameters.
 left            = 0.15;
