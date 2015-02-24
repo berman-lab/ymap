@@ -125,6 +125,9 @@ SNP_Genomic_display                  = true;
     %not in place yet... uninformative currently looks like unnassigned to script.
     show_uninformative           = false;
 
+axisLabelPosition_vert  = 0.01125;
+axisLabelPosition_horiz = 0.01125;
+
 % Generate CGD annotation files for analyzed microarrays.
 Output_CGD_annotations           = true;
 
