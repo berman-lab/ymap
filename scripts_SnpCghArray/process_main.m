@@ -110,7 +110,6 @@ SNP_Genomic_display                  = true;
 	Yscale_nearest_even_ploidy   = true;
 	Show_Genomic_LOH_fraction    = true;
 	show_unnassigned             = false;
-	show_Xlabels                 = false;
 	if strcmp(show_MRS_string,'1')
 		show_MRS             = true;
 	else
@@ -956,8 +955,9 @@ for chr = 1:num_chrs
 			% ensure subplot axes are consistent with main chr plots.
 			hold off;
 			axis off;
-			set(gca,'YTick',[]);    set(gca,'XTick',[]);
-			ylim([0,1]);            xlim([0,maxY*20]);
+			set(gca,'YTick',[]);
+			set(gca,'XTick',[]);
+			ylim([0,1]);
 			if (show_MRS == true)
 				xlim([-maxY*20/10*1.5,maxY*20]);
 			else
@@ -1457,16 +1457,12 @@ for chr = 1:num_chrs
 	else
 		ylim([0,maxY]);
 	end;
+	set(gca,'TickLength',[(TickSize*chr_size(1)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 	set(gca,'YTick',[]);
 	set(gca,'YTickLabel',[]);
-	set(gca,'TickLength',[(TickSize*chr_size(1)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-	text(-50000/5000/2*3, maxY*3/2,     chr_labels(chr), 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 	set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-	if (show_Xlabels == true)
-		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
-	else
-		set(gca,'XTickLabel',[]);
-	end;
+	set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
+	text(-50000/5000/2*3, maxY*3/2,     chr_labels(chr), 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 	if (CGH_Genomic_display == true)
 		if (strcmp(scale_type,'Ratio') == 1)
 			switch ploidyBase
@@ -1611,15 +1607,11 @@ for chr = 1:num_chrs
 		else
 			ylim([0,maxY]);
 		end;
+		set(gca,'TickLength',[(Linear_TickSize*chr_size(1)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 		set(gca,'YTick',[]);
 		set(gca,'YTickLabel',[]);
-		set(gca,'TickLength',[(Linear_TickSize*chr_size(1)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-		if (show_Xlabels == true)
-			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
-		else
-			set(gca,'XTickLabel',[]);
-		end;
+		set(gca,'XTickLabel',{'','','','','','','','','','','','','','','','',''});
 		if (chr == 1)
 			if (CGH_Genomic_display == true)
 				if (strcmp(scale_type,'Ratio') == 1)
