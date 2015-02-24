@@ -14,7 +14,7 @@ function deleteGenomeConfirmation(user,genome,key){
 
 function deleteGenome_yes(user,genome,key){
 	$.ajax({
-		url : 'php/genome.delete_server.php',
+		url : 'genome.delete_server.php',
 		type : 'post',
 		data : {
 			user: user,

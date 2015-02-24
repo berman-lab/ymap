@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -361,6 +361,8 @@ function blank_and_content_tab() {
 			var fig_standard_manual              = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.1.";
 			var CGD_annotations_SNP              = "users/"+user+"/projects/"+project+"/CGD_annotations."+project+".txt";
 
+			var CNV_bias_SnpCghArray_GCcontent   = "users/"+user+"/projects/"+project+"/fig_GCratio_vs_CGH.png";
+
 			var CNV_bias_WGseq_end               = "users/"+user+"/projects/"+project+"/fig.bias_chr_end.png";
 			var CNV_bias_WGseq_GCcontent         = "users/"+user+"/projects/"+project+"/fig.bias_GC_content.png";
 
@@ -424,7 +426,12 @@ function blank_and_content_tab() {
 					string1 = string1 + "; ";
 				}
 			}
-			// Show CNV bias figure for WGseq and ddRADseq.
+
+			// Show CNV bias figure for SnpCghArray, WGseq, and ddRADseq.
+			if (isFile(CNV_bias_SnpCghArray_GCcontent)) {
+				string1 = string1 + " : CNV biases ";
+				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_SnpCghArray_GCcontent+"\",\"50\")'>%GC</button>";
+			}
 			if ((isFile(CNV_bias_WGseq_end)) || (isFile(CNV_bias_WGseq_GCcontent))) {
 				string1 = string1 + " : CNV biases ";
 				if (isFile(CNV_bias_WGseq_end)) {

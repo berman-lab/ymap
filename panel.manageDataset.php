@@ -22,7 +22,8 @@
 		<b><font size='2'>Datasets Pending</font></b><br>
 		<div class='tab' style='color:#CC0000; font-size:10pt;' id='newly_installed_list' name='newly_installed_list'></div><br>
 		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:left;' id='pending_comment' name='pending_comment'>Reload page after any current uploads have completed to prepare pending datasets
-		for upload.<br><br>Additional datasets can be defined with the 'Install New Dataset' button while files upload.</div>
+		for upload.<br><br>Additional datasets can be defined with the 'Install New Dataset' button while files upload.<br></div>
+		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:center;' id='name_error_comment' name='name_error_comment'>(Entered dataset name is already in use.)</div>
 		<?php
 	}
 	?>
@@ -98,7 +99,7 @@
 				$sizeString_1 = trim(fgets($handle));
 				fclose($handle);
 			}
-			
+
 			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
 			$sizeString_2 = "";
 			if (file_exists($sizeFile_2))
@@ -107,7 +108,7 @@
 				$sizeString_2 = trim(fgets($handle));
 				fclose($handle);
 			}
-			
+
 			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
 			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
 			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
@@ -166,6 +167,11 @@
 </script>
 <?php
 		foreach($projectFolders_complete as $key_=>$project) {
+			// Load data type for project.
+			$handle   = fopen("users/".$user."/projects/".$project."/dataType.txt", "r");
+			$dataType = fgets($handle);
+			fclose($handle);
+
 			// Load colors for project.
 			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
 			if (file_exists($colorFile)) {
@@ -202,9 +208,14 @@
 			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
 			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
 
-			echo "</span> : ";
-			echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></span> ";
-			echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span>\n\t\t\t\t";
+			echo "</span>";
+			if ($dataType <> '0') {
+				// valid output for sequence data types, but not array data type.
+				echo "<font size='1'> : </font>";
+				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></span> ";
+				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span> ";
+				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/data.bam\")'><font size='1'>[BAM]</font></span>\n\t\t\t\t";
+			}
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p1_".$key."'></div>\n";
 		}
@@ -253,47 +264,47 @@ if (isset($_SESSION['logged_on'])) {
 		echo "p_js.key            = 'p_".$key."';\n";
 		if ($dataType == '0') {                                      // SnpCgh microarray
 			echo "p_js.display_string[0] = 'Add : SnpCgh array data...';\n";
-			echo "p_js.conclusion_script = 'php/project.SnpCgh.install.php';\n";
+			echo "p_js.conclusion_script = 'scripts_SnpCghArray/project.SnpCgh.install.php';\n";
 		} else if ($dataType == '1:0') {                             // WGseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read WGseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = 'php/project.single_WGseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php';\n";
 		} else if ($dataType == '1:1') {                             // WGseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read WGseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read WGseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = 'php/project.paired_WGseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php';\n";
 		} else if (($dataType == '1:2') || ($dataType == '1:3')) {   // WGseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : WGseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.conclusion_script = 'php/project.single_WGseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php';\n";
 		} else if ($dataType == '2:0') {                             // ddRADseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read ddRADseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = 'php/project.single_ddRADseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_1.php';\n";
 		} else if ($dataType == '2:1') {                             // ddRADseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = 'php/project.paired_ddRADseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_1.php';\n";
 		} else if (($dataType == '2:2') || ($dataType == '2:3')) {   // ddRADseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : ddRADseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.conclusion_script = 'php/project.single_ddRADseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_1.php';\n";
 		} else if ($dataType == '3:0') {                             // RNAseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read RNAseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = 'php/project.single_RNAseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_RNAseq/project.single_RNAseq.install_1.php';\n";
 		} else if ($dataType == '3:1') {                             // RNAseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read RNAseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read RNAseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = 'php/project.paired_RNAseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_RNAseq/project.paired_RNAseq.install_1.php';\n";
 		} else if (($dataType == '3:2') || ($dataType == '3:3')) {   // RNAseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : RNAseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.conclusion_script = 'php/project.single_RNAseq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_RNAseq/project.single_RNAseq.install_1.php';\n";
 		} else if ($dataType == '4:0') {                             // IonExpressSeq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read IonExpress data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = 'php/project.single_IonExpressSeq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_1.php';\n";
 		} else if ($dataType == '4:1') {                             // IonExpressSeq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read IonExpress data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read IonExpress data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = 'php/project.paired_IonExpressSeq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_IonExpressSeq/project.paired_IonExpressSeq.install_1.php';\n";
 		} else if (($dataType == '4:2') || ($dataType == '4:3')) {   // IonExpressSeq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : IonExpress data (SAM/BAM/TXT)...';\n";
-			echo "p_js.conclusion_script = 'php/project.single_IonExpressSeq.install_1.php';\n";
+			echo "p_js.conclusion_script = 'scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_1.php';\n";
 		}
 	}
 	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.

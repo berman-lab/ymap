@@ -18,7 +18,7 @@
 		The true identity of the users can only be revealed if they choose to notify the administrators, which is generally not needed.<br><br>
 		If a project displays an error description, or if you have any questions about how to use the tool, you can leave a comment the bug-tracking feature found in the "System" tab.<br>
 		<br>
-		<form action="php/register_server.php" method="post">
+		<form action="register_server.php" method="post">
 <!--		<b>Required:</b><br>  --!>
 			<label for="user">Username: </label>                                        <input type="text"     id="user"                      name="user"><br>
 			<label for="pw1">Password: </label>                                         <input type="password" id="pwOrig"                    name="pwOrig"><br>

@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script><?php echo "\n"; } else { $user = $_SESSION['user']; }
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
 	$projectsShown = filter_input(INPUT_POST, "projectsShown", FILTER_SANITIZE_STRING);

@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
 <html lang="en">
@@ -18,7 +18,7 @@
 					submitter = $('#submitter').val();
 					description = $('#description').val();
 					$.ajax({
-						url : 'php/addBug_server.php',
+						url : 'addBug_server.php',
 						type : 'post',
 						data : {
 							submitter: submitter,

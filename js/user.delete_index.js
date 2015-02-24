@@ -8,7 +8,7 @@ function deleteUserConfirmation(user,key){
 // Requires javascript value user to be defined globally
 function deleteUser_yes(user){
 	$.ajax({
-		url : 'php/user.delete_server.php',
+		url : 'user.delete_server.php',
 		type : 'post',
 		data : {
 			user : user

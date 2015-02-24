@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
 <html lang="en">
@@ -17,7 +17,7 @@
 		<div id="loginControls"><p>
 		</p></div>
 		<div id="projectCreationInformation"><p>
-			<form action="php/project.create_server.test.php" method="post">
+			<form action="project.create_server.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project">
 				</td><td>
@@ -88,8 +88,8 @@
 				</td></tr><tr bgcolor="#CCCCFF"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
-					$hapmapsDir1       = $directory."users/default/hapmaps/";
-					$hapmapsDir2       = $directory."users/".$user."/hapmaps/";
+					$hapmapsDir1       = "users/default/hapmaps/";
+					$hapmapsDir2       = "users/".$user."/hapmaps/";
 					$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
 					$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
 					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
@@ -99,19 +99,20 @@
 						Restriction enzymes :
 						<select id="selectRestrictionEnzymes" name="selectRestrictionEnzymes" onchange="UpdateParent();">
 						<option value="MfeI_MboI">MfeI & MboI</option>
-						<option value="BamHI_BclI">BamHI & BclI (testing)</option>
+						<?php // <option value="BamHI_BclI">BamHI & BclI (testing)</option>
+						?>
 						</select>
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection11" style="display:none">
 						Analysis of ddRADseq data is limited to restriction fragments bound by both restriction enzymes.<br>
-						If your restriction enzyme pair is not listed, you can request it be added by commenting to the admin in the "System" tab.
+						If your restriction enzyme pair is not listed, you can contact the system administrators about developing the option as a collaboration.
 					</div>
 				</td></tr><tr bgcolor="#CCCCFF"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
-					$hapmapsDir1       = $directory."users/default/hapmaps/";
-					$hapmapsDir2       = $directory."users/".$user."/hapmaps/";
+					$hapmapsDir1       = "users/default/hapmaps/";
+					$hapmapsDir2       = "users/".$user."/hapmaps/";
 					$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
 					$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
 					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
@@ -141,8 +142,8 @@
 				</td></tr><tr bgcolor="#CCFFCC"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
-					$projectsDir1       = $directory."users/default/projects/";
-					$projectsDir2       = $directory."users/".$user."/projects/";
+					$projectsDir1       = "users/default/projects/";
+					$projectsDir2       = "users/".$user."/projects/";
 					$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 					$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
