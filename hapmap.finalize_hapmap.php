@@ -11,15 +11,15 @@
 	}
 
 	$bad_chars = array(",", "\\", "/", " ");
-    $hapmap    = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
-    $user      = filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING);
-    $key       = filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING);
+	$hapmap    = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
+	$user      = filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING);
+	$key       = filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING);
 
-    $dir1      = "users/".$user."/hapmaps";
-    $dir2      = "users/".$user."/hapmaps/".$hapmap;
-    $dir3      = "users/default/hapmaps/".$hapmap;
+	$dir1      = "users/".$user."/hapmaps";
+	$dir2      = "users/".$user."/hapmaps/".$hapmap;
+	$dir3      = "users/default/hapmaps/".$hapmap;
 
-    // figure out what user the hapmap is installed under.
+	// figure out what user the hapmap is installed under.
 	$folder = "users/".$user."/hapmaps/".$hapmap."/";
 
 	// Re-initialize 'process_log.txt' file.
@@ -32,6 +32,10 @@
 	$handle     = fopen($handleName, 'w');
 	fwrite($handle, "complete");
 	fclose($handle);
+
+	// Run finalization python scripts to process Ymap-internal hapmap to final output versions.
+	//	python [Ymap_root]/scripts_seqModules/scripts_hapmaps/process_hapmap.output_cleaned.py [raw_hapmap_file] > [cleaned_hapmap_file]
+	//	python [Ymap_root]/scripts_seqModules/scripts_hapmaps/process_hapmap.output_errors.py  [raw_hapmap_file] > [errors_hapmap_file]
 
 	fwrite($logOutput, "Haplotype map finalized.\n");
 	fclose($logOutput);
