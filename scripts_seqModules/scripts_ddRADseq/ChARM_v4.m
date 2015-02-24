@@ -258,8 +258,10 @@ if (temp_figures == true)
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-			set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
+			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			ylim([0,maxY]);
+			set(gca,'YTick',[0 maxY/2 maxY]);
+			set(gca,'YTickLabel',[]);
 		end;
 	end;
     saveas(fig,[projectDir 'fig.ChARM_test.1.eps'], 'epsc');
@@ -285,8 +287,10 @@ if (temp_figures == true)
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-			set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''}); 
+			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			ylim([0,maxY]);
+			set(gca,'YTick',[0 maxY/2 maxY]);
+			set(gca,'YTickLabel',[]); 
 		end;
     end;
     saveas(fig,[projectDir 'fig.ChARM_test.2.eps'], 'epsc');
@@ -312,8 +316,10 @@ if (temp_figures == true)
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-			set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''}); 
+			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			ylim([0,maxY]);
+			set(gca,'YTick',[0 maxY/2 maxY]);
+			set(gca,'YTickLabel',[]); 
 		end;
     end;
     saveas(fig,[projectDir 'fig.ChARM_test.3.eps'], 'epsc');
@@ -351,7 +357,7 @@ if (temp_figures == true)
 			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
 			ylim([-1 1]);
 			set(gca,'YTick',[-1 0 1]);
-			set(gca,'YTickLabel',{'','',''});
+			set(gca,'YTickLabel',[]);
 		end;
     end;
     saveas(fig,[projectDir 'fig.ChARM_test.4.eps'], 'epsc');
@@ -737,7 +743,7 @@ for chr = 1:num_chrs
 		%			xlim([0,chr_size(chr_fig)*chr_length_scale_multiplier]);
 		%			ylim([0,maxY]);
 		%			set(gca,'YTick',[0 maxY/2 maxY]);
-		%			set(gca,'YTickLabel',{'','',''});
+		%			set(gca,'YTickLabel',[]);
 		%		end;
 		%		saveas(fig,[projectDir 'fig.ChARM_test.5.' num2str(chr_fig) '_' num2str(t,'%02d') '.eps'], 'epsc');
 		%		delete(fig)
@@ -777,8 +783,10 @@ if (temp_figures == true)
 			    plot([locs{chr}(edge) locs{chr}(edge)], [0 maxY],'color',[0 0 1]);
 			end;
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-			set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
+			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			ylim([0,maxY]);
+			set(gca,'YTick',[0 maxY/2 maxY]);
+			set(gca,'YTickLabel',[]);
 		end;
     end;
     saveas(fig,[projectDir 'fig.ChARM_test.5.eps'], 'epsc');
