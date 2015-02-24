@@ -697,6 +697,7 @@ for chr = 1:num_chrs
 end;
 fprintf('\n');
 largestChr = find(chr_width == max(chr_width));
+largestChr = largestChr(1);
 
 %% -----------------------------------------------------------------------------------------
 % Setup for linear-view figure generation.
@@ -809,32 +810,29 @@ for chr = 1:num_chrs
 	        set(f,'linestyle','none');
 	    end;
 
-	    % axes labels etc.
+	    % standard : axes labels etc.
 	    hold off;
 	    xlim([0,chr_size(chr)/bases_per_bin]);
     
-	    %% modify y axis limits to show annotation locations if any are provided.
+	    %% standard : modify y axis limits to show annotation locations if any are provided.
 	    if (length(annotations) > 0)
 	        ylim([-maxY/10*1.5,maxY]);
 	    else
 	        ylim([0,maxY]);
 	    end;
+	    set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 	    set(gca,'YTick',[]);
 	    set(gca,'YTickLabel',[]);
-	    set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-
-		% ylabel(chr_label{chr}, 'Rotation', 90, 'HorizontalAlign', 'center', 'VerticalAlign', 'bottom');
-		text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
-
 	    set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 	    set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
+	    text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 
 	    set(gca,'FontSize',12);
 	    if (chr == find(chr_posY == max(chr_posY)))
 			title([ project ' vs. (hapmap)' hapmap ' SNP/LOH map'],'Interpreter','none','FontSize',24);
 	    end;
 	    hold on;
-	    %end axes labels etc.
+	    % standard : end axes labels etc.
     
 		% standard : show segmental anueploidy breakpoints.
                 if (displayBREAKS == true) && (show_annotations == true)
@@ -928,7 +926,7 @@ for chr = 1:num_chrs
 	        hold on;
 	        title(chr_label{chr},'Interpreter','none','FontSize',20);
 
-	        % draw colorbars.
+	        % linear : draw colorbars.
 	        for i = 1:length(phased_plot2{chr})+1;
 	            x_ = [i i i-1 i-1];
 	            y_ = [0 maxY maxY 0];
@@ -949,7 +947,7 @@ for chr = 1:num_chrs
 	            set(f,'linestyle','none');
 	        end;
 
-	        %show segmental anueploidy breakpoints.
+	        % linear : show segmental anueploidy breakpoints.
                 if (Linear_displayBREAKS == true) && (show_annotations == true)
                         chr_length = ceil(chr_size(chr)/bases_per_bin);
                         for segment = 2:length(chr_breaks{chr})-1
@@ -958,7 +956,7 @@ for chr = 1:num_chrs
                         end;
                 end;
 
-	        %show centromere.
+	        % linear : show centromere.
 	        x1 = cen_start(chr)/bases_per_bin;
 	        x2 = cen_end(chr)/bases_per_bin;
 	        leftEnd  = 0.5*5000/bases_per_bin;
@@ -1006,9 +1004,9 @@ for chr = 1:num_chrs
 	                  [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy],...
 	                  'Color',[0 0 0]);
 	        end;
-	        %end show centromere.
+	        % linear : end show centromere.
 
-	        %show annotation locations
+	        % linear : show annotation locations
 	        if (show_annotations) && (length(annotations) > 0)
 	            plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 	            hold on;
@@ -1031,9 +1029,9 @@ for chr = 1:num_chrs
 	            end;
 	            hold off;
 	        end;
-	        %end show annotation locations.
+	        % linear : end show annotation locations.
 
-	        %% Final formatting stuff.
+	        %% linear : Final formatting stuff.
 	        xlim([0,chr_size(chr)/bases_per_bin]);
 	        % modify y axis limits to show annotation locations if any are provided.
 	        if (length(annotations) > 0)
@@ -1041,12 +1039,12 @@ for chr = 1:num_chrs
 	        else
 	            ylim([0,maxY]);
 	        end;
+		set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 		set(gca,'YTick',[]);
-                set(gca,'YTickLabel',[]);
-	        set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-	        set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-		set(gca,'XTickLabel',{'','','','','','','','','','','','','','','','',''});
-	        set(gca,'FontSize',12);
+        	set(gca,'YTickLabel',[]);
+		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
+		set(gca,'XTickLabel',[]);
+		set(gca,'FontSize',12);
 	        %end final reformatting.
 	        
 	        % shift back to main figure generation.

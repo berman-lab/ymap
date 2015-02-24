@@ -169,6 +169,7 @@ else
 	load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
 	[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use)
 	largestChr = find(chr_width == max(chr_width));
+	largestChr = largestChr(1);
 
 
 	%% =========================================================================================
@@ -468,9 +469,7 @@ else
 			set(gca,'YTick',[]);
 			set(gca,'YTickLabel',[]);
 			set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-
 			text(-50000/bases_per_bin/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
-
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 
@@ -824,7 +823,7 @@ else
 				set(gca,'YTickLabel',[]);
 				set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-				set(gca,'XTickLabel',{'','','','','','','','','','','','','','','','',''});
+				set(gca,'XTickLabel',[]);
 				if (first_chr)
 					% This section sets the Y-axis labelling.
 					switch ploidyBase

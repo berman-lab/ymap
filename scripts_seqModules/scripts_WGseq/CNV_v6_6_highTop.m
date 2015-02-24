@@ -114,8 +114,6 @@ load([projectDir 'Common_CNV.mat']);   %% 'CNVplot2','genome_CNV'.
 ploidy = str2num(ploidyEstimateString);
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
 fprintf('\n');
-largestChr = find(chr_width == max(chr_width));
-
 
 %% -----------------------------------------------------------------------------------------
 % Setup for main figure generation.
@@ -276,14 +274,12 @@ for chr = 1:num_chrs
 			ylim([0,maxY_highTop]);
 		end;
 
+		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 		set(gca,'YTick',[]);
 		set(gca,'YTickLabel',[]);
-		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-
-		%% standard : large chromosome labels at left of chromosome cartoons.
-		text(-50000/5000/2*3, maxY*3/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
+		text(-50000/5000/2*3, maxY*3/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 
 		% standard : This section sets the Y-axis labelling.
 		switch ploidyBase
@@ -501,8 +497,9 @@ for chr = 1:num_chrs
 				% ensure subplot axes are consistent with main chr plots.
 				hold off;
 				axis off;
-				set(gca,'YTick',[]);    set(gca,'XTick',[]);
-				ylim([0,1]);            xlim([0,maxY_highTop*20]);
+				set(gca,'YTick',[]);
+				set(gca,'XTick',[]);
+				ylim([0,1]);
 				if (show_annotations == true)
 					xlim([-maxY*20/10*1.5,maxY_highTop*20]);
 				else
@@ -697,7 +694,7 @@ for chr = 1:num_chrs
 			set(gca,'YTick',[]);
 			set(gca,'YTickLabel',[]);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-			set(gca,'XTickLabel',{'','','','','','','','','','','','','','','','',''});
+			set(gca,'XTickLabel',[]);
 			if (first_chr)
 				% This section sets the Y-axis labelling.
 				switch ploidyBase
