@@ -820,6 +820,7 @@ for chr = 1:num_chrs
 	        ylim([0,maxY]);
 	    end;
 	    set(gca,'YTick',[]);
+	    set(gca,'YTickLabel',[]);
 	    set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 
 		% ylabel(chr_label{chr}, 'Rotation', 90, 'HorizontalAlign', 'center', 'VerticalAlign', 'bottom');
@@ -827,12 +828,6 @@ for chr = 1:num_chrs
 
 	    set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 	    set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
-	    set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
-	    set(gca,'YTickLabel',{'','','','',''});
-	    text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-	    text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-	    text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-	    text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
 
 	    set(gca,'FontSize',12);
 	    if (chr == find(chr_posY == max(chr_posY)))
@@ -1046,21 +1041,11 @@ for chr = 1:num_chrs
 	        else
 	            ylim([0,maxY]);
 	        end;
+		set(gca,'YTick',[]);
+                set(gca,'YTickLabel',[]);
 	        set(gca,'TickLength',[(Linear_TickSize*chr_size(1)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 	        set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 	        set(gca,'XTickLabel',[]);
-	        if (first_chr == true)
-				ylabel({project;'vs. (hapmap)';hapmap}, 'Rotation', 0, 'HorizontalAlign', 'right', 'VerticalAlign', 'bottom','Interpreter','none','FontSize',10);
-	            set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
-	            set(gca,'YTickLabel',{'','','','',''});
-		    text(axisLabelPosition_horiz, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-		    text(axisLabelPosition_horiz, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-		    text(axisLabelPosition_horiz, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-		    text(axisLabelPosition_horiz, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
-	        else
-	            set(gca,'YTick',[]);
-	            set(gca,'YTickLabel',[]);
-	        end;
 	        set(gca,'FontSize',12);
 	        %end final reformatting.
 	        

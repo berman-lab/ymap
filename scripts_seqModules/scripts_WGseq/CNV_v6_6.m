@@ -599,7 +599,7 @@ largestChr = largestChr(1);
 %% -----------------------------------------------------------------------------------------
 % Setup for linear-view figure generation.
 %-------------------------------------------------------------------------------------------
-fig = figure();
+Standard_fig = figure();
 set(gcf, 'Position', [0 70 1024 600]);
 
 if (Linear_display == true)
@@ -612,7 +612,7 @@ if (Linear_display == true)
 
 	Linear_height          = 0.6;
 	Linear_base            = 0.1;
-	Linear_TickSize        = -0.01;  %negative for outside, percentage of longest chr figure.
+	Linear_TickSize        = -0.01;            % negative for outside, percentage of longest chr figure.
 	Linear_maxY            = 10;
 	Linear_left = Linear_left_start;
 
@@ -650,14 +650,14 @@ end;
 first_chr = true;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-		figure(fig);
-		% make standard chr cartoons.
+		%% make standard chr cartoons.
+		figure(Standard_fig);
 		left   = chr_posX(chr);
 		bottom = chr_posY(chr);
 		width  = chr_width(chr);
 		height = chr_height(chr);
 		subplot('Position',[left bottom width height]);
-		fprintf(['figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
+		fprintf(['chr' num2str(chr) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
 		hold on;
     
 		%% cgh plot section.
@@ -723,6 +723,7 @@ for chr = 1:num_chrs
 		end;
     
 		set(gca,'YTick',[]);
+		set(gca,'YTickLabel',[]);
 		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 
 		% ylabel(chr_label{chr}, 'Rotation', 90, 'HorizontalAlign', 'center', 'VerticalAlign', 'bottom');
@@ -734,29 +735,21 @@ for chr = 1:num_chrs
 		% This section sets the Y-axis labelling.
 		switch ploidyBase
 			case 1
-				set(gca,'YTick',[0 maxY/2 maxY]);
-				set(gca,'YTickLabel',{'','',''});
-				text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',5);
-				text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',5);
-		    case 2
-				set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
-				set(gca,'YTickLabel',{'','','','',''});
-				text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',5);
-				text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',5);
-				text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',5);
-				text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',5);
-		    case 3
-				set(gca,'YTick',[0 maxY/6 maxY/3 maxY/2 maxY/3*2 maxY/6*5 maxY]);
-				set(gca,'YTickLabel',{'','','','','','',''});
-				text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',5);
-				text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',5);
-		    case 4
-				set(gca,'YTick',[0 maxY/8 maxY/4 maxY/8*3 maxY/2 maxY/8*5 maxY/4*3 maxY/8*7 maxY]);
-				set(gca,'YTickLabel',{'','','','','','','','',''});
-				text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',5);
-				text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',5);
-				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',5);
-				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
+			case 2
+				text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+			case 3
+				text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
+			case 4
+				text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
 		end;
 
 		set(gca,'FontSize',6);
@@ -765,18 +758,19 @@ for chr = 1:num_chrs
 		end;
     
 		hold on;
-		%end axes labels etc.
+		% end axes labels etc.
     
-		%show segmental anueploidy breakpoints.
-			if (displayBREAKS == true) && (show_annotations == true)
-				chr_length = ceil(chr_size(chr)/bases_per_bin);
-                                for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length;
-                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
-                                end;
-                        end;
+		%% standard : show segmental anueploidy breakpoints.
+		if (displayBREAKS == true) && (show_annotations == true)
+			chr_length = ceil(chr_size(chr)/bases_per_bin);
+			for segment = 2:length(chr_breaks{chr})-1
+				bP = chr_breaks{chr}(segment)*chr_length;
+				plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+			end;
+		end;
+		% standard : end of : show segmental aneuploidy breakpoints.
 
-		%show centromere.
+		%% show centromere.
 		if (chr_size(chr) < 100000)
 			Centromere_format = 1;
 		else
@@ -1125,45 +1119,36 @@ for chr = 1:num_chrs
 				ylim([0,maxY]);
 			end;
 			set(gca,'TickLength',[(Linear_TickSize*chr_size(1)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'YTick',[]);
+			set(gca,'YTickLabel',[]);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',[]);
 			if (first_chr)
 				% This section sets the Y-axis labelling.
 				switch ploidyBase
 				case 1
-					set(gca,'YTick',[0 maxY/2 maxY]);
-					set(gca,'YTickLabel',{'','',''});
 					text(axisLabelPosition_horiz, maxY/2,      '1','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY,        '2','HorizontalAlignment','right','Fontsize',10);
 				case 2
-					set(gca,'YTick',[0 maxY/4 maxY/2 maxY/4*3 maxY]);
-					set(gca,'YTickLabel',{'','','','',''});
 					text(axisLabelPosition_horiz, maxY/4,      '1','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY/2,      '2','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY/4*3,    '3','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY,        '4','HorizontalAlignment','right','Fontsize',10);
 				case 3
-					set(gca,'YTick',[0 maxY/6 maxY/3 maxY/2 maxY/3*2 maxY/6*5 maxY]);
-					set(gca,'YTickLabel',{'','','','','','',''});
 					text(axisLabelPosition_horiz, maxY/2,      '3','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY,        '6','HorizontalAlignment','right','Fontsize',10);
 				case 4
-					set(gca,'YTick',[0 maxY/8 maxY/4 maxY/8*3 maxY/2 maxY/8*5 maxY/4*3 maxY/8*7 maxY]);
-					set(gca,'YTickLabel',{'','','','','','','','',''});
 					text(axisLabelPosition_horiz, maxY/4,      '2','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY/2,      '4','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY/4*3,    '6','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY,        '8','HorizontalAlignment','right','Fontsize',10);
 				end;
-			else
-				set(gca,'YTick',[]);
-				set(gca,'YTickLabel',[]);
 			end;
 			set(gca,'FontSize',12);
 			%end final reformatting.
 
 			% shift back to main figure generation.
-			figure(fig);
+			figure(Standard_fig);
 			hold on;
 
 			first_chr = false;
@@ -1172,15 +1157,15 @@ for chr = 1:num_chrs
 end;
 	
 % Save primary genome figure.
-set(fig,'PaperPosition',[0 0 8 6]*2);
-saveas(fig,        [projectDir 'fig.CNV-map.1.eps'], 'epsc');
-saveas(fig,        [projectDir 'fig.CNV-map.1.png'], 'png');
-delete(fig);
+set(Standard_fig,'PaperPosition',[0 0 8 6]*2);
+saveas(Standard_fig, [projectDir 'fig.CNV-map.1.eps'], 'epsc');
+saveas(Standard_fig, [projectDir 'fig.CNV-map.1.png'], 'png');
+delete(Standard_fig);
 
 % Save horizontal aligned genome figure.
 set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
-saveas(Linear_fig, [projectDir 'fig.CNV-map.2.eps'], 'epsc');
-saveas(Linear_fig, [projectDir 'fig.CNV-map.2.png'], 'png');
+saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.eps'], 'epsc');
+saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.png'], 'png');
 delete(Linear_fig);
 
 % Output chromosome copy number estimates.

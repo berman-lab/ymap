@@ -73,7 +73,7 @@ for i = 1:length(figure_details)
 		chr_label {figure_details(i).chr} = figure_details(i).label;
 		chr_name  {figure_details(i).chr} = figure_details(i).name;
 		chr_posX  (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY  (figure_details(i).chr) = figure_details(i).posY + 0.1 + 0.025*figure_details(i).chr;
+		chr_posY  (figure_details(i).chr) = figure_details(i).posY*1.12;   %% + 0.1 + 0.025*figure_details(i).chr;
 		chr_width (figure_details(i).chr) = figure_details(i).width;
 		chr_height(figure_details(i).chr) = figure_details(i).height;
 		chr_in_use(figure_details(i).chr) = str2num(figure_details(i).useChr);
@@ -92,7 +92,7 @@ if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 % basic plot parameters not defined per genome.
-TickSize         = 0;  % -0.005;  %negative for outside, percentage of longest chr figure.
+TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
 bases_per_bin    = max(chr_size)/700;
 maxY             = ploidyBase*2;
 cen_tel_Xindent  = 5;
@@ -188,12 +188,12 @@ for chr = 1:num_chrs
 		left   = chr_posX(chr);
 		bottom = chr_posY(chr);
 		width  = chr_width(chr);
-		height = chr_height(chr);
+		height = chr_height(chr)*1.7;
 		subplot('Position',[left bottom width height]);
-		fprintf(['figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
+		fprintf(['chr' num2str(chr) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
 		hold on;
 
-		%% cgh plot section.
+		%% standard : cgh plot section.
 		c_ = [0 0 0];
 		fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 		for i = 1:length(CNVplot2{chr});
@@ -218,11 +218,12 @@ for chr = 1:num_chrs
 			f = fill(x_,y_,c_);
 			set(f,'linestyle','none');
 		end;
+		% standard : end of : cgh plot section.
 
 		x2 = chr_size(chr)/bases_per_bin;
 		plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 
-		%% draw lines across plots for easier interpretation of CNV regions.
+		%% standard : draw lines across plots for easier interpretation of CNV regions.
 		switch ploidyBase
 		case 1
 			% above chr bounds.
@@ -260,14 +261,15 @@ for chr = 1:num_chrs
 				line([0 x2], [maxY/8*lineNum  maxY/8*lineNum ],'Color',[0.85 0.85 0.85]);
 			end;
 		end;
-		%% end cgh plot section.
+		%% standard : end cgh plot section.
 
-		%axes labels etc.
+		% standard : axes labels etc.
 		hold off;
-		% limit x-axis to range of chromosome.
+
+		% standard : limit x-axis to range of chromosome.
 		xlim([0,chr_size(chr)/bases_per_bin]);
 
-		% modify y axis limits to show annotation locations if any are provided.
+		% standard : modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
 			ylim([-maxY/10*1.5,maxY_highTop]);
 		else
@@ -275,69 +277,56 @@ for chr = 1:num_chrs
 		end;
 
 		set(gca,'YTick',[]);
+		set(gca,'YTickLabel',[]);
 		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
 
-		% ylabel(chr_label{chr}, 'Rotation', 90, 'HorizontalAlign', 'center', 'VerticalAlign', 'bottom');
-		text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
-
+		%% standard : large chromosome labels at left of chromosome cartoons.
+		text(-50000/5000/2*3, maxY*3/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 
-		% This section sets the Y-axis labelling.
+		% standard : This section sets the Y-axis labelling.
 		switch ploidyBase
 			case 1
-				set(gca,'YTick',[0 maxY*1/2 maxY*2/2 maxY*3/2 maxY*4/2 maxY*5/2 maxY*6/2]);
-				set(gca,'YTickLabel',{'','','','','','',''});
-				text(axisLabelPosition_vert, maxY*1/2,    '1' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*2/2,    '2' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*3/2,    '3' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*4/2,    '4' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*5/2,    '5' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*6/2,    '6' ,'HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY*1/2,    '1' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*2/2,    '2' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*3/2,    '3' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*4/2,    '4' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*5/2,    '5' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*6/2,    '6' ,'HorizontalAlignment','right','Fontsize',5);
 			case 2
-				set(gca,'YTick',[0 maxY*1/4 maxY*2/4 maxY*3/4 maxY*4/4 maxY*5/4 maxY*6/4 maxY*7/4 maxY*8/4 ...
-				                 maxY*9/4 maxY*10/4 maxY*11/4 maxY*12/4]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','',''});
-				text(axisLabelPosition_vert, maxY*1/4,    '1' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*2/4,    '2' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*3/4,    '3' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*4/4,    '4' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*5/4,    '5' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*6/4,    '6' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*7/4,    '7' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*8/4,    '8' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*9/4,    '9' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*10/4,   '10','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*11/4,   '11','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*12/4,   '12','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY*1/4,    '1' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*2/4,    '2' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*3/4,    '3' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*4/4,    '4' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*5/4,    '5' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*6/4,    '6' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*7/4,    '7' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*8/4,    '8' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*9/4,    '9' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*10/4,   '10','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*11/4,   '11','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*12/4,   '12','HorizontalAlignment','right','Fontsize',5);
 			case 3
-				set(gca,'YTick',[0 maxY*1/6 maxY*2/6 maxY*3/6 maxY*4/6 maxY*5/6 maxY*6/6 maxY*7/6 maxY*8/6 ...
-				                 maxY*9/6 maxY*10/6 maxY*11/6 maxY*12/6 maxY*13/6 maxY*14/6 maxY*15/6 maxY*16/6 ...
-				                 maxY*17/6 maxY*18/6]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','',','','','','','','});
-				text(axisLabelPosition_vert, maxY*3/6,    '3' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*6/6,    '6' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*9/6,    '9' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*12/6,   '12','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*15/6,   '15','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*18/6,   '18','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY*3/6,    '3' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*6/6,    '6' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*9/6,    '9' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*12/6,   '12','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*15/6,   '15','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*18/6,   '18','HorizontalAlignment','right','Fontsize',5);
 			case 4
-				set(gca,'YTick',[0 maxY*1/8 maxY*2/8 maxY*3/8 maxY*4/8 maxY*5/8 maxY*6/8 maxY*7/8 maxY*8/8 ...
-				                 maxY*9/8 maxY*10/8 maxY*11/8 maxY*12/8 maxY*13/8 maxY*14/8 maxY*15/8 maxY*16/8 ...
-				                 maxY*17/8 maxY*18/8 maxY*19/8 maxY*20/8 maxY*21/8 maxY*22/8 maxY*23/8 maxY*24/8]);
-				set(gca,'YTickLabel',{'','','','','','','','','','','','','','','','','','','','','','','','',''});
-				text(axisLabelPosition_vert, maxY*2/8,    '2' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*4/8,    '4' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*6/8,    '6' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*8/8,    '8' ,'HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*10/8,   '10','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*12/8,   '12','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*14/8,   '14','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*16/8,   '16','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*18/8,   '18','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*20/8,   '20','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*22/8,   '22','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY*24/8,   '24','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY*2/8,    '2' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*4/8,    '4' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*6/8,    '6' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*8/8,    '8' ,'HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*10/8,   '10','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*12/8,   '12','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*14/8,   '14','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*16/8,   '16','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*18/8,   '18','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*20/8,   '20','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*22/8,   '22','HorizontalAlignment','right','Fontsize',5);
+				text(axisLabelPosition_vert, maxY*24/8,   '24','HorizontalAlignment','right','Fontsize',5);
 		end;
 
 		set(gca,'FontSize',6);
@@ -346,18 +335,19 @@ for chr = 1:num_chrs
 		end;
 
 		hold on;
-		% end axes labels etc.
+		% standard : end axes labels etc.
 
-		%show segmental anueploidy breakpoints.
-			if (displayBREAKS == true) && (show_annotations == true)
-				chr_length = ceil(chr_size(chr)/bases_per_bin);
-                                for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length;
-                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
-                                end;
-                        end;
+		%% standard : show segmental anueploidy breakpoints.
+		if (displayBREAKS == true) && (show_annotations == true)
+			chr_length = ceil(chr_size(chr)/bases_per_bin);
+			for segment = 2:length(chr_breaks{chr})-1
+				bP = chr_breaks{chr}(segment)*chr_length;
+				plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+			end;
+		end;
+		% standard : end of : show segmental aneuploidy breakpoints.
 
-		%show centromere.
+		%% show centromere.
 		if (chr_size(chr) < 100000)
 			Centromere_format = 1;
 		else
@@ -417,9 +407,9 @@ for chr = 1:num_chrs
 			% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
 			plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
 		end;
-		%end show centromere.
+		% standard : end show centromere.
 
-		%show annotation locations
+		% standard : show annotation locations
 		if (show_annotations) && (length(annotations) > 0)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 			hold on;
@@ -442,18 +432,18 @@ for chr = 1:num_chrs
 			end;
 			hold off;
 		end;
-		%end show annotation locations.
+		% standard : end show annotation locations.
 
-		 % make CGH histograms to the right of the main chr cartoons.
+		% standard : make CGH histograms to the right of the main chr cartoons.
 		if (HistPlot == true)
 			width     = 0.020;
-			height    = chr_height(chr);
+			height    = chr_height(chr)*1.7;
 			bottom    = chr_posY(chr);
 			histAll   = [];
 			histAll2  = [];
 			smoothed  = [];
 			smoothed2 = [];
-			fprintf(['chr = ' num2str(chr) '\n']);
+			fprintf(['HistPlot for chr' num2str(chr) '\n']);
 			for segment = 1:length(chrCopyNum{chr})
 				subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom width height]);
 
@@ -466,33 +456,36 @@ for chr = 1:num_chrs
 					end;
 				end;
 
-				% make a histogram of CGH data, then smooth it for display.
+				% make a histogram of CGH data, log-scale it to emphasize small peaks, then smooth it for display.
 				histogram_end                                    = maxY_highTop+4;
 				histAll{segment}(histAll{segment}<=0)            = [];
-				histAll{segment}(length(histAll{segment})+1)     = 0;   % endpoints added to ensure histogram bounds.
-				histAll{segment}(length(histAll{segment})+1)     = histogram_end;  % these values represent copy numbers, 15 is way outside expected range.
+				histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
+				histAll{segment}(length(histAll{segment})+1)     = histogram_end;  % these values represent copy numbers, [histogram_end] is way outside expected range.
 				histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
 				histAll{segment}(histAll{segment}>histogram_end) = [];
-				smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
-
+				data_hist                                        = hist(histAll{segment},histogram_end*20);
+				% log-scale the histogram.
+				data_hist                                        = log(data_hist+1);
+				data_hist                                        = log(data_hist+1);
+				% smooth the histogram.
+				smoothed_data_hist                               = smooth_gaussian(data_hist,2,10);
 				% make a smoothed version of just the endpoints used to ensure histogram bounds.
 				histAll2{segment}(1)                             = 0;
 				histAll2{segment}(2)                             = histogram_end;
-				smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),2,10);
-
+				endPoint_hist                                    = hist(histAll2{segment},histogram_end*20);
+				smoothed_endPoint_hist                           = smooth_gaussian(endPoint_hist,2,10);
 				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-				smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
-				smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
-
+				smoothed_data_hist                               = (smoothed_data_hist - smoothed_endPoint_hist);
+				% scale the smoothed histogram so the max=1.
+				smoothed_data_hist                               = smoothed_data_hist/max(smoothed_data_hist);
 				% draw lines to mark whole copy number changes.
-				plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
+				plot([0; 0],[0; 1],'color',[0.00 0.00 0.00]);
 				hold on;
 				for i = 1:histogram_end
 					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
 				end;
-
 				% draw histogram.
-				area(smoothed{segment},'FaceColor',[0 0 0]);
+				area(smoothed_data_hist,'FaceColor',[0 0 0]);
 
 				% Draw red ticks between histplot segments
 				if (displayBREAKS == true) && (show_annotations == true)
@@ -517,6 +510,7 @@ for chr = 1:num_chrs
 				end;
 			end;
 		end;
+		% standard : end of HistPlot.
 
 		%% Linear figure draw section.
 		if (Linear_display == true)
@@ -527,7 +521,7 @@ for chr = 1:num_chrs
 			hold on;
 			title(chr_label{chr},'Interpreter','none','FontSize',20);
 
-			%% cgh plot section.
+			%% linear : cgh plot section.
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(CNVplot2{chr});
@@ -555,7 +549,7 @@ for chr = 1:num_chrs
 			x2 = chr_size(chr)/bases_per_bin;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 
-			%% draw lines across plots for easier interpretation of CNV regions.
+			%% linear : draw lines across plots for easier interpretation of CNV regions.
 			switch ploidyBase
 				case 1
 					% above chr bounds.
@@ -593,9 +587,9 @@ for chr = 1:num_chrs
 						line([0 x2], [maxY/8*lineNum  maxY/8*lineNum ],'Color',[0.85 0.85 0.85]);
 					end;
 			end;
-			%% end cgh plot section.
+			%% linear : end cgh plot section.
 
-			%show segmental anueploidy breakpoints.
+			%% linear : show segmental anueploidy breakpoints.
 			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
                                 for segment = 2:length(chr_breaks{chr})-1
@@ -603,8 +597,9 @@ for chr = 1:num_chrs
                                         plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
                                 end;
                         end;
+			% linear : end of : show segmental aneuploidy breakpoints.
 
-			%show centromere.
+			% linear : show centromere.
 			if (chr_size(chr) < 100000)
 				Centromere_format = 1;
 			else
@@ -662,9 +657,9 @@ for chr = 1:num_chrs
 				% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
 				plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
 			end;
-			%end show centromere.
+			% linear : end show centromere.
 
-			%show annotation locations
+			%% linear : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
 				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				hold on;
@@ -687,27 +682,26 @@ for chr = 1:num_chrs
 				end;
 				hold off;
 			end;
-			%end show annotation locations.
+			% linear : end show annotation locations.
 
-			%% Final formatting stuff.
+			%% linear : Final formatting stuff.
 			xlim([0,chr_size(chr)/bases_per_bin]);
 
-			% modify y axis limits to show annotation locations if any are provided.
+			%% linear : modify y axis limits to show annotation locations if any are provided.
 			if (length(annotations) > 0)
 				ylim([-maxY/10*1.5,maxY_highTop]);
 			else
 				ylim([0,maxY_highTop]);
 			end;
-
 			set(gca,'TickLength',[(Linear_TickSize*chr_size(1)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'YTick',[]);
+			set(gca,'YTickLabel',[]);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',[]);
-			%if (first_chr)
+			if (first_chr)
 				% This section sets the Y-axis labelling.
 				switch ploidyBase
 				case 1
-					set(gca,'YTick',[0 maxY*1/2 maxY*2/2 maxY*3/2 maxY*4/2 maxY*5/2 maxY*6/2]);
-					set(gca,'YTickLabel',{'','','','','','',''});
 					text(axisLabelPosition_horiz, maxY*1/2,    '1' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*2/2,    '2' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*3/2,    '3' ,'HorizontalAlignment','right','Fontsize',10);
@@ -715,9 +709,6 @@ for chr = 1:num_chrs
 					text(axisLabelPosition_horiz, maxY*5/2,    '5' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*6/2,    '6' ,'HorizontalAlignment','right','Fontsize',10);
 				case 2
-					set(gca,'YTick',[0 maxY*1/4 maxY*2/4 maxY*3/4 maxY*4/4 maxY*5/4 maxY*6/4 maxY*7/4 maxY*8/4 ...
-					                 maxY*9/4 maxY*10/4 maxY*11/4 maxY*12/4]);
-					set(gca,'YTickLabel',{'','','','','','','','','','','','',''});
 					text(axisLabelPosition_horiz, maxY*1/4,    '1' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*2/4,    '2' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*3/4,    '3' ,'HorizontalAlignment','right','Fontsize',10);
@@ -731,10 +722,6 @@ for chr = 1:num_chrs
 					text(axisLabelPosition_horiz, maxY*11/4,   '11','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*12/4,   '12','HorizontalAlignment','right','Fontsize',10);
 				case 3
-					set(gca,'YTick',[0 maxY*1/6 maxY*2/6 maxY*3/6 maxY*4/6 maxY*5/6 maxY*6/6 maxY*7/6 maxY*8/6 ...
-					                 maxY*9/6 maxY*10/6 maxY*11/6 maxY*12/6 maxY*13/6 maxY*14/6 maxY*15/6 maxY*16/6 ...
-					                 maxY*17/6 maxY*18/6]);
-					set(gca,'YTickLabel',{'','','','','','','','','','','','',','','','','','','});
 					text(axisLabelPosition_horiz, maxY*3/6,    '3' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*6/6,    '6' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*9/6,    '9' ,'HorizontalAlignment','right','Fontsize',10);
@@ -742,10 +729,6 @@ for chr = 1:num_chrs
 					text(axisLabelPosition_horiz, maxY*15/6,   '15','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*18/6,   '18','HorizontalAlignment','right','Fontsize',10);
 				case 4
-					set(gca,'YTick',[0 maxY*1/8 maxY*2/8 maxY*3/8 maxY*4/8 maxY*5/8 maxY*6/8 maxY*7/8 maxY*8/8 ...
-					                 maxY*9/8 maxY*10/8 maxY*11/8 maxY*12/8 maxY*13/8 maxY*14/8 maxY*15/8 maxY*16/8 ...
-					                 maxY*17/8 maxY*18/8 maxY*19/8 maxY*20/8 maxY*21/8 maxY*22/8 maxY*23/8 maxY*24/8]);
-					set(gca,'YTickLabel',{'','','','','','','','','','','','','','','','','','','','','','','','',''});
 					text(axisLabelPosition_horiz, maxY*2/8,    '2' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*4/8,    '4' ,'HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*6/8,    '6' ,'HorizontalAlignment','right','Fontsize',10);
@@ -759,14 +742,11 @@ for chr = 1:num_chrs
 					text(axisLabelPosition_horiz, maxY*22/8,   '22','HorizontalAlignment','right','Fontsize',10);
 					text(axisLabelPosition_horiz, maxY*24/8,   '24','HorizontalAlignment','right','Fontsize',10);
 				end;
-			%else
-			%	set(gca,'YTick',[]);
-			%	set(gca,'YTickLabel',[]);
-			%end;
+			end;
 			set(gca,'FontSize',12);
-			%end final reformatting.
+			% linear : end final reformatting.
 
-			% shift back to main figure generation.
+			%% shift back to main figure generation.
 			figure(Standard_fig);
 			hold on;
 	
@@ -777,7 +757,7 @@ end;
 	
 
 % Save primary genome figure.
-set(Standard_fig,'PaperPosition',[0 0 8 6*3]*2);
+set(Standard_fig,'PaperPosition',[0 0 8 6]*2);
 saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.eps'], 'epsc');
 saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.png'], 'png');
 delete(Standard_fig);
@@ -787,6 +767,5 @@ set(Linear_fig,'PaperPosition',[0 0 8 0.62222222*3]*2);
 saveas(Linear_fig,   [projectDir 'fig.CNV-map.highTop.2.eps'], 'epsc');
 saveas(Linear_fig,   [projectDir 'fig.CNV-map.highTop.2.png'], 'png');
 delete(Linear_fig);
-
 
 end
