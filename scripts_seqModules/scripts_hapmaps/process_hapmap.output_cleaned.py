@@ -1,3 +1,6 @@
+##
+## First of two scripts to process Ymap-generated hapmap into final output files.
+##
 #
 # usage:
 #	python process_hapmap.output_cleaned.py [raw_hapmap_file] > [cleaned_hapmap_file]

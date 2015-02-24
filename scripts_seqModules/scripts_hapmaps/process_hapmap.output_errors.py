@@ -1,3 +1,6 @@
+##
+## Second of two scripts to process Ymap-generated hapmap into final output file.
+##
 #
 # usage:
 #	python process_hapmap.output_errors.py [raw_hapmap_file] > [errors_only_file]
