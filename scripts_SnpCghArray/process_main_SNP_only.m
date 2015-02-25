@@ -247,6 +247,9 @@ data_file_load_online(matlab_save_dir,raw_data_dir,raw_data_file, microarray_des
 % load experimental values for all the probes.
 load([matlab_save_dir '/' experiment_name '.' microarray_design '.SNP_data.mat']);
 SNP_probeset_length = length(probeset1);
+fprintf('\nLoading ChARM segmentation file.');
+[segmental_aneuploidy] = Load_dataset_information_2(experiment_name,workingDir);
+
 
 %% ====================================================================
 % Apply probe polarity assignment from calibration data to experimental data.
