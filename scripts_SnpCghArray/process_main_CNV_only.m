@@ -262,7 +262,7 @@ if (no_calibration == 0)
 end;
 
 %% ====================================================================
-% Process raw data file into structures containing CGH and SNP information (if not already done).
+% Load processed CGH and SNP information.
 %----------------------------------------------------------------------
 data_file_load_online(matlab_save_dir,raw_data_dir,raw_data_file, microarray_design, experiment_name);
 % load experimental values for all the probes.
