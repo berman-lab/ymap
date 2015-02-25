@@ -498,7 +498,8 @@ if (performEndbiasCorrection)
 			hold off;
 			xlabel('Distance to chr end');
 			ylabel('CNV data');
-			xlim([0 1.0]);   ylim([0 aveData_Y*5]);
+			xlim([0 200]);
+			ylim([0 4]);
 			axis square;
 		subplot(1,2,2);
 			plot(EndDistanceData_all,correctedCGHdata_all,'k.');
@@ -507,7 +508,8 @@ if (performEndbiasCorrection)
 			hold off;
 			xlabel('Distance to chr end');
 			ylabel('corrected CNV data');
-			xlim([0 1.0]);   ylim([0 5]);
+			xlim([0 200]);
+			ylim([0 4]);
 			axis square;
 		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.png'], 'png');
 
