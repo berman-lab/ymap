@@ -621,12 +621,6 @@ else
 end;
 
     
-%% ====================================================================
-% Save datasetDetails.
-%----------------------------------------------------------------------
-save([workingDir '/' experiment_name '.' microarray_design '.datasetDetails.mat'], 'datasetDetails');
-
-    
 %% ========================================================================
 % Plotting probes across genome by interpretation catagory after accounting
 % for polarity of SNP pairs.

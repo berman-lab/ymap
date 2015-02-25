@@ -266,12 +266,10 @@ end;
 %----------------------------------------------------------------------
 fprintf('\nLoading previously calculated SNP interpretation cutoffs for microarray.');
 load([workingDir 'SNP_cutoffs.mat']);
-fprintf('\nLoading previously calculated datasetDetails structure containing CNV segmentation info.');
-load([matlab_save_dir '/' experiment_name '.' microarray_design '.datasetDetails.mat']);
 fprintf('\nLoading previously processed SNP data.');
 load([workingDir 'SNPdata_collected.mat']);
 
-    
+
 %% ========================================================================
 % Plotting probes across genome by interpretation catagory after accounting
 % for polarity of SNP pairs.
