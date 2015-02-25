@@ -459,7 +459,7 @@ if (performEndbiasCorrection)
 			end;
 		end;
 
-		% Gather CGH and GCratio data for LOWESS fitting.
+		% Gather CGH and EndDistance data for LOWESS fitting.
 		CGHdata_all         = [];
 		EndDistanceData_all = [];
 		for chr = 1:num_chrs
@@ -509,17 +509,17 @@ if (performEndbiasCorrection)
 			ylabel('corrected CNV data');
 			xlim([0 1.0]);   ylim([0 5]);
 			axis square;
-		saveas(GCfig, [workingDir 'fig_EndDistance_vs_CGH.png'], 'png');
+		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.png'], 'png');
 
 		% Move LOWESS-normalizd CGH data into display pipeline.
 		for chr = 1:num_chrs
 			chr_CGHdata{chr,2} = normalizedData_chr_Y{chr};
 		end;
 
-		% Save GC-bias corrected data from earlier.
+		% Save End-bias corrected data from earlier.
 		save([workingDir 'End_bias_corrected.mat'], 'chr_CGHdata');
 	else
-		% Load GC-bias corrected data from earlier.
+		% Load End-bias corrected data from earlier.
 		load([workingDir 'End_bias_corrected.mat']);
 	end;
 end;
