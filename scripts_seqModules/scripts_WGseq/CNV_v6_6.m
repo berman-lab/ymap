@@ -158,14 +158,14 @@ else
 	fclose(biases_fid);
 
 	% performLengthbiasCorrection is meaningless for this data format.
-	if (strcmp(bias2,'True') == 1)	performGCbiasCorrection    = true;
-	else							performGCbiasCorrection    = false;
+	if (strcmp(bias2,'True') == 1)  performGCbiasCorrection    = true;
+	else                            performGCbiasCorrection    = false;
 	end;
-	if (strcmp(bias3,'True') == 1)	performRepetbiasCorrection = true;
-	else							performRepetbiasCorrection = false;
+	if (strcmp(bias3,'True') == 1)  performRepetbiasCorrection = true;
+	else                            performRepetbiasCorrection = false;
 	end;
-	if (strcmp(bias4,'True') == 1)	performEndbiasCorrection   = true;
-	else							performEndbiasCorrection   = false;
+	if (strcmp(bias4,'True') == 1)  performEndbiasCorrection   = true;
+	else                            performEndbiasCorrection   = false;
 	end;
 end;
 
