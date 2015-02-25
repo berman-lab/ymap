@@ -899,14 +899,18 @@ for chr = 1:num_chrs
 end;
 
 if (strcmp(projectName1_parent,projectName2_child) == 1)
+	set(fig,'PaperPosition',[0 0 8 6]*2);
 	saveas(fig, [figureDir projectName1_parent '.normalized_CNV-SNP-map.1.eps'], 'epsc');
 	saveas(fig, [figureDir projectName1_parent '.normalized_CNV-SNP-map.1.png'], 'png');
+
 	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 	saveas(Linear_fig, [figureDir projectName1_parent '.normalized_CNV-SNP-map.2.eps'], 'epsc');
 	saveas(Linear_fig, [figureDir projectName1_parent '.normalized_CNV-SNP-map.2.png'], 'png');
 else
+	set(fig,'PaperPosition',[0 0 8 6]*2);
 	saveas(fig, [figureDir projectName1_parent '->' projectName2_child '.normalized_CNV-LOH-map.1.eps'], 'epsc');
 	saveas(fig, [figureDir projectName1_parent '->' projectName2_child '.normalized_CNV-LOH-map.1.png'], 'png');
+
 	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 	saveas(fig, [figureDir projectName1_parent '->' projectName2_child '.normalized_CNV-LOH-map.2.eps'], 'epsc');
 	saveas(fig, [figureDir projectName1_parent '->' projectName2_child '.normalized_CNV-LOH-map.2.png'], 'png');

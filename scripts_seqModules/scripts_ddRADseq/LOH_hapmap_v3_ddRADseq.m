@@ -475,6 +475,7 @@ subplot(2,3,6);
 	xlabel('GC ratio');   ylabel('corrected SNP data');
 	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
 
+saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.eps'], 'epsc');
 saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
 
 
@@ -891,12 +892,11 @@ end;
 set(fig,'PaperPosition',[0 0 8 6]*2);
 saveas(fig,        [projectDir 'fig.SNP-map.1.eps'], 'epsc');
 saveas(fig,        [projectDir 'fig.SNP-map.1.png'], 'png');
+delete(fig);
+
 set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 saveas(Linear_fig, [projectDir 'fig.SNP-map.2.eps'], 'epsc');
 saveas(Linear_fig, [projectDir 'fig.SNP-map.2.png'], 'png');
-
-%% Delete figures from memory.
-delete(fig);
 delete(Linear_fig);
 
 %% ========================================================================

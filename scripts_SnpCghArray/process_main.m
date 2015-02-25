@@ -426,6 +426,7 @@ if (performGCbiasCorrection)
 			ylabel('corrected CNV data');
 			xlim([0 1.0]);   ylim([0 5]);
 			axis square;
+		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.eps'], 'epsc');
 		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.png'], 'png');
 
 		% Move LOWESS-normalizd CGH data into display pipeline.
@@ -511,6 +512,7 @@ if (performEndbiasCorrection)
 			xlim([0 200]);
 			ylim([0 4]);
 			axis square;
+		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.eps'], 'epsc');
 		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.png'], 'png');
 
 		% Move LOWESS-normalizd CGH data into display pipeline.

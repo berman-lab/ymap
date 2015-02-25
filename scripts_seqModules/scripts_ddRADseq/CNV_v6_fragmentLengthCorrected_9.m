@@ -814,36 +814,6 @@ if (performLengthbiasCorrection) || (performRepetbiasCorrection)
 end;
 
 
-%% Generate figure showing correlation between GC content and repetitiveness.
-%	figTest = figure(99);
-%	X_GCbias_project = zeros(1,numFragments);
-%	Y_repet_project  = zeros(1,numFragments);
-%	for fragID = 1:numFragments
-%		X_GCbias_project(fragID) = fragment_data(fragID).GC_bias;
-%		Y_repet_project(fragID)  = fragment_data(fragID).repet;
-%		usable_project(fragID)   = fragment_data(fragID).usable;
-%	end;
-%	hold on;
-%	for fragID = 1:numFragments
-%		if (fragment_data(fragID).usable == 1)
-%			plot(fragment_data(fragID).GC_bias,fragment_data(fragID).repet,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',4);
-%		end;
-%	end;
-%	hold off;
-%	axis normal;
-%	h = title('[Repetitiveness] vs. [GC content] in genome.');   set(h, 'FontSize', 10);
-%	h = ylabel('Repetitiveness');  set(h, 'FontSize', 10);
-%	h = xlabel('GC content');      set(h, 'FontSize', 10);
-%	set(gca,'FontSize',10);
-%	xlim([0 1]);
-%	ylim([0 20000]);
-%	fprintf('Saving bias figure test.\n');
-%	set(figTest,'PaperPosition',[0 0 4 4]*2);
-%	saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.eps'], 'epsc');
-%	saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.png'], 'png');
-%	delete(figTest);
-
-
 %%================================================================================================
 % Prepare for LOWESS fitting 3 : correcting GC_bias.
 %-------------------------------------------------------------------------------------------------

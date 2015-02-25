@@ -424,6 +424,7 @@ histogram_fig = figure();
 	end;
 %end;
 set(histogram_fig,'PaperPosition',[0 0 8 1.5]*4);
+saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.eps'], 'epsc');
 saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.png'], 'png');
 delete(histogram_fig);
 
@@ -873,12 +874,11 @@ end;
 set(fig,'PaperPosition',[0 0 8 6]*2);
 saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.eps'], 'epsc');
 saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.png'], 'png');
+delete(fig);
+
 set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.eps'], 'epsc');
 saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.png'], 'png');
-
-%% Delete figures from memory.
-delete(fig);
 delete(Linear_fig);
 
 %%================================================================================================

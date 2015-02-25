@@ -866,12 +866,11 @@ else
 	set(fig,'PaperPosition',[0 0 8 6]*2);
 	saveas(fig,        [projectDir 'fig.CNV-manualLOH-map.1.eps'], 'epsc');
 	saveas(fig,        [projectDir 'fig.CNV-manualLOH-map.1.png'], 'png');
+	delete(fig);
+
 	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 	saveas(Linear_fig, [projectDir 'fig.CNV-manualLOH-map.2.eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.CNV-manualLOH-map.2.png'], 'png');
-
-	%% Delete figures from memory.
-	delete(fig);
 	delete(Linear_fig);
 end;
 
