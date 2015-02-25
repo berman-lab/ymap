@@ -345,8 +345,6 @@ for chr = 1:num_chrs
 	usedPlot12  = chr_SNPdata{chr,13}; % 'abbbbb'
 	usedPlot13  = chr_SNPdata{chr,14}; % hom unassigned.
 
-	usedPlotCGH = CNVplot2{chr};
-
 	% places chr copy number to the right of the main chr cartoons.
 	if (ChrNum == true)
 		% subplot to show chromosome copy number value.
@@ -388,8 +386,6 @@ for chr = 1:num_chrs
 			end;
 			histAll = [];
 			histAll2 = [];
-			%for i = round(1+length(usedPlotCGH)*chr_breaks{chr}(segment))
-			%        round(  length(usedPlotCGH)*chr_breaks{chr}(segment+1))
 			for i = 1:2:SNP_probeset_length
 				if (probeset1(i).probe_chromosome == chr) && ...
 					(probeset1(i).probe_location >= round(1+chr_size(chr)*datasetDetails.chr_breaks{chr}(segment))) && ...
