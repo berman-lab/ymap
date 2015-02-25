@@ -143,6 +143,11 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 	system(['sort -b -k1,1 ' file_dir '/SNP_rows.xls  -o ' file_dir '/SNP_rows.2.xls' ]);
 	system(['sort -b -k1,1 ' file_dir '/MLST_rows.xls -o ' file_dir '/MLST_rows.2.xls']);
 
+	%% Move sorted subfiles to original.
+	system(['mv ' file_dir '/CGH_rows.2.xls'  file_dir '/CGH_rows.xls' ]);
+	system(['mv ' file_dir '/SNP_rows.2.xls'  file_dir '/SNP_rows.xls' ]);
+	system(['mv ' file_dir '/MLST_rows.2.xls' file_dir '/MLST_rows.xls']);
+
 	%% Open pre-processed files for CGH data.
 	CGHfid = fopen([file_dir '/CGH_rows.xls'], 'r');
 	fprintf(['##\t' file_dir '/CGH_rows.xls\n##\tfid = ' num2str(CGHfid) '\n']);
