@@ -963,39 +963,6 @@ for chr = 1:num_chrs
 	end;
 end;
 
-% Main figure %LOH and ploidy value display.
-subplot('Position',[0.65 0.0 0.1 0.1]);
-axis off square;
-xlim([0,1]);
-ylim([-0.1,1.2]);
-set(gca,'XTick',[]);
-set(gca,'YTick',[]);
-if (show_unnassigned == false)
-	if (Show_Genomic_LOH_fraction == true)
-		text(0.35,2.5,['LOH_{snp/cgh} = ' num2str(100*SNPs_hom/SNPs_total) '%']);
-		if (ploidy_estimate ~= 0) % ploidy value given.
-			text(0.35,2.0,['Ploidy = ' num2str(ploidy_estimate) 'n']);
-		end;
-	else
-		if (ploidy_estimate ~= 0) % ploidy value given.
-			text(0.35,2.5,['Ploidy = ' num2str(ploidy_estimate) 'n']);
-		end;
-	end;
-else
-	if (Show_Genomic_LOH_fraction == true)
-		text(0.35,2.0,['LOH_{snp/cgh} = ' num2str(100*SNPs_hom/SNPs_total) '%']);
-		if (ploidy_estimate ~= 0) % ploidy value given.
-			text(0.35,1.5,['Ploidy = ' num2str(ploidy_estimate) 'n']);
-		end;
-	else
-		if (ploidy_estimate ~= 0) % ploidy value given.
-			text(0.35,1.5,['Ploidy = ' num2str(ploidy_estimate) 'n']);
-		end;
-	end;
-end;
-
-hold off;
-
 fprintf('\n');
 set(   fig,        'PaperPosition',[0 0 8 6]*2);
 saveas(fig,        [workingDir 'fig.CNV-map.1.eps'], 'epsc');
@@ -1012,20 +979,10 @@ delete(Linear_fig);
 %==========================================================================
 fprintf('\n');
 
-% delete any hanging waitbar dialogs or already saved figures.
-%set(0,'ShowHiddenHandles','on');
-%delete(get(0,'Children'));
-
 result_image_location1 = [workingDir 'fig_1.' experiment_name '.png'];
 result_image_location2 = [workingDir 'fig_2.' experiment_name '.png'];
 archive_data_location = {	[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.SNP_data.mat'], ...
 							[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.CGH_data.mat'], ...
 							[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.datasetDetails.mat']};
-
-%% Let the processing pipeline know that the analysis has completed.
-% new_fid        = fopen([workingDir 'complete.txt'],'w');
-% completionTime = datestr(clock, 0)
-% fprintf(new_fid,completionTime);
-% fclose(new_fid);
 
 end
