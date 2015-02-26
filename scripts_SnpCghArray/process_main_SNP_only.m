@@ -793,7 +793,7 @@ for chr = 1:num_chrs
 	set(gca,'YTick',[]);
 	set(gca,'YTickLabel',[]);
 	set(gca,'TickLength',[(TickSize*chr_size(1)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-	text(-50000/5000/2*3, maxY*3/2,     chr_labels(chr), 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+	text(-50000/5000/2*3, maxY/2,     chr_labels(chr), 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 	set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 	set(gca,'XTickLabel',[]);
 	set(gca,'FontSize',8);

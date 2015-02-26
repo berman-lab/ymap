@@ -1564,7 +1564,7 @@ for chr = 1:num_chrs
 	set(gca,'YTickLabel',[]);
 	set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 	set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
-	text(-50000/5000/2*3, maxY*3/2,     chr_labels(chr), 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+	text(-50000/5000/2*3, maxY/2,     chr_labels(chr), 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 	if (CGH_Genomic_display == true)
 		if (strcmp(scale_type,'Ratio') == 1)
 			switch ploidyBase
