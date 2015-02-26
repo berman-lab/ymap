@@ -13,8 +13,8 @@ blendColorBars              = false;
 show_annotations            = true;
 Yscale_nearest_even_ploidy  = true;
 AnglePlot                   = true;   % Show histogram of alleleic fraction at the left end of standard figure chromosomes.
-	FillColors              = true;   %     Fill histogram using colors.
-	show_uncalibrated       = false;  %     Fill with single color instead of ratio call colors.
+FillColors                  = true;   %     Fill histogram using colors.
+show_uncalibrated           = false;  %     Fill with single color instead of ratio call colors.
 HistPlot                    = true;   % Show histogram of CNV at the right end of standard figure chromosomes.
 ChrNum                      = true;   % Show numerical etimates of copy number to the right of standard figure chromosomes.
 Linear_display              = true;   % Figure version with chromosomes laid out horizontally.
@@ -361,12 +361,7 @@ for chr = 1:num_chrs
 	end;
 end;
 
-
-%% =========================================================================================
-% Setup for figure generation.
-%-------------------------------------------------------------------------------------------
-fig = figure(1);
-set(gcf, 'Position', [0 70 1024 600]);
+% Save details
 
 
 %% =========================================================================================
@@ -375,7 +370,6 @@ set(gcf, 'Position', [0 70 1024 600]);
 % threshold for full color saturation in SNP/LOH figure.
 % synced to bases_per_bin as below, or defaulted to 50.
 full_data_threshold = floor(bases_per_bin/100);
-fig = figure(1);
 set(gcf, 'Position', [0 70 1024 600]);
 data_mode = 1;
 for chr = 1:num_chrs
@@ -418,29 +412,6 @@ end;
 fprintf('\n');
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
-
-
-%% =========================================================================================
-% Setup for linear-view figure generation.
-%-------------------------------------------------------------------------------------------
-if (Linear_display == true)
-	Linear_fig           = figure(2);
-	Linear_genome_size   = sum(chr_size);
-	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-	Linear_left_start    = 0.02;               % left margin (also right margin).  (formerly 0.01)
-	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-	Linear_height        = 0.6;
-	Linear_base          = 0.1;
-	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
-	maxY                 = ploidyBase*2;
-	Linear_left          = Linear_left_start;
-
-	axisLabelPosition_horiz = -50000/bases_per_bin;
-	axisLabelPosition_horiz = 0.01125;
-end;
-
-axisLabelPosition_vert = -50000/5000/2;
-axisLabelPosition_vert = 0.01125;
 
 
 %% =========================================================================================
@@ -658,6 +629,40 @@ end;
 
 
 %% =========================================================================================
+% Save workspace variables.
+%-------------------------------------------------------------------------------------------
+save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+
+
+%% =========================================================================================
+% Setup for figure generation.
+%-------------------------------------------------------------------------------------------
+fig = figure(1);
+set(gcf, 'Position', [0 70 1024 600]);
+
+
+%% =========================================================================================
+% Setup for linear-view figure generation.
+%-------------------------------------------------------------------------------------------
+if (Linear_display == true)
+	Linear_fig           = figure(2);
+	Linear_genome_size   = sum(chr_size);
+	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
+	Linear_left_start    = 0.02;               % left margin (also right margin).  (formerly 0.01)
+	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
+	Linear_height        = 0.6;
+	Linear_base          = 0.1;
+	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
+	maxY                 = ploidyBase*2;
+	Linear_left          = Linear_left_start;
+	axisLabelPosition_horiz = -50000/bases_per_bin;
+	axisLabelPosition_horiz = 0.01125;
+end;
+axisLabelPosition_vert = -50000/5000/2;
+axisLabelPosition_vert = 0.01125;
+
+
+%% =========================================================================================
 % Make figures
 %-------------------------------------------------------------------------------------------
 first_chr = true;
@@ -678,13 +683,6 @@ for chr = 1:num_chrs
 	    c_     = c_prev;
 	    infill = zeros(1,length(unphased_plot2{chr}));
 	    colors = [];
-
-%		% Load Gaussian fitting-based ratio cutoffs from earlier calculations.
-%		peaks               = chrSegment_peaks{chr,segment};
-%		mostLikelyGaussians = chrSegment_mostLikelyGaussians{chr,segment};
-%		actual_cutoffs      = chrSegment_actual_cutoffs{chr,segment};
-% darrenabbey
-% Attempt to move color calls to Gaussian fit based cutoffs, rather than predefined edges, will require better ChARM finding of edges.
 
 		% standard : determines the color of each bin.
 		for chr_bin = 1:length(SNPs_to_fullData_ratio{chr})+1;
@@ -1983,12 +1981,13 @@ end;
 % end stuff
 %==========================================================================
 
-%% Save figures.
+fprintf('\n###\n### Saving main figure.\n###\n');
 set(   fig,        'PaperPosition',[0 0 8 6]*2);
 saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.eps'], 'epsc');
 saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.png'], 'png' );
 delete(fig);
 
+fprintf('\n###\n### Saving linear figure.\n###\n');
 set(   Linear_fig, 'PaperPosition',[0 0 8 0.62222222]*2);
 saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.eps'], 'epsc');
 saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.png'], 'png' );

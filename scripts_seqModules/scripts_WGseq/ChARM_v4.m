@@ -599,9 +599,9 @@ fprintf(    '----------------------\n');
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		fprintf(['[Window similarity test]:chr' num2str(chr) '\n']);
-	    test_edge = 2;
-	    num_starting_edges = length(locs{chr});
-	    for t = 1:num_starting_edges
+		test_edge = 2;
+		num_starting_edges = length(locs{chr});
+		for t = 1:num_starting_edges
 			position     = locs{chr};
 			num_edges    = length(position);
 			data         = CNVplot2{chr};
@@ -709,12 +709,12 @@ for chr = 1:num_chrs
 			% Resort and save edge positions.
 			%----------------------------------------------------------------------
 			locs{chr} = sort(position_sorted);
+		end;
 	end;
 end;
 
 %=====================================================================================================
 % Generate figures representing intermediate and final output of algorithm.
-% ERROR : chr_size is being reset before here...
 %-----------------------------------------------------------------------------------------------------
 fprintf('\n\nGenerate figure of final output of ChARM algorithm\n');
 fprintf(    '--------------------------------------------------\n');
