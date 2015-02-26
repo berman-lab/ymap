@@ -1,4 +1,6 @@
 function [] = ChARM_v4(project,user,genome,genomeUser,main_dir)
+addpath('../);
+
 %% =========================================================================================
 % Analyze CNV information for copy number changes.   Code based on algorithms
 % described in:
@@ -33,7 +35,8 @@ vars = who('-file',dataFile)
 % Defines chr sizes in bp. (diploid total=28,567,7888)
 % Defines centromere locations in bp.
 % Defines annotation locations in bp.
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir,genome);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 
 for i = 1:length(chr_sizes)
     chr_size(i) = 0;

@@ -1,5 +1,6 @@
 function [] = CNV_v6_4(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
                        CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+addpath('../);
 
 %% ========================================================================
 Centromere_format_default   = 0;
@@ -30,7 +31,8 @@ fprintf(['\n$$ projectDir : ' projectDir '\n']);
 fprintf([  '$$ genomeDir  : ' genomeDir  '\n']);
 fprintf([  '$$ genome     : ' genome     '\n']);
 fprintf([  '$$ project    : ' project    '\n']);
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(projectDir,genomeDir, genome);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 Aneuploidy = [];
 
 num_chrs  = length(chr_sizes);

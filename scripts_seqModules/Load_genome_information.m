@@ -1,12 +1,12 @@
-function [centromeres, chrSize, figure_details, annotations, figInfo_ploidy_default] = Load_genome_information_1(genomeDir,genome)
-fprintf(['\nLoad_genome_information_1.m : Genome in use : [' genome ']\n']);
+function [centromeres, chrSize, figure_details, annotations, figInfo_ploidy_default] = Load_genome_information(genomeDir)
+fprintf(['\nLoad_genome_information_1.m : Genome in use : [' genomeDir ']\n']);
 
 % Load centromere definition file.
 %    This is text file containing one header line and two columns.
 %    The two columns hold the start and end bp for the centromeres, with
 %       respect to each chromosome.
 centromeres          = [];
-centromere_fid       = fopen([genomeDir '/centromere_locations.txt'], 'r');
+centromere_fid       = fopen([genomeDir 'centromere_locations.txt'], 'r');
 discard              = fgetl(centromere_fid);
 lines_analyzed       = 0;
 fprintf(['\t' genomeDir '/centromere_locations.txt\n']);
@@ -42,7 +42,7 @@ chrSize        = [];
 chrSize_fid    = fopen([genomeDir '/chromosome_sizes.txt'],'r');
 discard        = fgetl(chrSize_fid);
 lines_analyzed = 0;
-fprintf(['\t' genomedir '/chromosome_sizes.txt\n']);
+fprintf(['\t' genomeDir '/chromosome_sizes.txt\n']);
 while not (feof(chrSize_fid))
 	lineData          = fgetl(chrSize_fid);
 	lines_analyzed    = lines_analyzed+1;

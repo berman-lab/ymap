@@ -1,18 +1,14 @@
-function [segmental_aneuploidy] = Load_dataset_information_1(projectDir, project)
-% Load centromere definition file.
-%    This is text file containing one header line and two columns.
-%    The two columns hold the start and end bp for the centromeres, with
-%       respect to each chromosome.
+function [segmental_aneuploidy] = Load_dataset_information(projectDir)
 
 %%=========================================================================
 % Load Common_ChARM.mat file for project : 'segmental_aneuploidy'.
 %--------------------------------------------------------------------------
 if (exist([projectDir 'Common_ChARM.mat'],'file') ~= 0)
     dataFile = [projectDir 'Common_ChARM.mat'];
-    fprintf(['\nLoading Common_ChARM.mat file for "' project '" : ' dataFile '\n']);
+    fprintf(['\nLoading Common_ChARM.mat file for "' projectDir '" : ' dataFile '\n']);
     load(dataFile);
 else
-    fprintf(['\nThe Common_ChARM.mat file for "' project '" was not found.\n']);
+    fprintf(['\nThe Common_ChARM.mat file for "' projectDir '" was not found.\n']);
     fprintf(['Analyze your dataset with "analyze_ChARM.sh" first.\n']);
     segmental_aneuploidy = [];
 end;

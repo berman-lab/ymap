@@ -1,5 +1,6 @@
 function [] = CNV_v6_fragmentLengthCorrected_9(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
                                                CNV_verString,displayBREAKS);
+addpath('../);
 
 % Close all pre-existing figures.
 delete(findall(0,'Type','figure'));
@@ -62,7 +63,8 @@ else
 	end;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir,genome);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [Aneuploidy] = [];
 
 for i = 1:length(chr_sizes)

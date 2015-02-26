@@ -1,6 +1,6 @@
 function [] = CNV_v6_fragmentLengthCorrected_9_MH(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
                                                   CNV_verString,displayBREAKS);
-
+addpath('../);
 
 %% ========================================================================
 % Generate CGH-type figures from RADseq data, using a reference dataset to correct for genome position-dependant biases.
@@ -59,7 +59,7 @@ else
 	end;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir,genome);
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [Aneuploidy] = [];
 
 for i = 1:length(chr_sizes)
