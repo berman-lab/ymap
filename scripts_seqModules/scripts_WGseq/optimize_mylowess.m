@@ -1,4 +1,5 @@
 function [newX, newY] = optimize_mylowess(rawData_X,rawData_Y, numFits, maxX)
+addpath('../);
 
 numDat        = length(rawData_X);
 spans         = linspace(0.01,0.99, numFits);
