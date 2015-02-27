@@ -1,5 +1,5 @@
 function [centromeres, chrSize, figure_details, annotations, figInfo_ploidy_default] = Load_genome_information_1()
-fprintf(['\nLoad_genome_information_1.m : Genome in use : [' genome ']\n']);
+fprintf(['\nLoad_genome_information_1.m : Genome in use : [Candida albicans SC5314]\n']);
 
 % Load centromere definition file.
 %    This is text file containing one header line and two columns.
