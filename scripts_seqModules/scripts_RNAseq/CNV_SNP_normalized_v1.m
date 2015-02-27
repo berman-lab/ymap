@@ -1,6 +1,6 @@
 function [] = CNV_SNP_normalized_v1(projectName1_parent,projectName2_child,genome_data,ploidyString, ...
                   ave_copy_num,CNV_verString,SNP_verString,LOH_verString,workingDir,figureDir,displayBREAKS);
-addpath('../);
+addpath('../');
 
 %% ========================================================================
 % Generate CGH-type figures from RNAseq data, using a reference dataset to correct for genome position-dependant biases.

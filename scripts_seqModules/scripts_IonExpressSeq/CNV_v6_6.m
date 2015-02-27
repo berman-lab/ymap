@@ -1,6 +1,6 @@
 function [] = CNV_v6_4(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
                        CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
-addpath('../);
+addpath('../');
 
 %% ========================================================================
 Centromere_format_default   = 0;

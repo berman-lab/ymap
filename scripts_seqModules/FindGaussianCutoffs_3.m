@@ -1,5 +1,4 @@
 function [x_peak,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(segment_smoothedHistogram, segment_copyNum);
-addpath('../);
 
 monosomy_peaks  = [0, 1]*199+1;
 disomy_peaks    = [0, 1/2, 1]*199+1;

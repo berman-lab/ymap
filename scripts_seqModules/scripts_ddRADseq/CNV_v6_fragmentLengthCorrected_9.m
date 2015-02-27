@@ -1,6 +1,6 @@
 function [] = CNV_v6_fragmentLengthCorrected_9(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
                                                CNV_verString,displayBREAKS);
-addpath('../);
+addpath('../');
 
 % Close all pre-existing figures.
 delete(findall(0,'Type','figure'));

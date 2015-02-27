@@ -1,5 +1,5 @@
 function [] = ChARM_v4(project,user,genome,genomeUser,main_dir)
-addpath('../);
+addpath('../');
 
 %% =========================================================================================
 % Analyze CNV information for copy number changes.   Code based on algorithms

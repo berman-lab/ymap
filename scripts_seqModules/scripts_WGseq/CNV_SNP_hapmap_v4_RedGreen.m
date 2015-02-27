@@ -1,6 +1,6 @@
 function [] = CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                                          SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-addpath('../);
+addpath('../');
 
 %% =========================================================================================
 % Load workspace variables saved in "CNV_SNP_hapmap_v4.m"

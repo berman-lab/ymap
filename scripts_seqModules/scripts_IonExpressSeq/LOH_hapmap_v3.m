@@ -1,6 +1,6 @@
 function [] = LOH_hapmap_v3(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                             SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-addpath('../);
+addpath('../');
 
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
