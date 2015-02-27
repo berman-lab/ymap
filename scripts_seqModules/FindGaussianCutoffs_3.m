@@ -1,4 +1,6 @@
 function [x_peak,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(segment_smoothedHistogram, segment_copyNum);
+addpath('../);
+
 monosomy_peaks  = [0, 1]*199+1;
 disomy_peaks    = [0, 1/2, 1]*199+1;
 trisomy_peaks   = [0, 1/3, 2/3, 1]*199+1;
@@ -153,7 +155,6 @@ else % if (segment_copyNum == 8+)
 	[G{1}.a,G{1}.b,G{1}.c, G{2}.a,G{2}.b,G{2}.c, G{3}.a,G{3}.b,G{3}.c, G{4}.a,G{4}.b,G{4}.c, G{5}.a,G{5}.b,G{5}.c, G{6}.a,G{6}.b,G{6}.c, G{7}.a,G{7}.b,G{7}.c, G{8}.a,G{8}.b,G{8}.c, G{9}.a,G{9}.b,G{9}.c, skew_factor] = ...
 		fit_Gaussian_model_octasomy_2(segment_smoothedHistogram,octasomy_peaks,sigma,ErrorType);
 	for i = 1:(length(G));   G{i}.d = skew_factor;   end;
-	testVar = G
 	[list]              = FindHighestGaussian_2(G);
 	actual_cutoffs      = [];
 	mostLikelyGaussians = [];

@@ -119,7 +119,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -172,7 +172,7 @@ fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapma
 % Load GC-bias corrected CGH data.
 %-------------------------------------------------------------------------------------------
 load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_3(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
 largestChr = find(chr_width == max(chr_width));
 
 

@@ -2,7 +2,7 @@ function [which] = FindHighestGaussian_2(G)
 % FindHighestGaussian determines which of called Gaussians is the highest
 %    across a 1:200 vector.   This is used to determine which Gaussians
 %    were meaningful in the multi-Gaussian fit.
-	curve_count = length(G)
+	curve_count = length(G);
 	which = [];
 	% finds highest Gaussian for each of [0..200].
 	for i = 1:200
