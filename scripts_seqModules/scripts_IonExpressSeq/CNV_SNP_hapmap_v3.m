@@ -1,6 +1,7 @@
 function [] = CNV_SNP_hapmap_v3(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                                 SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../);
+
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.

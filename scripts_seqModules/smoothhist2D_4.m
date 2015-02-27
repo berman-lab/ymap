@@ -1,4 +1,6 @@
 function [imageX, imageY, imageC] = smoothhist2D_4(x,y,lambda,nbins,rangeMax,outliercutoff)
+addpath('../);
+
 %
 %  This version allows user control of the colormap in use.   Only standard matlab colormaps are valid.
 %

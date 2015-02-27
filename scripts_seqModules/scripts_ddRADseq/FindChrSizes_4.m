@@ -1,4 +1,6 @@
 function [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot,Ploidy,num_chrs,chr_in_use)
+addpath('../);
+
 % FindChrSizes determines chromosome sizes from
 %    initial ploidy estimate and CGH data.
 maxY              = 10;
