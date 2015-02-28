@@ -565,6 +565,14 @@ function blank_and_content_tab() {
 	<br>
 	<iframe id="Hidden_GenerateNewHapmap_Frame" src="hapmap.create_window.php"></iframe>
 </DIV>
+<DIV id="Hidden_AddToHapmap" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
+	<table width="100%"><tr>
+	<td width="95%" align="left">Generate New Hapmap</td>
+	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_GenerateNewHapmap').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
+	</tr></table>
+	<br>
+	<iframe id="Hidden_AddToHapmap_Frame"></iframe>
+</DIV>
 <DIV id="Hidden_BugTracker" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
 	<table width="100%"><tr>
 	<td width="95%" align="left">Bug Reports</td>

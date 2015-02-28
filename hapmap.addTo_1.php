@@ -35,8 +35,6 @@
 	$handle2 = fopen($folder."parent.txt", "r");
 	$parent  = trim(fgets($handle2));
 	fclose($handle2);
-
-print $hapmap.":".$user.":".$key;
 ?>
 <html lang="en">
 	<HEAD>
