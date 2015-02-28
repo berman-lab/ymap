@@ -718,6 +718,7 @@ for chr = 1:num_chrs
 			% Resort and save edge positions.
 			%----------------------------------------------------------------------
 			locs{chr} = sort(position_sorted);
+		end;
 	end;
 end;
 

@@ -746,8 +746,10 @@ if (temp_figures == true)
 				plot([locs{chr}(edge) locs{chr}(edge)], [0 maxY],'color',[0 0 1]);
 			end;
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-			set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
+			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			ylim([0,maxY]);
+			set(gca,'YTick',[0 maxY/2 maxY]);
+			set(gca,'YTickLabel',[]);
 		end;
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.5.eps'], 'epsc');
