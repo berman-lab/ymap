@@ -18,14 +18,8 @@ project1=$3;
 project2=$4;
 hapmap=$5;
 
-main_dir=$(pwd)"/";
+main_dir=$(pwd)"/../../";
 
-#user='darren1';
-#referencePloidy='2';
-#project1='SC5314_A21-s02-m09-r07';
-#project2='12353_A21-s02-m09-r07';
-#hapmap='testing';
-#main_dir='/heap/hapmap/bermanlab/';
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -43,8 +37,8 @@ fi
 logName=$hapmapDirectory"process_log.txt";
 condensedLog=$hapmapDirectory"condensed_log.txt";
 echo "" >> $logName;
-echo "Running 'sh/hapmap.install_4.sh'" >> $logName;
-echo "Variables passed via command-line from 'php/hapmap.install_3.php' :" >> $logName;
+echo "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh'" >> $logName;
+echo "Variables passed via command-line from 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php' :" >> $logName;
 echo "    user            = "$user >> $logName;
 echo "    referencePloidy = "$referencePloidy >> $logName;
 echo "    project1        = "$project1 >> $logName;
@@ -130,7 +124,7 @@ then
 		cd $main_dir;
 
 		# Process parent SNP file 'SNPdata_parent.txt' into condensed het SNP information.
-		python $main_dir"py/hapmap.preprocess_parent.py" $genome $genomeUser $project1 $project1User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
+		python $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project1 $project1User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
 		rm $hapmapDirectory"SNPdata_parent.txt"
 		mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt"
 	else
@@ -140,7 +134,7 @@ then
 	##==============================================================================
 	## Read in 'haplotypeMap.txt' and output fragment definition files.
 	##------------------------------------------------------------------------------
-	python $main_dir"py/hapmap.expand_definitions.py" $user $hapmap $main_dir
+	python $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.expand_definitions.py" $user $hapmap $main_dir
 
 	##==============================================================================
 	## Deal with installing and processing child/project2 datasets.
@@ -164,7 +158,7 @@ then
 	cd $main_dir
 
 	# Process child dataset vs parental SNPs and haplotype map definitions.
-	python $main_dir"py/hapmap.process_child.py" $genome $genomeUser $project2 $user $hapmap $main_dir $childNum > $hapmapDirectory"SNPdata_parent.temp.txt"
+	python $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.process_child.py" $genome $genomeUser $project2 $user $hapmap $main_dir $childNum > $hapmapDirectory"SNPdata_parent.temp.txt"
 
 	# Delete original 'SNPdata_parent.txt' file.
 	rm $hapmapDirectory"SNPdata_parent.txt";
@@ -201,7 +195,7 @@ else
 		cd $main_dir;
 
 		# Process parent SNP files 'SNPdata_parent1.txt' & 'SNPdata_parent2.txt' into condensed het SNP information.
-		python $main_dir"py/hapmap.preprocess_haploid_parents.py" $genome $genomeUser $project1 $project1User $project2 $project2User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
+		python $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_haploid_parents.py" $genome $genomeUser $project1 $project1User $project2 $project2User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
 		mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt"
 
 		# Delete original 'SNPdata_parent1.txt' and 'SNPdata_parent2.txt' file, no longer needed here.
@@ -223,9 +217,3 @@ echo "Concluding analysis." >> $condensedLog;
 
 ## Delete 'working.txt' file to let pipeline know that processing has completed, but hapmap is available for additional entries.
 rm $main_dir"users/"$user"/hapmaps/"$hapmap"/working.txt";
-
-##==============================================================================
-## Cleanup intermediate files.
-##------------------------------------------------------------------------------
-#rm $hapmapDirectory"condensed_log.txt";
-#rm $hapmapDirectory"process_log.txt";

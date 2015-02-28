@@ -15,7 +15,7 @@
 	</HEAD>
 	<BODY onload="UpdateProjectList()">
 		<div id="hapmapCreationInformation"><p>
-			<form action="hapmap.install_1.php" method="post">
+			<form action="scripts_seqModules/scripts_hapmaps/hapmap.install_1.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="hapmap">Hapmap Name : </label><input type="text" name="hapmap" id="hapmap">
 				</td><td>
