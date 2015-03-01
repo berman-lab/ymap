@@ -160,7 +160,7 @@ UpdateProjectList=function() {
 						This strain will form haplotype 'b'.
 					</div<
 				</td></tr></table><br>
-				<input type="submit" value="Create New hapmap">
+				<input type="submit" value="Create new hapmap">
 			</form>
 		</p></div>
 	</body>
