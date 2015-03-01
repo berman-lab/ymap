@@ -1,12 +1,4 @@
 #!/bin/bash -e
-#
-# Initialization of genome into pipeline
-#   $1 : user
-#   $2 : referencePloidy
-#   $3 : project1 (parent or parent1)
-#   $4 : project2 (child or parent2)
-#   $5 : hapmap
-#   $6 : main_dir
 
 ## All created files will have permission 760
 umask 007;
@@ -39,12 +31,12 @@ condensedLog=$hapmapDirectory"condensed_log.txt";
 echo "" >> $logName;
 echo "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh'" >> $logName;
 echo "Variables passed via command-line from 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php' :" >> $logName;
-echo "    user            = "$user >> $logName;
-echo "    referencePloidy = "$referencePloidy >> $logName;
-echo "    project1        = "$project1 >> $logName;
-echo "    project2        = "$project2 >> $logName;
-echo "    hapmap          = "$hapmap >> $logName;
-echo "    main_dir        = "$main_dir >> $logName;
+echo "    user                        = "$user >> $logName;
+echo "    referencePloidy             = "$referencePloidy >> $logName;
+echo "    project1 (parent)           = "$project1 >> $logName;
+echo "    project2 (child)            = "$project2 >> $logName;
+echo "    hapmap                      = "$hapmap >> $logName;
+echo "    main_dir                    = "$main_dir >> $logName;
 echo "#.............................................................................." >> $logName;
 echo "" >> $logName;
 echo "#=====================================#" >> $logName;
@@ -52,10 +44,10 @@ echo "# Setting up locations and variables. #" >> $logName;
 echo "#=====================================#" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 echo "Important variables :" >> $logName;
-echo "    hapmapUser        = '"$hapmapUser"'" >> $logName;
-echo "    hapmapDirectory   = '"$hapmapDirectory"'" >> $logName;
+echo "    hapmap user                 = '"$hapmapUser"'" >> $logName;
+echo "    hapmap directory            = '"$hapmapDirectory"'" >> $logName;
 
-# Determine location of project1.
+# Determine location of project1 (parent).  Is it in user or default account?
 if [ -d $main_dir"users/"$user"/projects/"$project1"/" ]
 then
 	project1Directory=$main_dir"users/"$user"/projects/"$project1"/";
@@ -65,10 +57,9 @@ then
 	project1Directory=$main_dir"users/default/projects/"$project1"/";
 	project1User="default";
 fi
+echo "    project1 (parent) directory = '"$project1Directory"'" >> $logName;
 
-echo "    project1Directory = '"$project1Directory"'" >> $logName;
-
-# Determine location of project2.
+# Determine location of project2 (child).  Is it in user or default account?
 if [ -d $main_dir"users/"$user"/projects/"$project2"/" ]
 then
 	project2Directory=$main_dir"users/"$user"/projects/"$project2"/";
@@ -78,14 +69,13 @@ then
 	projcet2Directory=$main_dir"users/default/projects/"$project2"/";
 	project2User="default";
 fi
-
-echo "    project2Directory = '"$project2Directory"'" >> $logName;
+echo "    project2 (child) directory  = '"$project2Directory"'" >> $logName;
 
 # Get genome name from project1's "genome.txt" file.
 # ...both project1 and project2 will have the same genome, as only projects matching the genome
 # chosen for the hapmap are given as selection options.
 genome=$(head -n 1 $project1Directory"genome.txt");
-echo "    genome            = '"$genome"'" >> $logName;
+echo "    genome                      = '"$genome"'" >> $logName;
 
 # Determine location of project1 genome.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
@@ -97,12 +87,12 @@ then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
 fi
-echo "    genomeDirectory   = '"$genomeDirectory"'" >> $logName;
+echo "    genome directory            = '"$genomeDirectory"'" >> $logName;
 
 # Get reference FASTA file name from "reference.txt";
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
-echo "    genomeFASTA       = '"$genomeFASTA"'" >> $logName;
-echo "    referencePloidy   = '"$referencePloidy"'" >> $logName;
+echo "    genome FASTA file           = '"$genomeFASTA"'" >> $logName;
+echo "    reference ploidy            = '"$referencePloidy"'" >> $logName;
 
 if [ "$referencePloidy" = "2" ]
 then
@@ -142,10 +132,12 @@ then
 	# Copy child SNP dataset to hapmap directory.
 	echo "\tDetermining number of child datasets in hapmap." >> $logName;
 	childNum=0;
-	while [ -f $hapmapDirectory"SNPdata_child."$childNum".txt" ]
+	while [ -f $hapmapDirectory"haplotypeFragments."$childNum".txt" ]
 	do
 		childNum=`expr $childNum + 1`;
 	done
+	echo "\t\tThere are "$childNum" child datasets used in hapmap." >> $logName;
+	childNum=`expr $childNum - 1`;   # at least one will always be found, but counting of map entries is zero based.
 	echo "\tCopy child : 'SNP_CNV_v1.zip'" >> $logName;
 	echo "\t\t from : '"$project2Directory"SNP_CNV_v1.zip'" >> $logName;
 	echo "\t\t to   : '"$hapmapDirectory"SNPdata_child."$childNum".zip'" >> $logName;

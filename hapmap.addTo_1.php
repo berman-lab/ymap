@@ -19,11 +19,15 @@
 	$user      = filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING);
 	$key       = filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING);
 
-	$dir1      = "users/".$user."/hapmaps";
-	$dir2      = "users/".$user."/hapmaps/".$hapmap;
-	$dir3      = "users/default/hapmaps/".$hapmap;
 
-	// figure out what user the hapmap is installed under.
+	// Re-initialize 'process_log.txt' file.
+	$logOutputName = "users/".$user."/hapmaps/".$hapmap."/process_log.txt";
+	$logOutput     = fopen($logOutputName, 'a');
+	fwrite($logOutput, "\n================================================\n");
+	fwrite($logOutput, "Log file restarted for hapmap addition\n");
+	fwrite($logOutput, "Running 'hapmap.addTo_1.php'.\n");
+
+	// Defining directory location for later use.
 	$folder = "users/".$user."/hapmaps/".$hapmap."/";
 
 	// Load genome from 'hapmap/genome.txt'.
@@ -46,18 +50,12 @@
 		<title>[Needs Title]</title>
 	</HEAD>
 	<BODY onload="UpdateNextList()">
-		<div id="loginControls"><p>
-			<?php
-			if (isset($_SESSION['logged_on'])) {
-				$user = $_SESSION['user'];
-				echo "user: ".$user."<br>";
-			}
-			?>
-
-			<!-- If user is logged in, show logout button, otherwise, show the login button so we can get the user logged in-->
-			<button type="button" onclick="window.location.href='<?php if(isset($_SESSION['logged_on'])){echo "logout_server.php";}else{echo "user.login.php";}?>'"><?php if(isset($_SESSION['logged_on'])){echo "Logout";}else{echo "Login";}?></button>
-			<button type="button" onclick="window.location.href='index.php'">Back to Home</button>
-		</p></div>
+		<?php
+		if (isset($_SESSION['logged_on'])) {
+			$user = $_SESSION['user'];
+		}
+		?>
+		<b>Add to user defined hapmap.</b>
 		<div id="hapmapCreationInformation"><p>
 			<form action="hapmap.addTo_2.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
@@ -86,18 +84,30 @@
 					<script type="text/javascript">
 					var nextGenomeDatatype_entries = [['next','genome','dataType']<?php
 					foreach ($projectFolders_raw as $key=>$folder) {
-						$handle1         = fopen($folder."/genome.txt", "r");
-						$genome_string   = trim(fgets($handle1));
-						fclose($handle1);
 						$handle2         = fopen($folder."/dataType.txt", "r");
 						$dataType_string = trim(fgets($handle2));
 						$dataType_string = explode(":",$dataType_string);
 						$dataType_string = $dataType_string[0];
 						fclose($handle2);
-						$nextName        = $folder;
-						$nextName        = str_replace($projectsDir1,"",$nextName);
-						$nextName        = str_replace($projectsDir2,"",$nextName);
-						echo ",['{$nextName}','{$genome_string}',{$dataType_string}]";
+
+						// Exclude projects from unusable data types.
+						if ($dataType_string == '0') {
+							// 0 : array data is excluded from options.
+						} elseif ($dataType_string == '1') {
+							// 1 : WGseq data is usable.
+							$handle1         = fopen($folder."/genome.txt", "r");
+							$genome_string   = trim(fgets($handle1));
+							fclose($handle1);
+
+							$nextName        = $folder;
+							$nextName        = str_replace($projectsDir1,"",$nextName);
+							$nextName        = str_replace($projectsDir2,"",$nextName);
+							echo ",['{$nextName}','{$genome_string}',{$dataType_string}]";
+						} else {
+							// 2 : ddRADseq data is unusable.
+							// 3 : IonExpressSeq data is unusable.
+							// 4 : RNAseq data is unusable.
+						}
 					}
 					?>];
 
@@ -118,7 +128,7 @@
 					}
 					</script>
 				</td><td valign="top">
-					The first dataset used to construct the hapmap. (Others can be added later...)<br>
+					The dataset being used to extend the previously defined hapmap. (Others can be added later...)<br>
 					Each strain used to construct the hapmap should have large loss of heterozygosity regions.
 				</td></tr></table><br>
 				<input type="submit" value="Add hapmap entry">
@@ -126,3 +136,7 @@
 		</p></div>
 	</body>
 </html>
+<?php
+	fwrite($logOutput, "'hapmap.addTo_1.php' completed.\n");
+	fclose($logOutput);
+?>
