@@ -641,7 +641,7 @@ if (Linear_display == true)
 	Linear_fig           = figure(2);
 	Linear_genome_size   = sum(chr_size);
 	Linear_Chr_max_width = 0.91;
-	Linear_left_start    = 0.01;
+	Linear_left_start    = 0.02;
 	Linear_left_chr_gap  = 0.07/(num_chrs);
 	Linear_height        = 0.6;
 	Linear_base          = 0.1;
