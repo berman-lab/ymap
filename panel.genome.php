@@ -19,10 +19,11 @@
 
 		$_SESSION['pending_install_genome_count'] = 0;
 		?>
-		<b><font size='2'>Genomes Pending</font></b><br>
+		<b><font size='2'>Genomes Pending:</font></b><br>
 		<div class='tab' style='color:#CC0000; font-size:10pt;' id='newly_installed_list' name='newly_installed_list'></div><br>
 		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:center;' id='pending_comment' name='pending_comment'>(Reload page after current uploads have completed to prepare these
 		for upload.)</div>
+		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:center;' id='name_error_comment' name='name_error_comment'>(Entered genome name is already in use.)</div>
 		<?php
 	}
 
@@ -76,7 +77,7 @@
 			$handle       = fopen($sizeFile_1,'r');
 			$sizeString_1 = trim(fgets($handle));
 			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
 			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
 
 			echo "</font></span>\n\t\t\t\t";
@@ -97,7 +98,7 @@
 			$handle       = fopen($sizeFile_1,'r');
 			$sizeString_1 = trim(fgets($handle));
 			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
 			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
 
 			echo "</font></span>\n\t\t\t\t";
@@ -118,7 +119,7 @@
 			$handle       = fopen($sizeFile_1,'r');
 			$sizeString_1 = trim(fgets($handle));
 			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
+			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
 			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
 
 			echo "</font></span>\n\t\t\t\t";
@@ -140,7 +141,7 @@
 	// Trim path from each folder string.
 	foreach($systemGenomeFolders as $key=>$folder) {   $systemGenomeFolders[$key] = str_replace($genomesDir,"",$folder);   }
 	$systemGenomeCount = count($systemGenomeFolders);
-	echo "<b><font size='2'>Installed Reference Genomes:</font></b>\n";
+	echo "<b><font size='2'>Installed Reference Genomes:</font></b><br>\n";
 	foreach ($systemGenomeFolders as $key=>$genome) {
 		$genomeNameString = file_get_contents("users/default/genomes/".$genome."/name.txt");
 		$genomeNameString = trim($genomeNameString);
@@ -160,14 +161,15 @@ if (isset($_SESSION['logged_on'])) {
 		$genome   = $genomeFolders[$key];
 		echo "\n\t// javascript for genome #".$key.", '".$genome."'\n\t";
 		echo "var el_g               = document.getElementById('frameContainer.g3_".$key."');\n\t";
-		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:28px\" ";
+		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:38px\" ";
 		echo     "src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
 		echo "var g_iframe           = document.getElementById('g_".$key."');\n\t";
 	    echo "var g_js               = g_iframe.contentWindow;\n\t";
 		echo "g_js.display_string    = new Array();\n\t";
 		echo "g_js.display_string[0] = \"Add : Genome reference FASTA file...\";\n\t";
 		echo "g_js.target_dir        = \"../../users/".$user."/genomes/".$genome."/\";\n\t";
-		echo "g_js.conclusion_script = \"php/genome.install_1.php\";\n\t";
+		echo "g_js.conclusion_script = \"scripts_genomes/genome.install_1.php\";\n\t";
+
 	    echo "g_js.user              = \"".$user."\";\n\t";
 	    echo "g_js.genome            = \"".$genome."\";\n\t";
 	    echo "g_js.key               = \"g_".$key."\";\n";

@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -361,6 +361,9 @@ function blank_and_content_tab() {
 			var fig_standard_manual              = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.1.";
 			var CGD_annotations_SNP              = "users/"+user+"/projects/"+project+"/CGD_annotations."+project+".txt";
 
+			var CNV_bias_SnpCghArray_GCcontent   = "users/"+user+"/projects/"+project+"/fig_GCratio_vs_CGH.png";
+			var CNV_bias_SnpCghArray_end         = "users/"+user+"/projects/"+project+"/fig_EndDistance_vs_CGH.png";
+
 			var CNV_bias_WGseq_end               = "users/"+user+"/projects/"+project+"/fig.bias_chr_end.png";
 			var CNV_bias_WGseq_GCcontent         = "users/"+user+"/projects/"+project+"/fig.bias_GC_content.png";
 
@@ -398,7 +401,6 @@ function blank_and_content_tab() {
 					string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_RedGreen+"png\",\"100\")'> ";
 					string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV_SNP_RedGreen+"eps\")'>";
 				}
-
 				string1 = string1 + " or standard ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP+"png\",\"50\")'> ";
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_CNV_SNP+"eps\")'>";
@@ -409,7 +411,7 @@ function blank_and_content_tab() {
 				}
 				string1 = string1 + ")";
 				if ((isFile(fig_linear_CNV+"png")) || (isFile(fig_linear_SNP+"png"))) {
-					string1 = string1 + "; ";
+					string1 = string1 + " ";
 				}
 			}
 			if (isFile(fig_linear_CNV+"png")) {
@@ -421,18 +423,20 @@ function blank_and_content_tab() {
 	            string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_CNV+"eps\")'>";
 				string1 = string1 + ")";
 				if (isFile(fig_linear_SNP+"png")) {
-					string1 = string1 + "; ";
+					string1 = string1 + " ";
 				}
 			}
-			// Show CNV bias figure for WGseq and ddRADseq.
+
+			// Show CNV bias figure for SnpCghArray, WGseq, and ddRADseq.
+			if ((isFile(CNV_bias_SnpCghArray_GCcontent)) || (isFile(CNV_bias_SnpCghArray_end))) {
+				string1 = string1 + " : CNV biases ";
+				if (isFile(CNV_bias_SnpCghArray_GCcontent)) { string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_SnpCghArray_GCcontent+"\",\"50\")'>%GC</button>";   }
+				if (isFile(CNV_bias_SnpCghArray_end)) {       string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_SnpCghArray_end+"\",\"50\")'>chr end</button>";     }
+			}
 			if ((isFile(CNV_bias_WGseq_end)) || (isFile(CNV_bias_WGseq_GCcontent))) {
 				string1 = string1 + " : CNV biases ";
-				if (isFile(CNV_bias_WGseq_end)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_end+"\",\"50\")'>chr end</button>";
-				}
-				if (isFile(CNV_bias_WGseq_GCcontent)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_GCcontent+"\",\"50\")'>%GC</button>";
-				}
+				if (isFile(CNV_bias_WGseq_GCcontent)) {       string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_GCcontent+"\",\"50\")'>%GC</button>";         }
+				if (isFile(CNV_bias_WGseq_end)) {             string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_end+"\",\"50\")'>chr end</button>";           }
 			}
 			if (isFile(fig_linear_CNV_highTop+"png")) {
 				string1 = string1 + " : CNV ";
@@ -440,15 +444,9 @@ function blank_and_content_tab() {
 			}
 			if ((isFile(CNV_bias_ddRADseq_1)) || (isFile(CNV_bias_ddRADseq_2)) || (isFile(CNV_bias_ddRADseq_3))) {
 				string1 = string1 + " : CNV biases ";
-				if (isFile(CNV_bias_ddRADseq_1)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>fragment length</button>";
-				}
-				if (isFile(CNV_bias_ddRADseq_2)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>%GC</button>";
-				}
-				if (isFile(CNV_bias_ddRADseq_3)) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";
-				}
+				if (isFile(CNV_bias_ddRADseq_1)) {            string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"\",\"100\")'>fragment length</button>"; }
+				if (isFile(CNV_bias_ddRADseq_2)) {            string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>%GC</button>";             }
+				if (isFile(CNV_bias_ddRADseq_3)) {            string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";         }
 			}
 			if (isFile(fig_linear_SNP+"png")) {
 				string1 = string1 + "<br><b>SNP/LOH only</b> (lin. ";
@@ -468,12 +466,8 @@ function blank_and_content_tab() {
 			// Show allelic ratio plot version for ddRADseq and WGseq.
 			if ((isFile(fig_linear_SNPratio_histogram)) || (isFile(fig_linear_SNPratio_fireplot))) {
 				string1 = string1 + " : SNP ratios ";
-			}
-			if (isFile(fig_linear_SNPratio_histogram)) {
-				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_histogram+"\",\"100\")'>histogram</button>";
-			}
-			if (isFile(fig_linear_SNPratio_fireplot)) {
-				string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"\",\"100\")'>fire plot</button>";
+				if (isFile(fig_linear_SNPratio_histogram)) {  string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_histogram+"\",\"100\")'>histogram</button>"; }
+				if (isFile(fig_linear_SNPratio_fireplot)) {   string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"\",\"100\")'>fire plot</button>";  }
 			}
 
 			string1 = string1 + "</font>";
@@ -570,6 +564,14 @@ function blank_and_content_tab() {
 	</tr></table>
 	<br>
 	<iframe id="Hidden_GenerateNewHapmap_Frame" src="hapmap.create_window.php"></iframe>
+</DIV>
+<DIV id="Hidden_AddToHapmap" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
+	<table width="100%"><tr>
+	<td width="95%" align="left">Generate New Hapmap</td>
+	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_GenerateNewHapmap').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
+	</tr></table>
+	<br>
+	<iframe id="Hidden_AddToHapmap_Frame"></iframe>
 </DIV>
 <DIV id="Hidden_BugTracker" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
 	<table width="100%"><tr>

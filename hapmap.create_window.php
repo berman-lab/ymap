@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
 <html lang="en">
@@ -15,7 +15,7 @@
 	</HEAD>
 	<BODY onload="UpdateProjectList()">
 		<div id="hapmapCreationInformation"><p>
-			<form action="php/hapmap.install_1.php" method="post">
+			<form action="scripts_seqModules/scripts_hapmaps/hapmap.install_1.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="hapmap">Hapmap Name : </label><input type="text" name="hapmap" id="hapmap">
 				</td><td>
@@ -160,7 +160,7 @@ UpdateProjectList=function() {
 						This strain will form haplotype 'b'.
 					</div<
 				</td></tr></table><br>
-				<input type="submit" value="Create New hapmap">
+				<input type="submit" value="Create new hapmap">
 			</form>
 		</p></div>
 	</body>

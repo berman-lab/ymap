@@ -26,10 +26,14 @@
 		<button onclick="AddHaplotypeEntry();">Add haplotype entry...</button>
 
 		<script type="text/javascript">
+
+// parent.show_hidden("Hidden_AddToHapmap");
+// parent.reload_hidden("Hidden_AddToHapmap","hapmap..php");
+
 			AddHaplotypeEntry=function() {
 			var autoSubmitForm = document.createElement('form');
 			autoSubmitForm.setAttribute('method','post');
-			autoSubmitForm.setAttribute('action','php/hapmap.addTo_1.php');
+			autoSubmitForm.setAttribute('action','hapmap.addTo_1.php');
 			var input1 = document.createElement('input');
 				input1.setAttribute('type','hidden');
 				input1.setAttribute('name','user');

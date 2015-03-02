@@ -19,7 +19,7 @@
 </head>
 <BODY class="tab">
 <!---------- Main section of User interface ----------!>
-	<form id="fileupload" class="HTML5Uploader" method="POST" action="php/uploader/" enctype="multipart/form-data">
+	<form id="fileupload" class="HTML5Uploader" method="POST" action="uploader/" enctype="multipart/form-data">
 		<div class="upload-wrapper">
 			<div id="1-wrapper">
 			<table><tr>
@@ -27,7 +27,13 @@
 			<td valign="top">
 				<div id="select-wrapper" class="info-wrapper">
 					<div id="browsebutton" class="fileinput-button button gray" href="">
-						<script type="text/javascript">document.write(display_string[0]);</script>
+						<script type="text/javascript">
+							console.log("uploader.4.php : display_string    = '"+display_string[0]+"'");
+							console.log("uploader.4.php : currentDir        = '<?php echo getcwd(); ?>'");
+							console.log("uploader.4.php : target_dir        = '"+target_dir+"'");
+							console.log("uploader.4.php : conclusion_script = '"+conclusion_script+"'");
+							document.write(display_string[0]);
+						</script>
 						<input type="file" id="fileinput" name="files[]" class="fileinput" single onchange="Show2()">
 					</div>
 				</div>

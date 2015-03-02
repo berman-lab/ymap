@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript">reload(); </script> <?php } else { $user = $_SESSION['user']; }
-	require_once 'php/constants.php';
+	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
 <HEAD>
@@ -16,7 +16,7 @@
 		// Generate a form to post data to loaded page.
 		var conclusion = document.createElement("form");
 		conclusion.setAttribute("method","post");
-		conclusion.setAttribute("action","php/genome.working_server.php");
+		conclusion.setAttribute("action","genome.working_server.php");
 
 		var input1 = document.createElement("input");
 		input1.setAttribute("type","hidden");

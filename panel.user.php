@@ -25,7 +25,7 @@ if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 if (isset($_SESSION['logged_on'])) {
 	echo "User '<b>".$user."</b>' logged in. \n";
 	// provide logout button.
-	echo "<button type='button' onclick=\"window.location.href='php/user.logout_server.php'\">Logout</button>\n";
+	echo "<button type='button' onclick=\"window.location.href='user.logout_server.php'\">Logout</button>\n";
 	// provide delete-user button.
 	echo "<span id='u_".$user."_delete'></span>\n";
 	echo "<button type='button' onclick=\"window.location.href='user.delete.php'\">Delete User.</button>\n";
@@ -38,7 +38,7 @@ if (isset($_SESSION['logged_on'])) {
 	echo "</font>\n";
 } else {
 	echo "<script type=\"text/javascript\">\n\t\n\t</script>\n\t";
-	echo "<form action='php/user.login_server.php' method='post'>\n\t";
+	echo "<form action='user.login_server.php' method='post'>\n\t";
 	echo "<label for='user'>Username: </label><input type='text' id='user' name='user'><br>\n\t";
 	echo "<label for='pw'>Password: </label><input type='password' id='pw' name='pw'><br>\n\t";
 	echo "<button type='submit' onclick=\"parent.update_projectsShown_after_logout();\">Login</button>\n\t";

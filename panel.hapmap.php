@@ -60,12 +60,12 @@ function showColors(colorName,targetToChange,contentString) {
 			}
 			echo "<button id='hapmap_delete_".$key."' type='button' onclick=\"parent.deleteHapmapConfirmation('".$user."','".$hapmap."','".$key."')\">Delete</button>\n\t\t";
 			echo "<font size='2'>".$hapmap."</font></span></td><td>\n\t\t\t\t";
-			echo "<span id='h_delete_".$key."' style='></span>\n\t\t";
+			echo "<span id='h_delete_".$key."'></span>\n\t\t\t\t";
 
-			echo "<td><div id='userHapmapA_".$key."'  >filler</div></td>\n\t\t\t\t";
-			echo "<td><div id='userHapmapHET_".$key."'>filler</div></td>\n\t\t\t\t";
-			echo "<td><div id='userHapmapB_".$key."'  >filler</div></td>\n\t\t\t\t";
-			echo "<td><div id='userHapmapHOM_".$key."'>filler</div></td></tr></table>\n\t\t\t\t";
+			echo "<td><div id='userHapmapA_".$key."'  >[a]</div></td>\n\t\t\t\t";
+			echo "<td><div id='userHapmapHET_".$key."'>[ab]</div></td>\n\t\t\t\t";
+			echo "<td><div id='userHapmapB_".$key."'  >[b]</div></td>\n\t\t\t\t";
+			echo "<td><div id='userHapmapHOM_".$key."'>[hom]</div></td></tr></table>\n\t\t\t\t";
 			echo "<div id='frameContainer.h_".$key."'></div></div>\n\t\t\t\t";
 
 			echo "<script type='text/javascript'>\n\t\t\t\t";
@@ -123,10 +123,10 @@ function showColors(colorName,targetToChange,contentString) {
 	echo "<div class='hapmap'><b><font size='2'>System hapmaps:</font></b>\n\t\t\t\t";
 	foreach ($systemHapmapFolders as $key=>$hapmap) {
 		echo "<div class='tab'><table><tr><td><font size='2'>".$hapmap."</font></td>\n\t\t\t\t";
-		echo "<td><div id='defaultHapmapA_".$key."'  >filler</div></td>\n\t\t\t\t";
-		echo "<td><div id='defaultHapmapHET_".$key."'>filler</div></td>\n\t\t\t\t";
-		echo "<td><div id='defaultHapmapB_".$key."'  >filler</div></td>\n\t\t\t\t";
-		echo "<td><div id='defaultHapmapHOM_".$key."'>filler</div></td></tr></table>\n\t\t\t\t";
+		echo "<td><div id='defaultHapmapA_".$key."'  >[a]</div></td>\n\t\t\t\t";
+		echo "<td><div id='defaultHapmapHET_".$key."'>[ab]</div></td>\n\t\t\t\t";
+		echo "<td><div id='defaultHapmapB_".$key."'  >[b]</div></td>\n\t\t\t\t";
+		echo "<td><div id='defaultHapmapHOM_".$key."'>[hom]</div></td></tr></table>\n\t\t\t\t";
 		echo "</div>\n\t\t\t\t";
 	}
 	?>
@@ -150,7 +150,7 @@ if (isset($_SESSION['user']) != 0) {
 		echo "\t\t\t\t\tshowColors('".$colorString1."','userHapmapA_".$key."','a');\n";
 		echo "\t\t\t\t\tshowColors('".$colorString2."','userHapmapB_".$key."','b');\n";
 		echo "\t\t\t\t\tshowColors('red','userHapmapHOM_".$key."','hom');\n";
-		echo "\t\t\t\t\tshowColors('grey','userHapmapHET_".$key."','ab');\n";
+		echo "\t\t\t\t\tshowColors('grey','userHapmapHET_".$key."','ab');\n\n";
 	}
 }
 $hapmapsDir          = "users/default/hapmaps/";
@@ -167,7 +167,7 @@ foreach ($systemHapmapFolders as $key=>$hapmap) {
 	echo "\t\t\t\t\tshowColors('".$colorString1."','defaultHapmapA_".$key."','a');\n";
 	echo "\t\t\t\t\tshowColors('".$colorString2."','defaultHapmapB_".$key."','b');\n";
 	echo "\t\t\t\t\tshowColors('red','defaultHapmapHOM_".$key."','hom');\n";
-	echo "\t\t\t\t\tshowColors('grey','defaultHapmapHET_".$key."','ab');\n";
+	echo "\t\t\t\t\tshowColors('grey','defaultHapmapHET_".$key."','ab');\n\n";
 }
 ?>
 </script>

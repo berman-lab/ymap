@@ -13,7 +13,7 @@
 		<title>[Needs Title]</title>
 	</head>
 	<body>
-		<form action="php/user.login_server.php" method="post">
+		<form action="user.login_server.php" method="post">
 			<label for="user">Username: </label><input type="text"     id="user" name="user"><br>
 			<label for="pw"  >Password: </label><input type="password" id="pw"   name="pw"  ><br>
 			<button type="submit">Login</button>
