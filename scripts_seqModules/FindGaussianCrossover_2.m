@@ -1,4 +1,5 @@
 function [crossoverPoint] = FindGaussianCrossover_2(G1,G2, cross)
+
 % FindGaussianCutoffs_2 finds the equal probability point between two skew
 %     gaussians.   Equations found by manually solving for the intersection
 %     of componant Gaussians of skew Gaussians.

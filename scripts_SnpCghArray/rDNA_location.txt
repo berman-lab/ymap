@@ -1,0 +1,2 @@
+Chr	start(bp)	end(bp)	Name
+8	1889085	1896981	rDNA

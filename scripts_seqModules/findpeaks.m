@@ -1,4 +1,4 @@
-function [pks,locs] = my_findpeaks(X);
+function [pks,locs] = findpeaks(X);
 %
 % From comment at: http://stackoverflow.com/questions/4376636/unexpected-behaviour-of-function-findpeaks-in-matlabs-signal-processing-toolbox
 %

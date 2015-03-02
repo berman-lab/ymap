@@ -1,5 +1,7 @@
 function [] = CNV_SNP_normalized_v1(projectName1_parent,projectName2_child,genome_data,ploidyString, ...
                   ave_copy_num,CNV_verString,SNP_verString,LOH_verString,workingDir,figureDir,displayBREAKS);
+addpath('../');
+
 %% ========================================================================
 % Generate CGH-type figures from RNAseq data, using a reference dataset to correct for genome position-dependant biases.
 %==========================================================================
@@ -23,8 +25,9 @@ Linear_display              = true;
 % Defines chr sizes in bp. (diploid total=28,567,7888)
 % Defines centromere locations in bp.
 % Defines annotation locations in bp.
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(workingDir,figureDir,genome_data);            
-[Aneuploidy]                                                          = Load_dataset_information_1(projectName2_child,workingDir);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[Aneuploidy]                                                          = Load_dataset_information(projectName2_child);
 
 for i = 1:length(chr_sizes)
     chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;

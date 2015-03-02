@@ -5,10 +5,10 @@ testPloidyBase = ploidyBaseString
 
 workingDir      = [main_dir 'users/' user '/projects/' project '/'];
 figureDir       = workingDir;
-CNV_verString   = 'v1';
 INDEL_verString = 'v1';
 SNP_verString   = 'v4';
 LOH_verString   = 'v2';
+CNV_verString   = 'v1';
 displayBREAKS   = true;
 referenceCHR    = 1;
 

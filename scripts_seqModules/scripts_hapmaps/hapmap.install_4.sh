@@ -1,12 +1,4 @@
 #!/bin/bash -e
-#
-# Initialization of genome into pipeline
-#   $1 : user
-#   $2 : referencePloidy
-#   $3 : project1 (parent or parent1)
-#   $4 : project2 (child or parent2)
-#   $5 : hapmap
-#   $6 : main_dir
 
 ## All created files will have permission 760
 umask 007;
@@ -18,17 +10,11 @@ project1=$3;
 project2=$4;
 hapmap=$5;
 
-main_dir=$(pwd)"/";
+main_dir=$(pwd)"/../../";
 
 # load local installed program location variables.
 . $main_dir/sh/local_installed_programs.sh;
 
-#user='darren1';
-#referencePloidy='2';
-#project1='SC5314_A21-s02-m09-r07';
-#project2='12353_A21-s02-m09-r07';
-#hapmap='testing';
-#main_dir='/heap/hapmap/bermanlab/';
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -46,14 +32,14 @@ fi
 logName=$hapmapDirectory"process_log.txt";
 condensedLog=$hapmapDirectory"condensed_log.txt";
 echo "" >> $logName;
-echo "Running 'sh/hapmap.install_4.sh'" >> $logName;
-echo "Variables passed via command-line from 'php/hapmap.install_3.php' :" >> $logName;
-echo "    user            = "$user >> $logName;
-echo "    referencePloidy = "$referencePloidy >> $logName;
-echo "    project1        = "$project1 >> $logName;
-echo "    project2        = "$project2 >> $logName;
-echo "    hapmap          = "$hapmap >> $logName;
-echo "    main_dir        = "$main_dir >> $logName;
+echo "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh'" >> $logName;
+echo "Variables passed via command-line from 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php' :" >> $logName;
+echo "    user                        = "$user >> $logName;
+echo "    referencePloidy             = "$referencePloidy >> $logName;
+echo "    project1 (parent)           = "$project1 >> $logName;
+echo "    project2 (child)            = "$project2 >> $logName;
+echo "    hapmap                      = "$hapmap >> $logName;
+echo "    main_dir                    = "$main_dir >> $logName;
 echo "#.............................................................................." >> $logName;
 echo "" >> $logName;
 echo "#=====================================#" >> $logName;
@@ -61,10 +47,10 @@ echo "# Setting up locations and variables. #" >> $logName;
 echo "#=====================================#" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 echo "Important variables :" >> $logName;
-echo "    hapmapUser        = '"$hapmapUser"'" >> $logName;
-echo "    hapmapDirectory   = '"$hapmapDirectory"'" >> $logName;
+echo "    hapmap user                 = '"$hapmapUser"'" >> $logName;
+echo "    hapmap directory            = '"$hapmapDirectory"'" >> $logName;
 
-# Determine location of project1.
+# Determine location of project1 (parent).  Is it in user or default account?
 if [ -d $main_dir"users/"$user"/projects/"$project1"/" ]
 then
 	project1Directory=$main_dir"users/"$user"/projects/"$project1"/";
@@ -74,10 +60,9 @@ then
 	project1Directory=$main_dir"users/default/projects/"$project1"/";
 	project1User="default";
 fi
+echo "    project1 (parent) directory = '"$project1Directory"'" >> $logName;
 
-echo "    project1Directory = '"$project1Directory"'" >> $logName;
-
-# Determine location of project2.
+# Determine location of project2 (child).  Is it in user or default account?
 if [ -d $main_dir"users/"$user"/projects/"$project2"/" ]
 then
 	project2Directory=$main_dir"users/"$user"/projects/"$project2"/";
@@ -87,14 +72,13 @@ then
 	projcet2Directory=$main_dir"users/default/projects/"$project2"/";
 	project2User="default";
 fi
-
-echo "    project2Directory = '"$project2Directory"'" >> $logName;
+echo "    project2 (child) directory  = '"$project2Directory"'" >> $logName;
 
 # Get genome name from project1's "genome.txt" file.
 # ...both project1 and project2 will have the same genome, as only projects matching the genome
 # chosen for the hapmap are given as selection options.
 genome=$(head -n 1 $project1Directory"genome.txt");
-echo "    genome            = '"$genome"'" >> $logName;
+echo "    genome                      = '"$genome"'" >> $logName;
 
 # Determine location of project1 genome.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
@@ -106,12 +90,12 @@ then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
 fi
-echo "    genomeDirectory   = '"$genomeDirectory"'" >> $logName;
+echo "    genome directory            = '"$genomeDirectory"'" >> $logName;
 
 # Get reference FASTA file name from "reference.txt";
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
-echo "    genomeFASTA       = '"$genomeFASTA"'" >> $logName;
-echo "    referencePloidy   = '"$referencePloidy"'" >> $logName;
+echo "    genome FASTA file           = '"$genomeFASTA"'" >> $logName;
+echo "    reference ploidy            = '"$referencePloidy"'" >> $logName;
 
 if [ "$referencePloidy" = "2" ]
 then
@@ -133,7 +117,7 @@ then
 		cd $main_dir;
 
 		# Process parent SNP file 'SNPdata_parent.txt' into condensed het SNP information.
-		$python_exec $main_dir"py/hapmap.preprocess_parent.py" $genome $genomeUser $project1 $project1User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
+		$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project1 $project1User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
 		rm $hapmapDirectory"SNPdata_parent.txt"
 		mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt"
 	else
@@ -143,7 +127,7 @@ then
 	##==============================================================================
 	## Read in 'haplotypeMap.txt' and output fragment definition files.
 	##------------------------------------------------------------------------------
-	$python_exec $main_dir"py/hapmap.expand_definitions.py" $user $hapmap $main_dir
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.expand_definitions.py" $user $hapmap $main_dir
 
 	##==============================================================================
 	## Deal with installing and processing child/project2 datasets.
@@ -151,10 +135,12 @@ then
 	# Copy child SNP dataset to hapmap directory.
 	echo "\tDetermining number of child datasets in hapmap." >> $logName;
 	childNum=0;
-	while [ -f $hapmapDirectory"SNPdata_child."$childNum".txt" ]
+	while [ -f $hapmapDirectory"haplotypeFragments."$childNum".txt" ]
 	do
 		childNum=`expr $childNum + 1`;
 	done
+	echo "\t\tThere are "$childNum" child datasets used in hapmap." >> $logName;
+	childNum=`expr $childNum - 1`;   # at least one will always be found, but counting of map entries is zero based.
 	echo "\tCopy child : 'SNP_CNV_v1.zip'" >> $logName;
 	echo "\t\t from : '"$project2Directory"SNP_CNV_v1.zip'" >> $logName;
 	echo "\t\t to   : '"$hapmapDirectory"SNPdata_child."$childNum".zip'" >> $logName;
@@ -167,7 +153,7 @@ then
 	cd $main_dir
 
 	# Process child dataset vs parental SNPs and haplotype map definitions.
-	$python_exec $main_dir"py/hapmap.process_child.py" $genome $genomeUser $project2 $user $hapmap $main_dir $childNum > $hapmapDirectory"SNPdata_parent.temp.txt"
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.process_child.py" $genome $genomeUser $project2 $user $hapmap $main_dir $childNum > $hapmapDirectory"SNPdata_parent.temp.txt"
 
 	# Delete original 'SNPdata_parent.txt' file.
 	rm $hapmapDirectory"SNPdata_parent.txt";
@@ -204,7 +190,7 @@ else
 		cd $main_dir;
 
 		# Process parent SNP files 'SNPdata_parent1.txt' & 'SNPdata_parent2.txt' into condensed het SNP information.
-		$python_exec $main_dir"py/hapmap.preprocess_haploid_parents.py" $genome $genomeUser $project1 $project1User $project2 $project2User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
+		$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_haploid_parents.py" $genome $genomeUser $project1 $project1User $project2 $project2User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
 		mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt"
 
 		# Delete original 'SNPdata_parent1.txt' and 'SNPdata_parent2.txt' file, no longer needed here.
@@ -226,9 +212,3 @@ echo "Concluding analysis." >> $condensedLog;
 
 ## Delete 'working.txt' file to let pipeline know that processing has completed, but hapmap is available for additional entries.
 rm $main_dir"users/"$user"/hapmaps/"$hapmap"/working.txt";
-
-##==============================================================================
-## Cleanup intermediate files.
-##------------------------------------------------------------------------------
-#rm $hapmapDirectory"condensed_log.txt";
-#rm $hapmapDirectory"process_log.txt";

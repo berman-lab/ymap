@@ -1,5 +1,6 @@
 function [] = CNV_v6_fragmentLengthCorrected_9(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
                                                CNV_verString,displayBREAKS);
+addpath('../');
 
 % Close all pre-existing figures.
 delete(findall(0,'Type','figure'));
@@ -62,7 +63,8 @@ else
 	end;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir,genome);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [Aneuploidy] = [];
 
 for i = 1:length(chr_sizes)
@@ -812,36 +814,6 @@ if (performLengthbiasCorrection) || (performRepetbiasCorrection)
 	saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.png'], 'png');
 	delete(fig1);
 end;
-
-
-%% Generate figure showing correlation between GC content and repetitiveness.
-%	figTest = figure(99);
-%	X_GCbias_project = zeros(1,numFragments);
-%	Y_repet_project  = zeros(1,numFragments);
-%	for fragID = 1:numFragments
-%		X_GCbias_project(fragID) = fragment_data(fragID).GC_bias;
-%		Y_repet_project(fragID)  = fragment_data(fragID).repet;
-%		usable_project(fragID)   = fragment_data(fragID).usable;
-%	end;
-%	hold on;
-%	for fragID = 1:numFragments
-%		if (fragment_data(fragID).usable == 1)
-%			plot(fragment_data(fragID).GC_bias,fragment_data(fragID).repet,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',4);
-%		end;
-%	end;
-%	hold off;
-%	axis normal;
-%	h = title('[Repetitiveness] vs. [GC content] in genome.');   set(h, 'FontSize', 10);
-%	h = ylabel('Repetitiveness');  set(h, 'FontSize', 10);
-%	h = xlabel('GC content');      set(h, 'FontSize', 10);
-%	set(gca,'FontSize',10);
-%	xlim([0 1]);
-%	ylim([0 20000]);
-%	fprintf('Saving bias figure test.\n');
-%	set(figTest,'PaperPosition',[0 0 4 4]*2);
-%	saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.eps'], 'epsc');
-%	saveas(figTest, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.T.png'], 'png');
-%	delete(figTest);
 
 
 %%================================================================================================

@@ -19,14 +19,13 @@
 	// Re-initialize 'process_log.txt' file.
 	$logOutputName = "users/".$user."/hapmaps/".$hapmap."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
-	fwrite($logOutput, "Log file restarted for hapmap addition\n");
-	fwrite($logOutput, "Running 'hapmap.addTo_1.php'.\n");
+	fwrite($logOutput, "Running 'hapmap.addTo_2.php'.\n");
 
 	// Make a form to generate a form to POST information to pass along to the next page in the process.
 	echo "<script type=\"text/javascript\">\n";
 	echo "\tvar autoSubmitForm = document.createElement('form');\n";
 	echo "\t\tautoSubmitForm.setAttribute('method','post');\n";
-	echo "\t\tautoSubmitForm.setAttribute('action','hapmap.install_2.php');\n";
+	echo "\t\tautoSubmitForm.setAttribute('action','scripts_seqModules/scripts_hapmaps/hapmap.install_2.php');\n";
 	echo "\tvar input1 = document.createElement('input');\n";
 	echo "\t\tinput1.setAttribute('type','hidden');\n";
 	echo "\t\tinput1.setAttribute('name','hapmap');\n";
@@ -55,7 +54,6 @@
 	echo "\tautoSubmitForm.submit();\n";
 	echo "</script>";
 
-
-	fwrite($logOutput, "'hapmap.addTo_1.php' completed.\n");
+	fwrite($logOutput, "'hapmap.addTo_2.php' completed.\n");
 	fclose($logOutput);
 ?>

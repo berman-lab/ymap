@@ -1,5 +1,7 @@
 function [] = CNV_SNP_normalized_v1(projectName1_parent,projectName2_child,genome_data,ploidyString, ...
                   ave_copy_num,CNV_verString,SNP_verString,LOH_verString,workingDir,figureDir,displayBREAKS);
+addpath('../');
+
 %% ========================================================================
 % Generate CGH-type figures from RADseq data, using a reference dataset to correct for genome position-dependant biases.
 %==========================================================================
@@ -23,8 +25,9 @@ Linear_display              = true;
 % Defines chr sizes in bp. (diploid total=28,567,7888)
 % Defines centromere locations in bp.
 % Defines annotation locations in bp.
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir, genome);
-[Aneuploidy]                                                          = Load_dataset_information_1(projectName2_child,workingDir);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[Aneuploidy]                                                          = Load_dataset_information(projectName2_child);
 
 for i = 1:length(chr_sizes)
     chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
@@ -899,14 +902,18 @@ for chr = 1:num_chrs
 end;
 
 if (strcmp(projectName1_parent,projectName2_child) == 1)
+	set(fig,'PaperPosition',[0 0 8 6]*2);
 	saveas(fig, [figureDir projectName1_parent '.normalized_CNV-SNP-map.1.eps'], 'epsc');
 	saveas(fig, [figureDir projectName1_parent '.normalized_CNV-SNP-map.1.png'], 'png');
+
 	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 	saveas(Linear_fig, [figureDir projectName1_parent '.normalized_CNV-SNP-map.2.eps'], 'epsc');
 	saveas(Linear_fig, [figureDir projectName1_parent '.normalized_CNV-SNP-map.2.png'], 'png');
 else
+	set(fig,'PaperPosition',[0 0 8 6]*2);
 	saveas(fig, [figureDir projectName1_parent '->' projectName2_child '.normalized_CNV-LOH-map.1.eps'], 'epsc');
 	saveas(fig, [figureDir projectName1_parent '->' projectName2_child '.normalized_CNV-LOH-map.1.png'], 'png');
+
 	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 	saveas(fig, [figureDir projectName1_parent '->' projectName2_child '.normalized_CNV-LOH-map.2.eps'], 'epsc');
 	saveas(fig, [figureDir projectName1_parent '->' projectName2_child '.normalized_CNV-LOH-map.2.png'], 'png');

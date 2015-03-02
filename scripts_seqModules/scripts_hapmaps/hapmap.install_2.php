@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-	require_once 'constants.php';
+	require_once '../../constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
 	error_reporting(E_ALL);
@@ -17,8 +17,8 @@
 	$project2        = filter_input(INPUT_POST, "project2",        FILTER_SANITIZE_STRING);
 
 // Load the number of chromosomes from "chromosome_sizes.txt"
-	$file1 = "../users/default/genomes/".$genome."/chromosome_sizes.txt";
-	$file2 = "../users/".$user."/genomes/".$genome."/chromosome_sizes.txt";
+	$file1 = "../../users/default/genomes/".$genome."/chromosome_sizes.txt";
+	$file2 = "../../users/".$user."/genomes/".$genome."/chromosome_sizes.txt";
 	if (file_exists($file1)) {
 		$handle     = fopen($file1,'r');
 		$fileString = fread($handle, filesize($file1));
@@ -80,18 +80,18 @@
 	} else {
 		echo "Reference dataset 1 : ".$project1."<br>";
 	}
-	if (file_exists("../users/".$user."/projects/".$project1)) {
-	    if (file_exists("../users/".$user."/projects/".$project1."/fig.CNV-LOH-map.2.png")) {
-	        $imageUrl = "../users/".$user."/projects/".$project1."/fig.CNV-LOH-map.2.png";
+	if (file_exists("../../users/".$user."/projects/".$project1)) {
+	    if (file_exists("../../users/".$user."/projects/".$project1."/fig.CNV-LOH-map.2.png")) {
+	        $imageUrl = "../../users/".$user."/projects/".$project1."/fig.CNV-LOH-map.2.png";
 	    } else {
-	        $imageUrl = "../users/".$user."/projects/".$project1."/fig.CNV-SNP-map.2.png";
+	        $imageUrl = "../../users/".$user."/projects/".$project1."/fig.CNV-SNP-map.2.png";
 	    }
 	    echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 	} else {
-		if (file_exists("../users/default/projects/".$project1."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = "../users/default/projects/".$project1."/fig.CNV-LOH-map.2.png";
+		if (file_exists("../../users/default/projects/".$project1."/fig.CNV-LOH-map.2.png")) {
+			$imageUrl = "../../users/default/projects/".$project1."/fig.CNV-LOH-map.2.png";
 		} else {
-			$imageUrl = "../users/default/projects/".$project1."/fig.CNV-SNP-map.2.png";
+			$imageUrl = "../../users/default/projects/".$project1."/fig.CNV-SNP-map.2.png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 	}
@@ -102,28 +102,28 @@
 	} else {
 		echo "Reference dataset 2 : ".$project2."<br>";
 	}
-	if (file_exists("../users/".$user."/projects/".$project2)) {
-		if (file_exists("../users/".$user."/projects/".$project2."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = "../users/".$user."/projects/".$project2."/fig.CNV-LOH-map.2.png";
+	if (file_exists("../../users/".$user."/projects/".$project2)) {
+		if (file_exists("../../users/".$user."/projects/".$project2."/fig.CNV-LOH-map.2.png")) {
+			$imageUrl = "../../users/".$user."/projects/".$project2."/fig.CNV-LOH-map.2.png";
 		} else {
-			$imageUrl = "../users/".$user."/projects/".$project2."/fig.CNV-SNP-map.2.png";
+			$imageUrl = "../../users/".$user."/projects/".$project2."/fig.CNV-SNP-map.2.png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
-		$CGD_annotations_url = "../users/".$user."/projects/".$project2."/CGD_annotations.".$project2.".txt";
-		if (file_exists("../users/".$user."/projects/".$project2."/CGD_annotations.".$project2.".txt")) {
+		$CGD_annotations_url = "../../users/".$user."/projects/".$project2."/CGD_annotations.".$project2.".txt";
+		if (file_exists("../../users/".$user."/projects/".$project2."/CGD_annotations.".$project2.".txt")) {
 			if ($referencePloidy == 2) {
 				echo "<br><div class='tab'>Examine <button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse annotation track</button> to determine precise breakpoints.</div><br>";
 			}
 		}
 	} else {
-		if (file_exists("../users/default/projects/".$project2."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = "../users/default/projects/".$project2."/fig.CNV-LOH-map.2.png";
+		if (file_exists("../../users/default/projects/".$project2."/fig.CNV-LOH-map.2.png")) {
+			$imageUrl = "../../users/default/projects/".$project2."/fig.CNV-LOH-map.2.png";
 		} else {
-			$imageUrl = "../users/default/projects/".$project2."/fig.CNV-SNP-map.2.png";
+			$imageUrl = "../../users/default/projects/".$project2."/fig.CNV-SNP-map.2.png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
-		$CGD_annotations_url = "../users/default/projects/".$project2."/CGD_annotations.".$project2.".txt";
-		if (file_exists("../users/default/projects/".$project2."/CGD_annotations.".$project2.".txt")) {
+		$CGD_annotations_url = "../../users/default/projects/".$project2."/CGD_annotations.".$project2.".txt";
+		if (file_exists("../../users/default/projects/".$project2."/CGD_annotations.".$project2.".txt")) {
 			if ($referencePloidy == 2) {
 				echo "<button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse</button><br>";
 			}
@@ -213,7 +213,7 @@ if ($referencePloidy == 2) {
 <tr><td>
 <div class="tab">
 	<?php
-		$colorsFile = "../users/".$user."/hapmaps/".$hapmap."/colors.txt";
+		$colorsFile = "../../users/".$user."/hapmaps/".$hapmap."/colors.txt";
 		if (file_exists($colorsFile)) {
 			$handle       = fopen($colorsFile,'r');
 			$colorString1 = trim(fgets($handle));

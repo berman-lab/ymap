@@ -177,18 +177,23 @@ chromosomes_to_analyze = 1:num_chrs;
 % Defines chromosome sizes in bp. (diploid total=28,567,7888)
 % Defines centromere locations in bp.
 % Defines MRS locations in bp.
-[centromeres, chr_sizes,MRSs] = Load_information();
+[centromeres, chr_sizes,MRSs,rDNA] = Load_information();
 for i = chromosomes_to_analyze
-    chr_size(i)  = chr_sizes(i).size;
-    cen_start(i) = centromeres(i).start;
-    cen_end(i)   = centromeres(i).end;
+    chr_size(i)     = chr_sizes(i).size;
+    cen_start(i)    = centromeres(i).start;
+    cen_end(i)      = centromeres(i).end;
 end;
 for i = 1:length(MRSs)
-    MRS_chr(i)   = MRSs(i).chr;
+    MRS_chr(i)      = MRSs(i).chr;
     MRS_location(i) = (MRSs(i).start+MRSs(i).end)/2;
+	MRS_color_1(i)  = MRSs(i).color_fill;
+	MRS_color_2(i)  = MRSs(i).color_edge;
 end;
-clear centromeres chr_sizes MRSs;
-
+rDNA_chr            = rDNA.chr;
+rDNA_location       = (rDNA.start+rDNA.end)/2;
+rDNA_color_1        = rDNA.color_fill;
+rDNA_color_2        = rDNA.color_edge;
+clear centromeres chr_sizes MRSs rDNA;
 
 
 % basic plot parameters not defined per genome.
@@ -329,6 +334,7 @@ end;
 datafile = [workingDir 'dataBiases.txt'];
 if (exist(datafile,'file') == 0)
 	performGCbiasCorrection     = true;
+	performEndbiasCorrection    = true;
 else
 	biases_fid = fopen(datafile, 'r');
 	bias1      = fgetl(biases_fid);
@@ -336,10 +342,11 @@ else
 	bias3      = fgetl(biases_fid);
 	bias4      = fgetl(biases_fid);
 	fclose(biases_fid);
-	if (strcmp(bias2,'True') == 1)
-		performGCbiasCorrection = true;
-	else
-		performGCbiasCorrection = false;
+	if (strcmp(bias2,'True') == 1)  performGCbiasCorrection  = true;
+	else                            performGCbiasCorrection  = false;
+	end;
+	if (strcmp(bias4,'True') == 1)  performEndbiasCorrection = true;
+	else                            performEndbiasCorrection = false;
 	end;
 end;
 
@@ -407,7 +414,7 @@ if (performGCbiasCorrection)
 				plot(fitX1,fitY1,'r','LineWidth',2);
 			hold off;
 			xlabel('GC ratio');
-			ylabel('CGH data');
+			ylabel('CNV data');
 			xlim([0 1.0]);   ylim([0 aveData_Y*5]);
 			axis square;
 		subplot(1,2,2);
@@ -416,9 +423,10 @@ if (performGCbiasCorrection)
 				plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);
 			hold off;
 			xlabel('GC ratio');
-			ylabel('corrected CGH data');
+			ylabel('corrected CNV data');
 			xlim([0 1.0]);   ylim([0 5]);
 			axis square;
+		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.eps'], 'epsc');
 		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.png'], 'png');
 
 		% Move LOWESS-normalizd CGH data into display pipeline.
@@ -431,6 +439,92 @@ if (performGCbiasCorrection)
 	else
 		% Load GC-bias corrected data from earlier.
 		load([workingDir 'GC_bias_corrected.mat']);
+	end;
+end;
+
+
+%%================================================================================================
+% Apply distance from fragment center to nearest end of chromosome bias correction
+%-------------------------------------------------------------------------------------------------
+if (performEndbiasCorrection)
+	if (exist([workingDir 'End_bias_corrected.mat'],'file') == 0)
+		for chr = 1:num_chrs
+			chr_EndDistanceData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+		end;
+		for chr = 1:num_chrs
+			for position = 1:ceil(chr_size(chr)/bases_per_bin)
+				frag_size                          = ceil(chr_size(chr)/bases_per_bin);
+				frag_center                        = position;
+				frag_nearestChrEnd                 = min(frag_center, frag_size - frag_center);
+				chr_EndDistanceData{chr}(position) = frag_nearestChrEnd;
+			end;
+		end;
+
+		% Gather CGH and EndDistance data for LOWESS fitting.
+		CGHdata_all         = [];
+		EndDistanceData_all = [];
+		for chr = 1:num_chrs
+			CGHdata_all         = [CGHdata_all         chr_CGHdata{chr,2}      ];
+			EndDistanceData_all = [EndDistanceData_all chr_EndDistanceData{chr}];
+		end;
+
+		% Perform LOWESS fitting.
+		rawData_X1        = EndDistanceData_all;
+		rawData_Y1        = CGHdata_all;
+		numFits           = 10;
+		[fitX1, fitY1]    = optimize_mylowess(rawData_X1,rawData_Y1, numFits, 0);
+
+		% Correct data using normalization to LOWESS fitting
+		Y_target = 1;
+		for chr = 1:num_chrs
+			rawData_chr_X             = chr_EndDistanceData{chr};
+			rawData_chr_Y             = chr_CGHdata{chr,2};
+			fitData_chr_Y             = interp1(fitX1,fitY1,rawData_chr_X,'spline');
+			normalizedData_chr_Y{chr} = rawData_chr_Y./fitData_chr_Y*Y_target;
+		end;
+		aveData_Y = mean(rawData_Y1);
+
+		% Gather corrected CGH data after normalization to the LOWESS fitting.
+		correctedCGHdata_all = [];
+		for chr = 1:num_chrs
+			correctedCGHdata_all = [correctedCGHdata_all normalizedData_chr_Y{chr}];
+		end;
+
+		%% Generate figure showing subplots of LOWESS fittings.
+		Endfig = figure();
+		subplot(1,2,1);
+			plot(EndDistanceData_all,CGHdata_all,'k.');
+			hold on;
+				plot(fitX1,fitY1,'r','LineWidth',2);
+			hold off;
+			xlabel('Distance to chr end');
+			ylabel('CNV data');
+			xlim([0 200]);
+			ylim([0 4]);
+			axis square;
+		subplot(1,2,2);
+			plot(EndDistanceData_all,correctedCGHdata_all,'k.');
+			hold on;
+				plot([min(EndDistanceData_all) max(EndDistanceData_all)],[Y_target Y_target],'r','LineWidth',2);
+			hold off;
+			xlabel('Distance to chr end');
+			ylabel('corrected CNV data');
+			xlim([0 200]);
+			ylim([0 4]);
+			axis square;
+		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.eps'], 'epsc');
+		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.png'], 'png');
+
+		% Move LOWESS-normalizd CGH data into display pipeline.
+		for chr = 1:num_chrs
+			chr_CGHdata{chr,2} = normalizedData_chr_Y{chr};
+		end;
+
+		% Save End-bias corrected data from earlier.
+		save([workingDir 'End_bias_corrected.mat'], 'chr_CGHdata');
+	else
+		% Load End-bias corrected data from earlier.
+		load([workingDir 'End_bias_corrected.mat']);
 	end;
 end;
 
@@ -529,12 +623,6 @@ else
 end;
 
     
-%% ====================================================================
-% Save datasetDetails.
-%----------------------------------------------------------------------
-save([workingDir '/' experiment_name '.' microarray_design '.datasetDetails.mat'], 'datasetDetails');
-
-    
 %% ========================================================================
 % Plotting probes across genome by interpretation catagory after accounting
 % for polarity of SNP pairs.
@@ -553,7 +641,7 @@ if (Linear_display == true)
 	Linear_fig           = figure(2);
 	Linear_genome_size   = sum(chr_size);
 	Linear_Chr_max_width = 0.91;
-	Linear_left_start    = 0.01;
+	Linear_left_start    = 0.02;
 	Linear_left_chr_gap  = 0.07/(num_chrs);
 	Linear_height        = 0.6;
 	Linear_base          = 0.1;
@@ -842,6 +930,9 @@ for i = 1:2:SNP_probeset_length
 		end;
 	end;
 end;
+
+% Save SNP 
+save([workingDir 'SNPdata_collected.mat'], 'chr_SNPdata','probeset1','SNPs_hom','SNPs_total');
 
 % basic plot parameters.
 left            = 0.15;
@@ -1430,12 +1521,23 @@ for chr = 1:num_chrs
 		for i = 1:length(MRS_location)
 			if (MRS_chr(i) == chr)
 				MRSloc = MRS_location(i)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
-				plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor','k','MarkerFaceColor','k','MarkerSize',5)
+				plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',MRS_color_2(i),'MarkerFaceColor',MRS_color_1(i),'MarkerSize',5);
 			end;
 		end;
 		hold off;
 	end;
 	% end show MRS locations.
+
+	% standard : show rDNA location.
+	if (show_MRS)
+		hold on;
+		if (rDNA_chr == chr)
+			rDNAloc = rDNA_location*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
+			plot(rDNAloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',rDNA_color_2,'MarkerFaceColor',rDNA_color_1,'MarkerSize',5);
+		end;
+		hold off;
+	end;
+	% end show rDNA location.
 
 	% standard : show ChARM edges.
 	if ((Show_ChARM_edges) && (show_MRS))
@@ -1462,7 +1564,7 @@ for chr = 1:num_chrs
 	set(gca,'YTickLabel',[]);
 	set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 	set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
-	text(-50000/5000/2*3, maxY*3/2,     chr_labels(chr), 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+	text(-50000/5000/2*3, maxY/2,     chr_labels(chr), 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 	if (CGH_Genomic_display == true)
 		if (strcmp(scale_type,'Ratio') == 1)
 			switch ploidyBase
@@ -1593,12 +1695,23 @@ for chr = 1:num_chrs
 			for i = 1:length(MRS_location)
 				if (MRS_chr(i) == chr)
 					MRSloc = MRS_location(i)*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
-					plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor','k','MarkerFaceColor','k','MarkerSize',5)
+					plot(MRSloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',MRS_color_2(i),'MarkerFaceColor',MRS_color_1(i),'MarkerSize',5);
 				end;
 			end;
 			hold off;
 		end;
-		%end show MRS locations.
+		% end show MRS locations.
+
+		% linear : show rDNA location.
+		if (show_MRS)
+			hold on;
+			if (rDNA_chr == chr)
+				rDNAloc = rDNA_location*chr_length_scale_multiplier-0.5*(5000/bases_per_bin);
+				plot(rDNAloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',rDNA_color_2,'MarkerFaceColor',rDNA_color_1,'MarkerSize',5);
+			end;
+			hold off;
+		end;
+		% end show rDNA location.
 
 		% linear : final reformatting.
 		xlim([0,chr_size(chr)*chr_length_scale_multiplier]);

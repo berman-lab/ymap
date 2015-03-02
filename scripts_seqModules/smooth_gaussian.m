@@ -1,4 +1,5 @@
 function s = smooth_gaussian(data,sigma,size)
+
 %    data  : input vector with raw data.
 %    sigma : standard deviation of the gaussian distribution used in the smoothing.
 %    size  : size of vector over which smoothing function is applied.   (2-3 sigmas is usually good.)

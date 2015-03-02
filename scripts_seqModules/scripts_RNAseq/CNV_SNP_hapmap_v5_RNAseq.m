@@ -1,5 +1,7 @@
 function [] = CNV_SNP_hapmap_v5_RNAseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                                        SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+addpath('../');
+
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
@@ -67,8 +69,9 @@ else
 	end;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(projectDir,genomeDir, genome);
-[Aneuploidy]                                                          = Load_dataset_information_1(projectDir, project);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[Aneuploidy]                                                          = Load_dataset_information(projectDir);
 
 num_chrs = length(chr_sizes);
 
@@ -116,7 +119,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -169,7 +172,7 @@ fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapma
 % Load GC-bias corrected CGH data.
 %-------------------------------------------------------------------------------------------
 load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_3(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
 largestChr = find(chr_width == max(chr_width));
 
 

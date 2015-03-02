@@ -129,7 +129,7 @@
 	} else {
 		?>
 		<html>
-		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.hapmap_UI_refresh_1_<?php echo str_replace('h_','',$key); ?>();">
+		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#00AA00'); parent.hapmap_UI_refresh_1_<?php echo str_replace('h_','',$key); ?>();">
 		</body>
 		</html>
 		<?php

@@ -84,9 +84,7 @@ else
 	echo "\tR="$reflocation$FASTA >> $logName;
 	echo "\tO="$reflocation$FASTAname".dict" >> $logName;
 
-#       local-specific: This call may need changed with different PicardTools installation methods.
-#	java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
-	picard-tools CreateSequenceDictionary R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
+	java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
 fi
 
 echo "\n\t============================================================================================== 4" >> $logName;

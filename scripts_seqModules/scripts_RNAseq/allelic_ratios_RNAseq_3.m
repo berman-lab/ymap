@@ -1,5 +1,7 @@
 function [] = allelic_ratios_RNAseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                                     SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+addpath('../');
+
 %%================================================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
@@ -147,8 +149,9 @@ end;
 
 
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(projectDir,genomeDir, genome);
-[Aneuploidy]                                                          = Load_dataset_information_1(projectDir, project);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[Aneuploidy]                                                          = Load_dataset_information(projectDir);
 num_chrs = length(chr_sizes);
 
 for i = 1:length(chr_sizes)
@@ -424,6 +427,7 @@ histogram_fig = figure();
 	end;
 %end;
 set(histogram_fig,'PaperPosition',[0 0 8 1.5]*4);
+saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.eps'], 'epsc');
 saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.png'], 'png');
 delete(histogram_fig);
 
@@ -873,12 +877,11 @@ end;
 set(fig,'PaperPosition',[0 0 8 6]*2);
 saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.eps'], 'epsc');
 saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.png'], 'png');
+delete(fig);
+
 set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.eps'], 'epsc');
 saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.png'], 'png');
-
-%% Delete figures from memory.
-delete(fig);
 delete(Linear_fig);
 
 %%================================================================================================

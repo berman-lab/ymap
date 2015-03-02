@@ -1,5 +1,6 @@
 function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
                        CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+addpath('../');
 
 %% ========================================================================
 Centromere_format_default   = 0;
@@ -31,7 +32,8 @@ fprintf(['\n$$ projectDir : ' projectDir '\n']);
 fprintf([  '$$ genomeDir  : ' genomeDir  '\n']);
 fprintf([  '$$ genome     : ' genome     '\n']);
 fprintf([  '$$ project    : ' project    '\n']);
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir, genome);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 Aneuploidy = [];
 
 num_chrs  = length(chr_sizes);
@@ -158,14 +160,14 @@ else
 	fclose(biases_fid);
 
 	% performLengthbiasCorrection is meaningless for this data format.
-	if (strcmp(bias2,'True') == 1)	performGCbiasCorrection    = true;
-	else							performGCbiasCorrection    = false;
+	if (strcmp(bias2,'True') == 1)  performGCbiasCorrection    = true;
+	else                            performGCbiasCorrection    = false;
 	end;
-	if (strcmp(bias3,'True') == 1)	performRepetbiasCorrection = true;
-	else							performRepetbiasCorrection = false;
+	if (strcmp(bias3,'True') == 1)  performRepetbiasCorrection = true;
+	else                            performRepetbiasCorrection = false;
 	end;
-	if (strcmp(bias4,'True') == 1)	performEndbiasCorrection   = true;
-	else							performEndbiasCorrection   = false;
+	if (strcmp(bias4,'True') == 1)  performEndbiasCorrection   = true;
+	else                            performEndbiasCorrection   = false;
 	end;
 end;
 
@@ -499,6 +501,7 @@ if (performEndbiasCorrection)
 	title('NearestEnd Corrected');
 
 	set(bias_end_fig,'PaperPosition',[0 0 6 3]*2);
+	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.eps'], 'epsc');
 	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.png'], 'png');
 	delete(bias_end_fig);
 end;
@@ -512,30 +515,31 @@ if (performGCbiasCorrection)
 		end;
 	end;
 	plot(fitX2,fitY2,'r','LineWidth',2);						% LOWESS fit curve.
-    hold off;
-    xlabel('GC ratio');
-    ylabel('CGH data');
+	hold off;
+	xlabel('GC ratio');
+	ylabel('CGH data');
 	xlim([0.0 1.0]);
 	ylim([0 4]);
-    axis square;
+	axis square;
 	title('Reads vs. GC bias');
 	subplot(1,2,2);
-    hold on;
+	hold on;
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			plot(rawData_chr_X2{chr},normalizedData_chr_Y2{chr},'k.','markersize',1);	% corrected data.
 		end;
 	end;
 	plot([fitX2(1) fitX2(end)],[Y_target Y_target],'r','LineWidth',2);			% normalization line.
-    hold off;
-    xlabel('GC ratio');
-    ylabel('corrected CGH data');
+	hold off;
+	xlabel('GC ratio');
+	ylabel('corrected CGH data');
 	xlim([0.0 1.0]);
 	ylim([0 4]);
-    axis square;
+	axis square;
 	title('GC bias Corrected');
 
 	set(bias_GC_fig,'PaperPosition',[0 0 6 3]*2);
+	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.eps'], 'epsc');
 	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.png'], 'png');
 	delete(bias_GC_fig);
 end;
@@ -573,6 +577,7 @@ if (performRepetbiasCorrection)
 	title('Repetitiveness Corrected');
 
 	set(bias_repet_fig,'PaperPosition',[0 0 6 3]*2);
+	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.eps'], 'epsc');
 	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.png'], 'png');
 	delete(bias_repet_fig);
 end;
@@ -604,19 +609,16 @@ Standard_fig = figure();
 set(gcf, 'Position', [0 70 1024 600]);
 
 if (Linear_display == true)
-	Linear_fig = figure();
-	Linear_genome_size     = sum(chr_size);
-
+	Linear_fig           = figure();
+	Linear_genome_size   = sum(chr_size);
 	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
 	Linear_left_start    = 0.02;               % left margin (also right margin).  (formerly 0.01)
 	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-
-	Linear_height          = 0.6;
-	Linear_base            = 0.1;
-	Linear_TickSize        = -0.01;            % negative for outside, percentage of longest chr figure.
-	Linear_maxY            = 10;
-	Linear_left = Linear_left_start;
-
+	Linear_height        = 0.6;
+	Linear_base          = 0.1;
+	Linear_TickSize      = -0.01;            % negative for outside, percentage of longest chr figure.
+	Linear_maxY          = 10;
+	Linear_left          = Linear_left_start;
 	axisLabelPosition_horiz = -50000/bases_per_bin;
 	axisLabelPosition_horiz = 0.01125;
 end;

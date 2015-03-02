@@ -109,36 +109,48 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 	fprintf('\n');
 
 	% analyze text file, line by line.
-	fprintf(['\nAnalyzing \"', file_name, '\" for CGH & SNP info.']);
+	fprintf(['## Analyzing \"', file_name, '\" for CGH & SNP info.\n']);
 	% CGH probes  : "CGHv1_Ca_..."
 	% SNP probes  : "SNPv1_Ca_..."
 	% MLST probes : "MLSTv1_..."
 
-	%% Make CGH/SNP/MLST probe data subfiles.
-	fprintf('\n## using [GREP] to split raw data file into CGH, SNP, & MLST subfiles.\n');
+	%% Standardize end-of-line characters to '\n'.
+	fprintf('## Using [perl] to standardize end-of-line characters.\n');
+	system(['perl -pi -e "s/\r\n/\n/g" ' file_dir '/' file_name]);            % \r\n => \n
+	system(['perl -pi -e "s/\r/\n/g" '   file_dir '/' file_name]);            % \r   => \n
 
+	%% Make CGH/SNP/MLST probe data subfiles.
+	fprintf('## using [GREP] to split raw data file into CGH, SNP, & MLST subfiles.\n');
 	system(['grep "CGHv1_Ca_\|CGH_Ca_" ' file_dir '/' file_name ' > ' file_dir '/CGH_rows.xls']);
 	system(['grep "SNPv1_Ca_\|SNP_Ca_" ' file_dir '/' file_name ' > ' file_dir '/SNP_rows.xls']);
 	system(['grep "MLSTv1_" '   file_dir '/' file_name ' > ' file_dir '/MLST_rows.xls']);
-	system(['chmod 644 ' file_dir '/CGH_rows.xls']);
-	system(['chmod 644 ' file_dir '/SNP_rows.xls']);
+	system(['chmod 644 ' file_dir '/CGH_rows.xls' ]);
+	system(['chmod 644 ' file_dir '/SNP_rows.xls' ]);
 	system(['chmod 644 ' file_dir '/MLST_rows.xls']);
 
 	%% find number of lines in each subfile.
 	fprintf('## using [WC] to find number of entries in CGH, SNP, & MLST subfiles.\n');
-	CGH_probe_count  = system(['wc -l < ' file_dir '/CGH_rows.xls']);
-	SNP_probe_count  = system(['wc -l < ' file_dir '/SNP_rows.xls']);
+	CGH_probe_count  = system(['wc -l < ' file_dir '/CGH_rows.xls' ]);
+	SNP_probe_count  = system(['wc -l < ' file_dir '/SNP_rows.xls' ]);
 	MLST_probe_count = system(['wc -l < ' file_dir '/MLST_rows.xls']);
 
-	%% sort subfiles by probe name
+	%% Sort subfiles by probe name
 	fprintf('## using [SORT] to make sure CGH, SNP, & MLST subfiles are sorted.\n');
-	system(['sort -t$"\\t" -k1 ' file_dir '/CGH_rows.xls -o ' file_dir '/CGH_rows.xls']);
-	system(['sort -t$"\\t" -k1 ' file_dir '/SNP_rows.xls -o ' file_dir '/SNP_rows.xls']);
-	system(['sort -t$"\\t" -k1 ' file_dir '/MLST_rows.xls -o ' file_dir '/MLST_rows.xls']);
+	% -b    : ignore leading spaces in column entries.
+	% -k1,1 : sort on columns from 1 to 1.
+	% -o    : output file.
+	system(['sort -b -k1,1 ' file_dir '/CGH_rows.xls  -o ' file_dir '/CGH_rows.2.xls' ]);
+	system(['sort -b -k1,1 ' file_dir '/SNP_rows.xls  -o ' file_dir '/SNP_rows.2.xls' ]);
+	system(['sort -b -k1,1 ' file_dir '/MLST_rows.xls -o ' file_dir '/MLST_rows.2.xls']);
+
+	%% Move sorted subfiles to original.
+	system(['mv ' file_dir '/CGH_rows.2.xls '  file_dir '/CGH_rows.xls' ]);
+	system(['mv ' file_dir '/SNP_rows.2.xls '  file_dir '/SNP_rows.xls' ]);
+	system(['mv ' file_dir '/MLST_rows.2.xls ' file_dir '/MLST_rows.xls']);
 
 	%% Open pre-processed files for CGH data.
 	CGHfid = fopen([file_dir '/CGH_rows.xls'], 'r');
-	fprintf(['### ' file_dir '/CGH_rows.xls  ### fid = ' num2str(CGHfid) '\n']);
+	fprintf(['##\t' file_dir '/CGH_rows.xls\n##\tfid = ' num2str(CGHfid) '\n']);
 
 	fprintf('## loading CGH subfile into [MATLAB] data structure.\n');
 	lines_analyzed = 0;
@@ -162,7 +174,7 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 
 	%% Open pre-processed files for SNP data.
 	SNPfid = fopen([file_dir '/SNP_rows.xls'], 'r');
-	fprintf(['### ' file_dir '/SNP_rows.xls  ### fid = ' num2str(SNPfid) '\n']);
+	fprintf(['##\t' file_dir '/SNP_rows.xls\n##\tfid = ' num2str(SNPfid) '\n']);
 
 	fprintf('## loading SNP subfile into [MATLAB] data structure.\n');
 	lines_analyzed = 0;

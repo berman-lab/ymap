@@ -1,5 +1,7 @@
 function [] = allelic_ratios_RNAseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                                     SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+addpath('../');
+
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
@@ -60,8 +62,9 @@ else
 	parentDir = projectDir;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(projectDir,genomeDir, genome);
-[Aneuploidy]                                                          = Load_dataset_information_1(projectDir, project);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[Aneuploidy]                                                          = Load_dataset_information(projectDir);
 
 num_chrs = length(chr_sizes);
 

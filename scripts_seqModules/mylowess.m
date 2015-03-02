@@ -1,4 +1,5 @@
 function ys=mylowess(xy,xs,span)
+
 %MYLOWESS Lowess smoothing, preserving x values
 %   YS=MYLOWESS(XY,XS) returns the smoothed version of the x/y data in the
 %   two-column matrix XY, but evaluates the smooth at XS and returns the

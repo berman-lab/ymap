@@ -1,7 +1,7 @@
 <?php
     session_start();
     if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-    require_once 'constants.php';
+    require_once '../../constants.php';
     echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
@@ -10,9 +10,9 @@
 	$hapmap          = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
 	$user            = $_SESSION['user'];
 
-	$dir1            = "../users/".$user."/hapmaps";
-	$dir2            = "../users/".$user."/hapmaps/".$hapmap;
-	$dir3            = "../users/default/hapmaps/".$hapmap;
+	$dir1            = "../../users/".$user."/hapmaps";
+	$dir2            = "../../users/".$user."/hapmaps/".$hapmap;
+	$dir3            = "../../users/default/hapmaps/".$hapmap;
 
 	$genome          = filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING);
 	$referencePloidy = filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING);

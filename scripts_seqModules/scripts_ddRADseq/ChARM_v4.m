@@ -1,4 +1,6 @@
 function [] = ChARM_v4(project,user,genome,genomeUser,main_dir)
+addpath('../');
+
 %% =========================================================================================
 % Analyze CNV information for copy number changes.   Code based on algorithms
 % described in:
@@ -33,7 +35,8 @@ vars = who('-file',dataFile)
 % Defines chr sizes in bp. (diploid total=28,567,7888)
 % Defines centromere locations in bp.
 % Defines annotation locations in bp.
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(genomeDir, genome);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 
 for i = 1:length(chr_sizes)
     chr_size(i) = 0;
@@ -228,20 +231,20 @@ end;
 %-----------------------------------------------------------------------------------------------------
 fprintf('\nGenerate figures for different stages of the ChARM algorithm.\n');
 if (temp_figures == true)
-    %% Assigning raw and filtered data to convenient names for later use.
-    data1 = CNVplot2;
-    for chr = 1:num_chrs
+	%% Assigning raw and filtered data to convenient names for later use.
+	data1 = CNVplot2;
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			data2{chr} = CNV_median{chr};
 			data3{chr} = CNV_median_smoothed{chr};
 			data4{chr} = CNV_differentiated_smoothed{chr};
 		end;
 	end;
-    maxY = 2;
+	maxY = 2;
 
-    fig = figure(1);    dataShow = data1;
-    set(gcf, 'Position', [0 70 1024 600]);
-    for chr = 1:num_chrs
+	fig = figure(1);    dataShow = data1;
+	set(gcf, 'Position', [0 70 1024 600]);
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			left   = chr_posX(chr);    bottom = chr_posY(chr);
 			width  = chr_width(chr);   height = chr_height(chr);
@@ -250,10 +253,10 @@ if (temp_figures == true)
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(dataShow{chr});
-			    x_ = [i i i-1 i-1];
-			    if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
-			    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
-			    set(f,'linestyle','none');
+				x_ = [i i i-1 i-1];
+				if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
+				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
 			end;
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -264,13 +267,13 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]);
 		end;
 	end;
-    saveas(fig,[projectDir 'fig.ChARM_test.1.eps'], 'epsc');
+	saveas(fig,[projectDir 'fig.ChARM_test.1.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.1.png'], 'png');
-    delete(fig);
+	delete(fig);
 
-    fig = figure(2);    dataShow = data2;
-    set(gcf, 'Position', [0 70 1024 600]);
-    for chr = 1:num_chrs
+	fig = figure(2);    dataShow = data2;
+	set(gcf, 'Position', [0 70 1024 600]);
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			left   = chr_posX(chr);    bottom = chr_posY(chr);
 			width  = chr_width(chr);   height = chr_height(chr);
@@ -279,10 +282,10 @@ if (temp_figures == true)
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(dataShow{chr});
-			    x_ = [i i i-1 i-1];
-			    if (dataShow{chr}(i) == 0);    CNVhistValue = 0;    else;    CNVhistValue = dataShow{chr}(i);    end;
-			    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);   
-			    set(f,'linestyle','none');
+				x_ = [i i i-1 i-1];
+				if (dataShow{chr}(i) == 0);    CNVhistValue = 0;    else;    CNVhistValue = dataShow{chr}(i);    end;
+				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);   
+				set(f,'linestyle','none');
 			end;
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -292,14 +295,14 @@ if (temp_figures == true)
 			set(gca,'YTick',[0 maxY/2 maxY]);
 			set(gca,'YTickLabel',[]); 
 		end;
-    end;
-    saveas(fig,[projectDir 'fig.ChARM_test.2.eps'], 'epsc');
+	end;
+	saveas(fig,[projectDir 'fig.ChARM_test.2.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.2.png'], 'png');
-    delete(fig);
+	delete(fig);
 
-    fig = figure(3);    dataShow = data3;
-    set(gcf, 'Position', [0 70 1024 600]);
-    for chr = 1:num_chrs
+	fig = figure(3);    dataShow = data3;
+	set(gcf, 'Position', [0 70 1024 600]);
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			left   = chr_posX(chr);    bottom = chr_posY(chr);
 			width  = chr_width(chr);   height = chr_height(chr);
@@ -308,10 +311,10 @@ if (temp_figures == true)
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(dataShow{chr});
-			    x_ = [i i i-1 i-1];
-			    if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
-			    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);   
-			    set(f,'linestyle','none');
+				x_ = [i i i-1 i-1];
+				if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
+				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);   
+				set(f,'linestyle','none');
 			end;
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -321,15 +324,15 @@ if (temp_figures == true)
 			set(gca,'YTick',[0 maxY/2 maxY]);
 			set(gca,'YTickLabel',[]); 
 		end;
-    end;
-    saveas(fig,[projectDir 'fig.ChARM_test.3.eps'], 'epsc');
+	end;
+	saveas(fig,[projectDir 'fig.ChARM_test.3.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.3.png'], 'png');
-    delete(fig);
+	delete(fig);
 
-    fig = figure(4);
-    dataShow = data4;
-    set(gcf, 'Position', [0 70 1024 600]);
-    for chr = 1:num_chrs
+	fig = figure(4);
+	dataShow = data4;
+	set(gcf, 'Position', [0 70 1024 600]);
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			left   = chr_posX(chr);    bottom = chr_posY(chr);
 			width  = chr_width(chr);   height = chr_height(chr);
@@ -337,13 +340,13 @@ if (temp_figures == true)
 			hold on;
 			c_ = [0 0 0];
 			for i = 1:length(dataShow{chr});
-			    x_ = [i i i-1 i-1];
-			    CNVhistValue = dataShow{chr}(i);
-			    startY = 0;
-			    endY   = CNVhistValue*8;
-			    y_ = [startY endY endY startY];
-			    f = fill(x_,y_,c_);
-			    set(f,'linestyle','none');
+				x_ = [i i i-1 i-1];
+				CNVhistValue = dataShow{chr}(i);
+				startY = 0;
+				endY   = CNVhistValue*8;
+				y_ = [startY endY endY startY];
+				f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
 			end;
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [0; 0],'color',[0 0 0]);  % 2n line.
@@ -359,10 +362,10 @@ if (temp_figures == true)
 			set(gca,'YTick',[-1 0 1]);
 			set(gca,'YTickLabel',[]);
 		end;
-    end;
-    saveas(fig,[projectDir 'fig.ChARM_test.4.eps'], 'epsc');
+	end;
+	saveas(fig,[projectDir 'fig.ChARM_test.4.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.4.png'], 'png');
-    delete(fig)
+	delete(fig)
 end;
 
 
@@ -715,54 +718,20 @@ for chr = 1:num_chrs
 			% Resort and save edge positions.
 			%----------------------------------------------------------------------
 			locs{chr} = sort(position_sorted);
-	
-		%	%=====================================================================================================
-		%	% Generate figures representing intermediate and final output of algorithm.
-		%	%-----------------------------------------------------------------------------------------------------
-		%	if (temp_figures == true)
-		%		fig = figure(1);    dataShow = data1;
-		%		set(gcf, 'Position', [0 70 1024 600]);
-		%		for chr_fig = 1:num_chrs
-		%		left   = chr_posX(chr_fig);    bottom = chr_posY(chr_fig);
-		%		width  = chr_width(chr_fig);   height = chr_height(chr_fig);
-		%		subplot('Position',[left bottom width height]);
-		%		hold on;
-		%		c_ = [0 0 0];
-		%		for i = 1:length(dataShow{chr_fig});
-		%			x_ = [i i i-1 i-1];
-		%			if (dataShow{chr_fig}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr_fig}(i);    end;
-		%				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
-		%				set(f,'linestyle','none');
-		%			end;
-		%			x2 = chr_size(chr_fig)*chr_length_scale_multiplier;
-		%			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-		%			for edge = 1:length(locs{chr_fig})
-		%				plot([locs{chr_fig}(edge) locs{chr_fig}(edge)], [0 maxY],'color',[0 0 1]);
-		%			end;
-		%			hold off;
-		%			xlim([0,chr_size(chr_fig)*chr_length_scale_multiplier]);
-		%			ylim([0,maxY]);
-		%			set(gca,'YTick',[0 maxY/2 maxY]);
-		%			set(gca,'YTickLabel',[]);
-		%		end;
-		%		saveas(fig,[projectDir 'fig.ChARM_test.5.' num2str(chr_fig) '_' num2str(t,'%02d') '.eps'], 'epsc');
-		%		delete(fig)
-		%	end;
 		end;
 	end;
 end;
 
 %=====================================================================================================
 % Generate figures representing intermediate and final output of algorithm.
-% ERROR : chr_size is being reset before here...
 %-----------------------------------------------------------------------------------------------------
 fprintf('\n\nGenerate figure of final output of ChARM algorithm\n');
 fprintf(    '--------------------------------------------------\n');
 fprintf(['length(chr_size) = ' num2str(length(chr_size)) '\n']);
 if (temp_figures == true)
-    fig = figure(1);    dataShow = data1;
-    set(gcf, 'Position', [0 70 1024 600]*2);
-    for chr = 1:num_chrs
+	fig = figure(1);    dataShow = data1;
+	set(gcf, 'Position', [0 70 1024 600]*2);
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			left   = chr_posX(chr);    bottom = chr_posY(chr);
 			width  = chr_width(chr);   height = chr_height(chr);
@@ -771,16 +740,16 @@ if (temp_figures == true)
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) ' :: ']);
 			for i = 1:length(dataShow{chr});
-			    x_ = [i i i-1 i-1];
-			    if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
-			    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
-			    set(f,'linestyle','none');   
+				x_ = [i i i-1 i-1];
+				if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
+				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
+				set(f,'linestyle','none');   
 			end;
 			fprintf([num2str(chr_size) '\n']);
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.	
 			for edge = 1:length(locs{chr})
-			    plot([locs{chr}(edge) locs{chr}(edge)], [0 maxY],'color',[0 0 1]);
+				plot([locs{chr}(edge) locs{chr}(edge)], [0 maxY],'color',[0 0 1]);
 			end;
 			hold off;
 			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
@@ -788,10 +757,10 @@ if (temp_figures == true)
 			set(gca,'YTick',[0 maxY/2 maxY]);
 			set(gca,'YTickLabel',[]);
 		end;
-    end;
-    saveas(fig,[projectDir 'fig.ChARM_test.5.eps'], 'epsc');
+	end;
+	saveas(fig,[projectDir 'fig.ChARM_test.5.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.5.png'], 'png');
-    delete(fig)
+	delete(fig)
 end;
 
 %%=========================================================================

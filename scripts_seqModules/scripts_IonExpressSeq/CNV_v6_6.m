@@ -1,5 +1,6 @@
 function [] = CNV_v6_4(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
                        CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+addpath('../');
 
 %% ========================================================================
 Centromere_format_default   = 0;
@@ -30,7 +31,8 @@ fprintf(['\n$$ projectDir : ' projectDir '\n']);
 fprintf([  '$$ genomeDir  : ' genomeDir  '\n']);
 fprintf([  '$$ genome     : ' genome     '\n']);
 fprintf([  '$$ project    : ' project    '\n']);
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(projectDir,genomeDir, genome);
+
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 Aneuploidy = [];
 
 num_chrs  = length(chr_sizes);
@@ -487,6 +489,7 @@ if (performEndbiasCorrection)
 	title('NearestEnd Corrected');
 
 	set(bias_end_fig,'PaperPosition',[0 0 6 3]*2);
+	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.eps'], 'epsc');
 	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.png'], 'png');
 	delete(bias_end_fig);
 end;
@@ -500,30 +503,31 @@ if (performGCbiasCorrection)
 		end;
 	end;
 	plot(fitX2,fitY2,'r','LineWidth',2);						% LOWESS fit curve.
-    hold off;
-    xlabel('GC ratio');
-    ylabel('CGH data');
+	hold off;
+	xlabel('GC ratio');
+	ylabel('CGH data');
 	xlim([0.0 1.0]);
 	ylim([0 4]);
-    axis square;
+	axis square;
 	title('Reads vs. GC bias');
 	subplot(1,2,2);
-    hold on;
+	hold on;
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			plot(rawData_chr_X2{chr},normalizedData_chr_Y2{chr},'k.','markersize',1);	% corrected data.
 		end;
 	end;
 	plot([fitX2(1) fitX2(end)],[Y_target Y_target],'r','LineWidth',2);			% normalization line.
-    hold off;
-    xlabel('GC ratio');
-    ylabel('corrected CGH data');
+	hold off;
+	xlabel('GC ratio');
+	ylabel('corrected CGH data');
 	xlim([0.0 1.0]);
 	ylim([0 4]);
-    axis square;
+	axis square;
 	title('GC bias Corrected');
 
 	set(bias_GC_fig,'PaperPosition',[0 0 6 3]*2);
+	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.eps'], 'epsc');
 	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.png'], 'png');
 	delete(bias_GC_fig);
 end;
@@ -561,6 +565,7 @@ if (performRepetbiasCorrection)
 	title('Repetitiveness Corrected');
 
 	set(bias_repet_fig,'PaperPosition',[0 0 6 3]*2);
+	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.eps'], 'epsc');
 	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.png'], 'png');
 	delete(bias_repet_fig);
 end;
