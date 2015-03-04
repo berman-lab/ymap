@@ -37,7 +37,7 @@ end;
 
 
 %%================================================================================================
-% Control variables for Candida albicans SC5314.
+% Control variables.
 %-------------------------------------------------------------------------------------------------
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
@@ -219,9 +219,13 @@ for usedChr = 1:num_chrs
 end;
 
 
-%%================================================================================================
-%%= No further control variables below. ==========================================================
-%%================================================================================================
+%% =========================================================================================
+%% =========================================================================================
+%% =========================================================================================
+%% = No further control variables below. ===================================================
+%% =========================================================================================
+%% =========================================================================================
+%% =========================================================================================
 
 
 % Sanitize user input of euploid state.
@@ -597,24 +601,6 @@ for chr = 1:num_chrs
 
 		% standard : This section sets the Y-axis labelling.
 		axisLabelPosition = -50000/bases_per_bin;
-		switch ploidyBase
-			case 1
-				text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
-			case 2
-				text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
-			case 3
-				text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
-			case 4
-				text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
-		end;
 		set(gca,'FontSize',12);
 		if (chr == find(chr_posY == max(chr_posY)))
 			title([ project ' allelic fraction map'],'Interpreter','none','FontSize',24);
@@ -860,40 +846,19 @@ for chr = 1:num_chrs
 			end;
 			% linear : end show annotation locations.
 
-	        % linear : Final formatting stuff.
-	        xlim([0,chr_size(chr)/bases_per_bin]);
-	        % modify y axis limits to show annotation locations if any are provided.
-	        if (length(annotations) > 0)
-	            ylim([-maxY/10*1.5,maxY]);
-	        else
-	            ylim([0,maxY]);
-	        end;
-		set(gca,'YTick',[]);
-		set(gca,'YTickLabel',[]);
-	        set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-	        set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-	        set(gca,'XTickLabel',[]);
-	        if (first_chr == true)
-				% This section sets the Y-axis labelling.
-				switch ploidyBase
-					case 1
-						text(axisLabelPosition_horiz, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
-					case 2
-						text(axisLabelPosition_horiz, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
-					case 3
-						text(axisLabelPosition_horiz, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
-					case 4
-						text(axisLabelPosition_horiz, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
-				end;
+			% linear : Final formatting stuff.
+			xlim([0,chr_size(chr)/bases_per_bin]);
+			% modify y axis limits to show annotation locations if any are provided.
+			if (length(annotations) > 0)
+				ylim([-maxY/10*1.5,maxY]);
+			else
+				ylim([0,maxY]);
 			end;
+			set(gca,'YTick',[]);
+			set(gca,'YTickLabel',[]);
+			set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
+			set(gca,'XTickLabel',[]);
 			set(gca,'FontSize',12);
 			% linear : end final reformatting.
 
