@@ -1,4 +1,4 @@
-Branch: Feature__Add-FTP-dropbox-file-access
+Branch: Fix__ddRADseq_SNP_presentation_variance_between_figures
 
-The goal of this branch is to add to the user-interface a way to select data files from the directory [Ymap_root]/FTP_drop/[user_directory]/ for processing.
-Feature should only be visible to users with server access.
+The goal of this branch is to improve consistency of SNP presentation in output from ddRADseq module.
+Currently, the figure "fig.allelic_ratio-map.c1.png" is showing more SNP data than "fig.CNV-SNP-map.1.png".
