@@ -139,9 +139,11 @@ else
 						if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
 
 						if (localCopyEstimate <= 0)
+							% Copy number indicates a deletion, no SNPs should exist.
+							% Spurious SNP data will be drawn in white, the color used to represent a lack of SNP data.
 							if (length(ratioData_all) > 0)
 								for i = 1:length(ratioData_all)
-									colors_all{i} = het_color;
+									colors_all{i} = colorNoData;
 								end;
 							end;
 						elseif (localCopyEstimate == 1)

@@ -306,44 +306,44 @@ end;
     colorBBBBBBBBB  = homolog_b_color;
 
 % unphased colors.
-    % haploid colors.
-    unphased_color_1of1 = hom_unphased_color;
-    % diploid colors.
-    unphased_color_2of2 = hom_unphased_color;
-    unphased_color_1of2 = het_unphased_color;
-    % triploid colors.
-    unphased_color_3of3 = hom_unphased_color;
-    unphased_color_2of3 = hom_unphased_color*2/3 + het_unphased_color*1/3;
-    % tetraploid colors.
-    unphased_color_4of4 = hom_unphased_color;
-    unphased_color_3of4 = hom_unphased_color*3/4 + het_unphased_color*1/4;
-    unphased_color_2of4 = het_unphased_color;
-    % pentaploid colors.
-    unphased_color_5of5 = hom_unphased_color;
-    unphased_color_4of5 = hom_unphased_color*4/5 + het_unphased_color*1/5;
-    unphased_color_3of5 = hom_unphased_color*3/5 + het_unphased_color*2/5;
-    % hexaploid colors.
-    unphased_color_6of6 = hom_unphased_color;
-    unphased_color_5of6 = hom_unphased_color*5/6 + het_unphased_color*1/6;
-    unphased_color_4of6 = hom_unphased_color*4/6 + het_unphased_color*2/6;
-    unphased_color_3of6 = het_unphased_color;
-    % heptaploid colors.
+	% haploid colors.
+	unphased_color_1of1 = hom_unphased_color;
+	% diploid colors.
+	unphased_color_2of2 = hom_unphased_color;
+	unphased_color_1of2 = het_unphased_color;
+	% triploid colors.
+	unphased_color_3of3 = hom_unphased_color;
+	unphased_color_2of3 = hom_unphased_color*2/3 + het_unphased_color*1/3;
+	% tetraploid colors.
+	unphased_color_4of4 = hom_unphased_color;
+	unphased_color_3of4 = hom_unphased_color*3/4 + het_unphased_color*1/4;
+	unphased_color_2of4 = het_unphased_color;
+	% pentaploid colors.
+	unphased_color_5of5 = hom_unphased_color;
+	unphased_color_4of5 = hom_unphased_color*4/5 + het_unphased_color*1/5;
+	unphased_color_3of5 = hom_unphased_color*3/5 + het_unphased_color*2/5;
+	% hexaploid colors.
+	unphased_color_6of6 = hom_unphased_color;
+	unphased_color_5of6 = hom_unphased_color*5/6 + het_unphased_color*1/6;
+	unphased_color_4of6 = hom_unphased_color*4/6 + het_unphased_color*2/6;
+	unphased_color_3of6 = het_unphased_color;
+	% heptaploid colors.
 	unphased_color_7of7 = hom_unphased_color;
-    unphased_color_6of7 = hom_unphased_color*6/7 + het_unphased_color*1/7;
-    unphased_color_5of7 = hom_unphased_color*5/7 + het_unphased_color*2/7;
-    unphased_color_4of7 = hom_unphased_color*4/7 + het_unphased_color*3/7;
-    % octaploid colors.
-    unphased_color_8of8 = hom_unphased_color;
-    unphased_color_7of8 = hom_unphased_color*7/8 + het_unphased_color*1/8;
-    unphased_color_6of8 = hom_unphased_color*6/8 + het_unphased_color*2/8;
-    unphased_color_5of8 = hom_unphased_color*5/8 + het_unphased_color*3/8;
-    unphased_color_4of8 = het_unphased_color;
-    % nonaploid colors.
-    unphased_color_9of9 = hom_unphased_color;
-    unphased_color_8of9 = hom_unphased_color*8/9 + het_unphased_color*1/9;
-    unphased_color_7of9 = hom_unphased_color*7/9 + het_unphased_color*2/9;
-    unphased_color_6of9 = hom_unphased_color*6/9 + het_unphased_color*3/9;
-    unphased_color_5of9 = hom_unphased_color*5/9 + het_unphased_color*4/9;
+	unphased_color_6of7 = hom_unphased_color*6/7 + het_unphased_color*1/7;
+	unphased_color_5of7 = hom_unphased_color*5/7 + het_unphased_color*2/7;
+	unphased_color_4of7 = hom_unphased_color*4/7 + het_unphased_color*3/7;
+	% octaploid colors.
+	unphased_color_8of8 = hom_unphased_color;
+	unphased_color_7of8 = hom_unphased_color*7/8 + het_unphased_color*1/8;
+	unphased_color_6of8 = hom_unphased_color*6/8 + het_unphased_color*2/8;
+	unphased_color_5of8 = hom_unphased_color*5/8 + het_unphased_color*3/8;
+	unphased_color_4of8 = het_unphased_color;
+	% nonaploid colors.
+	unphased_color_9of9 = hom_unphased_color;
+	unphased_color_8of9 = hom_unphased_color*8/9 + het_unphased_color*1/9;
+	unphased_color_7of9 = hom_unphased_color*7/9 + het_unphased_color*2/9;
+	unphased_color_6of9 = hom_unphased_color*6/9 + het_unphased_color*3/9;
+	unphased_color_5of9 = hom_unphased_color*5/9 + het_unphased_color*4/9;
 
 
 
@@ -418,8 +418,8 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 				end;
 
 				% format = '(number1,number2,...,numberN)'
-                phased_coordinates_string(1)       = [];
-                phased_coordinates_string(end)     = [];
+				phased_coordinates_string(1)       = [];
+				phased_coordinates_string(end)     = [];
 				if (length(phased_coordinates_string) == 0)
 					phased_coordinates             = [];
 				else
