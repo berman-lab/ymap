@@ -8,10 +8,11 @@ addpath('../');
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
-if ((useHapmap == true) || (strcmp(project,hapmap) == 1))
+if (strcmp(project,hapmap) == 1)
 	% Either a hapmap was in use or the project and parent are the same, so the
 	% figure drawn by "CNV_SNP_hapmap_v4.m" is all that needs to be done.
-	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being skipped.\n##\n']);
+	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being skipped...\n']);
+	fprintf(['##\tbecause the dataset is not being compared to another dataset.\n']);
 else
 	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being processed.\n##\n']);
 
@@ -46,52 +47,51 @@ else
 	%% =========================================================================================
 	% Define colors for figure generation.
 	%-------------------------------------------------------------------------------------------
-	%define colors for colorBars plot
+	%d efine colors for colorBars plot
 	colorNoData     = [1.0   1.0   1.0  ]; %used when no data is available for the bin.
 	colorInit       = [0.5   0.5   0.5  ]; %external; used in blending at ends of chr.
-	% The 'project' is different than the 'hapmap'/'parent'.
-	het_color             = [0.66667 0.66667 0.66667]; % heterozygous.
-	hom_unphased_color    = [1.0     0.0     0.0    ]; % homozygous, unphased.
-	het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
-	oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+	% The 'project' is different than the 'hapmap'('parent').
+	hom_color       = [1.0     0.0     0.0    ]; % homozygous, unphased.
+	het_color       = [0.66667 0.66667 0.66667]; % heterozygous.
+	oddhet_color    = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
 	% haploid colors.
-	unphased_color_1of1 = hom_unphased_color;
+	color_1of1      = hom_color;
 	% diploid colors.
-	unphased_color_2of2 = hom_unphased_color;
-	unphased_color_1of2 = het_unphased_color;
+	color_2of2      = hom_color;
+	color_1of2      = het_color;
 	% triploid colors.
-	unphased_color_3of3 = hom_unphased_color;
-	unphased_color_2of3 = oddhet_unphased_color;
+	color_3of3      = hom_color;
+	color_2of3      = oddhet_color;
 	% tetraploid colors.
-	unphased_color_4of4 = hom_unphased_color;
-	unphased_color_3of4 = oddhet_unphased_color;
-	unphased_color_2of4 = het_unphased_color;
+	color_4of4      = hom_color;
+	color_3of4      = oddhet_color;
+	color_2of4      = het_color;
 	% pentaploid colors.
-	unphased_color_5of5 = hom_unphased_color;
-	unphased_color_4of5 = oddhet_unphased_color;
-	unphased_color_3of5 = oddhet_unphased_color;
+	color_5of5      = hom_color;
+	color_4of5      = oddhet_color;
+	color_3of5      = oddhet_color;
 	% hexaploid colors.
-	unphased_color_6of6 = hom_unphased_color;
-	unphased_color_5of6 = oddhet_unphased_color;
-	unphased_color_4of6 = oddhet_unphased_color;
-	unphased_color_3of6 = het_unphased_color;
+	color_6of6      = hom_color;
+	color_5of6      = oddhet_color;
+	color_4of6      = oddhet_color;
+	color_3of6      = het_color;
 	% heptaploid colors.
-	unphased_color_7of7 = hom_unphased_color;
-	unphased_color_6of7 = oddhet_unphased_color;
-	unphased_color_5of7 = oddhet_unphased_color;
-	unphased_color_4of7 = oddhet_unphased_color;
+	color_7of7      = hom_color;
+	color_6of7      = oddhet_color;
+	color_5of7      = oddhet_color;
+	color_4of7      = oddhet_color;
 	% octaploid colors.
-	unphased_color_8of8 = hom_unphased_color;
-	unphased_color_7of8 = oddhet_unphased_color;
-	unphased_color_6of8 = oddhet_unphased_color;
-	unphased_color_5of8 = oddhet_unphased_color;
-	unphased_color_4of8 = het_unphased_color;
+	color_8of8      = hom_color;
+	color_7of8      = oddhet_color;
+	color_6of8      = oddhet_color;
+	color_5of8      = oddhet_color;
+	color_4of8      = het_color;
 	% nonaploid colors.
-	unphased_color_9of9 = hom_unphased_color;
-	unphased_color_8of9 = oddhet_unphased_color;
-	unphased_color_7of9 = oddhet_unphased_color;
-	unphased_color_6of9 = oddhet_unphased_color;
-	unphased_color_5of9 = oddhet_unphased_color;
+	color_9of9      = hom_color;
+	color_8of9      = oddhet_color;
+	color_7of9      = oddhet_color;
+	color_6of9      = oddhet_color;
+	color_5of9      = oddhet_color;
 
 
 	%% =========================================================================================
@@ -128,9 +128,9 @@ else
 						% Define colorMix using localized copy number estimate to define SNP cutoff thresholds,
 						%     then the ratio of SNP data in each SNP ratio bin.
 						% For testing, consider all loci haploid, so only two ratio bins.
-						ratioData_unphased  = chr_SNPdata{chr,2}{chr_bin};
-						coordinate_unphased = chr_SNPdata{chr,4}{chr_bin};
-						colors_unphased     = cell(1,length(coordinate_unphased));
+						ratioData_all       = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
+						coordinate_all      = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
+						colors_all          = cell(1,length(coordinate_all));
 
 						% Determine localized copy number estimate, per bin.
 						localCopyEstimate   = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
@@ -139,272 +139,272 @@ else
 						if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
 
 						if (localCopyEstimate <= 0)
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									colors_unphased{i} = het_unphased_color;
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									colors_all{i} = het_color;
 								end;
 							end;
 						elseif (localCopyEstimate == 1)
-							binCounts_unphased = 0;
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									binCounts_unphased = binCounts_unphased+1;
-									colors_unphased{i} = unphased_color_1of1;
+							binCounts_all = 0;
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									binCounts_all = binCounts_all+1;
+									colors_all{i} = color_1of1;
 								end;
 							end;
-							colorMix = unphased_color_1of1 * binCounts_unphased / sum(binCounts_unphased);
+							colorMix = color_1of1 * binCounts_all / sum(binCounts_all);
 							% 1of1 contains [aa, bb].
 						elseif (localCopyEstimate == 2)
-							binCounts_unphased = zeros(1,2);
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									if (ratioData_unphased(i) < 1/4);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_2of2;
-									elseif (ratioData_unphased(i) > 3/4);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_2of2;
+							binCounts_all = zeros(1,2);
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									if (ratioData_all(i) < 1/4);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_2of2;
+									elseif (ratioData_all(i) > 3/4);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_2of2;
 									else
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_1of2;
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_1of2;
 									end;
 								end;
 							end;
-							colorMix = unphased_color_2of2 * binCounts_unphased(1)/ sum(binCounts_unphased) + ...
-							           unphased_color_1of2 * binCounts_unphased(2)/ sum(binCounts_unphased);
+							colorMix = color_2of2 * binCounts_all(1)/ sum(binCounts_all) + ...
+							           color_1of2 * binCounts_all(2)/ sum(binCounts_all);
 							% 2of2 contains [aa, bb].
 							% 1of2 contains [ab].
 						elseif (localCopyEstimate == 3)
-							binCounts_unphased = zeros(1,2);
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									if (ratioData_unphased(i) < 1/6);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_3of3;
-									elseif (ratioData_unphased(i) > 5/6);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_3of3;
+							binCounts_all = zeros(1,2);
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									if (ratioData_all(i) < 1/6);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_3of3;
+									elseif (ratioData_all(i) > 5/6);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_3of3;
 									else
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_2of3;
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_2of3;
 									end;
 								end;
 							end;
-							colorMix = unphased_color_3of3 * binCounts_unphased(1)/ sum(binCounts_unphased) + ...
-							           unphased_color_2of3 * binCounts_unphased(2)/ sum(binCounts_unphased);
+							colorMix = color_3of3 * binCounts_all(1)/ sum(binCounts_all) + ...
+							           color_2of3 * binCounts_all(2)/ sum(binCounts_all);
 							% 3of3 contains [aaa, bbb].
 							% 2of3 contains [abb, abb]
 						elseif (localCopyEstimate == 4)
-							binCounts_unphased = zeros(1,3);
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									if (ratioData_unphased(i) < 1/8);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_4of4;
-									elseif (ratioData_unphased(i) < 3/8);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_3of4;
-									elseif (ratioData_unphased(i) > 7/8);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_4of4;
-									elseif (ratioData_unphased(i) > 5/8);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_3of4;
+							binCounts_all = zeros(1,3);
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									if (ratioData_all(i) < 1/8);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_4of4;
+									elseif (ratioData_all(i) < 3/8);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_3of4;
+									elseif (ratioData_all(i) > 7/8);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_4of4;
+									elseif (ratioData_all(i) > 5/8);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_3of4;
 									else
-										binCounts_unphased(3) = binCounts_unphased(3)+1;
-										colors_unphased{i}    = unphased_color_2of4;
+										binCounts_all(3) = binCounts_all(3)+1;
+										colors_all{i}    = color_2of4;
 									end;
 								end;
 							end;
-							colorMix = unphased_color_4of4 * binCounts_unphased(1)/ sum(binCounts_unphased) + ...
-							           unphased_color_3of4 * binCounts_unphased(2)/ sum(binCounts_unphased) + ...
-							           unphased_color_2of4 * binCounts_unphased(3)/ sum(binCounts_unphased);
+							colorMix = color_4of4 * binCounts_all(1)/ sum(binCounts_all) + ...
+							           color_3of4 * binCounts_all(2)/ sum(binCounts_all) + ...
+							           color_2of4 * binCounts_all(3)/ sum(binCounts_all);
 							% 4of4 contains [aaaa, bbbb].
 							% 3of4 contains [aaab, abbb].
 							% 2of4 contains [aabb].
 						elseif (localCopyEstimate == 5)
-							binCounts_unphased = zeros(1,3);
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									if (ratioData_unphased(i) < 1/10);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_5of5;
-									elseif (ratioData_unphased(i) < 3/10);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_4of5;
-									elseif (ratioData_unphased(i) > 9/10);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_5of5;
-									elseif (ratioData_unphased(i) > 7/10);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_4of5;
+							binCounts_all = zeros(1,3);
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									if (ratioData_all(i) < 1/10);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_5of5;
+									elseif (ratioData_all(i) < 3/10);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_4of5;
+									elseif (ratioData_all(i) > 9/10);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_5of5;
+									elseif (ratioData_all(i) > 7/10);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_4of5;
 									else
-										binCounts_unphased(3) = binCounts_unphased(3)+1;
-										colors_unphased{i}    = unphased_color_3of5;
+										binCounts_all(3) = binCounts_all(3)+1;
+										colors_all{i}    = color_3of5;
 									end;
 								end;
 							end;
-							colorMix = unphased_color_5of5 * binCounts_unphased(1)/ sum(binCounts_unphased) + ...
-							           unphased_color_4of5 * binCounts_unphased(2)/ sum(binCounts_unphased) + ...
-							           unphased_color_3of5 * binCounts_unphased(3)/ sum(binCounts_unphased);
+							colorMix = color_5of5 * binCounts_all(1)/ sum(binCounts_all) + ...
+							           color_4of5 * binCounts_all(2)/ sum(binCounts_all) + ...
+							           color_3of5 * binCounts_all(3)/ sum(binCounts_all);
 							% 5of5 contains [aaaaa, bbbbb].
 							% 4of5 contains [aaaab, abbbb].
 							% 3of5 contains [aaabb, aabbb].
 						elseif (localCopyEstimate == 6)
-							binCounts_unphased = zeros(1,4);
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									if (ratioData_unphased(i) < 1/12);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_6of6;
-									elseif (ratioData_unphased(i) < 3/12);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_5of6;
-									elseif (ratioData_unphased(i) < 5/12);
-										binCounts_unphased(3) = binCounts_unphased(3)+1;
-										colors_unphased{i}    = unphased_color_4of6;
-									elseif (ratioData_unphased(i) > 11/12);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_6of6;
-									elseif (ratioData_unphased(i) > 9/12);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_5of6;
-									elseif (ratioData_unphased(i) > 7/12);
-										binCounts_unphased(3) = binCounts_unphased(3)+1;
-										colors_unphased{i}    = unphased_color_4of6;
+							binCounts_all = zeros(1,4);
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									if (ratioData_all(i) < 1/12);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_6of6;
+									elseif (ratioData_all(i) < 3/12);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_5of6;
+									elseif (ratioData_all(i) < 5/12);
+										binCounts_all(3) = binCounts_all(3)+1;
+										colors_all{i}    = color_4of6;
+									elseif (ratioData_all(i) > 11/12);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_6of6;
+									elseif (ratioData_all(i) > 9/12);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_5of6;
+									elseif (ratioData_all(i) > 7/12);
+										binCounts_all(3) = binCounts_all(3)+1;
+										colors_all{i}    = color_4of6;
 									else
-										binCounts_unphased(4) = binCounts_unphased(4)+1;
-										colors_unphased{i}    = unphased_color_3of6;
+										binCounts_all(4) = binCounts_all(4)+1;
+										colors_all{i}    = color_3of6;
 									end;
 								end;
 							end;
-							colorMix = unphased_color_6of6 * binCounts_unphased(1)/ sum(binCounts_unphased) + ...
-							           unphased_color_5of6 * binCounts_unphased(2)/ sum(binCounts_unphased) + ...
-							           unphased_color_4of6 * binCounts_unphased(3)/ sum(binCounts_unphased) + ...
-							           unphased_color_3of6 * binCounts_unphased(4)/ sum(binCounts_unphased);
+							colorMix = color_6of6 * binCounts_all(1)/ sum(binCounts_all) + ...
+							           color_5of6 * binCounts_all(2)/ sum(binCounts_all) + ...
+							           color_4of6 * binCounts_all(3)/ sum(binCounts_all) + ...
+							           color_3of6 * binCounts_all(4)/ sum(binCounts_all);
 							% 6of6 contains [aaaaaa, bbbbbb].
 							% 5of6 contains [aaaaab, abbbbb].
 							% 4of6 contains [aaaabb, aabbbb].
 							% 3of6 contains [aaabbb].
 						elseif (localCopyEstimate == 7)
-							binCounts_unphased = zeros(1,4);
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									if (ratioData_unphased(i) < 1/14);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_7of7;
-									elseif (ratioData_unphased(i) < 3/14);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_6of7;
-									elseif (ratioData_unphased(i) < 5/14);
-										binCounts_unphased(3) = binCounts_unphased(3)+1;
-										colors_unphased{i}    = unphased_color_5of7;
-									elseif (ratioData_unphased(i) > 13/14);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_7of7;
-									elseif (ratioData_unphased(i) > 11/14);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_6of7;
-									elseif (ratioData_unphased(i) > 9/14);
-										binCounts_unphased(3) = binCounts_unphased(3)+1;
-										colors_unphased{i}    = unphased_color_5of7;
+							binCounts_all = zeros(1,4);
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									if (ratioData_all(i) < 1/14);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_7of7;
+									elseif (ratioData_all(i) < 3/14);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_6of7;
+									elseif (ratioData_all(i) < 5/14);
+										binCounts_all(3) = binCounts_all(3)+1;
+										colors_all{i}    = color_5of7;
+									elseif (ratioData_all(i) > 13/14);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_7of7;
+									elseif (ratioData_all(i) > 11/14);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_6of7;
+									elseif (ratioData_all(i) > 9/14);
+										binCounts_all(3) = binCounts_all(3)+1;
+										colors_all{i}    = color_5of7;
 									else
-										binCounts_unphased(4) = binCounts_unphased(4)+1;
-										colors_unphased{i}    = unphased_color_4of7;
+										binCounts_all(4) = binCounts_all(4)+1;
+										colors_all{i}    = color_4of7;
 									end;
 								end;
 							end;
-							colorMix = unphased_color_7of7 * binCounts_unphased(1)/ sum(binCounts_unphased) + ...
-							           unphased_color_6of7 * binCounts_unphased(2)/ sum(binCounts_unphased) + ...
-							           unphased_color_5of7 * binCounts_unphased(3)/ sum(binCounts_unphased) + ...
-							           unphased_color_4of7 * binCounts_unphased(4)/ sum(binCounts_unphased);
+							colorMix = color_7of7 * binCounts_all(1)/ sum(binCounts_all) + ...
+							           color_6of7 * binCounts_all(2)/ sum(binCounts_all) + ...
+							           color_5of7 * binCounts_all(3)/ sum(binCounts_all) + ...
+							           color_4of7 * binCounts_all(4)/ sum(binCounts_all);
 							% 7of7 contains [aaaaaaa, bbbbbbb].
 							% 6of7 contains [aaaaaab, abbbbbb].
 							% 5of7 contains [aaaaabb, aabbbbb].
 							% 4of7 contains [aaaabbb, aaabbbb].
 						elseif (localCopyEstimate == 8)
-							binCounts_unphased = zeros(1,5);
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									if (ratioData_unphased(i) < 1/16);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_8of8;
-									elseif (ratioData_unphased(i) < 3/16);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_7of8;
-									elseif (ratioData_unphased(i) < 5/16);
-										binCounts_unphased(3) = binCounts_unphased(3)+1;
-										colors_unphased{i}    = unphased_color_6of8;
-									elseif (ratioData_unphased(i) < 6/16);
-										binCounts_unphased(4) = binCounts_unphased(4)+1;
-										colors_unphased{i}    = unphased_color_5of8;
-									elseif (ratioData_unphased(i) > 15/16);
-										binCounts_unphased(1) = binCounts_unphased(1)+1;
-										colors_unphased{i}    = unphased_color_8of8;
-									elseif (ratioData_unphased(i) > 13/16);
-										binCounts_unphased(2) = binCounts_unphased(2)+1;
-										colors_unphased{i}    = unphased_color_7of8;
-									elseif (ratioData_unphased(i) > 11/16);
-										binCounts_unphased(3) = binCounts_unphased(3)+1;
-										colors_unphased{i}    = unphased_color_6of8;
-									elseif (ratioData_unphased(i) > 9/16);
-										binCounts_unphased(4) = binCounts_unphased(4)+1;
-										colors_unphased{i}    = unphased_color_5of8;
+							binCounts_all = zeros(1,5);
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									if (ratioData_all(i) < 1/16);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_8of8;
+									elseif (ratioData_all(i) < 3/16);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_7of8;
+									elseif (ratioData_all(i) < 5/16);
+										binCounts_all(3) = binCounts_all(3)+1;
+										colors_all{i}    = color_6of8;
+									elseif (ratioData_all(i) < 6/16);
+										binCounts_all(4) = binCounts_all(4)+1;
+										colors_all{i}    = color_5of8;
+									elseif (ratioData_all(i) > 15/16);
+										binCounts_all(1) = binCounts_all(1)+1;
+										colors_all{i}    = color_8of8;
+									elseif (ratioData_all(i) > 13/16);
+										binCounts_all(2) = binCounts_all(2)+1;
+										colors_all{i}    = color_7of8;
+									elseif (ratioData_all(i) > 11/16);
+										binCounts_all(3) = binCounts_all(3)+1;
+										colors_all{i}    = color_6of8;
+									elseif (ratioData_all(i) > 9/16);
+										binCounts_all(4) = binCounts_all(4)+1;
+										colors_all{i}    = color_5of8;
 									else
-										binCounts_unphased(5) = binCounts_unphased(5)+1;
-										colors_unphased{i}    = unphased_color_4of8;
+										binCounts_all(5) = binCounts_all(5)+1;
+										colors_all{i}    = color_4of8;
 									end;
 								end;
 							end;
-							colorMix = unphased_color_8of8 * binCounts_unphased(1)/ sum(binCounts_unphased) + ...
-							           unphased_color_7of8 * binCounts_unphased(2)/ sum(binCounts_unphased) + ...
-							           unphased_color_6of8 * binCounts_unphased(3)/ sum(binCounts_unphased) + ...
-							           unphased_color_5of8 * binCounts_unphased(4)/ sum(binCounts_unphased) + ...
-							           unphased_color_4of8 * binCounts_unphased(5)/ sum(binCounts_unphased);
+							colorMix = color_8of8 * binCounts_all(1)/ sum(binCounts_all) + ...
+							           color_7of8 * binCounts_all(2)/ sum(binCounts_all) + ...
+							           color_6of8 * binCounts_all(3)/ sum(binCounts_all) + ...
+							           color_5of8 * binCounts_all(4)/ sum(binCounts_all) + ...
+							           color_4of8 * binCounts_all(5)/ sum(binCounts_all);
 							% 8of8 contains [aaaaaaaa, bbbbbbbb].
 							% 7of8 contains [aaaaaaab, abbbbbbb].
 							% 6of8 contains [aaaaaabb, aabbbbbb].
 							% 5of8 contains [aaaaabbb, aaabbbbb].
 							% 4of8 contains [aaaabbbb].
 						elseif (localCopyEstimate >= 9)
-							binCounts_unphased = zeros(1,5);
-							if (length(ratioData_unphased) > 0)
-								for i = 1:length(ratioData_unphased)
-									if (ratioData_unphased(i) < 1/18);
-										binCounts_unphased(1)  = binCounts_unphased(1) +1;
-										colors_unphased{i}     = unphased_color_9of9;
-									elseif (ratioData_unphased(i) < 3/18);
-										binCounts_unphased(2)  = binCounts_unphased(2) +1;
-										colors_unphased{i}     = unphased_color_8of9;
-									elseif (ratioData_unphased(i) < 5/18);
-										binCounts_unphased(3)  = binCounts_unphased(3) +1;
-										colors_unphased{i}     = unphased_color_7of9;
-									elseif (ratioData_unphased(i) < 7/18);
-										binCounts_unphased(4)  = binCounts_unphased(4) +1;
-										colors_unphased{i}     = unphased_color_6of9;
-									elseif (ratioData_unphased(i) > 17/18);
-										binCounts_unphased(1)  = binCounts_unphased(1) +1;
-										colors_unphased{i}     = unphased_color_9of9;
-									elseif (ratioData_unphased(i) > 15/18);
-										binCounts_unphased(2)  = binCounts_unphased(2) +1;
-										colors_unphased{i}     = unphased_color_8of9;
-									elseif (ratioData_unphased(i) > 13/18);
-										binCounts_unphased(3)  = binCounts_unphased(3) +1;
-										colors_unphased{i}     = unphased_color_7of9;
-									elseif (ratioData_unphased(i) > 11/18);
-										binCounts_unphased(4)  = binCounts_unphased(4) +1;
-										colors_unphased{i}     = unphased_color_6of9;
+							binCounts_all = zeros(1,5);
+							if (length(ratioData_all) > 0)
+								for i = 1:length(ratioData_all)
+									if (ratioData_all(i) < 1/18);
+										binCounts_all(1)  = binCounts_all(1) +1;
+										colors_all{i}     = color_9of9;
+									elseif (ratioData_all(i) < 3/18);
+										binCounts_all(2)  = binCounts_all(2) +1;
+										colors_all{i}     = color_8of9;
+									elseif (ratioData_all(i) < 5/18);
+										binCounts_all(3)  = binCounts_all(3) +1;
+										colors_all{i}     = color_7of9;
+									elseif (ratioData_all(i) < 7/18);
+										binCounts_all(4)  = binCounts_all(4) +1;
+										colors_all{i}     = color_6of9;
+									elseif (ratioData_all(i) > 17/18);
+										binCounts_all(1)  = binCounts_all(1) +1;
+										colors_all{i}     = color_9of9;
+									elseif (ratioData_all(i) > 15/18);
+										binCounts_all(2)  = binCounts_all(2) +1;
+										colors_all{i}     = color_8of9;
+									elseif (ratioData_all(i) > 13/18);
+										binCounts_all(3)  = binCounts_all(3) +1;
+										colors_all{i}     = color_7of9;
+									elseif (ratioData_all(i) > 11/18);
+										binCounts_all(4)  = binCounts_all(4) +1;
+										colors_all{i}     = color_6of9;
 									else
-										binCounts_unphased(5) = binCounts_unphased(5)+1;
-										colors_unphased{i}     = unphased_color_5of9;
+										binCounts_all(5) = binCounts_all(5)+1;
+										colors_all{i}     = color_5of9;
 									end;
 								end;
 							end;
-							colorMix = unphased_color_9of9 * binCounts_unphased(1)/ sum(binCounts_unphased) + ...
-							           unphased_color_8of9 * binCounts_unphased(2)/ sum(binCounts_unphased) + ...
-							           unphased_color_7of9 * binCounts_unphased(3)/ sum(binCounts_unphased) + ...
-							           unphased_color_6of9 * binCounts_unphased(4)/ sum(binCounts_unphased) + ...
-							           unphased_color_5of9 * binCounts_unphased(5)/ sum(binCounts_unphased);
+							colorMix = color_9of9 * binCounts_all(1)/ sum(binCounts_all) + ...
+							           color_8of9 * binCounts_all(2)/ sum(binCounts_all) + ...
+							           color_7of9 * binCounts_all(3)/ sum(binCounts_all) + ...
+							           color_6of9 * binCounts_all(4)/ sum(binCounts_all) + ...
+							           color_5of9 * binCounts_all(5)/ sum(binCounts_all);
 							% 9of9 contains [aaaaaaaaa, bbbbbbbbb].
 							% 8of9 contains [aaaaaaaab, abbbbbbbb].
 							% 7of9 contains [aaaaaaabb, aabbbbbbb].
