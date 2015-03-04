@@ -30,7 +30,8 @@ foreach($FTPdrop_files as $key=>$file) {
 ?>
 </select>
 to
-<input type="submit" value="load into project">.
+<input type="submit" id="submitbutton" value="load into project" onclick="document.getElementById('submitbutton').style.display='none'; document.getElementById('submitbutton_replace').style.display='inline';">
+<div id="submitbutton_replace" style="display:none">load into project</div>.
 <input type="hidden" name="key"     value="<?php echo $project_key;       ?>">
 <input type="hidden" name="user"    value="<?php echo $user;              ?>">
 <input type="hidden" name="project" value="<?php echo $project;           ?>">
