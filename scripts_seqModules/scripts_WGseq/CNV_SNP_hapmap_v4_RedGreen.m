@@ -8,10 +8,11 @@ addpath('../');
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
-if ((useHapmap == true) || (strcmp(project,hapmap) == 1))
+if (strcmp(project,hapmap) == 1)
 	% Either a hapmap was in use or the project and parent are the same, so the
 	% figure drawn by "CNV_SNP_hapmap_v4.m" is all that needs to be done.
-	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being skipped.\n##\n']);
+	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being skipped...\n']);
+	fprintf(['##\tbecause the dataset is not being compared to another dataset.\n']);
 else
 	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being processed.\n##\n']);
 
