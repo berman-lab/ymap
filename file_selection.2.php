@@ -43,13 +43,5 @@ to
 <input type="hidden" name="project"    value="<?php echo $project;           ?>">
 <input type="hidden" name="script"     value="<?php echo $conclusion_script; ?>">
 </form>
-
-<p id="demo" onclick="myFunction()">Click me to change my text color.</p>
-<script>
-function myFunction() {
-    document.getElementById("demo").style.color = "red";
-}
-</script>
-
 </body>
 </html>
