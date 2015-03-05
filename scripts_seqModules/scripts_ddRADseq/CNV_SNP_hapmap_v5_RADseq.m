@@ -125,7 +125,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -187,7 +187,7 @@ largestChr = find(chr_width == max(chr_width));
 %-------------------------------------------------------------------------------------------------
 LOH_file = [projectDir 'SNP_' SNP_verString '.reduced.mat'];
 if (exist(LOH_file,'file') == 2)
-	load(LOH_file);                                   % 'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsP'
+	load(LOH_file);                                   % 'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC', 'chr_SNPdata_colorsC_alternate'
 else
 	load([projectDir 'SNP_' SNP_verString '.mat']);   % 'chr_SNPdata'
 	new_bases_per_bin = bases_per_bin;
@@ -279,114 +279,6 @@ end;
 if (Output_CGD_annotations == true)
 	CGDid = fopen([projectDir 'CGD_annotations.' project  '.txt'], 'w');
 	fprintf(CGDid,['track name=' project ' description="WGseq annotation of SNPs" useScore=0 itemRGB=On\n']);
-end;
-
-
-%% =========================================================================================
-% Blend adjacent colorbars to minimize noise :
-%	doesn't work correctly.
-%	When comparing strain to parent, it averages allelic ratios from het coordinates with adjacent hom coordinates.
-%-------------------------------------------------------------------------------------------
-if (blendColorBars)
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			% X-coordinates for chromosome.
-			dataX    = 1:ceil(chr_size(chr)/new_bases_per_bin);
-
-			% Y-coordinates for experimental dataset.
-			dataY    = chr_SNPdata{chr,2};
-			newDataY = dataY;
-			if (length(dataX) > 2)
-				for i = 2:(length(dataX)-1)
-					datumX = dataX(i);
-					datumY = maxY - dataY(i)*maxY;
-					if (datumY > 0) % usable coordinate.
-						% for each valid point, look for the first valid point to the left.
-						foundLeft          = false;
-						for j = (i-1):-1:1
-							datumXleft     = dataX(2);
-							datumYleft     = maxY - dataY(j)*maxY;
-							if (datumYleft > 0) % usable point to the left.
-								foundLeft  = true;
-							end;
-						end;
-						% for each valid point, look for the first valid point to the right.
-						foundRight         = false;
-						for j = (i+1):length(dataX)
-							datumXright    = dataX(2);
-							datumYright    = maxY - dataY(j)*maxY;
-							if (datumYright > 0) % usable point to the right.
-								foundRight = true;
-							end;
-						end;
-						newDatumX = datumX;
-						%if (foundLeft) && (foundRight)
-						%	newDatumY = datumY*0.500 + datumYleft*0.250 + datumYright*0.250;
-						%elseif (foundLeft)
-						%	newDatumY = datumY*0.667 + datumYleft*0.333;
-						%elseif (foundRight)
-						%	newDatumY = datumY*0.667 + datumYright*0.333;
-						%else
-						%	newDatumY = datumY;
-						%end;
-						newDatumY   = datumY;
-						newDatumY   = (maxY - newDatumY)/maxY;
-						newDataY(i) = newDatumY;
-					end;
-				end;
-			end;
-			% Y-coordinates for experimental dataset.
-			chr_SNPdata{chr,2} = newDataY;
-
-			if (useParent)
-				% Y-coordinates for parental dataset.
-				dataY    = chr_SNPdata{chr,4};
-				newDataY = dataY;
-				if (length(dataX) > 2)
-					for i = 2:(length(dataX)-1)
-						datumX = dataX(i);
-						datumY = maxY - dataY(i)*maxY;
-						if (datumY > 0) % usable coordinate.
-							% for each valid point, look for the first valid point to the left.
-							foundLeft          = false;
-							for j = (i-1):-1:1
-								datumXleft     = dataX(2);
-								datumYleft     = maxY - dataY(j)*maxY;
-								if (datumYleft > 0) % usable point to the left.
-									foundLeft  = true;
-								end;
-							end;
-							% for each valid point, look for the first valid point to the right.
-							foundRight         = false;
-							for j = (i+1):length(dataX)
-								datumXright    = dataX(2);
-								datumYright    = maxY - dataY(j)*maxY;
-								if (datumYright > 0) % usable point to the right.
-									foundRight = true;
-								end;
-							end;
-							newDatumX = datumX;
-							%if (foundLeft) && (foundRight)
-							%	newDatumY = datumY*0.500 + datumYleft*0.250 + datumYright*0.250;
-							%elseif (foundLeft)
-							%	newDatumY = datumY*0.667 + datumYleft*0.333;
-							%elseif (foundRight)
-							%	newDatumY = datumY*0.667 + datumYright*0.333;
-							%else
-							%	newDatumY = datumY;
-							%end;
-							newDatumY   = datumY;
-							newDatumY   = (maxY - newDatumY)/maxY;
-							newDataY(i) = newDatumY;
-						end;
-					end;
-				end;
-				% Y-coordinates for parental dataset.
-				chr_SNPdata{chr,4} = newDataY;
-			end;
-
-		end;
-	end;
 end;
 
 

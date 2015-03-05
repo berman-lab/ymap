@@ -199,7 +199,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -261,20 +261,22 @@ else
 	new_bases_per_bin = bases_per_bin/2;
 end;
 for chr = 1:length(chr_sizes)
-	%	1 : experimental : phased ratio data.
-	%	2 : experimental : unphased ratio data.
+	%   1 : experimental : phased ratio data.
+	%   2 : experimental : unphased ratio data.
 	%   3 : reference    : phased ratio data.
 	%   4 : reference    : unphased ratio data.
 	chr_length = ceil(chr_size(chr)/new_bases_per_bin);
 	for j = 1:4
 		chr_SNPdata{chr,j} = ones(chr_length,1);
 	end;
+	% Colors used to illustrate SNP/LOH data.
+	%    chr_SNPdata_colorsC           : colors scheme defined by hapmap or red for unspecified LOH.
+	%    chr_SNPdata_colorsC_alternate : color scheme defined to accentuate difference between homozygous and skewed heterozygous data.
 	for j = 1:3
-		chr_SNPdata_colorsC{chr,j} = zeros(chr_length,1)+2/3;
-		chr_SNPdata_colorsP{chr,j} = zeros(chr_length,1)+2/3;
+		chr_SNPdata_colorsC{chr,j}           = zeros(chr_length,1)+2/3;
+		chr_SNPdata_colorsC_alternate{chr,j} = zeros(chr_length,1)+2/3;
 	end;
 	chr_SNPdata_countC{chr,1} = zeros(chr_length,1);
-	chr_SNPdata_countP{chr,1} = zeros(chr_length,1);
 end;
 
 
@@ -303,144 +305,44 @@ end;
 %%================================================================================================
 % Reduce dataset size for plotting.
 %-------------------------------------------------------------------------------------------------
-dataReductionMethod = 1;
 if (useHapmap)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			if (dataReductionMethod == 1)
-				% experiment : data reduction by determining colors for each coordinate.
-				test_C_chr_count = C_chr_count{chr}
-				for i = 1:length(C_chr_count{chr})
-					pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					chr_SNPdata{chr,2}(pos) = C_chr_SNP_data_ratios{ chr}(i);
-					baseCall                = C_chr_baseCall{        chr}{i};
-					homologA                = C_chr_SNP_homologA{    chr}{i};
-					homologB                = C_chr_SNP_homologB{    chr}{i};
-					flipper                 = C_chr_SNP_flipHomologs{chr}(i);
-					if (flipper)
-						temp     = homologA;
-						homologA = homologB;
-						homologB = temp;
-					end;
-					allelicFraction = C_chr_SNP_data_ratios{chr}(i);
-					percentHom      = (allelicFraction-0.5)*2;
-					percentHet      = 1-percentHom;
-					if (baseCall == homologA)
-						colorList = homolog_a_color*percentHom + het_color*percentHet;
-					elseif (baseCall == homologB)
-						colorList = homolog_b_color*percentHom + het_color*percentHet;
-					else
-						colorList = [2/3 2/3 2/3]; % [1.0 1.0 1.0];
-					end;
-					chr_SNPdata_colorsC{chr,1}(pos) = colorList(1);
-					chr_SNPdata_colorsC{chr,2}(pos) = colorList(2);
-					chr_SNPdata_colorsC{chr,3}(pos) = colorList(3);
-					chr_SNPdata_countC{ chr,1}(pos) = chr_SNPdata_countC{chr,1}(pos)+1;
+			% experiment : data reduction by determining colors for each coordinate.
+			for i = 1:length(C_chr_count{chr})
+				pos                             = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+				chr_SNPdata{chr,2}(pos)         = C_chr_SNP_data_ratios{ chr}(i);
+				baseCall                        = C_chr_baseCall{        chr}{i};
+				homologA                        = C_chr_SNP_homologA{    chr}{i};
+				homologB                        = C_chr_SNP_homologB{    chr}{i};
+				flipper                         = C_chr_SNP_flipHomologs{chr}(i);
+				if (flipper)
+					temp                    = homologA;
+					homologA                = homologB;
+					homologB                = temp;
 				end;
-				for i = 1:length(C_chr_count{chr})
-					if (chr_SNPdata_countC{chr,1}(pos) > 0)
-						chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr,1}(pos);
-						chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr,1}(pos);
-						chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr,1}(pos);
-					end;
+				allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
+				percentHom                      = (allelicFraction-0.5)*2;
+				percentHet                      = 1-percentHom;
+				if (baseCall == homologA)
+					colorList               = homolog_a_color*percentHom + het_color*percentHet;
+				elseif (baseCall == homologB)
+					colorList               = homolog_b_color*percentHom + het_color*percentHet;
+				else
+					% heterozygous basecall.
+					colorList               = [2/3 2/3 2/3];
 				end;
-
-				% reference : data reduction by averaging colors within each bin.
-				for i = 1:length(C_chr_count{chr})
-					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					chr_SNPdata{chr,4}(pos) = P_chr_SNP_data_ratios{ chr}(i);
-					baseCall                = P_chr_baseCall{        chr}{i};
-					homologA                = P_chr_SNP_homologA{    chr}{i};
-					homologB                = P_chr_SNP_homologB{    chr}{i};
-					flipper                 = P_chr_SNP_flipHomologs{chr}(i);
-					if (flipper)
-						temp     = homologA;
-						homologA = homologB;
-						homologB = temp;
-					end;
-					allelicFraction = P_chr_SNP_data_ratios{chr}(i);
-					percentHom      = (allelicFraction-0.5)*2;
-					percentHet      = 1-percentHom;
-					if (baseCall == homologA)
-						colorList = homolog_a_color*percentHom + het_color*percentHet;
-					elseif (baseCall == homologB)
-						colorList = homolog_b_color*percentHom + het_color*percentHet;
-					else
-						colorList = [2/3 2/3 2/3]; % [1.0 1.0 1.0];
-					end;
-					chr_SNPdata_colorsP{chr,1}(pos) = colorList(1);
-					chr_SNPdata_colorsP{chr,2}(pos) = colorList(2);
-					chr_SNPdata_colorsP{chr,3}(pos) = colorList(3);
-					chr_SNPdata_countP{ chr,1}(pos) = chr_SNPdata_countP{chr,1}(pos)+1;
+				chr_SNPdata_colorsC{chr,1}(pos) = colorList(1);
+				chr_SNPdata_colorsC{chr,2}(pos) = colorList(2);
+				chr_SNPdata_colorsC{chr,3}(pos) = colorList(3);
+				chr_SNPdata_countC{ chr,1}(pos) = chr_SNPdata_countC{chr,1}(pos)+1;
+			end;
+			for i = 1:length(C_chr_count{chr})
+				if (chr_SNPdata_countC{chr,1}(pos) > 0)
+					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr,1}(pos);
+					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr,1}(pos);
+					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr,1}(pos);
 				end;
-				for i = 1:length(C_chr_count{chr})
-					if (chr_SNPdata_countP{chr,1}(pos) > 0)
-						chr_SNPdata_colorsP{chr,1}(pos) = chr_SNPdata_colorsP{chr,1}(pos)/chr_SNPdata_countP{chr,1}(pos);
-						chr_SNPdata_colorsP{chr,2}(pos) = chr_SNPdata_colorsP{chr,2}(pos)/chr_SNPdata_countP{chr,1}(pos);
-						chr_SNPdata_colorsP{chr,3}(pos) = chr_SNPdata_colorsP{chr,3}(pos)/chr_SNPdata_countP{chr,1}(pos);
-					end;
-				end;
-			elseif (dataReductionMethod == 2)
-				% experiment : data reduction by only looking at closest to 1:1 data per bin.
-				for i = 1:length(C_chr_count{chr})
-					pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					if (C_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,2}(pos))
-						chr_SNPdata{chr,2}(pos) = C_chr_SNP_data_ratios{ chr}(i);
-						baseCall                = C_chr_baseCall{        chr}{i};
-						homologA                = C_chr_SNP_homologA{    chr}{i};
-						homologB                = C_chr_SNP_homologB{    chr}{i};
-						flipper                 = C_chr_SNP_flipHomologs{chr}(i);
-						if (flipper)
-							temp     = homologA;
-							homologA = homologB;
-							homologB = temp;
-						end;
-						allelicFraction = C_chr_SNP_data_ratios{chr}(i);
-						percentHom      = (allelicFraction-0.5)*2;
-						percentHet      = 1-percentHom;
-						if (baseCall == homologA)
-							colorList = homolog_a_color*percentHom + het_color*percentHet;
-						elseif (baseCall == homologB)
-							colorList = homolog_b_color*percentHom + het_color*percentHet;
-						else
-							colorList = [2/3 2/3 2/3]; % [1.0 1.0 1.0];
-						end;
-						chr_SNPdata_colorsC{chr,1}(pos) = colorList(1);
-						chr_SNPdata_colorsC{chr,2}(pos) = colorList(2);
-						chr_SNPdata_colorsC{chr,3}(pos) = colorList(3);
-					end;
-				end;
-
-				% experiment : data reduction by only looking at closest to 1:1 data per bin.
-				for i = 1:length(C_chr_count{chr})
-					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					if (P_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,4}(pos))
-						chr_SNPdata{chr,4}(pos) = P_chr_SNP_data_ratios{ chr}(i);
-						baseCall                = P_chr_baseCall{        chr}{i};
-						homologA                = P_chr_SNP_homologA{    chr}{i};
-						homologB                = P_chr_SNP_homologB{    chr}{i};
-						flipper                 = P_chr_SNP_flipHomologs{chr}(i);
-						if (flipper)
-							temp     = homologA;
-							homologA = homologB;
-							homologB = temp;
-						end;
-						allelicFraction = P_chr_SNP_data_ratios{chr}(i);
-						percentHom      = (allelicFraction-0.5)*2;
-						percentHet      = 1-percentHom;
-						if (baseCall == homologA)
-							colorList = homolog_a_color*percentHom + het_color*percentHet;
-						elseif (baseCall == homologB)
-							colorList = homolog_b_color*percentHom + het_color*percentHet;
-						else
-							colorList = [2/3 2/3 2/3]; % [1.0 1.0 1.0];
-						end;
-						chr_SNPdata_colorsP{chr,1}(pos) = colorList(1);
-						chr_SNPdata_colorsP{chr,2}(pos) = colorList(2);
-						chr_SNPdata_colorsP{chr,3}(pos) = colorList(3);
-					end;
-				end;
-
 			end;
 		end;
 	end;
@@ -459,23 +361,11 @@ else
 					end;
 				end;
 			end;
-			if (length(P_chr_count{chr}) > 1)
-				for i = 1:length(P_chr_count{chr})
-					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					if (P_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,4}(pos))
-						chr_SNPdata{chr,4}(pos)      = P_chr_SNP_data_ratios{chr}(i);
-						colorList                    = [1.0 1.0 1.0];
-						chr_SNPdata_colorsP{chr,1}(i) = colorList(1);
-						chr_SNPdata_colorsP{chr,2}(i) = colorList(2);
-						chr_SNPdata_colorsP{chr,3}(i) = colorList(3);
-					end;
-				end;
-			end;
 		end;
 	end;
 end;
 
-save([projectDir 'SNP_' SNP_verString '.reduced.mat'],'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsP');
+save([projectDir 'SNP_' SNP_verString '.reduced.mat'],'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsC_alternate');
 
 
 
