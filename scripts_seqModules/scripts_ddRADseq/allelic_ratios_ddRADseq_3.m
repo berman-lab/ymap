@@ -331,41 +331,48 @@ load([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']);   % 'CNVp
 if (useHapmap)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			% experiment : data reduction by determining colors for each coordinate.
-			for i = 1:length(C_chr_count{chr})
-				pos                             = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-				CNVestimate                     = CNVplot2{              chr}(pos);
-				chr_SNPdata{chr,2}(pos)         = C_chr_SNP_data_ratios{ chr}(i);
-				baseCall                        = C_chr_baseCall{        chr}{i};
-				homologA                        = C_chr_SNP_homologA{    chr}{i};
-				homologB                        = C_chr_SNP_homologB{    chr}{i};
-				flipper                         = C_chr_SNP_flipHomologs{chr}(i);
-				if (flipper)
-					temp                    = homologA;
-					homologA                = homologB;
-					homologB                = temp;
+			if (length(C_chr_count{chr}) > 1)
+				%
+				% Determining colors for each SNP coordinate.
+				%
+				for i = 1:length(C_chr_count{chr})
+					pos                             = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					CNVestimate                     = CNVplot2{              chr}(pos);
+					chr_SNPdata{chr,2}(pos)         = C_chr_SNP_data_ratios{ chr}(i);
+					baseCall                        = C_chr_baseCall{        chr}{i};
+					homologA                        = C_chr_SNP_homologA{    chr}{i};
+					homologB                        = C_chr_SNP_homologB{    chr}{i};
+					flipper                         = C_chr_SNP_flipHomologs{chr}(i);
+					if (flipper)
+						temp                    = homologA;
+						homologA                = homologB;
+						homologB                = temp;
+					end;
+					allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
+					percentHom                      = (allelicFraction-0.5)*2;
+					percentHet                      = 1-percentHom;
+					if (baseCall == homologA)
+						colorList               = homolog_a_color*percentHom + het_color*percentHet;
+					elseif (baseCall == homologB)
+						colorList               = homolog_b_color*percentHom + het_color*percentHet;
+					else
+						% heterozygous basecall.
+						colorList               = [2/3 2/3 2/3];
+					end;
+					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos) + colorList(1);
+					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos) + colorList(2);
+					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos) + colorList(3);
+					chr_SNPdata_countC{ chr  }(pos) = chr_SNPdata_countC{ chr  }(pos) + 1;
 				end;
-				allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
-				percentHom                      = (allelicFraction-0.5)*2;
-				percentHet                      = 1-percentHom;
-				if (baseCall == homologA)
-					colorList               = homolog_a_color*percentHom + het_color*percentHet;
-				elseif (baseCall == homologB)
-					colorList               = homolog_b_color*percentHom + het_color*percentHet;
-				else
-					% heterozygous basecall.
-					colorList               = [2/3 2/3 2/3];
-				end;
-				chr_SNPdata_colorsC{chr,1}(pos) = colorList(1);
-				chr_SNPdata_colorsC{chr,2}(pos) = colorList(2);
-				chr_SNPdata_colorsC{chr,3}(pos) = colorList(3);
-				chr_SNPdata_countC{ chr,1}(pos) = chr_SNPdata_countC{chr,1}(pos)+1;
-			end;
-			for i = 1:length(C_chr_count{chr})
-				if (chr_SNPdata_countC{chr,1}(pos) > 0)
-					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr,1}(pos);
-					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr,1}(pos);
-					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr,1}(pos);
+				%
+				% Determine average colors for each standard genome bin.
+				%
+				for pos = 1:length(chr_SNPdata_countC{chr})
+					if (chr_SNPdata_countC{chr}(pos) > 0)
+						chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr}(pos);
+						chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr}(pos);
+						chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr}(pos);
+					end;
 				end;
 			end;
 		end;
@@ -374,6 +381,9 @@ else
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
+				%
+				% Determine colors for each standard genome bin.
+				%
 				for i = 1:length(C_chr_count{chr})
 					pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
 					if (C_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,2}(pos))
