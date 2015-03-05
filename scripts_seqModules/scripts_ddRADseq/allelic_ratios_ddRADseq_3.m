@@ -144,9 +144,135 @@ if (useHapmap)
 			homolog_b_color = [1.0 0.0 0.0];
 	end;
 
-	het_color          = [0.66667 0.66667 0.66667]; % heterozygous.
-	hom_unphased_color = [1.0     0.0     0.0    ]; % homozygous, unphased.
+	het_color             = [0.66667 0.66667 0.66667]; % heterozygous.
+	hom_unphased_color    = [1.0     0.0     0.0    ]; % homozygous, unphased.
+	het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
+else
+	% Haplotype map is not in use.
+	if (strcmp(project,hapmap) == 1)
+		% The 'project' is the same as the 'hapmap'/'parent'.
+		homolog_a_color       = [0.66667 0.66667 0.66667];
+		homolog_b_color       = [0.66667 0.66667 0.66667];
+		het_color             = [0.66667 0.66667 0.66667]; % heterozygous.
+		hom_unphased_color    = [0.66667 0.66667 0.66667]; % homozygous, unphased.
+		het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
+		oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+	else
+		% The 'project' is different than the 'hapmap'/'parent'.
+		homolog_a_color       = [1.0 0.0 0.0];
+		homolog_b_color       = [1.0 0.0 0.0];
+		het_color             = [0.66667 0.66667 0.66667]; % heterozygous.
+		hom_unphased_color    = [1.0     0.0     0.0    ]; % homozygous, unphased.
+		het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
+		oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+	end;
 end;
+
+
+% phased data colors.
+	% haploid colors.
+	colorA          = homolog_a_color;
+	colorB          = homolog_b_color;
+	% diploid colors.
+	colorAA         = homolog_a_color;
+	colorAB         = het_color;
+	colorBB         = homolog_b_color;
+	% triploid colors.
+	colorAAA        = homolog_a_color;
+	colorAAB        = homolog_a_color*2/3 + homolog_b_color*1/3;
+	colorABB        = homolog_a_color*1/3 + homolog_b_color*2/3;
+	colorBBB        = homolog_b_color;
+	% tetraploid colors.
+	colorAAAA       = homolog_a_color;
+	colorAAAB       = homolog_a_color*3/4 + homolog_b_color*1/4;
+	colorAABB       = het_color;
+	colorABBB       = homolog_a_color*1/4 + homolog_b_color*3/4;
+	colorBBBB       = homolog_b_color;
+	% pentaploid colors.
+	colorAAAAA      = homolog_a_color;
+	colorAAAAB      = homolog_a_color*4/5 + homolog_b_color*1/5;
+	colorAAABB      = homolog_a_color*3/5 + homolog_b_color*2/5;
+	colorAABBB      = homolog_a_color*2/5 + homolog_b_color*3/5;
+	colorABBBB      = homolog_a_color*1/5 + homolog_b_color*4/5;
+	colorBBBBB      = homolog_b_color;
+	% hexaploid colors.
+	colorAAAAAA     = homolog_a_color;
+	colorAAAAAB     = homolog_a_color*5/6 + homolog_b_color*1/6;
+	colorAAAABB     = homolog_a_color*4/6 + homolog_b_color*2/6;
+	colorAAABBB     = het_color;
+	colorAABBBB     = homolog_a_color*2/6 + homolog_b_color*4/6;
+	colorABBBBB     = homolog_a_color*1/6 + homolog_b_color*5/6;
+	colorBBBBBB     = homolog_b_color;
+	% heptaploid colors.
+	colorAAAAAAA    = homolog_a_color;
+	colorAAAAAAB    = homolog_a_color*6/7 + homolog_b_color*1/7;
+	colorAAAAABB    = homolog_a_color*5/7 + homolog_b_color*2/7;
+	colorAAAABBB    = homolog_a_color*4/7 + homolog_b_color*3/7;
+	colorAAABBBB    = homolog_a_color*3/7 + homolog_b_color*4/7;
+	colorAABBBBB    = homolog_a_color*2/7 + homolog_b_color*5/7;
+	colorABBBBBB    = homolog_a_color*1/7 + homolog_b_color*6/7;
+	colorBBBBBBB    = homolog_b_color;
+	% octaploid colors.
+	colorAAAAAAAA   = homolog_a_color;
+	colorAAAAAAAB   = homolog_a_color*7/8 + homolog_b_color*1/8;
+	colorAAAAAABB   = homolog_a_color*6/8 + homolog_b_color*2/8;
+	colorAAAAABBB   = homolog_a_color*5/8 + homolog_b_color*3/8;
+	colorAAAABBBB   = het_color;
+	colorAAABBBBB   = homolog_a_color*3/8 + homolog_b_color*5/8;
+	colorAABBBBBB   = homolog_a_color*2/8 + homolog_b_color*6/8;
+	colorABBBBBBB   = homolog_a_color*1/8 + homolog_b_color*7/8;
+	colorBBBBBBBB   = homolog_b_color;
+	% nonaploid colors.
+	colorAAAAAAAAA  = homolog_a_color;
+	colorAAAAAAAAB  = homolog_a_color*8/9 + homolog_b_color*1/9;
+	colorAAAAAAABB  = homolog_a_color*7/9 + homolog_b_color*2/9;
+	colorAAAAAABBB  = homolog_a_color*6/9 + homolog_b_color*3/9;
+	colorAAAAABBBB  = homolog_a_color*5/9 + homolog_b_color*4/9;
+	colorAAAABBBBB  = homolog_a_color*4/9 + homolog_b_color*5/9;
+	colorAAABBBBBB  = homolog_a_color*3/9 + homolog_b_color*6/9;
+	colorAABBBBBBB  = homolog_a_color*2/9 + homolog_b_color*7/9;
+	colorABBBBBBBB  = homolog_a_color*1/9 + homolog_b_color*8/9;
+	colorBBBBBBBBB  = homolog_b_color;
+
+% unphased colors.
+	% haploid colors.
+	unphased_color_1of1 = hom_unphased_color;
+	% diploid colors.
+	unphased_color_2of2 = hom_unphased_color;
+	unphased_color_1of2 = het_unphased_color;
+	% triploid colors.
+	unphased_color_3of3 = hom_unphased_color;
+	unphased_color_2of3 = hom_unphased_color*2/3 + het_unphased_color*1/3;
+	% tetraploid colors.
+	unphased_color_4of4 = hom_unphased_color;
+	unphased_color_3of4 = hom_unphased_color*3/4 + het_unphased_color*1/4;
+	unphased_color_2of4 = het_unphased_color;
+	% pentaploid colors.
+	unphased_color_5of5 = hom_unphased_color;
+	unphased_color_4of5 = hom_unphased_color*4/5 + het_unphased_color*1/5;
+	unphased_color_3of5 = hom_unphased_color*3/5 + het_unphased_color*2/5;
+	% hexaploid colors.
+	unphased_color_6of6 = hom_unphased_color;
+	unphased_color_5of6 = hom_unphased_color*5/6 + het_unphased_color*1/6;
+	unphased_color_4of6 = hom_unphased_color*4/6 + het_unphased_color*2/6;
+	unphased_color_3of6 = het_unphased_color;
+	% heptaploid colors.
+	unphased_color_7of7 = hom_unphased_color;
+	unphased_color_6of7 = hom_unphased_color*6/7 + het_unphased_color*1/7;
+	unphased_color_5of7 = hom_unphased_color*5/7 + het_unphased_color*2/7;
+	unphased_color_4of7 = hom_unphased_color*4/7 + het_unphased_color*3/7;
+	% octaploid colors.
+	unphased_color_8of8 = hom_unphased_color;
+	unphased_color_7of8 = hom_unphased_color*7/8 + het_unphased_color*1/8;
+	unphased_color_6of8 = hom_unphased_color*6/8 + het_unphased_color*2/8;
+	unphased_color_5of8 = hom_unphased_color*5/8 + het_unphased_color*3/8;
+	unphased_color_4of8 = het_unphased_color;
+	% nonaploid colors.
+	unphased_color_9of9 = hom_unphased_color;
+	unphased_color_8of9 = hom_unphased_color*8/9 + het_unphased_color*1/9;
+	unphased_color_7of9 = hom_unphased_color*7/9 + het_unphased_color*2/9;
+	unphased_color_6of9 = hom_unphased_color*6/9 + het_unphased_color*3/9;
+	unphased_color_5of9 = hom_unphased_color*5/9 + het_unphased_color*4/9;
 
 
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
@@ -227,6 +353,9 @@ end;
 %% =========================================================================================
 %% =========================================================================================
 
+
+% Process input ploidy.
+ploidy = str2num(ploidyEstimateString);
 
 % Sanitize user input of euploid state.
 ploidyBase = round(str2num(ploidyBaseString));
@@ -328,6 +457,7 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('\nLoading "Common_CNV" data file for ddRADseq project.');
 load([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
+[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
 
 
 %%================================================================================================
@@ -342,7 +472,7 @@ if (useHapmap)
 				%
 				for i = 1:length(C_chr_count{chr})
 					pos                             = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					CNVestimate                     = CNVplot2{              chr}(pos);
+					localCopyEstimate               = round(CNVplot2{chr}(pos)*ploidy*ploidyAdjust);
 					chr_SNPdata{chr,2}(pos)         = C_chr_SNP_data_ratios{ chr}(i);
 					baseCall                        = C_chr_baseCall{        chr}{i};
 					homologA                        = C_chr_SNP_homologA{    chr}{i};
@@ -354,15 +484,250 @@ if (useHapmap)
 						homologB                = temp;
 					end;
 					allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
-					percentHom                      = (allelicFraction-0.5)*2;
-					percentHet                      = 1-percentHom;
-					if (baseCall == homologA)
-						colorList               = homolog_a_color*percentHom + het_color*percentHet;
-					elseif (baseCall == homologB)
-						colorList               = homolog_b_color*percentHom + het_color*percentHet;
-					else
-						% heterozygous basecall.
-						colorList               = [2/3 2/3 2/3];
+					fprintf(['localCopyEstimate = ' num2str(localCopyEstimate) '\n']);
+					fprintf(['allelicFraction   = ' num2str(allelicFraction) '\n\n']);
+					if (localCopyEstimate <= 0)
+						colorList = [1 1 1];
+					elseif (localCopyEstimate == 1)
+						if (baseCall == homologA)
+							colorList = colorA;
+						elseif (baseCall == homologB)
+							colorList = colorB;
+						else
+							colorList = hom_unphased_color;
+						end;
+					elseif (localCopyEstimate == 2)
+						if (baseCall == homologA)
+							if (allelicFraction > 3/4)
+								colorList = colorAA;
+							else
+								colorList = colorAB;
+							end;
+						elseif (baseCall == homologB)
+							if (allelicFraction > 3/4)
+								colorList = colorBB;
+							else
+								colorList = colorAB;
+							end;
+						else
+							if (allelicFraction > 3/4)
+								colorList = hom_unphased_color;
+							else
+								colorList = het_unphased_color;
+							end;
+						end;
+					elseif (localCopyEstimate == 3)
+						if (baseCall == homologA)
+							if (allelicFraction > 5/6)
+								colorList = colorAAA;
+							else
+								colorList = colorAAB;
+							end;
+						elseif (baseCall == homologB)
+							if (allelicFraction > 5/6)
+								colorList = colorBBB;
+							else
+								colorList = colorABB;
+							end;
+						else
+							if (allelicFraction > 5/6)
+								colorList = unphased_color_3of3;
+							else
+								colorList = unphased_color_2of3;
+							end;
+						end;
+					elseif (localCopyEstimate == 4)
+						if (baseCall == homologA)
+							if (allelicFraction > 7/8)
+								colorList = colorAAAA;
+							elseif (allelicFraction > 5/8)
+								colorList = colorAAAB;
+							else
+								colorList = colorAABB;
+							end;
+						elseif (baseCall == homologB)
+							if (allelicFraction > 7/8)
+								colorList = colorBBBB;
+							elseif (allelicFraction > 5/8)
+								colorList = colorABBB;
+							else
+								colorList = colorAABB;
+							end;
+						else
+							if (allelicFraction > 7/8)
+								colorList = unphased_color_4of4;
+							elseif (allelicFraction > 5/8)
+								colorList = unphased_color_3of4;
+							else
+								colorList = unphased_color_2of4;
+							end;
+						end;
+					elseif (localCopyEstimate == 5)
+						if (baseCall == homologA)
+							if (allelicFraction > 9/10)
+								colorList = colorAAAAA;
+							elseif (allelicFraction > 7/10)
+								colorList = colorAAAAB;
+							else
+								colorList = colorAAABB;
+							end;
+						elseif (baseCall == homologB)
+							if (allelicFraction > 9/10)
+								colorList = colorBBBBB;
+							elseif (allelicFraction > 7/10)
+								colorList = colorABBBB;
+							else
+								colorList = colorAABBB;
+							end;
+						else
+							if (allelicFraction > 9/10)
+								colorList = unphased_color_5of5;
+							elseif (allelicFraction > 7/10)
+								colorList = unphased_color_4of5;
+							else
+								colorList = unphased_color_3of5;
+							end;
+						end;
+					elseif (localCopyEstimate == 6)
+						if (baseCall == homologA)
+							if (allelicFraction > 11/12)
+								colorList = colorAAAAAA;
+							elseif (allelicFraction > 9/12)
+								colorList = colorAAAAAB;
+							elseif (allelicFraction > 7/12)
+								colorList = colorAAAABB;
+							else
+								colorList = colorAAABBB;
+							end;
+						elseif (baseCall == homologB)
+							if (allelicFraction > 11/12)
+								colorList = colorBBBBBB;
+							elseif (allelicFraction > 9/12)
+								colorList = colorABBBBB;
+							elseif (allelicFraction > 7/12)
+								colorList = colorAABBBB;
+							else
+								colorList = colorAAABBB;
+							end;
+						else
+							if (allelicFraction > 11/12)
+								colorList = unphased_color_6of6;
+							elseif (allelicFraction > 9/12)
+								colorList = unphased_color_5of6;
+							elseif (allelicFraction > 7/12)
+								colorList = unphased_color_4of6;
+							else
+								colorList = unphased_color_3of6;
+							end;
+						end;
+					elseif (localCopyEstimate == 7)
+						if (baseCall == homologA)
+							if (allelicFraction > 13/14)
+								colorList = colorAAAAAAA;
+							elseif (allelicFraction > 11/14)
+								colorList = colorAAAAAAB;
+							elseif (allelicFraction > 9/14)
+								colorList = colorAAAAABB;
+							else
+								colorList = colorAAAABBB;
+							end;
+						elseif (baseCall == homologB)
+							if (allelicFraction > 13/14)
+								colorList = colorBBBBBBB;
+							elseif (allelicFraction > 11/14)
+								colorList = colorABBBBBB;
+							elseif (allelicFraction > 9/14)
+								colorList = colorAABBBBB;
+							else
+								colorList = colorAAABBBB;
+							end;
+						else
+							if (allelicFraction > 13/14)
+								colorList = unphased_color_7of7;
+							elseif (allelicFraction > 11/14)
+								colorList = unphased_color_6of7;
+							elseif (allelicFraction > 9/14)
+								colorList = unphased_color_5of7;
+							else
+								colorList = unphased_color_4of7;
+							end;
+						end;
+					elseif (localCopyEstimate == 8)
+						if (baseCall == homologA)
+							if (allelicFraction > 15/16)
+								colorList = colorAAAAAAAA;
+							elseif (allelicFraction > 13/16)
+								colorList = colorAAAAAAAB;
+							elseif (allelicFraction > 11/16)
+								colorList = colorAAAAAABB;
+							elseif (allelicFraction > 9/16)
+								colorList = colorAAAAABBB;
+							else
+								colorList = colorAAAABBBB;
+							end;
+						elseif (baseCall == homologB)
+							if (allelicFraction > 15/16)
+								colorList = colorBBBBBBBB;
+							elseif (allelicFraction > 13/16)
+								colorList = colorABBBBBBB;
+							elseif (allelicFraction > 11/16)
+								colorList = colorAABBBBBB;
+							elseif (allelicFraction > 9/16)
+								colorList = colorAAABBBBB;
+							else
+								colorList = colorAAAABBBB;
+							end;
+						else
+							if (allelicFraction > 15/16)
+								colorList = unphased_color_8of8;
+							elseif (allelicFraction > 13/16)
+								colorList = unphased_color_7of8;
+							elseif (allelicFraction > 11/16)
+								colorList = unphased_color_6of8;
+							elseif (allelicFraction > 9/16)
+								colorList = unphased_color_5of8;
+							else
+								colorList = unphased_color_4of8;
+							end;
+						end;
+					elseif (localCopyEstimate >= 9)
+						if (baseCall == homologA)
+							if (allelicFraction > 17/18)
+								colorList = colorAAAAAAAAA;
+							elseif (allelicFraction > 15/18)
+								colorList = colorAAAAAAAAB;
+							elseif (allelicFraction > 13/18)
+								colorList = colorAAAAAAABB;
+							elseif (allelicFraction > 11/18)
+								colorList = colorAAAAAABBB;
+							else
+								colorList = colorAAAAABBBB;
+							end;
+						elseif (baseCall == homologB)
+							if (allelicFraction > 17/18)
+								colorList = colorBBBBBBBBB;
+							elseif (allelicFraction > 15/18)
+								colorList = colorABBBBBBBB;
+							elseif (allelicFraction > 13/18)
+								colorList = colorAABBBBBBB;
+							elseif (allelicFraction > 11/18)
+								colorList = colorAAABBBBBB;
+							else
+								colorList = colorAAAABBBBB;
+							end;
+						else
+							if (allelicFraction > 17/18)
+								colorList = unphased_color_9of9;
+							elseif (allelicFraction > 15/18)
+								colorList = unphased_color_8of9;
+							elseif (allelicFraction > 13/18)
+								colorList = unphased_color_7of9;
+							elseif (allelicFraction > 11/18)
+								colorList = unphased_color_6of9;
+							else
+								colorList = unphased_color_5of9;
+							end;
+						end;
 					end;
 
 					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos) + colorList(1);
