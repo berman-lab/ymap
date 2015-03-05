@@ -291,6 +291,16 @@ if (useHapmap)
 		fprintf('\nAllelic fraction MAT file 1 found, loading.\n');
 	end;
 	load([projectDir 'SNP_' SNP_verString '.all3.mat']);
+	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs'
+	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count','P_chr_baseCall','P_chr_SNP_homologA','P_chr_SNP_homologB','P_chr_SNP_flipHomologs'
+	%
+	% C_chr_SNP_data_positions = coordinate of SNP.
+	% C_chr_SNP_data_ratios    = allelic ratio of SNP.
+	% C_chr_count              = number of reads at SNP coordinate.
+	% C_chr_baseCall           = majority basecall of SNP.
+	% C_chr_SNP_homologA       = hapmap homolog a basecall.
+	% C_chr_SNP_homologB       = hapmap homolog b basecall.
+	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?
 else
 	if (exist([projectDir 'SNP_' SNP_verString '.all1.mat'],'file') == 0)
 		fprintf('\nAllelic fraction MAT file 1 not found, generating.\n');
@@ -299,7 +309,20 @@ else
 		fprintf('\nAllelic fraction MAT file 1 found, loading.\n');
 	end;
 	load([projectDir 'SNP_' SNP_verString '.all1.mat']);
+	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
+	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'
+	%
+	% C_chr_SNP_data_positions = coordinate of SNP.
+	% C_chr_SNP_data_ratios    = allelic ratio of SNP.
+	% C_chr_count              = number of reads at SNP coordinate.
 end;
+
+
+%%================================================================================================
+% Load 'Common_CNV.mat' file containing CNV estimates per standard genome bin.
+%-------------------------------------------------------------------------------------------------
+fprintf('\nLoading "Common_CNV" data file for ddRADseq project.');
+load([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
 
 
 %%================================================================================================
@@ -311,6 +334,7 @@ if (useHapmap)
 			% experiment : data reduction by determining colors for each coordinate.
 			for i = 1:length(C_chr_count{chr})
 				pos                             = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+				CNVestimate                     = CNVplot2{              chr}(pos);
 				chr_SNPdata{chr,2}(pos)         = C_chr_SNP_data_ratios{ chr}(i);
 				baseCall                        = C_chr_baseCall{        chr}{i};
 				homologA                        = C_chr_SNP_homologA{    chr}{i};

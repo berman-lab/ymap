@@ -13,14 +13,14 @@ H_datafile = [hapmapDir   'SNPdata_parent.txt'        ]
 % Preallocate data vectors the length of each chromosome.
 %-------------------------------------------------------------------------------------------------------------
 fprintf('Preallocate data vectors for each chromosome.\n');
-C_chr_SNP_data_positions = cell(length(chr_size),1);
-C_chr_SNP_data_ratios    = cell(length(chr_size),1);
-C_chr_baseCall           = cell(length(chr_size),1);
-C_chr_count              = cell(length(chr_size),1);
-C_chr_SNP_homologA       = cell(length(chr_size),1);
-C_chr_SNP_homologB       = cell(length(chr_size),1);
-C_chr_SNP_flipHomologs   = cell(length(chr_size),1);
-C_chr_SNP_keep           = cell(length(chr_size),1);
+C_chr_SNP_data_positions = cell(length(chr_size),1);   % coordinate of SNP.
+C_chr_SNP_data_ratios    = cell(length(chr_size),1);   % allelic ratio of SNP.
+C_chr_baseCall           = cell(length(chr_size),1);   % majority basecall of SNP.
+C_chr_count              = cell(length(chr_size),1);   % number of reads at SNP coordinate.
+C_chr_SNP_homologA       = cell(length(chr_size),1);   % hapmap homolog a basecall.
+C_chr_SNP_homologB       = cell(length(chr_size),1);   % hapmap homolog b basecall.
+C_chr_SNP_flipHomologs   = cell(length(chr_size),1);   % does hapmap entry need flipped?
+C_chr_SNP_keep           = cell(length(chr_size),1);   % is SNP coordinate found in hapmap?
 
 P_chr_SNP_data_positions = cell(length(chr_size),1);
 P_chr_SNP_data_ratios    = cell(length(chr_size),1);
@@ -45,7 +45,7 @@ for chrID = 1:length(chr_size)
 		C_chr_SNP_homologA{      chrID} = cell( chr_size(chrID),1);
 		C_chr_SNP_homologB{      chrID} = cell( chr_size(chrID),1);
 		C_chr_SNP_flipHomologs{  chrID} = zeros(chr_size(chrID),1);
-		C_chr_SNP_keep{          chrID} = ones(chr_size(chrID),1);
+		C_chr_SNP_keep{          chrID} = ones( chr_size(chrID),1);
 		C_chr_lines_analyzed(    chrID) = 0;
 
 		P_chr_SNP_data_positions{chrID} = zeros(chr_size(chrID),1);
@@ -55,7 +55,7 @@ for chrID = 1:length(chr_size)
 		P_chr_SNP_homologA{      chrID} = cell( chr_size(chrID),1);
 		P_chr_SNP_homologB{      chrID} = cell( chr_size(chrID),1);
 		P_chr_SNP_flipHomologs{  chrID} = zeros(chr_size(chrID),1);
-		P_chr_SNP_keep{          chrID} = ones(chr_size(chrID),1);
+		P_chr_SNP_keep{          chrID} = ones( chr_size(chrID),1);
 		P_chr_lines_analyzed(    chrID) = 0;
 
 		H_chr_SNP_data_positions{chrID} = zeros(chr_size(chrID),1);
@@ -138,22 +138,22 @@ while not (feof(C_data))
 			if (C_chr_num ~= old_chr)
 				fprintf(['\tchr = ' num2str(C_chr_num) '\n']);
 			end;
-			C_SNP_countA       = str2num(C_SNP_countA);
-			C_SNP_countT       = str2num(C_SNP_countT);
-			C_SNP_countG       = str2num(C_SNP_countG);
-			C_SNP_countC       = str2num(C_SNP_countC);
-			C_count_vector1    = [C_SNP_countA C_SNP_countT C_SNP_countG C_SNP_countC];
-			C_chr_read_max1    = max(C_count_vector1);
-			C_SNP_coordinate   = str2num(C_SNP_coordinate);
-			C_chr_lines_analyzed(C_chr_num) = C_chr_lines_analyzed(C_chr_num)+1;
+			C_SNP_countA                                                         = str2num(C_SNP_countA);
+			C_SNP_countT                                                         = str2num(C_SNP_countT);
+			C_SNP_countG                                                         = str2num(C_SNP_countG);
+			C_SNP_countC                                                         = str2num(C_SNP_countC);
+			C_count_vector1                                                      = [C_SNP_countA C_SNP_countT C_SNP_countG C_SNP_countC];
+			C_chr_read_max1                                                      = max(C_count_vector1);
+			C_SNP_coordinate                                                     = str2num(C_SNP_coordinate);
+			C_chr_lines_analyzed(C_chr_num)                                      = C_chr_lines_analyzed(C_chr_num)+1;
 			C_chr_SNP_data_positions{C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_SNP_coordinate;
 			C_chr_SNP_data_ratios{   C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_chr_read_max1/sum(C_count_vector1);
 			C_chr_count{             C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = sum(C_count_vector1);
-			allele_call_id = find(C_count_vector1==max(C_count_vector1));
+			allele_call_id                                                       = find(C_count_vector1==max(C_count_vector1));
 			if (length(allele_call_id) > 1)
-				C_chr_read_id = 'N';
+				C_chr_read_id                                                = 'N';
 			else
-				C_chr_read_id = allele_list(allele_call_id);
+				C_chr_read_id                                                = allele_list(allele_call_id);
 			end;
 			C_chr_baseCall{          C_chr_num}{C_chr_lines_analyzed(C_chr_num)} = C_chr_read_id;
 			old_chr = C_chr_num;
@@ -214,20 +214,6 @@ for chrID = 1:length(chr_size)
 		C_chr_SNP_keep{          chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
 		C_chr_SNP_data_positions{chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
 
-		test_C1 = C_chr_SNP_data_ratios{chrID}'
-
-%		C_chr_SNP_data_ratios{   chrID}(C_chr_count{             chrID} <= 20) = [];
-%		C_chr_SNP_data_positions{chrID}(C_chr_count{             chrID} <= 20) = [];
-%		C_chr_baseCall{          chrID}(C_chr_count{             chrID} <= 20) = [];
-%		C_chr_SNP_homologA{      chrID}(C_chr_count{             chrID} <= 20) = [];
-%		C_chr_SNP_homologB{      chrID}(C_chr_count{             chrID} <= 20) = [];
-%		C_chr_SNP_flipHomologs{  chrID}(C_chr_count{             chrID} <= 20) = [];
-%		C_chr_SNP_keep{          chrID}(C_chr_count{             chrID} <= 20) = [];
-%		C_chr_count{             chrID}(C_chr_count{             chrID} <= 20) = [];
-
-		test_C2 = C_chr_SNP_data_ratios{chrID}'
-
-
 		P_chr_SNP_data_ratios{   chrID}(P_chr_SNP_data_positions{chrID} == 0)  = [];
 		P_chr_count{             chrID}(P_chr_SNP_data_positions{chrID} == 0)  = [];
 		P_chr_baseCall{          chrID}(P_chr_SNP_data_positions{chrID} == 0)  = [];
@@ -236,15 +222,6 @@ for chrID = 1:length(chr_size)
 		P_chr_SNP_flipHomologs{  chrID}(P_chr_SNP_data_positions{chrID} == 0)  = [];
 		P_chr_SNP_keep{          chrID}(P_chr_SNP_data_positions{chrID} == 0)  = [];
 		P_chr_SNP_data_positions{chrID}(P_chr_SNP_data_positions{chrID} == 0)  = [];
-
-%		P_chr_SNP_data_ratios{   chrID}(P_chr_count{             chrID} <= 20) = [];
-%		P_chr_SNP_data_positions{chrID}(P_chr_count{             chrID} <= 20) = [];
-%		P_chr_baseCall{          chrID}(P_chr_count{             chrID} <= 20) = [];
-%		P_chr_SNP_homologA{      chrID}(P_chr_count{             chrID} <= 20) = [];
-%		P_chr_SNP_homologB{      chrID}(P_chr_count{             chrID} <= 20) = [];
-%		P_chr_SNP_flipHomologs{  chrID}(P_chr_count{             chrID} <= 20) = [];
-%		P_chr_SNP_keep{          chrID}(P_chr_count{             chrID} <= 20) = [];
-%		P_chr_count{             chrID}(P_chr_count{             chrID} <= 20) = [];
 
 		H_chr_SNP_alleleA{       chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
 		H_chr_SNP_alleleB{       chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
@@ -280,7 +257,7 @@ for chrID = 1:length(chr_size)
 				C_chr_SNP_keep{        chrID}(projectDatumID) = 1;
 				start = projectDatumID;
 			else
-				% fprintf(['\tchr' num2str(chrID) ':' num2str(pos) '-\n']);
+				fprintf(['\tchr' num2str(chrID) ':' num2str(pos) '-\n']);
 				C_chr_SNP_keep{        chrID}(projectDatumID) = 0;
 				start = 1;
 			end;
