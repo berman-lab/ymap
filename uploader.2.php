@@ -103,7 +103,7 @@
 
 				// hide upload buttons before all files are selected.
 				document.getElementById("info-wrapper-1").style.display = 'none';
-            }
+			}
 			Show3=function() {
 				document.getElementById("2-wrapper").style.display = 'none';
 

@@ -713,14 +713,17 @@ for chr = 1:num_chrs
 					if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
 
 					if (localCopyEstimate <= 0)
+						% Copy number estimate suggests segmental deletion.
+						% There should therefore be no SNP data, but spurious data may exist.
+						% This data should be drawn in white, the color used to indicate a lack of data.
 						if (length(ratioData_phased) > 0)
 							for i = 1:length(ratioData_phased)
-								colors_phased{i} = colorAB;
+								colors_phased{i} = colorNoData;
 							end;
 						end;
 						if (length(ratioData_unphased) > 0)
 							for i = 1:length(ratioData_unphased)
-								colors_unphased{i} = het_unphased_color;
+								colors_unphased{i} = colorNoData;
 							end;
 						end;
 					elseif (localCopyEstimate == 1)
