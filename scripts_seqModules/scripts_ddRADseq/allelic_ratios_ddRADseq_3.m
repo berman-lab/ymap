@@ -387,11 +387,19 @@ if (useHapmap)
 				end;
 
 				%
-				% Collecting parental data ratios.
+				% Collecting parental data ratios per standard genome bin.
 				%
 				for i = 1:length(C_chr_count{chr})
 					pos                             = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					chr_SNPdata{chr,4}(pos)         = P_chr_SNP_data_ratios{ chr}(i);
+					chr_SNPdata{chr,4}(pos)         = chr_SNPdata{chr,4}(pos)      + P_chr_SNP_data_ratios{chr}(i);
+					chr_SNPdata_countP{chr}(pos)    = chr_SNPdata_countP{chr}(pos) + 1;
+				end;
+				for pos = 1:length(chr_SNPdata_countC{chr})
+					if (chr_SNPdata_countP{chr}(pos) > 0)
+						chr_SNPdata{chr,4}(pos) = chr_SNPdata{chr,4}(pos)/chr_SNPdata_countP{chr}(pos);
+					else
+						chr_SNPdata{chr,4}(pos) = 0;
+					end;
 				end;
 			end;
 		end;
@@ -534,7 +542,6 @@ for chr = 1:num_chrs
 		hold on;
 		fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 
-
 		% standard : axes labels etc.
 		xlim([0,chr_size(chr)/bases_per_bin]);
     
@@ -561,33 +568,18 @@ for chr = 1:num_chrs
 
 		% standard : draw colorbars.
 		if (useHapmap)
-			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-			dataY_C    = chr_SNPdata{chr,2};
-			dataY_P    = chr_SNPdata{chr,4};
-			fprintf('\n');
-			fprintf(['project = ' project '\n']);
-			fprintf(['hapmap  = ' hapmap '\n']);
-			fprintf('\n');
-			for i = 1:length(dataX)
-				datumX   = dataX(i);
+			for i = 1:1:ceil(chr_size(chr)/new_bases_per_bin)
 				colorR   = chr_SNPdata_colorsC{chr,1}(i);
 				colorG   = chr_SNPdata_colorsC{chr,2}(i);
 				colorB   = chr_SNPdata_colorsC{chr,3}(i);
 				if (colorR < 1) || (colorG < 1) || (colorB < 1)
-					plot([datumX datumX], [0 maxY],'Color',[colorR colorG colorB]);
+					plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 				end;
 			end;
 		else
 			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
 			dataY_C    = chr_SNPdata{chr,2};
 			dataY_P    = chr_SNPdata{chr,4};
-			fprintf('\n');
-			fprintf(['X_length    = ' num2str(length(dataX)) '\n']);
-			fprintf(['project     = ' project '\n']);
-			fprintf(['   Y_length = ' num2str(length(dataY_C)) '\n']);
-			fprintf(['parent      = ' parent '\n']);
-			fprintf(['   Y_length = ' num2str(length(dataY_P)) '\n']);
-			fprintf('\n');
 			for i = 1:length(dataX)
 				datumX    = dataX(i)/2; 
 				datumY_C  = dataY_C(i)*maxY;
@@ -696,20 +688,12 @@ for chr = 1:num_chrs
 
 			% linear : draw colorbars
 			if (useHapmap)
-				dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-				dataY_C    = chr_SNPdata{chr,2};
-				dataY_P    = chr_SNPdata{chr,4};
-				fprintf('\n');
-				fprintf(['project = ' project '\n']);
-				fprintf(['hapmap  = ' hapmap '\n']);
-				fprintf('\n');
-				for i = 1:length(dataX)
-					datumX   = dataX(i);
+				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
 					colorR   = chr_SNPdata_colorsC{chr,1}(i);
 					colorG   = chr_SNPdata_colorsC{chr,2}(i);
 					colorB   = chr_SNPdata_colorsC{chr,3}(i);
 					if (colorR < 1) || (colorG < 1) || (colorB < 1)
-						plot([datumX datumX], [0 maxY],'Color',[colorR colorG colorB]);
+						plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
 			else
