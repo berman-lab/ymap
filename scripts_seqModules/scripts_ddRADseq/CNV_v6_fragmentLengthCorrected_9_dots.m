@@ -131,25 +131,6 @@ if (useParent)
 end;
 
 
-%%================================================================================================
-% Load pre-processed ddRADseq fragment CNV data for project.
-%-------------------------------------------------------------------------------------------------
-load([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.mat']);
-project_fragments_CNV = fragments_CNV;
-clear fragments_CNV;
-
-
-%%================================================================================================
-% Load pre-processed ddRADseq fragment CNV data for parent project.
-%-------------------------------------------------------------------------------------------------
-if (strcmp(project,parent) == 1)
-	parent_fragments_CNV = project_fragments_CNV;
-else
-	load([main_dir 'users/' parentUser '/projects/' parent '/fragment_CNV_data.mat']);
-	parent_fragments_CNV = fragments_CNV;
-	clear fragments_CNV;
-end;
-
 
 %
 %%
