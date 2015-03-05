@@ -326,7 +326,7 @@ load([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']);   % 'CNVp
 
 
 %%================================================================================================
-% Reduce dataset size for plotting.
+% Process SNP/hapmap data to determine colors for presentation.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
 	for chr = 1:num_chrs
