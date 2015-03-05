@@ -536,7 +536,7 @@ for chr = 1:num_chrs
 
 
 		% standard : axes labels etc.
-	    xlim([0,chr_size(chr)/bases_per_bin]);
+		xlim([0,chr_size(chr)/bases_per_bin]);
     
 		%% standard : modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
@@ -570,12 +570,10 @@ for chr = 1:num_chrs
 			fprintf('\n');
 			for i = 1:length(dataX)
 				datumX   = dataX(i);
-				datumY_1 = dataY_P(i)*maxY;
-				datumY_2 = maxY - dataY_P(i)*maxY;
-				if (datumY_2 > 0)
-					colorR = chr_SNPdata_colorsC{chr,1}(i);
-					colorG = chr_SNPdata_colorsC{chr,2}(i);
-					colorB = chr_SNPdata_colorsC{chr,3}(i);
+				colorR   = chr_SNPdata_colorsC{chr,1}(i);
+				colorG   = chr_SNPdata_colorsC{chr,2}(i);
+				colorB   = chr_SNPdata_colorsC{chr,3}(i);
+				if (colorR < 1) || (colorG < 1) || (colorB < 1)
 					plot([datumX datumX], [0 maxY],'Color',[colorR colorG colorB]);
 				end;
 			end;
@@ -606,13 +604,13 @@ for chr = 1:num_chrs
 		end;
 		% standard : end show allelic ratio data.
 
-			if (displayBREAKS == true) && (show_annotations == true)
-				chr_length = ceil(chr_size(chr)/bases_per_bin);
-                                for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length;
-                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
-                                end;
-                        end;
+		if (displayBREAKS == true) && (show_annotations == true)
+			chr_length = ceil(chr_size(chr)/bases_per_bin);
+			for segment = 2:length(chr_breaks{chr})-1
+				bP = chr_breaks{chr}(segment)*chr_length;
+				plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+			end;
+		end;
 
 		% standard : show centromere outlines and horizontal marks.
 		x1 = cen_start(chr)/bases_per_bin;
@@ -707,12 +705,10 @@ for chr = 1:num_chrs
 				fprintf('\n');
 				for i = 1:length(dataX)
 					datumX   = dataX(i);
-					datumY_1 = dataY_P(i)*maxY;
-					datumY_2 = maxY - dataY_P(i)*maxY;
-					if (datumY_2 > 0)
-						colorR = chr_SNPdata_colorsC{chr,1}(i);
-						colorG = chr_SNPdata_colorsC{chr,2}(i);
-						colorB = chr_SNPdata_colorsC{chr,3}(i);
+					colorR   = chr_SNPdata_colorsC{chr,1}(i);
+					colorG   = chr_SNPdata_colorsC{chr,2}(i);
+					colorB   = chr_SNPdata_colorsC{chr,3}(i);
+					if (colorR < 1) || (colorG < 1) || (colorB < 1)
 						plot([datumX datumX], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
