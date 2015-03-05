@@ -19,7 +19,12 @@ ChrNum                      = true;
 Linear_display              = true;
 Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true;
-Output_CGD_annotations      = true;   % Generate CGD annotation files for analyzed datasets.
+Output_CGD_annotations      = false;   % Generate CGD annotation files for analyzed datasets.
+
+fprintf('\n');
+fprintf('################################\n');
+fprintf('## CNV_SNP_hapmap_v5_RADseq.m ##\n');
+fprintf('################################\n');
 
 
 %% =========================================================================================
@@ -36,7 +41,7 @@ end;
 
 
 %% =========================================================================================
-% Control variables for Candida albicans SC5314.
+% Control variables.
 %-------------------------------------------------------------------------------------------
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
@@ -439,26 +444,43 @@ for chr = 1:num_chrs
 			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
 			dataY_1    = chr_SNPdata{chr,2};
 			dataY_2    = chr_SNPdata{chr,4};
-			fprintf('\n');
-			fprintf(['project = ' project '\n']);
-			fprintf(['hapmap  = ' hapmap '\n']);
-			fprintf('\n');
 			for i = 1:length(dataX)
-				datumX   = dataX(i);
-				datumY_1 = dataY_1(i)*maxY;
-				datumY_2 = maxY - dataY_1(i)*maxY;
-				if (datumY_2 > 0)
-					plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
+				datumX    = dataX(i);
+				datumY_1a = dataY_1(i)*maxY;
+				datumY_1b = maxY - dataY_1(i)*maxY;
+				datumY_2a = dataY_2(i)*maxY;
+				datumY_2b = maxY - dataY_2(i)*maxY;
+
+				% if (datumY_1b > 0)
+				%       plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
+				% end;
+
+				% plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
+
+				% plot([datumX datumX], [maxY datumY_1a],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
+				% plot([datumX datumX], [0    datumY_2b],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
+
+				% white_fraction = max(1,((dataY_1(i)-0.5)*2)*2);
+				% color_fraction = 1-white_fraction;
+				% colorR = chr_SNPdata_colorsC{chr,1}(i)*color_fraction + 1*white_fraction;
+				% colorG = chr_SNPdata_colorsC{chr,2}(i)*color_fraction + 1*white_fraction;
+				% colorB = chr_SNPdata_colorsC{chr,3}(i)*color_fraction + 1*white_fraction;
+				% plot([datumX datumX], [0 maxY],'Color',[colorR, colorG, colorB]);
+
+				if (datumY_2b > 0)
+					colorR = chr_SNPdata_colorsC{chr,1}(i);
+					colorG = chr_SNPdata_colorsC{chr,2}(i);
+					colorB = chr_SNPdata_colorsC{chr,3}(i);
+					plot([datumX datumX], [0 maxY],'Color',[colorR colorG colorB]);
 				end;
 			end;
 		else
 			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
 			dataY_C    = chr_SNPdata{chr,2};
 			dataY_P    = chr_SNPdata{chr,4};
-			fprintf('\n');
-			fprintf(['project = ' project '\n']);
-			fprintf(['parent  = ' parent '\n']);
-			fprintf('\n');
+			fprintf(['length(dataX)   = ' num2str(length(dataX)) '\n']);
+			fprintf(['length(dataY_C) = ' num2str(length(dataY_C)) '\n']);
+			fprintf(['length(dataY_P) = ' num2str(length(dataY_P)) '\n']);
 			for i = 1:length(dataX)
 				if (useParent)
 					datumX    = dataX(i)/2;
@@ -477,6 +499,7 @@ for chr = 1:num_chrs
 				end;
 			end;
 		end;
+		% end standard : draw color bars.
 
 
 		%% standard : cgh plot section.
@@ -800,6 +823,7 @@ for chr = 1:num_chrs
 					end;
 				end;
 			end;
+			% end linear : draw color bars.
 
 			% linear : cgh plot section.
 			c_ = [0 0 0];
