@@ -199,7 +199,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
+%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -273,10 +273,15 @@ for chr = 1:length(chr_sizes)
 	%    chr_SNPdata_colorsC           : colors scheme defined by hapmap or red for unspecified LOH.
 	%    chr_SNPdata_colorsC_alternate : color scheme defined to accentuate difference between homozygous and skewed heterozygous data.
 	for j = 1:3
-		chr_SNPdata_colorsC{chr,j}           = zeros(chr_length,1)+2/3;
-		chr_SNPdata_colorsC_alternate{chr,j} = zeros(chr_length,1)+2/3;
+		% Track the RGB value sum per standard bin, then divide by the count to reach the average color per standard genome bin.
+		chr_SNPdata_colorsC{chr,j}           = zeros(chr_length,1);   
+		chr_SNPdata_colorsP{chr,j}           = zeros(chr_length,1);
+		chr_SNPdata_colorsC_alternate{chr,j} = zeros(chr_length,1);
 	end;
-	chr_SNPdata_countC{chr,1} = zeros(chr_length,1);
+
+	% Track the number of SNP colors per standard bin.
+	chr_SNPdata_countC{chr} = zeros(chr_length,1);
+	chr_SNPdata_countP{chr} = zeros(chr_length,1); 
 end;
 
 
@@ -311,7 +316,7 @@ else
 	load([projectDir 'SNP_' SNP_verString '.all1.mat']);
 	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
 	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'
-	%
+	%   
 	% C_chr_SNP_data_positions = coordinate of SNP.
 	% C_chr_SNP_data_ratios    = allelic ratio of SNP.
 	% C_chr_count              = number of reads at SNP coordinate.
@@ -359,20 +364,34 @@ if (useHapmap)
 						% heterozygous basecall.
 						colorList               = [2/3 2/3 2/3];
 					end;
+
 					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos) + colorList(1);
 					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos) + colorList(3);
 					chr_SNPdata_countC{ chr  }(pos) = chr_SNPdata_countC{ chr  }(pos) + 1;
 				end;
+
 				%
-				% Determine average colors for each standard genome bin.
+				% Average color per bin.
 				%
 				for pos = 1:length(chr_SNPdata_countC{chr})
 					if (chr_SNPdata_countC{chr}(pos) > 0)
 						chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr}(pos);
 						chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr}(pos);
 						chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr}(pos);
+					else
+						chr_SNPdata_colorsC{chr,1}(pos) = 1.0;
+						chr_SNPdata_colorsC{chr,2}(pos) = 1.0;
+						chr_SNPdata_colorsC{chr,3}(pos) = 1.0;
 					end;
+				end;
+
+				%
+				% Collecting parental data ratios.
+				%
+				for i = 1:length(C_chr_count{chr})
+					pos                             = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					chr_SNPdata{chr,4}(pos)         = P_chr_SNP_data_ratios{ chr}(i);
 				end;
 			end;
 		end;
@@ -381,9 +400,6 @@ else
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
-				%
-				% Determine colors for each standard genome bin.
-				%
 				for i = 1:length(C_chr_count{chr})
 					pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
 					if (C_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,2}(pos))
@@ -395,11 +411,23 @@ else
 					end;
 				end;
 			end;
+			if (length(P_chr_count{chr}) > 1)
+				for i = 1:length(P_chr_count{chr})
+					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					if (P_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,4}(pos))
+						chr_SNPdata{chr,4}(pos)      = P_chr_SNP_data_ratios{chr}(i);
+						colorList                    = [1.0 1.0 1.0];
+						chr_SNPdata_colorsP{chr,1}(i) = colorList(1);
+						chr_SNPdata_colorsP{chr,2}(i) = colorList(2);
+						chr_SNPdata_colorsP{chr,3}(i) = colorList(3);
+					end;
+				end;
+			end;
 		end;
 	end;
 end;
 
-save([projectDir 'SNP_' SNP_verString '.reduced.mat'],'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsC_alternate');
+save([projectDir 'SNP_' SNP_verString '.reduced.mat'],'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsP');
 
 
 
@@ -534,16 +562,16 @@ for chr = 1:num_chrs
 		% standard : draw colorbars.
 		if (useHapmap)
 			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-			dataY_1    = chr_SNPdata{chr,2};
-			dataY_2    = chr_SNPdata{chr,4};
+			dataY_C    = chr_SNPdata{chr,2};
+			dataY_P    = chr_SNPdata{chr,4};
 			fprintf('\n');
 			fprintf(['project = ' project '\n']);
 			fprintf(['hapmap  = ' hapmap '\n']);
 			fprintf('\n');
 			for i = 1:length(dataX)
 				datumX   = dataX(i);
-				datumY_1 = dataY_1(i)*maxY;
-				datumY_2 = maxY - dataY_2(i)*maxY;
+				datumY_1 = dataY_P(i)*maxY;
+				datumY_2 = maxY - dataY_P(i)*maxY;
 				if (datumY_2 > 0)
 					colorR = chr_SNPdata_colorsC{chr,1}(i);
 					colorG = chr_SNPdata_colorsC{chr,2}(i);
@@ -563,8 +591,8 @@ for chr = 1:num_chrs
 			fprintf(['   Y_length = ' num2str(length(dataY_P)) '\n']);
 			fprintf('\n');
 			for i = 1:length(dataX)
-				datumX   = dataX(i)/2; 
-				datumY_C = dataY_C(i)*maxY;
+				datumX    = dataX(i)/2; 
+				datumY_C  = dataY_C(i)*maxY;
 				datumY_P1 = dataY_P(i)*maxY;
 				datumY_P2 = maxY - dataY_P(i)*maxY;
 				if (useParent)
@@ -587,100 +615,100 @@ for chr = 1:num_chrs
                         end;
 
 		% standard : show centromere outlines and horizontal marks.
-	    x1 = cen_start(chr)/bases_per_bin;
-	    x2 = cen_end(chr)/bases_per_bin;
-	    leftEnd  = 0.5*5000/bases_per_bin;
-	    rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+		x1 = cen_start(chr)/bases_per_bin;
+		x2 = cen_end(chr)/bases_per_bin;
+		leftEnd  = 0.5*5000/bases_per_bin;
+		rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
 
-	    if (Centromere_format == 0)
-	        % standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-	        dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-	        dy = cen_tel_Yindent; %maxY/10;
-	        % draw white triangles at corners and centromere locations.
-	        % top left corner.
-	        c_ = [1.0 1.0 1.0];
-	        x_ = [leftEnd   leftEnd   leftEnd+dx];
-	        y_ = [maxY-dy   maxY      maxY      ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom left corner.
-	        x_ = [leftEnd   leftEnd   leftEnd+dx];
-	        y_ = [dy        0         0         ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % top right corner.
-	        x_ = [rightEnd   rightEnd   rightEnd-dx];
-	        y_ = [maxY-dy    maxY       maxY      ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom right corner.
-	        x_ = [rightEnd   rightEnd   rightEnd-dx];
-	        y_ = [dy         0          0         ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % top centromere.
-	        x_ = [x1-dx   x1        x2        x2+dx];
-	        y_ = [maxY    maxY-dy   maxY-dy   maxY];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom centromere.
-	        x_ = [x1-dx   x1   x2   x2+dx];
-	        y_ = [0       dy   dy   0    ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-	        plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-	             [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-	            'Color',[0 0 0]);
-	    end;
-	    % standard : end show centromere.
+		if (Centromere_format == 0)
+			% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
+			dx = cen_tel_Xindent; %5*5000/bases_per_bin;
+			dy = cen_tel_Yindent; %maxY/10;
+			% draw white triangles at corners and centromere locations.
+			% top left corner.
+			c_ = [1.0 1.0 1.0];
+			x_ = [leftEnd   leftEnd   leftEnd+dx];
+			y_ = [maxY-dy   maxY      maxY      ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom left corner.
+			x_ = [leftEnd   leftEnd   leftEnd+dx];
+			y_ = [dy        0         0         ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% top right corner.
+			x_ = [rightEnd   rightEnd   rightEnd-dx];
+			y_ = [maxY-dy    maxY       maxY      ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom right corner.
+			x_ = [rightEnd   rightEnd   rightEnd-dx];
+			y_ = [dy         0          0         ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% top centromere.
+			x_ = [x1-dx   x1        x2        x2+dx];
+			y_ = [maxY    maxY-dy   maxY-dy   maxY];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom centromere.
+			x_ = [x1-dx   x1   x2   x2+dx];
+			y_ = [0       dy   dy   0    ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
+			plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
+			     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
+			     'Color',[0 0 0]);
+		end;
+		% standard : end show centromere.
     
-	    % standard : show annotation locations
-	    if (show_annotations) && (length(annotations) > 0)
-	        plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-	        annotation_location = (annotation_start+annotation_end)./2;
-	        for i = 1:length(annotation_location)
-	            if (annotation_chr(i) == chr)
-	                annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                if (strcmp(annotation_type{i},'dot') == 1)
-	                    plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-	                                                          'MarkerFaceColor',annotation_fillcolor{i}, ...
-	                                                          'MarkerSize',     annotation_size(i));
-	                elseif (strcmp(annotation_type{i},'block') == 1)
-	                    fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-	                         [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-	                         annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
-	                end;
-	            end;
-	        end;
-	    end;
-	    % standard : end show annotation locations.
+		% standard : show annotation locations
+		if (show_annotations) && (length(annotations) > 0)
+			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
+			annotation_location = (annotation_start+annotation_end)./2;
+			for i = 1:length(annotation_location)
+				if (annotation_chr(i) == chr)
+					annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					if (strcmp(annotation_type{i},'dot') == 1)
+						plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
+						     'MarkerFaceColor',annotation_fillcolor{i}, ...
+						     'MarkerSize',     annotation_size(i));
+					elseif (strcmp(annotation_type{i},'block') == 1)
+						fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+						     [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+						     annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+					end;
+				end;
+			end;
+		end;
+		% standard : end show annotation locations.
 		hold off;
 
-	    %% Linear figure draw section
-	    if (Linear_display == true)
-	        figure(Linear_fig);
-	        Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
-	        subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
+		%% Linear figure draw section
+		if (Linear_display == true)
+			figure(Linear_fig);
+			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
+			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 			hold on;
-	        Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
-	        title(chr_label{chr},'Interpreter','none','FontSize',20);
+			Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
+			title(chr_label{chr},'Interpreter','none','FontSize',20);
 
 			% linear : draw colorbars
 			if (useHapmap)
 				dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-				dataY_1    = chr_SNPdata{chr,2};
-				dataY_2    = chr_SNPdata{chr,4};
+				dataY_C    = chr_SNPdata{chr,2};
+				dataY_P    = chr_SNPdata{chr,4};
 				fprintf('\n');
 				fprintf(['project = ' project '\n']);
 				fprintf(['hapmap  = ' hapmap '\n']);
 				fprintf('\n');
 				for i = 1:length(dataX)
 					datumX   = dataX(i);
-					datumY_1 = dataY_1(i)*maxY;
-					datumY_2 = maxY - dataY_2(i)*maxY;
+					datumY_1 = dataY_P(i)*maxY;
+					datumY_2 = maxY - dataY_P(i)*maxY;
 					if (datumY_2 > 0)
 						colorR = chr_SNPdata_colorsC{chr,1}(i);
 						colorG = chr_SNPdata_colorsC{chr,2}(i);
@@ -716,11 +744,11 @@ for chr = 1:num_chrs
                                 end;
                         end;
 
-	        % linear : show centromere.
-	        x1 = cen_start(chr)/bases_per_bin;
-	        x2 = cen_end(chr)/bases_per_bin;
-	        leftEnd  = 0.5*5000/bases_per_bin;
-	        rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+			% linear : show centromere.
+			x1 = cen_start(chr)/bases_per_bin;
+			x2 = cen_end(chr)/bases_per_bin;
+			leftEnd  = 0.5*5000/bases_per_bin;
+			rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
 
 			if (Centromere_format == 0)
 				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
@@ -788,10 +816,10 @@ for chr = 1:num_chrs
 
 			hold off;
 	        
-	        % shift back to main figure generation.
-	        figure(fig);
+			% shift back to main figure generation.
+			figure(fig);
 			first_chr = false;
-	    end;
+		end;
 	end;
 end;
 
@@ -810,3 +838,4 @@ delete(Linear_fig);
 % end stuff
 %=================================================================================================
 end
+
