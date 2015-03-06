@@ -1,0 +1,4 @@
+Branch: Feature__Add-ddRADseq-alternate-colors
+
+The goal of this branch is to add an alternate color scheme to the ddRADseq module output.
+The color scheme should improve descrimination between homozygous data and heterozygous data with an extreme alleleic ratio.

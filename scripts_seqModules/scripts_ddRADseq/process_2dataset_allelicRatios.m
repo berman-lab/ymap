@@ -48,13 +48,13 @@ while not (feof(C_data))
 		C_SNP_countC     = sscanf(C_dataLine, '%s',7);   for i = 1:size(sscanf(C_dataLine,'%s',6),2);   C_SNP_countC(1)     = [];   end;
 		C_chr_num        = find(strcmp(C_SNP_chr_name, chr_name));
 		if (length(C_chr_num) > 0)
-			C_SNP_countA       = str2num(C_SNP_countA);
-			C_SNP_countT       = str2num(C_SNP_countT);
-			C_SNP_countG       = str2num(C_SNP_countG);
-			C_SNP_countC       = str2num(C_SNP_countC);
-			C_count_vector     = [C_SNP_countA C_SNP_countT C_SNP_countG C_SNP_countC];
-			C_SNP_coordinate   = str2num(C_SNP_coordinate);
-			C_chr_lines_analyzed(C_chr_num) = C_chr_lines_analyzed(C_chr_num)+1;
+			C_SNP_countA                                                         = str2num(C_SNP_countA);
+			C_SNP_countT                                                         = str2num(C_SNP_countT);
+			C_SNP_countG                                                         = str2num(C_SNP_countG);
+			C_SNP_countC                                                         = str2num(C_SNP_countC);
+			C_count_vector                                                       = [C_SNP_countA C_SNP_countT C_SNP_countG C_SNP_countC];
+			C_SNP_coordinate                                                     = str2num(C_SNP_coordinate);
+			C_chr_lines_analyzed(C_chr_num)                                      = C_chr_lines_analyzed(C_chr_num)+1;
 			C_chr_SNP_data_positions{C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_SNP_coordinate;
 			C_chr_SNP_data_ratios   {C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = max(C_count_vector)/sum(C_count_vector);
 			C_chr_count             {C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = sum(C_count_vector);
@@ -81,13 +81,13 @@ while not (feof(P_data))
 		P_SNP_countC     = sscanf(P_dataLine, '%s',7);   for i = 1:size(sscanf(P_dataLine,'%s',6),2);   P_SNP_countC(1)     = [];   end;
 		P_chr_num        = find(strcmp(P_SNP_chr_name, chr_name));
 		if (length(P_chr_num) > 0)
-			P_SNP_countA       = str2num(P_SNP_countA);
-			P_SNP_countT       = str2num(P_SNP_countT);
-			P_SNP_countG       = str2num(P_SNP_countG);
-			P_SNP_countC       = str2num(P_SNP_countC);
-			P_count_vector     = [P_SNP_countA P_SNP_countT P_SNP_countG P_SNP_countC];
-			P_SNP_coordinate   = str2num(P_SNP_coordinate);
-			P_chr_lines_analyzed(P_chr_num) = P_chr_lines_analyzed(P_chr_num)+1;
+			P_SNP_countA                                                         = str2num(P_SNP_countA);
+			P_SNP_countT                                                         = str2num(P_SNP_countT);
+			P_SNP_countG                                                         = str2num(P_SNP_countG);
+			P_SNP_countC                                                         = str2num(P_SNP_countC);
+			P_count_vector                                                       = [P_SNP_countA P_SNP_countT P_SNP_countG P_SNP_countC];
+			P_SNP_coordinate                                                     = str2num(P_SNP_coordinate);
+			P_chr_lines_analyzed(P_chr_num)                                      = P_chr_lines_analyzed(P_chr_num)+1;
 			P_chr_SNP_data_positions{P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = P_SNP_coordinate;
 			P_chr_SNP_data_ratios   {P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = max(P_count_vector)/sum(P_count_vector);
 			P_chr_count             {P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = sum(P_count_vector);
@@ -105,16 +105,16 @@ for chrID = 1:length(chr_size)
 		C_chr_SNP_data_ratios{   chrID}(C_chr_SNP_data_positions{chrID} == 0) = [];
 		C_chr_count{             chrID}(C_chr_SNP_data_positions{chrID} == 0) = [];
 		C_chr_SNP_data_positions{chrID}(C_chr_SNP_data_positions{chrID} == 0) = [];
-		C_chr_SNP_data_ratios{   chrID}(C_chr_count{chrID} <= 20)             = [];
-		C_chr_SNP_data_positions{chrID}(C_chr_count{chrID} <= 20)             = [];
-		C_chr_count{             chrID}(C_chr_count{chrID} <= 20)             = [];
+		C_chr_SNP_data_ratios{   chrID}(C_chr_count{chrID} < 20)              = [];
+		C_chr_SNP_data_positions{chrID}(C_chr_count{chrID} < 20)              = [];
+		C_chr_count{             chrID}(C_chr_count{chrID} < 20)              = [];
 
 		P_chr_SNP_data_ratios{   chrID}(P_chr_SNP_data_positions{chrID} == 0) = [];
 		P_chr_count{             chrID}(P_chr_SNP_data_positions{chrID} == 0) = [];
 		P_chr_SNP_data_positions{chrID}(P_chr_SNP_data_positions{chrID} == 0) = [];
-		P_chr_SNP_data_ratios{   chrID}(P_chr_count{chrID} <= 20)             = [];
-		P_chr_SNP_data_positions{chrID}(P_chr_count{chrID} <= 20)             = [];
-		P_chr_count{             chrID}(P_chr_count{chrID} <= 20)             = [];
+		P_chr_SNP_data_ratios{   chrID}(P_chr_count{chrID} < 20)              = [];
+		P_chr_SNP_data_positions{chrID}(P_chr_count{chrID} < 20)              = [];
+		P_chr_count{             chrID}(P_chr_count{chrID} < 20)              = [];
 	end;
 end;
 

@@ -321,19 +321,32 @@ else
 
 	wait;
 fi
-if [ -f $projectDirectory"trimmed_SNPs_v4.parent.txt" ]
+if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
 then
+	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
+	echo "\t\tDone." >> $logName;
 	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
 	echo "\t\tDone." >> $logName;
-	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
 	echo "\t\tDone." >> $logName;
 else
 	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
-	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"          $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
+	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"            $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
+	echo "\t\tDone." >> $logName;
 
-	echo "\tPython : Simplify child putative_SNP list to contain only those simplified loci from the parent dataset." >> $logName;
-        python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
+	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+	echo "\t\tDone." >> $logName;
+
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py"   $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
+	echo "\t\tDone." >> $logName;
 fi
+
+
+
+
+
 
 echo "Pileup processing is complete." >> $condensedLog;
 echo "\n\tPileup processing complete.\n" >> $logName;

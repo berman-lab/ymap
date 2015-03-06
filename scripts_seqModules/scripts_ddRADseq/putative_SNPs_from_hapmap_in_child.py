@@ -1,7 +1,14 @@
+### 
+### Simplify child putative_SNP list to contain only those loci found in the hapmap.
+###
+### Uses genome definition files to only output data lines for chromosomes of interest.
+###
+
+
 def process_ChildLine(entry_line):
-	global chrNums
-	global chrName
-	global chrCount
+	global chrNums;
+	global chrName;
+	global chrCount;
 	# Process 'SNP_CNV_v1.txt' file line.
 	# example lines:
 	#       chromosome               coord   total   ref   A    T    G    C
@@ -9,75 +16,69 @@ def process_ChildLine(entry_line):
 	#       ChrA_C_glabrata_CBS138   46      37      T     0    37   0    0
 	#       ChrA_C_glabrata_CBS138   47      38      A     38   0    0    0
 	#       ChrA_C_glabrata_CBS138   48      39      A     39   0    0    0
-	child_line = string.strip(entry_line)
-	child_line = child_line.split('\t')
-	C_chr_name = child_line[0]   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
-	C_position = child_line[1]   # chr position of bp.      : 2286371
-	C_countTot = child_line[2]   # total count at bp.       : 101
-	C_refBase  = child_line[3]   # reference base at bp.    : T
-	C_countA   = child_line[4]   # count of A.              : 100
-	C_countT   = child_line[5]   # count of T.              : 0
-	C_countG   = child_line[6]   # count of G.              : 0
-	C_countC   = child_line[7]   # count of C.              : 1
+	child_line = string.strip(entry_line);
+	child_line = child_line.split('\t');
+	C_chr_name = child_line[0];   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
+	C_position = child_line[1];   # chr position of bp.      : 2286371
+	C_countTot = child_line[2];   # total count at bp.       : 101
+	C_refBase  = child_line[3];   # reference base at bp.    : T
+	C_countA   = child_line[4];   # count of A.              : 100
+	C_countT   = child_line[5];   # count of T.              : 0
+	C_countG   = child_line[6];   # count of G.              : 0
+	C_countC   = child_line[7];   # count of C.              : 1
 	# Determine chrID associated with chromosome name.
-	C_chr = 0
+	C_chr = 0;
 	for x in range(0,chrCount):
 		if (chrNums[x] != 0):
 			if chrName[x] == C_chr_name:
-				C_chr = x+1
-	C_chrName = chrName[C_chr-1]
-	return C_chr,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC
+				C_chr = x+1;
+	C_chrName = chrName[C_chr-1];
+	return C_chr,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC;
 
 def process_HapmapLine(entry_line):
-	global chrNums
-	global chrName
-	global chrCount
-	# Process 'putative_SNPs_v4.txt' file line.
+	global chrNums;
+	global chrName;
+	global chrCount;
+	# Process 'SNPdata_parent.txt' file line.
 	# example lines:
-	#       chromosome                   coord   HomA   HomB   null
+	#       chromosome                   coord   HomA   HomB   Status
 	#       Ca21chr1_C_albicans_SC5314   812     C      T      0
 	#       Ca21chr1_C_albicans_SC5314   816     T      C      0
 	#       Ca21chr1_C_albicans_SC5314   879     G      A      0
-	#       Ca21chr1_C_albicans_SC5314   920     C      T      0
-	hapmap_line = string.strip(entry_line)
-	hapmap_line = hapmap_line.split('\t')
-	H_chr_name  = hapmap_line[0]   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
-	H_position  = hapmap_line[1]   # chr position of bp.      : 2286371
+	hapmap_line = string.strip(entry_line);
+	hapmap_line = hapmap_line.split('\t');
+	H_chr_name  = hapmap_line[0];   # chromosome   : Ca21chrR_C_albicans_SC5314
+	H_position  = hapmap_line[1];   # coordinate   : 2286371
+	H_status    = hapmap_line[4];   # entry status : [0,1] = good; [10,11,12] = bad.
 	# Determine chrID associated with chromosome name.
-	H_chr = 0
+	H_chr = 0;
 	for x in range(0,chrCount):
 		if (chrNums[x] != 0):
 			if chrName[x] == H_chr_name:
-				H_chr = x+1
-	H_chrName = chrName[H_chr-1]
-	return H_chr,H_chrName,H_position
-
-###
-### Preprocesses parent 'putative_SNPs_v4' and child 'SNP_CNV_v1.txt' files to output child lines corresponding
-###     to putative_SNP lines near 1:1 in parent file into 'SNP_CNV_v1.txt' file.
-### Uses genome definition files to only output data lines for chromosomes of interest.
-###
+				H_chr = x+1;
+	H_chrName = chrName[H_chr-1];
+	return H_chr,H_chrName,H_position,H_status;
 
 import string, sys, time
 
-genome            = sys.argv[ 1]
-genomeUser        = sys.argv[ 2]
-projectChild      = sys.argv[ 3]
-projectChildUser  = sys.argv[ 4]
-hapmap            = sys.argv[ 5]
-HapmapUser        = sys.argv[ 6]
-main_dir          = sys.argv[ 7]
+genome             = sys.argv[ 1];
+genomeUser         = sys.argv[ 2];
+projectChild       = sys.argv[ 3];
+projectChildUser   = sys.argv[ 4];
+hapmap             = sys.argv[ 5];
+HapmapUser         = sys.argv[ 6];
+main_dir           = sys.argv[ 7];
 
-logName           = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt"
-inputFile_H       = main_dir+"users/"+HapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt"
-inputFile_C       = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt"
+logName            = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt";
+inputFile_H        = main_dir+"users/"+HapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
+inputFile_C        = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt";
 
-t0 = time.clock()
+t0 = time.clock();
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*====================================================================================*\n")
-	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py' |\n")
-	myfile.write("\t\t*------------------------------------------------------------------------------------*\n")
+	myfile.write("\t\t*====================================================================================*\n");
+	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py' |\n");
+	myfile.write("\t\t*------------------------------------------------------------------------------------*\n");
 
 
 #============================================================================================================
@@ -100,7 +101,7 @@ FastaName      = FastaName.replace(".fasta", "")
 # Process 'preprocessed_SNPs.txt' file for hapmap to determine initial SNP loci.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tProcessing parent 'putative_SNPs_v4' file -> het loci.\n")
+	myfile.write("\t\t|\tProcessing hapmap file -> het loci.\n")
 
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
@@ -190,60 +191,76 @@ for x in range(0,chrCount):
 	if (chrNums[x] != 0):
 		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
 
+
+# Process hapmap file, as well as "SNP_CNV_v1.txt" for the data from the child.
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tGathering data in child from loci defined in the hapmap.\n")
-
-# Open dataset 'putative_CNVs_v1.txt' file.
-data_H = open(inputFile_H,"r")
-
-print '### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, countA, countT, countG, countC]'
-
-# Process 'SNP_CNV_v1.txt' file for both parents, line by line... while checking for missing data.
-line_H = data_H.readline();
-error_endOfFile = False;
+        myfile.write("\t\t|\tLoading SNP coordinates from hapmap.\n");
+print '### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, countA, countT, countG, countC]';
+data_H      = open(inputFile_H,"r");
 old_H_chrID = 0;
-while (error_endOfFile == False):
-	# bypass comment lines.
-	while (line_H[:1] == '#'):
-		line_H = data_H.readline()
+hapmap_loci = [];
+for line_H in data_H:
+	if (len(line_H) > 0):
+		if (line_H[0] != "#"):
+			H_chrID,H_chrName,H_position,H_status = process_HapmapLine(line_H);
+			if H_chrID != old_H_chrID:
+				with open(logName, "a") as myfile:
+					myfile.write("\t\t|\t\tchr = "+str(H_chrName)+"\n");
+			if int(H_status) in [0, 1]:
+				if H_chrID > 0:
+					hapmap_loci.append([H_chrName,H_position]);
+			old_H_chrID = H_chrID;
+data_H.close();
 
-	H_chrID,H_chrName,H_position = process_HapmapLine(line_H)
-	if H_chrID != old_H_chrID:
-		with open(logName, "a") as myfile:
-			myfile.write("\t\t|\t\tchr = "+str(H_chrName)+"\n");
+# Process child dataset for matches to hapmap.
+with open(logName, "a") as myfile:
+	myfile.write("\t\t|\tScreening through child dataset for coordinates matching hapmap loci.");
+data_C           = open(inputFile_C,"r");
+old_C_chrID      = 0;
+child_SNPs       = [];
+child_SNPs_small = [];
+counter          = 0;
+for line_C in data_C:
+	if (len(line_C) > 0):
+		if (line_C[0] != "#"):
+			C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
+			if C_chrID != old_C_chrID:
+				with open(logName, "a") as myfile:
+					myfile.write("\n\t\t|\t\tchr = "+str(C_chrName)+"\n");
+				counter = 0;
+			if (C_chrID > 0) and (int(C_countA)+int(C_countT)+int(C_countG)+int(C_countC) >= 20):   # chromosome is identified and in use; read depth >= 20.
+				if [C_chrName,C_position] in hapmap_loci:
+					child_SNPs.append([C_chrName,C_position,C_countA,C_countT,C_countG,C_countC]);
+					child_SNPs_small.append([C_chrName,C_position]);
+				#	with open(logName, "a") as myfile:
+				#		myfile.write("\t\t|\t\tline_C  = '"+line_C.strip()+"'\n");
+					if counter == 0:
+						with open(logName, "a") as myfile:
+							myfile.write("\t\t|\t\t");
+					if counter%10 == 0:
+						with open(logName, "a") as myfile:
+							myfile.write(".");
+					if counter == 800:
+						with open(logName, "a") as myfile:
+							myfile.write("\n\t\t|\t\t");
+						counter = 0;
+					counter += 1;
+			old_C_chrID = C_chrID;
+data_C.close();
 
-	data_C = open(inputFile_C,"r")
-	line_C = data_C.readline()
-	error_endOfFile = False
-	while (error_endOfFile == False):
-		C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
-		if (C_chrID == H_chrID) and (C_position == H_position):
-			print C_chrName+"\t"+str(C_position)+"\t"+str(C_countA)+"\t"+str(C_countT)+"\t"+str(C_countG)+"\t"+str(C_countC)
-			data_C.close()
-			break;
-		line_C = data_C.readline()
-		if not line_C: # EOF 2
-			error_endOfFile = True
-			data_C.close()
-			break;
-	if (error_endOfFile == True):
-		# data line corresponding to parent SNP was not found in child "SNP_CNV_v1.txt" file.
-		print H_chrName+"\t"+str(H_position)+"\t0\t0\t0\t0"
-	data_C.close()
-
-	error_endOfFile = False
-	line_H = data_H.readline()
-	if not line_H: # EOF 1
-		error_endOfFile = True
-		break
-	old_H_chrID = H_chrID;
-data_H.close()
+# Output child lines from hapmap positions.
+with open(logName, "a") as myfile:
+	myfile.write("\n\t\t|\tOutputting lines from child dataset that match coordinates of hapmap loci.\n");
+for SNP in hapmap_loci:
+	if SNP in child_SNPs_small:
+		SNP_data = child_SNPs[child_SNPs_small.index(SNP)];
+		print SNP[0]+"\t"+SNP[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5];
 
 #------------------------------------------------------------------------------------------------------------
 # End of main code block.
 #============================================================================================================
 
-print '### End of preprocessed parental SNP, child SNP data.'
+print '### End of preprocessed hapmap loci vs. child SNP data.'
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")

@@ -96,7 +96,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.

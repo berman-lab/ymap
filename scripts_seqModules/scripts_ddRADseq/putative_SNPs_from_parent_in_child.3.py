@@ -67,8 +67,6 @@ projectChild       = sys.argv[3];
 projectChildUser   = sys.argv[4];
 main_dir           = sys.argv[5];
 
-# Call example:
-#    python putative_SNPs_from_parent_in_child.3.py C_albicans_SC5314_vA21-s02-m09-r07 default test_ddRADseq_testnew darren1 /var/www/html/Ymap/
 
 
 logName            = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt";
