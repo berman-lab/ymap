@@ -43,5 +43,9 @@ allelic_ratios_ddRADseq_B(main_dir,user,genomeUser,project,parent,hapmap,genome,
 allelic_ratios_ddRADseq_C(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 
+% Alternate presentation of SNP data, showing allelic ratios of all data : standard-plot with RedGreen alternate color scheme.
+allelic_ratios_ddRADseq_D(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+
+
 fprintf('*--- End of ''analyze_SNPs.m'' was reached ---*\n');
 end

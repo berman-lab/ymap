@@ -27,6 +27,8 @@ fprintf('\n');
 
 CNV_SNP_hapmap_v5_RADseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
+CNV_SNP_hapmap_v5_RADseq_RedGreen(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+
 
 fprintf('*--- End of ''analyze_CNV_SNPs_RADseq.m'' was reached ---*\n');
 % log file end, for in-process analysis
