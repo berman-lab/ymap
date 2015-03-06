@@ -451,8 +451,14 @@ end;
 % Load 'Common_CNV.mat' file containing CNV estimates per standard genome bin.
 %-------------------------------------------------------------------------------------------------
 fprintf('\nLoading "Common_CNV" data file for ddRADseq project.');
-load([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
+load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+
+
+%%================================================================================================
+% Save workspace variables for use in "allelic_ratios_ddRADseq_D.m"
+%-------------------------------------------------------------------------------------------------
+save([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 
 
 %%================================================================================================

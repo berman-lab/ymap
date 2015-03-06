@@ -47,7 +47,7 @@ else
 	%% =========================================================================================
 	% Define colors for figure generation.
 	%-------------------------------------------------------------------------------------------
-	%d efine colors for colorBars plot
+	% define colors for colorBars plot
 	colorNoData     = [1.0   1.0   1.0  ]; %used when no data is available for the bin.
 	colorInit       = [0.5   0.5   0.5  ]; %external; used in blending at ends of chr.
 	% The 'project' is different than the 'hapmap'('parent').

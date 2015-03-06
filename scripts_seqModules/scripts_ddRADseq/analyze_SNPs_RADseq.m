@@ -31,7 +31,7 @@ fclose(data);
 % LOH_hapmap_v2(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 
-% Adds processing of preprocessed_SNPs file columns for data coordinates.
+% Adds processing of preprocessed_SNPs file columns for data coordinates : not useful plot, but precalculations are used.
 LOH_hapmap_v3_ddRADseq(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 

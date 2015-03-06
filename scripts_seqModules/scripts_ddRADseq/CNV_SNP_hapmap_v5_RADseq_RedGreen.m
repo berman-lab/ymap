@@ -185,14 +185,13 @@ largestChr = find(chr_width == max(chr_width));
 %%================================================================================================
 % Load SNP/LOH data.
 %-------------------------------------------------------------------------------------------------
-LOH_file = [projectDir 'SNP_' SNP_verString '.reduced.mat'];
+LOH_file = [projectDir 'SNP_' SNP_verString '.reduced_RedGreen.mat'];
 if (exist(LOH_file,'file') == 2)
 	load(LOH_file);                                   % 'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC', 'chr_SNPdata_colorsP'
 else
 	load([projectDir 'SNP_' SNP_verString '.mat']);   % 'chr_SNPdata'
 	new_bases_per_bin = bases_per_bin;
 end;
-
 
 %% =========================================================================================
 % Test adjacent segments for no change in copy number estimate.
@@ -800,14 +799,14 @@ end;
 %==========================================================================
 %% Save figures.
 set(Main_fig,'PaperPosition',[0 0 8 6]*2);
-saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.1.eps'], 'epsc');
-saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.1.png'], 'png');
+saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.eps'], 'epsc');
+saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.png'], 'png');
 delete(Main_fig);
 
 if (Linear_display == true)
 	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
-	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.eps'], 'epsc');
-	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.png'], 'png');
+	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.eps'], 'epsc');
+	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.png'], 'png');
 	delete(Linear_fig);
 end;
 
