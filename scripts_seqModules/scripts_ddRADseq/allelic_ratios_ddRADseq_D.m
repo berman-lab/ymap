@@ -223,7 +223,6 @@ else
 
 	save([projectDir 'SNP_' SNP_verString '.reduced_RedGreen.mat'],'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsP');
 
-
 	%%================================================================================================
 	% Make figures
 	%-------------------------------------------------------------------------------------------------
@@ -466,13 +465,13 @@ else
 
 	%% Save figures.
 	set(fig,'PaperPosition',[0 0 8 6]*2);
-	saveas(fig,        [projectDir 'fig.allelic_ratio-map.d1.eps'], 'epsc');
-	saveas(fig,        [projectDir 'fig.allelic_ratio-map.d1.png'], 'png');
+	saveas(fig,        [projectDir 'fig.allelic_ratio-map.RedGreen.c1.eps'], 'epsc');
+	saveas(fig,        [projectDir 'fig.allelic_ratio-map.RedGreen.c1.png'], 'png');
 	delete(fig);
 
 	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
-	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.d2.eps'], 'epsc');
-	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.d2.png'], 'png');
+	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.RedGreen.c2.eps'], 'epsc');
+	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.RedGreen.c2.png'], 'png');
 	delete(Linear_fig);
 end;
 
