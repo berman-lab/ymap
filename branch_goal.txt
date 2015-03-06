@@ -1,0 +1,35 @@
+Branch: Feature__Install_diploid_reference_genome
+
+The goal of this branch is to allow the user to install a diploid/phased genome.
+
+The intended example is Candida albicans Assembly 22, which is defined by a FASTA file with 17 entries.
+	>Ca22chr1A_C_albicans_SC5314 (3188363 nucleotides)
+	>Ca22chr1B_C_albicans_SC5314 (3188408 nucleotides)
+	>Ca22chr2A_C_albicans_SC5314 (2231927 nucleotides)
+	>Ca22chr2B_C_albicans_SC5314 (2231882 nucleotides)
+	>Ca22chr3A_C_albicans_SC5314 (1799283 nucleotides)
+	>Ca22chr3B_C_albicans_SC5314 (1799299 nucleotides)
+	>Ca22chr4A_C_albicans_SC5314 (1603308 nucleotides)
+	>Ca22chr4B_C_albicans_SC5314 (1603388 nucleotides)
+	>Ca22chr5A_C_albicans_SC5314 (1190869 nucleotides)
+	>Ca22chr5B_C_albicans_SC5314 (1190984 nucleotides)
+	>Ca22chr6A_C_albicans_SC5314 (1033476 nucleotides)
+	>Ca22chr6B_C_albicans_SC5314 (1033443 nucleotides)
+	>Ca22chr7A_C_albicans_SC5314 (949590 nucleotides)
+	>Ca22chr7B_C_albicans_SC5314 (949612 nucleotides)
+	>Ca22chrM_C_albicans_SC5314 (40420 nucleotides)
+	>Ca22chrRA_C_albicans_SC5314 (2286310 nucleotides)
+	>Ca22chrRB_C_albicans_SC5314 (2285733 nucleotides)
+
+In addition to current features, the user-interface should allow:
+	1) Assignment of homolog pairs.
+	2) Designation of homolog identity as 'a'/'b'.
+
+The pipeline should then:
+	1) Synthesize haploid chromosome sequences.
+		- Deal with differences in sequence length between homologs.
+		- Using a mutual alignment tool?
+	2) Infer haplotype map from differences between aligned homolog sequences.
+		- sequences found in only one homolog will be homozygous, so not in hapmap.
+	3) Generate hapmap in internal hapmap file format.
+
