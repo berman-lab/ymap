@@ -346,7 +346,7 @@ if (useHapmap)
 				end;
 
 				% reference : data reduction by averaging colors within each bin.
-				for i = 1:length(C_chr_count{chr})
+				for i = 1:length(P_chr_count{chr})
 					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
 					chr_SNPdata{chr,4}(pos) = P_chr_SNP_data_ratios{ chr}(i);
 					baseCall                = P_chr_baseCall{        chr}{i};
@@ -373,7 +373,7 @@ if (useHapmap)
 					chr_SNPdata_colorsP{chr,3}(pos) = colorList(3);
 					chr_SNPdata_countP{ chr,1}(pos) = chr_SNPdata_countP{chr,1}(pos)+1;
 				end;
-				for i = 1:length(C_chr_count{chr})
+				for i = 1:length(P_chr_count{chr})
 					if (chr_SNPdata_countP{chr,1}(pos) > 0)
 						chr_SNPdata_colorsP{chr,1}(pos) = chr_SNPdata_colorsP{chr,1}(pos)/chr_SNPdata_countP{chr,1}(pos);
 						chr_SNPdata_colorsP{chr,2}(pos) = chr_SNPdata_colorsP{chr,2}(pos)/chr_SNPdata_countP{chr,1}(pos);
