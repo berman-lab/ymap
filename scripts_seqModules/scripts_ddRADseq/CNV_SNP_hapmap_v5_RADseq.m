@@ -187,7 +187,7 @@ largestChr = find(chr_width == max(chr_width));
 %-------------------------------------------------------------------------------------------------
 LOH_file = [projectDir 'SNP_' SNP_verString '.reduced.mat'];
 if (exist(LOH_file,'file') == 2)
-	load(LOH_file);                                   % 'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC', 'chr_SNPdata_colorsC_alternate'
+	load(LOH_file);                                   % 'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC', 'chr_SNPdata_colorsP'
 else
 	load([projectDir 'SNP_' SNP_verString '.mat']);   % 'chr_SNPdata'
 	new_bases_per_bin = bases_per_bin;
@@ -333,61 +333,24 @@ for chr = 1:num_chrs
 
 		% standard : draw colorbars.
 		if (useHapmap)
-			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-			dataY_1    = chr_SNPdata{chr,2};
-			dataY_2    = chr_SNPdata{chr,4};
-			for i = 1:length(dataX)
-				datumX    = dataX(i);
-				datumY_1a = dataY_1(i)*maxY;
-				datumY_1b = maxY - dataY_1(i)*maxY;
-				datumY_2a = dataY_2(i)*maxY;
-				datumY_2b = maxY - dataY_2(i)*maxY;
-
-				% if (datumY_1b > 0)
-				%       plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-				% end;
-
-				% plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-
-				% plot([datumX datumX], [maxY datumY_1a],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-				% plot([datumX datumX], [0    datumY_2b],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-
-				% white_fraction = max(1,((dataY_1(i)-0.5)*2)*2);
-				% color_fraction = 1-white_fraction;
-				% colorR = chr_SNPdata_colorsC{chr,1}(i)*color_fraction + 1*white_fraction;
-				% colorG = chr_SNPdata_colorsC{chr,2}(i)*color_fraction + 1*white_fraction;
-				% colorB = chr_SNPdata_colorsC{chr,3}(i)*color_fraction + 1*white_fraction;
-				% plot([datumX datumX], [0 maxY],'Color',[colorR, colorG, colorB]);
-
-				if (datumY_2b > 0)
-					colorR = chr_SNPdata_colorsC{chr,1}(i);
-					colorG = chr_SNPdata_colorsC{chr,2}(i);
-					colorB = chr_SNPdata_colorsC{chr,3}(i);
-					plot([datumX datumX], [0 maxY],'Color',[colorR colorG colorB]);
+			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				colorR   = chr_SNPdata_colorsC{chr,1}(i);
+				colorG   = chr_SNPdata_colorsC{chr,2}(i);
+				colorB   = chr_SNPdata_colorsC{chr,3}(i);
+				if (colorR < 1) || (colorG < 1) || (colorB < 1)
+					plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 				end;
 			end;
 		else
-			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-			dataY_C    = chr_SNPdata{chr,2};
-			dataY_P    = chr_SNPdata{chr,4};
-			fprintf(['length(dataX)   = ' num2str(length(dataX)) '\n']);
-			fprintf(['length(dataY_C) = ' num2str(length(dataY_C)) '\n']);
-			fprintf(['length(dataY_P) = ' num2str(length(dataY_P)) '\n']);
-			for i = 1:length(dataX)
+			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
 				if (useParent)
-					datumX    = dataX(i)/2;
-					datumY_C  = dataY_C(i)*maxY;
-					datumY_P1 = dataY_P(i)*maxY;
-					datumY_P2 = maxY - dataY_P(i)*maxY;
-					plot([datumX datumX], [maxY datumY_C ],'Color',[1.0 0.0 0.0]);
-					plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
+					plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 				else
-					datumX    = dataX(i)/2;
-					datumY_C  = dataY_C(i)*maxY;
-					datumY_P1 = dataY_P(i)*maxY;
-					datumY_P2 = maxY - dataY_P(i)*maxY;
-					plot([datumX datumX], [maxY datumY_P1],'Color',[1/3 1/3 1/3]);
-					plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
+					plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 				end;
 			end;
 		end;
@@ -657,61 +620,24 @@ for chr = 1:num_chrs
 
 			% linear : draw colorbars.
 			if (useHapmap)
-				dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-				dataY_1    = chr_SNPdata{chr,2};
-				dataY_2    = chr_SNPdata{chr,4};
-				for i = 1:length(dataX)
-					datumX    = dataX(i);
-					datumY_1a = dataY_1(i)*maxY;
-					datumY_1b = maxY - dataY_1(i)*maxY;
-					datumY_2a = dataY_2(i)*maxY;
-					datumY_2b = maxY - dataY_2(i)*maxY;
-
-					% if (datumY_1b > 0)
-					% 	plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-					% end;
-
-					% plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-
-					% plot([datumX datumX], [maxY datumY_1a],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-					% plot([datumX datumX], [0    datumY_2b],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-
-					% white_fraction = max(1,((dataY_1(i)-0.5)*2)*2);
-					% color_fraction = 1-white_fraction;
-					% colorR = chr_SNPdata_colorsC{chr,1}(i)*color_fraction + 1*white_fraction;
-					% colorG = chr_SNPdata_colorsC{chr,2}(i)*color_fraction + 1*white_fraction;
-					% colorB = chr_SNPdata_colorsC{chr,3}(i)*color_fraction + 1*white_fraction;
-					% plot([datumX datumX], [0 maxY],'Color',[colorR, colorG, colorB]);
-
-					if (datumY_2b > 0)
-						colorR = chr_SNPdata_colorsC{chr,1}(i);
-						colorG = chr_SNPdata_colorsC{chr,2}(i);
-						colorB = chr_SNPdata_colorsC{chr,3}(i);
-						plot([datumX datumX], [0 maxY],'Color',[colorR colorG colorB]);
+				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					colorR   = chr_SNPdata_colorsC{chr,1}(i);
+					colorG   = chr_SNPdata_colorsC{chr,2}(i);
+					colorB   = chr_SNPdata_colorsC{chr,3}(i);
+					if (colorR < 1) || (colorG < 1) || (colorB < 1)
+						plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
 			else
-				dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-				dataY_C    = chr_SNPdata{chr,2};
-				dataY_P    = chr_SNPdata{chr,4};
-				fprintf(['length(dataX)   = ' num2str(length(dataX)) '\n']);
-				fprintf(['length(dataY_C) = ' num2str(length(dataY_C)) '\n']);
-				fprintf(['length(dataY_P) = ' num2str(length(dataY_P)) '\n']);
-				for i = 1:length(dataX)
+				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
 					if (useParent)
-						datumX    = dataX(i)/2;
-						datumY_C  = dataY_C(i)*maxY;
-						datumY_P1 = dataY_P(i)*maxY;
-						datumY_P2 = maxY - dataY_P(i)*maxY;
-						plot([datumX datumX], [maxY datumY_C ],'Color',[1.0 0.0 0.0]);
-						plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
+						plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+						plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 					else
-						datumX    = dataX(i)/2;
-						datumY_C  = dataY_C(i)*maxY;
-						datumY_P1 = dataY_P(i)*maxY;
-						datumY_P2 = maxY - dataY_P(i)*maxY;
-						plot([datumX datumX], [maxY datumY_P1],'Color',[1/3 1/3 1/3]);
-						plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
+						plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+						plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 					end;
 				end;
 			end;

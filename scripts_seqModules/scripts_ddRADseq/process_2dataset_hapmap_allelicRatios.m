@@ -4,9 +4,17 @@ function [] = process_2dataset_hapmap_allelicRatios(project1dir, project2dir, ha
 %%============================================================================================================
 % Define files for processing.
 %-------------------------------------------------------------------------------------------------------------
-C_datafile = [project1dir 'trimmed_SNPs_v4.txt'       ]
-P_datafile = [project1dir 'trimmed_SNPs_v4.parent.txt']
-H_datafile = [hapmapDir   'SNPdata_parent.txt'        ]
+%	% Child data at loci where parent has allelic ratio on range [0.25-0.75].
+%	C_datafile = [project1dir 'trimmed_SNPs_v4.txt'       ];
+
+% Child data at loci from hapmap.
+C_datafile = [project1dir 'trimmed_SNPs_v5.txt'       ];
+
+% Parent data at loci where allelic ratio is on range [0.25-0.75].
+P_datafile = [project1dir 'trimmed_SNPs_v4.parent.txt'];
+
+% Hapmap dataset.
+H_datafile = [hapmapDir   'SNPdata_parent.txt'        ];
 
 
 %%============================================================================================================
@@ -164,6 +172,7 @@ while not (feof(C_data))
 end;
 fclose(C_data);
 
+
 %%============================================================================================================
 % Process hapmap dataset.
 %-------------------------------------------------------------------------------------------------------------
@@ -232,9 +241,9 @@ end;
 
 
 %%============================================================================================================
-% Determine hapmap information for dataset values.
+% Determine child dataset values at hapmap loci.
 %-------------------------------------------------------------------------------------------------------------
-fprintf('Determine hapmap information for child dataset values.\n');
+fprintf('Determine child dataset values at hapmap loci.\n');
 start = 1;
 for chrID = 1:length(chr_size)
 	if (chr_in_use(chrID) == 1)
@@ -250,14 +259,12 @@ for chrID = 1:length(chr_size)
 				end;
 			end;
 			if (found == true)
-				fprintf(['\tchr' num2str(chrID) ':' num2str(pos) ' +\n']);
 				C_chr_SNP_homologA{    chrID}{projectDatumID} = H_chr_SNP_alleleA{       chrID}{hapmapDatumID};;
 				C_chr_SNP_homologB{    chrID}{projectDatumID} = H_chr_SNP_alleleB{       chrID}{hapmapDatumID};;
 				C_chr_SNP_flipHomologs{chrID}(projectDatumID) = H_chr_SNP_needToFlip{    chrID}(hapmapDatumID);;
 				C_chr_SNP_keep{        chrID}(projectDatumID) = 1;
 				start = projectDatumID;
 			else
-				fprintf(['\tchr' num2str(chrID) ':' num2str(pos) '-\n']);
 				C_chr_SNP_keep{        chrID}(projectDatumID) = 0;
 				start = 1;
 			end;
@@ -274,7 +281,12 @@ for chrID = 1:length(chr_size)
 		C_chr_SNP_keep{          chrID}(C_chr_SNP_keep{chrID} == 0) = [];
 	end;
 end;
-fprintf('Determine hapmap information for parent dataset values.\n');
+
+
+%%============================================================================================================
+% Determine parent dataset values at hapmap loci.
+%-------------------------------------------------------------------------------------------------------------
+fprintf('Determine parent dataset values at hapmap loci.\n');
 start = 1;
 for chrID = 1:length(chr_size)
 	if (chr_in_use(chrID) == 1)
@@ -290,14 +302,12 @@ for chrID = 1:length(chr_size)
 				end;
 			end;
 			if (found == true)
-				fprintf(['\tchr' num2str(chrID) ':' num2str(pos) ' +\n']);
 				P_chr_SNP_homologA{    chrID}{projectDatumID} = H_chr_SNP_alleleA{       chrID}{hapmapDatumID};;
 				P_chr_SNP_homologB{    chrID}{projectDatumID} = H_chr_SNP_alleleB{       chrID}{hapmapDatumID};;
 				P_chr_SNP_flipHomologs{chrID}(projectDatumID) = H_chr_SNP_needToFlip{    chrID}(hapmapDatumID);;
 				P_chr_SNP_keep{        chrID}(projectDatumID) = 1;
 				start = projectDatumID;
 			else
-				% fprintf(['\tchr' num2str(chrID) ':' num2str(pos) '-\n']);
 				P_chr_SNP_keep{        chrID}(projectDatumID) = 0;
 				start = 1;
 			end;

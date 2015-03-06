@@ -35,12 +35,12 @@ fclose(data);
 LOH_hapmap_v3_ddRADseq(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 
-% Alternate presentation of SNP data, showing allelic ratios of all data : LAVA-PLOT
-allelic_ratios_ddRADseq_2(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+% Alternate presentation of SNP data, showing allelic ratios of all data : fire-plot
+allelic_ratios_ddRADseq_A(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 
 % Alternate presentation of SNP data, showing allelic ratios of all data : ratio-histogram-plot and standard-plot
-allelic_ratios_ddRADseq_3(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+allelic_ratios_ddRADseq_B(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 
 fprintf('*--- End of ''analyze_SNPs.m'' was reached ---*\n');
