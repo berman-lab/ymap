@@ -452,20 +452,46 @@ if (performEndbiasCorrection)
 			chr_EndDistanceData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
 		end;
 		for chr = 1:num_chrs
+			chr_size                                   = ceil(chr_size(chr)/bases_per_bin);
 			for position = 1:ceil(chr_size(chr)/bases_per_bin)
-				frag_size                          = ceil(chr_size(chr)/bases_per_bin);
-				frag_center                        = position;
-				frag_nearestChrEnd                 = min(frag_center, frag_size - frag_center);
-				chr_EndDistanceData{chr}(position) = frag_nearestChrEnd;
+				bin_center                         = position;
+				bin_nearestChrEnd                  = min(bin_center, chr_size - bin_center);
+				chr_EndDistanceData{chr}(position) = bin_nearestChrEnd;
 			end;
 		end;
 
-		% Gather CGH and EndDistance data for LOWESS fitting.
+		% Extend EndDistance data for shorter chromosomes to length of the midpoint of the longest chromosome.
+		chr_EndDistanceData_extended = chr_EndDistanceData;
+		longest_chr_bin_count = ceil(chr_size(1)/bases_per_bin);   % chr1 is longest chromosome.
+		for chr = 2:num_chrs
+			chr_bin_count = ceil(chr_size(chr)/bases_per_bin);
+			for pos = 1:(longest_chr_bin_count - chr_bin_count)
+				bin_center                               = pos + chr_bin_count/2;
+				bin_nearestChrEnd                        = min(bin_center, largest_chr_bin_count - bin_center);
+				chr_EndDistanceData_extended{chr}(end+1) = bin_nearestChrEnd;
+			end;
+		end;
+
+		% Extend CGH data for shorter chromosomes to length of the midpoint of the longest chromosome.
+		chr_CGHdata_extended = [];
+		for chr = 1:num_chrs
+			chr_CGHdata_extended{chr} = chr_CGHdata{chr,2};
+		end;
+		for chr = 2:num_chrs
+			chr_bin_count     = ceil(chr_size(chr)/bases_per_bin);
+			chr_middle_bin    = round(chr_size/2);
+			center_median_CGH = mean(chr_CGHdata_extended{chr}((chr_middle_bin-50):(chr_middle_bin+50)));
+			for pos = 1:(longest_chr_bin_count - chr_bin_count)
+				chr_CGHdata_extended{chr}(end+1) = center_median_CGH;
+			end;
+		end;
+
+		% Gather CNV and EndDistance data for LOWESS fitting.
 		CGHdata_all         = [];
 		EndDistanceData_all = [];
 		for chr = 1:num_chrs
-			CGHdata_all         = [CGHdata_all         chr_CGHdata{chr,2}      ];
-			EndDistanceData_all = [EndDistanceData_all chr_EndDistanceData{chr}];
+			CGHdata_all         = [CGHdata_all         chr_CGHdata_extended{chr}        ];
+			EndDistanceData_all = [EndDistanceData_all chr_EndDistanceData_extended{chr}];
 		end;
 
 		% Perform LOWESS fitting.
