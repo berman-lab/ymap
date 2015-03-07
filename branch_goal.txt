@@ -1,0 +1,7 @@
+Branch: Fix__Chromosome-end-bias_large-chr-effect
+
+The chr-end bias correction code introduces an error in condition where larger chromosomes have increased copy number.
+The LOWESS normalization curve removes true increase in copy number found at the center of large chromosomes, because there is no smaller chromosome data to balance it.
+Two methods of fixing:
+	1) Normalization is only from the end of the chromosomes to the half-width of smallest chromosome.
+	2) Data used for normalization is extended for smaller chromosomes to half-width of largest chromosome, using median value of data from middle of each chr.
