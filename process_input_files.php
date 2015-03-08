@@ -99,7 +99,6 @@ if (strcmp($ext,"zip") == 0) {
 		// For example:
 		//    [0] = 'test';
 		//    [1] = 'fastq';
-		$oldName         = str_replace('.'.end($fileName_parts),'',$oldName);
 		$ext_new         = end($fileName_parts);
 		fwrite($logOutput, "\t\t| Original file name = '".$oldName."'.\n");
 		fwrite($logOutput, "\t\t|    File extension  = '".$ext_new."'\n");
@@ -137,12 +136,15 @@ if (strcmp($ext,"zip") == 0) {
 		}
 		fwrite($logOutput, "\t\t| Original file name         = '".$oldName."'.\n");
 		fwrite($logOutput, "\t\t|    Inferred file extension = '".$ext_new."'\n");
+		$oldName = $oldName.".".$ext_new;
+		fwrite($logOutput, "\t\t|    New file name           = '".$oldName."'\n");
 	}
-	$name_new    = $oldName;
 	// rename decompressed file.
 	$rename      = "datafile_".$key.".".$ext_new;
 	chdir($projectPath);
-	rename($name_new,$rename);
+	fwrite($logOutput, "\t\t| oldName = '".$oldName."'\n");
+	fwrite($logOutput, "\t\t| rename  = '".$rename."'\n");
+	rename($oldName,$rename);
 	chdir($currentDir);
 	$name_new    = $rename;
 } else {
