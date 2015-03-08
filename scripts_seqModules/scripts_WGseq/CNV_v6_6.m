@@ -256,18 +256,18 @@ if (performRepetbiasCorrection)
 		end;
 	end;
 	while not (feof(standard_bins_repetitiveness_fid))
-	    dataLine = fgetl(standard_bins_repetitiveness_fid);
-	    if (length(dataLine) > 0)
-	        if (dataLine(1) ~= '#')
-	            % The number of valid lines found so far...  the number of usable standard fragments with data so far.
-	            chr            = str2num(sscanf(dataLine, '%s',1));
-	            fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-	            fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
-	            repetitiveness = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      repetitiveness(1) = []; end;    repetitiveness = str2num(repetitiveness);
+		dataLine = fgetl(standard_bins_repetitiveness_fid);
+		if (length(dataLine) > 0)
+			if (dataLine(1) ~= '#')
+				% The number of valid lines found so far...  the number of usable standard fragments with data so far.
+				chr            = str2num(sscanf(dataLine, '%s',1));
+				fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
+				fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
+				repetitiveness = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      repetitiveness(1) = []; end;    repetitiveness = str2num(repetitiveness);
 				position       = ceil(fragment_start/bases_per_bin);
-	            chr_repetitivenessData{chr}(position) = repetitiveness;
-	        end;
-	    end;
+				chr_repetitivenessData{chr}(position) = repetitiveness;
+			end;
+		end;
 	end;
 	fclose(standard_bins_repetitiveness_fid);
 end;
@@ -285,11 +285,22 @@ if (performEndbiasCorrection)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			for position = 1:ceil(chr_size(chr)/bases_per_bin)
-				frag_size                         = ceil(chr_size(chr)/bases_per_bin);
-				frag_center                       = position;
-				frag_nearestChrEnd                = min(frag_center, frag_size - frag_center);
+				frag_size                          = ceil(chr_size(chr)/bases_per_bin);
+				frag_center                        = position;
+				frag_nearestChrEnd                 = min(frag_center, frag_size - frag_center);
 				chr_EndDistanceData{chr}(position) = frag_nearestChrEnd;
 			end;
+		end;
+	end;
+
+	% Extend EndDistance data for shorter chromosomes to length of the midpoint of the longest chromosome.
+	chr_EndDistanceData_extended = chr_EndDistanceData;
+	largest_chr_bin_count        = ceil(max(chr_size)/bases_per_bin);
+	for chr = 1:num_chrs
+		chr_bin_count = ceil(chr_size(chr)/bases_per_bin);
+		for pos = 1:(largest_chr_bin_count - chr_bin_count)
+			bin_center                               = pos + chr_bin_count/2;
+			chr_EndDistanceData_extended{chr}(end+1) = min(bin_center, largest_chr_bin_count - bin_center);
 		end;
 	end;
 end;
@@ -299,54 +310,92 @@ end;
 % Perform bias corrections.
 %-------------------------------------------------------------------------------------------------
 if (performEndbiasCorrection)
-    % Gather data for LOWESS fitting 3 : Chr end bias.
-    CGHdata_all_n1         = [];
-    GCratioData_all        = [];
-    chr_EndDistanceData_all = [];
-    for chr = 1:num_chrs
-        if (chr_in_use(chr) == 1)
-            CGHdata_all_n1          = [CGHdata_all_n1          CNVplot{chr}                ];
-            GCratioData_all         = [GCratioData_all         chr_GCratioData{chr}        ];
-            chr_EndDistanceData_all = [chr_EndDistanceData_all chr_EndDistanceData{chr}    ];
-        end;
-    end;
-    % Clean up data by:
-    %    deleting GC ratio data near zero.
-    %    deleting CGH data beyond 3* the median value.  (rDNA, etc.)
+	% Extend CGH data for shorter chromosomes to length of the midpoint of the longest chromosome.
+	chr_CGHdata_extended  = [];
+	largest_chr_bin_count = ceil(max(chr_size)/bases_per_bin);
+	for chr = 1:num_chrs
+		chr_CGHdata_extended{chr} = CNVplot{chr};
+	end;
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			chr_bin_count     = ceil(chr_size(chr)/bases_per_bin);
+			fprintf(['chr_bin_count(' num2str(chr) ') = ' num2str(chr_bin_count) '\n']);
+			chr_middle_bin    = round(chr_bin_count/2);
+			fprintf(['chr_middle_bin   = ' num2str(chr_middle_bin) '\n']);
+			center_median_CGH = mean(chr_CGHdata_extended{chr}((chr_middle_bin-20):(chr_middle_bin+20)));
+			for pos = 1:(largest_chr_bin_count - chr_bin_count)
+				chr_CGHdata_extended{chr}(end+1) = center_median_CGH;
+			end;
+		end;
+	end;
+
+	% Gather data for LOWESS fitting 3 : Chr end bias.
+	CGHdata_all_n1                   = [];
+	GCratioData_all                  = [];
+	chr_EndDistanceData_all          = [];
+	chr_CGHdata_extended_all         = [];
+	chr_EndDistanceData_extended_all = [];
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			CGHdata_all_n1                   = [CGHdata_all_n1                   CNVplot{chr}                     ];
+			GCratioData_all                  = [GCratioData_all                  chr_GCratioData{chr}             ];
+			chr_EndDistanceData_all          = [chr_EndDistanceData_all          chr_EndDistanceData{chr}         ];
+
+			chr_CGHdata_extended_all         = [chr_CGHdata_extended_all         chr_CGHdata_extended{chr}        ];
+			chr_EndDistanceData_extended_all = [chr_EndDistanceData_extended_all chr_EndDistanceData_extended{chr}];
+		end;
+	end;
+
+	% Clean up data by:
+	%    deleting GC ratio data near zero.
+	%    deleting CGH data beyond 3* the median value.  (rDNA, etc.)
 	CGHdata_clean                                        = CGHdata_all_n1;
-    GCratioData_clean                                    = GCratioData_all;
-    chr_EndDistanceData_clean                            = chr_EndDistanceData_all;
-    chr_EndDistanceData_clean(GCratioData_clean <  0.01) = [];
-    CGHdata_clean(            GCratioData_clean <  0.01) = [];
-    GCratioData_clean(        GCratioData_clean <  0.01) = [];
-    chr_EndDistanceData_clean(CGHdata_clean     >  6   ) = [];
-    GCratioData_clean(        CGHdata_clean     >  6   ) = [];
-    CGHdata_clean(            CGHdata_clean     >  6   ) = [];
-    chr_EndDistanceData_clean(CGHdata_clean     == 0   ) = [];
-    GCratioData_clean(        CGHdata_clean     == 0   ) = [];
-    CGHdata_clean(            CGHdata_clean     == 0   ) = [];
-    % Perform LOWESS fitting : GC_bias.
-    rawData_X1     = chr_EndDistanceData_clean;
-    rawData_Y1     = CGHdata_clean;
-    fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
-    [fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1,10, 0);
-    % Correct data using normalization to LOWESS fitting
-    Y_target = 1;
-    for chr = 1:num_chrs
-        if (chr_in_use(chr) == 1)
-            fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-            rawData_chr_X1{chr}        = chr_EndDistanceData{chr};
-            rawData_chr_Y1{chr}        = CNVplot{chr};
-            fitData_chr_Y1{chr}        = interp1(fitX1,fitY1,rawData_chr_X1{chr},'spline');
+	GCratioData_clean                                    = GCratioData_all;
+	chr_EndDistanceData_clean                            = chr_EndDistanceData_all;
+	chr_CGHdata_extended_clean                           = chr_CGHdata_extended_all;
+	chr_EndDistanceData_extended_clean                   = chr_EndDistanceData_extended_all;
+
+	chr_EndDistanceData_clean(         GCratioData_clean <  0.01) = [];
+	CGHdata_clean(                     GCratioData_clean <  0.01) = [];
+	chr_CGHdata_extended_clean(        GCratioData_clean <  0.01) = [];
+	chr_EndDistanceData_extended_clean(GCratioData_clean <  0.01) = [];
+	GCratioData_clean(                 GCratioData_clean <  0.01) = [];
+
+	chr_EndDistanceData_clean(         CGHdata_clean     >  6   ) = [];
+	GCratioData_clean(                 CGHdata_clean     >  6   ) = [];
+	chr_CGHdata_extended_clean(        CGHdata_clean     >  6   ) = [];
+	chr_EndDistanceData_extended_clean(CGHdata_clean     >  6   ) = [];
+	CGHdata_clean(                     CGHdata_clean     >  6   ) = [];
+
+	chr_EndDistanceData_clean(         CGHdata_clean     == 0   ) = [];
+	GCratioData_clean(                 CGHdata_clean     == 0   ) = [];
+	chr_CGHdata_extended_clean(        CGHdata_clean     == 0   ) = [];
+	chr_EndDistanceData_extended_clean(CGHdata_clean     == 0   ) = [];
+	CGHdata_clean(                     CGHdata_clean     == 0   ) = [];
+
+	% Perform LOWESS fitting : end bias.
+	rawData_X1     = chr_EndDistanceData_extended_clean;
+	rawData_Y1     = chr_CGHdata_extended_clean;
+	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
+	[fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1,10, 0);
+
+	% Correct data using normalization to LOWESS fitting
+	Y_target = 1;
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+			rawData_chr_X1{chr}        = chr_EndDistanceData{chr};
+			rawData_chr_Y1{chr}        = CNVplot{chr};
+			fitData_chr_Y1{chr}        = interp1(fitX1,fitY1,rawData_chr_X1{chr},'spline');
 			normalizedData_chr_Y1{chr} = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target;
-        end;
-    end;
+		end;
+	end;
 else
-    for chr = 1:num_chrs
-        if (chr_in_use(chr) == 1)
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
 			normalizedData_chr_Y1{chr} = CNVplot{chr};
-        end;
-    end;
+		end;
+	end;
 end;
 
 
