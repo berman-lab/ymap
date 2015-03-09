@@ -54,7 +54,9 @@ else
 	end;
 end;
 if (strcmp(project,parent) == 1)
-	useParent = false;
+	useParent  = false;
+	parentDir  = projectDir;
+	parentUSer = user;
 else
 	useParent = true;
 	if (exist([main_dir 'users/default/projects/' parent '/'], 'dir') == 7)
