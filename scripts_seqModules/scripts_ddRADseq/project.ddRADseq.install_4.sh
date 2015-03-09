@@ -84,9 +84,9 @@ fi
 ##------------------------------------------------------------------------------
 if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]
 then
-	echo "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
+	echo "\tParent or hapmap data already preprocessed with python script: 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
+	echo "\tSNP data already preprocessed with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 else
-	echo "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 	if [ -f $parentDirectory"putative_SNPs_v4.txt" ]
 	then
 		echo "\tParent SNP data already decompressed." >> $logName;
@@ -99,12 +99,14 @@ else
 		cp $parentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	fi
 
-	# preprocess parent for comparison.
+	# preprocess hapmap/parent SNP data.
+	echo "\tProcessing SNP data from parent or hapmap with python script : 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
 	python $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
-
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
+	# preprocess dataset SNP data.
+	echo "\Processing SNP data with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 	python $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	chmod 0777 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	echo "\tpre-processing complete." >> $logName;
@@ -162,7 +164,7 @@ then
 else
 	echo "\tGenerating MATLAB script to perform ChARM analysis of dataset." >> $logName;
 	outputName=$projectDirectory"processing2.m";
-	echo "\toutputName = "$outputName >> $logName; 
+	echo "\toutputName = "$outputName >> $logName;
 
 	echo "function [] = processing2()" > $outputName;
 	echo "\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $outputName;
