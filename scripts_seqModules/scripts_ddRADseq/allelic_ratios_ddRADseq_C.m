@@ -182,6 +182,9 @@ end;
 % Load SNP/LOH data.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
+%
+% Only run when compared vs. a hapmap.
+%
 	load([projectDir 'SNP_' SNP_verString '.all3.mat']);
 	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs'
 	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count','P_chr_baseCall','P_chr_SNP_homologA','P_chr_SNP_homologB','P_chr_SNP_flipHomologs'
@@ -193,7 +196,10 @@ if (useHapmap)
 	% C_chr_SNP_homologA       = hapmap homolog a basecall.
 	% C_chr_SNP_homologB       = hapmap homolog b basecall.
 	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?
-else
+elseif
+%
+% Run when compared vs. a parent dataset or vs. itself.
+%
 	load([projectDir 'SNP_' SNP_verString '.all1.mat']);
 	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
 	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'

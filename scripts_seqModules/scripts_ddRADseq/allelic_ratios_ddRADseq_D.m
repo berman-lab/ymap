@@ -9,6 +9,9 @@ projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 
 if (useHapmap)
+%
+% Only run when compared vs. a hapmap.
+%
 	% Dataset was compared to a hapmap, so draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
 
@@ -470,9 +473,15 @@ if (useHapmap)
 	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.RedGreen.c2.png'], 'png');
 	delete(Linear_fig);
 elseif (useParent)
+%
+% Only run when compared vs. a parent.
+%
 	% Dataset was compared to a parent, so don't draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Parent in use, so "allelic_ratios_ddRADseq_D.m" is being skipped.\n##\n']);
 else
+%
+% Only run when compared vs. itself.
+%
 	% Dataset was not compared to a hapmap or parent, so don't draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Neither parent or hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being skipped.\n##\n']);
 end;

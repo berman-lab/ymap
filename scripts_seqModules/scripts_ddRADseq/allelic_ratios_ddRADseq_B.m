@@ -413,6 +413,9 @@ end;
 % Load SNP/LOH data.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
+%
+% Only run when compared vs. a hapmap.
+%
 	if (exist([projectDir 'SNP_' SNP_verString '.all3.mat'],'file') == 0)
 		fprintf('\nAllelic fraction MAT file 3 not found, generating.\n');
 		process_2dataset_hapmap_allelicRatios(projectDir, projectDir, hapmapDir, chr_size, chr_name, chr_in_use, SNP_verString);
@@ -430,7 +433,10 @@ if (useHapmap)
 	% C_chr_SNP_homologA       = hapmap homolog a basecall.
 	% C_chr_SNP_homologB       = hapmap homolog b basecall.
 	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?
-elseif (useParent)
+else
+%
+% Run when compared vs. a parent dataset or vs. itself. 
+%
 	if (exist([projectDir 'SNP_' SNP_verString '.all1.mat'],'file') == 0)
 		fprintf('\nAllelic fraction MAT file 1 not found, generating.\n');
 		process_2dataset_allelicRatios(projectDir, parentDir, chr_size, chr_name, chr_in_use, SNP_verString);
@@ -465,6 +471,9 @@ save([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 % Process SNP/hapmap data to determine colors for presentation.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
+%
+% Only run when compared vs. a hapmap.
+%
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
@@ -752,7 +761,10 @@ if (useHapmap)
 			end;
 		end;
 	end;
-elseif (useParent)
+else
+%
+% Run when compared vs. a parent dataset or vs. itself.
+%
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
@@ -791,50 +803,46 @@ save([projectDir 'SNP_' SNP_verString '.reduced.mat'],'chr_SNPdata','new_bases_p
 % Make histogram of 'homozygous' data.
 %-------------------------------------------------------------------------------------------------
 histogram_fig = figure();
-%if (useHapmap)
-%	% chr_SNPdata_colorsC
-%else
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			data_C = [];
-			data_P = [];
-			for i = 1:length(chr_SNPdata{chr,2})
-				data_C = [data_C chr_SNPdata{chr,2}(i)];
-			end;
-			for i = 1:length(chr_SNPdata{chr,4})
-				data_P = [data_P chr_SNPdata{chr,4}(i)];
-			end;
-			histogram_C = hist(data_C,100);	
-			histogram_P = hist(data_P,100);
-			final_histogram_C = [fliplr(histogram_C) histogram_C];
-			final_histogram_P = [fliplr(histogram_P) histogram_P];
-
-			subplot(2,num_chrs,chr);
-			hold on;
-			plot(1:200, log(final_histogram_C+1),'Color',[1.0 0.0 0.0]);
-			plot(1:200, log(final_histogram_P+1),'Color',[1/3 1/3 1/3]);
-			ylim([0 6]);
-			title([chr_label{chr}]);
-			set(gca,'XTick',[0 50 100 150 200]);
-			set(gca,'XTickLabel',{'0','1/4','1/2','3/4','1'});
-			ylabel('log(data count)');
-			xlabel('allelic ratio');
-			hold off;
-
-			subplot(2,num_chrs,chr+num_chrs);
-			hold on;
-			plot(1:200, final_histogram_C,'Color',[1.0 0.0 0.0]);
-			plot(1:200, final_histogram_P,'Color',[1/3 1/3 1/3]);
-			ylim([0 200]);
-			title([chr_label{chr}]);
-			set(gca,'XTick',[0 50 100 150 200]);
-			set(gca,'XTickLabel',{'0','1/4','1/2','3/4','1'});
-			ylabel('data count');
-			xlabel('allelic ratio');
-			hold off;
+for chr = 1:num_chrs
+	if (chr_in_use(chr) == 1)
+		data_C = [];
+		data_P = [];
+		for i = 1:length(chr_SNPdata{chr,2})
+			data_C = [data_C chr_SNPdata{chr,2}(i)];
 		end;
+		for i = 1:length(chr_SNPdata{chr,4})
+			data_P = [data_P chr_SNPdata{chr,4}(i)];
+		end;
+		histogram_C = hist(data_C,100);	
+		histogram_P = hist(data_P,100);
+		final_histogram_C = [fliplr(histogram_C) histogram_C];
+		final_histogram_P = [fliplr(histogram_P) histogram_P];
+
+		subplot(2,num_chrs,chr);
+		hold on;
+		plot(1:200, log(final_histogram_C+1),'Color',[1.0 0.0 0.0]);
+		plot(1:200, log(final_histogram_P+1),'Color',[1/3 1/3 1/3]);
+		ylim([0 6]);
+		title([chr_label{chr}]);
+		set(gca,'XTick',[0 50 100 150 200]);
+		set(gca,'XTickLabel',{'0','1/4','1/2','3/4','1'});
+		ylabel('log(data count)');
+		xlabel('allelic ratio');
+		hold off;
+
+		subplot(2,num_chrs,chr+num_chrs);
+		hold on;
+		plot(1:200, final_histogram_C,'Color',[1.0 0.0 0.0]);
+		plot(1:200, final_histogram_P,'Color',[1/3 1/3 1/3]);
+		ylim([0 200]);
+		title([chr_label{chr}]);
+		set(gca,'XTick',[0 50 100 150 200]);
+		set(gca,'XTickLabel',{'0','1/4','1/2','3/4','1'});
+		ylabel('data count');
+		xlabel('allelic ratio');
+		hold off;
 	end;
-%end;
+end;
 set(histogram_fig,'PaperPosition',[0 0 8 1.5]*4);
 saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.eps'], 'epsc');
 saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.png'], 'png');
