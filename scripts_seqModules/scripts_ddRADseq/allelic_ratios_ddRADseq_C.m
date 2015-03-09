@@ -41,26 +41,31 @@ end;
 %--------------------------------------------------------------------------
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
-if (strcmp(hapmap,genome) == 0)
+if (strcmp(hapmap,'') == 1)
+	useHapmap = false;
+else
 	useHapmap = true;
 	if (exist([main_dir 'users/default/hapmaps/' hapmap '/'], 'dir') == 7)
-		hapmapDir = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
+		hapmapDir  = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
+		hapmapUser = 'default';
 	else
-		hapmapDir = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
+		hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
+		hapmapUser = user;
 	end;
-else
-	useHapmap = false;
 end;
-if (strcmp(project,parent) == 0)
+if (strcmp(project,parent) == 1)
+	useParent  = false;
+	parentDir  = projectDir;
+	parentUSer = user;
+else
 	useParent = true;
 	if (exist([main_dir 'users/default/projects/' parent '/'], 'dir') == 7)
-		parentDir = [main_dir 'users/default/projects/' parent '/'];   % system parent.
+		parentDir  = [main_dir 'users/default/projects/' parent '/'];   % system parent.
+		parentUser = 'default';
 	else
-		parentDir = [main_dir 'users/' user '/projects/' parent '/'];  % user parent.
+		parentDir  = [main_dir 'users/' user '/projects/' parent '/'];  % user parent.
+		parentUser = user;
 	end;
-else
-	useParent = false
-	parentDir = projectDir;
 end;
 
 
