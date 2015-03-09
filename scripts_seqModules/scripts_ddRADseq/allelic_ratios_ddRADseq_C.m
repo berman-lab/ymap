@@ -196,7 +196,7 @@ if (useHapmap)
 	% C_chr_SNP_homologA       = hapmap homolog a basecall.
 	% C_chr_SNP_homologB       = hapmap homolog b basecall.
 	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?
-elseif
+else
 %
 % Run when compared vs. a parent dataset or vs. itself.
 %
@@ -208,9 +208,11 @@ elseif
 	% C_chr_SNP_data_ratios    = allelic ratio of SNP.
 	% C_chr_count              = number of reads at SNP coordinate.
 end;
+
+%
 % Data to be used in secondary fire-plot:
 %	X:Y = C_chr_SNP_data_positions:C_chr_SNP_data_ratios
-
+%
 
 %% -----------------------------------------------------------------------------------------
 % Setup for main figure generation.
