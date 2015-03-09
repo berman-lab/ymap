@@ -337,6 +337,7 @@ else
 	echo "\t\tDone." >> $logName;
 fi
 if [ $hapmapInUse = 1 ]
+then
 	if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
 	then
 		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
