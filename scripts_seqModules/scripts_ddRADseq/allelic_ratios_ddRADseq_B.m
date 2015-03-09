@@ -417,7 +417,7 @@ if (useHapmap)
 		fprintf('\nAllelic fraction MAT file 3 not found, generating.\n');
 		process_2dataset_hapmap_allelicRatios(projectDir, projectDir, hapmapDir, chr_size, chr_name, chr_in_use, SNP_verString);
 	else
-		fprintf('\nAllelic fraction MAT file 1 found, loading.\n');
+		fprintf('\nAllelic fraction MAT file 3 found, loading.\n');
 	end;
 	load([projectDir 'SNP_' SNP_verString '.all3.mat']);
 	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs'
@@ -430,7 +430,7 @@ if (useHapmap)
 	% C_chr_SNP_homologA       = hapmap homolog a basecall.
 	% C_chr_SNP_homologB       = hapmap homolog b basecall.
 	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?
-else
+elseif (useParent)
 	if (exist([projectDir 'SNP_' SNP_verString '.all1.mat'],'file') == 0)
 		fprintf('\nAllelic fraction MAT file 1 not found, generating.\n');
 		process_2dataset_allelicRatios(projectDir, parentDir, chr_size, chr_name, chr_in_use, SNP_verString);
@@ -752,7 +752,7 @@ if (useHapmap)
 			end;
 		end;
 	end;
-else
+elseif (useParent)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
@@ -915,7 +915,7 @@ for chr = 1:num_chrs
 		% standard : end axes labels etc.
 
 		% standard : draw colorbars.
-		if (useHapmap)
+		if (useHapmap)   % an experimental dataset vs. a hapmap.
 			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
 				colorR   = chr_SNPdata_colorsC{chr,1}(i);
 				colorG   = chr_SNPdata_colorsC{chr,2}(i);
@@ -924,20 +924,31 @@ for chr = 1:num_chrs
 					plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 				end;
 			end;
-		else
+		% Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
+		%	elseif (useParent)   % an experimental dataset vs. a reference dataset.
+		%		for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+		%			colorR   = chr_SNPdata_colorsP{chr,1}(i);
+		%			colorG   = chr_SNPdata_colorsP{chr,2}(i);
+		%			colorB   = chr_SNPdata_colorsP{chr,3}(i);
+		%			if (colorR < 1) || (colorG < 1) || (colorB < 1)
+		%				plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
+		%			end;
+		%		end;
+		elseif (useParent)   % an experimental dataset vs. a reference dataset.
 			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
 				datumY_C = chr_SNPdata{chr,2}(i)*maxY;
 				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-				if (useParent)
-					plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
-					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-				else
-					plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
-					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-				end;
+				plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+				plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+			end;
+		else   % only a reference dataset.
+			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
+				plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+				plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 			end;
 		end;
-		% standard : end show allelic ratio data.
+		% standard : end draw colorbars.
 
 		if (displayBREAKS == true) && (show_annotations == true)
 			chr_length = ceil(chr_size(chr)/bases_per_bin);
@@ -1030,7 +1041,7 @@ for chr = 1:num_chrs
 			title(chr_label{chr},'Interpreter','none','FontSize',20);
 
 			% linear : draw colorbars
-			if (useHapmap)
+			if (useHapmap)   % an experimental dataset vs. a hapmap.
 				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
 					colorR   = chr_SNPdata_colorsC{chr,1}(i);
 					colorG   = chr_SNPdata_colorsC{chr,2}(i);
@@ -1039,20 +1050,32 @@ for chr = 1:num_chrs
 						plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
-			else
+			% Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
+			%	elseif (useParent)   % an experimental dataset vs. a reference dataset.
+			%		for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+			%			colorR   = chr_SNPdata_colorsC{chr,1}(i);
+			%			colorG   = chr_SNPdata_colorsC{chr,2}(i);
+			%			colorB   = chr_SNPdata_colorsC{chr,3}(i);
+			%			if (colorR < 1) || (colorG < 1) || (colorB < 1)
+			%				plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
+			%			end;
+			%		end;
+			elseif (useParent)   % an experimental dataset vs. a reference dataset.
 				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
 					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
 					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-					if (useParent)
-						plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
-						plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-					else
-						plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
-						plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-					end;
+					plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+				end;
+			else   % only a reference dataset.
+				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
+					plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 				end;
 			end;
-			% linear : end show allelic ratio data.
+			% linear : end draw colorbars.
 
 			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);

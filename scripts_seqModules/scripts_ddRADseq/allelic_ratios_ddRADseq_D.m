@@ -8,13 +8,9 @@ addpath('../');
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 
-if (strcmp(project,hapmap) == 1)
-	% Either a hapmap was in use or the project and parent are the same, so the
-	% figure drawn by "allelic_ratios_ddRADseq_D.m" is all that needs to be done.
-	fprintf(['\n##\n## allelic_ratios_ddRADseq_D.m is being skipped...\n']);
-	fprintf(['##\tbecause the dataset is not being compared to another dataset.\n']);
-else
-	fprintf(['\n##\n## allelic_ratios_ddRADseq_D.m is being processed.\n##\n']);
+if (useHapmap)
+	% Dataset was compared to a hapmap, so draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
 
 	%% ===============================================================================================
 	% Setup for main figure generation.
@@ -273,7 +269,7 @@ else
 					plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 				end;
 			end;
-			% standard : end show allelic ratio data.
+			% standard : end draw colorbars
 
 			if (displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
@@ -374,7 +370,7 @@ else
 						plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
-				% linear : end show allelic ratio data.
+				% linear : end draw colorbars
 
 				if (Linear_displayBREAKS == true) && (show_annotations == true)
 					chr_length = ceil(chr_size(chr)/bases_per_bin);
@@ -473,7 +469,12 @@ else
 	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.RedGreen.c2.eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.RedGreen.c2.png'], 'png');
 	delete(Linear_fig);
+elseif (useParent)
+	% Dataset was compared to a parent, so don't draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Parent in use, so "allelic_ratios_ddRADseq_D.m" is being skipped.\n##\n']);
+else
+	% Dataset was not compared to a hapmap or parent, so don't draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Neither parent or hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being skipped.\n##\n']);
 end;
 
 end
-
