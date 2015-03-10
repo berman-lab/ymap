@@ -37,9 +37,9 @@ logName            = sys.argv[ 9]
 runMode            = sys.argv[10]  # 'hapmap' or 'LOH' modes.
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*=============================================================================================*\n")
-	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'   |\n")
-	myfile.write("\t\t*---------------------------------------------------------------------------------------------*\n")
+	myfile.write("\t\t*========================================================================================================*\n")
+	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'.             |\n")
+	myfile.write("\t\t*--------------------------------------------------------------------------------------------------------*\n")
 
 # Figure out if input name 'hapmap' corresponds to a project or an actual hapmap.
 if (runMode == 'hapmap'):
@@ -494,27 +494,32 @@ for fragment in range(1,numFragments):
 	#     4) list of unphased data ratios.
 	#     5) list of phased data coordinates.
 	#     6) list of unphased data coordinates.
-	chrNum_string           =  str(fragments[fragment-1][0])
-	bpStart_string          =  str(fragments[fragment-1][1])
-	bpEnd_string            =  str(fragments[fragment-1][2])
-	phasedData_string       =  fragments[fragment-1][3]
-	if len(phasedData_string) > 1:
-		phasedData_string   =  phasedData_string[:-1]
-	phasedData_string       += ")"
-	unphasedData_string     =  fragments[fragment-1][4]
-	if len(unphasedData_string) > 1:
-		unphasedData_string       =  unphasedData_string[:-1]
-	unphasedData_string           += ")"
-	phasedCoordinate_string       =  fragments[fragment-1][5]
-	if len(phasedCoordinate_string) > 1:
-		phasedCoordinate_string   =  phasedCoordinate_string[:-1]
-	phasedCoordinate_string       += ")"
-	unphasedCoordinate_string     =  fragments[fragment-1][6]
-	if len(unphasedCoordinate_string) > 1:
-		unphasedCoordinate_string =  unphasedCoordinate_string[:-1]
-	unphasedCoordinate_string     += ")"
+	chrNum_string                     = str(fragments[fragment-1][0]);
+	bpStart_string                    = str(fragments[fragment-1][1]);
+	bpEnd_string                      = str(fragments[fragment-1][2]);
 
-	print chrNum_string+'\t'+bpStart_string+'\t'+bpEnd_string+'\t'+phasedData_string+'\t'+unphasedData_string+'\t'+phasedCoordinate_string+'\t'+unphasedCoordinate_string
+	phasedData_string                 = fragments[fragment-1][3];
+	if len(phasedData_string) > 1:
+		phasedData_string         = phasedData_string[:-1];           # remove trailing comma.
+	phasedData_string                += ")"
+
+	unphasedData_string               = fragments[fragment-1][4];
+	if len(unphasedData_string) > 1:
+		unphasedData_string       = unphasedData_string[:-1];         # remove trailing comma.
+	unphasedData_string              += ")"
+
+	phasedCoordinate_string           = fragments[fragment-1][5];
+	if len(phasedCoordinate_string) > 1:
+		phasedCoordinate_string   = phasedCoordinate_string[:-1];     # remove trailing comma.
+	phasedCoordinate_string          += ")"
+
+	unphasedCoordinate_string         = fragments[fragment-1][6];
+	if len(unphasedCoordinate_string) > 1:
+		unphasedCoordinate_string = unphasedCoordinate_string[:-1];   # remove trailing comma.
+	unphasedCoordinate_string        += ")"
+
+	if (len(phasedData_string)+len(unphasedData_string)+len(phasedCoordinate_string)+len(unphasedCoordinate_string) > 8):
+		print chrNum_string+'\t'+bpStart_string+'\t'+bpEnd_string+'\t'+phasedData_string+'\t'+unphasedData_string+'\t'+phasedCoordinate_string+'\t'+unphasedCoordinate_string;
 
 #------------------------------------------------------------------------------------------------------------
 # End of code section to output information about fragments. 
@@ -525,6 +530,6 @@ print "### ", time.clock() - t0, "seconds to complete processing of fragment def
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) +"\n")
-	myfile.write("\t\t*-----------------------------------------------------------------------------------------------*\n")
-	myfile.write("\t\t| 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py' completed. |\n")
-	myfile.write("\t\t*===============================================================================================*\n")
+	myfile.write("\t\t*--------------------------------------------------------------------------------------------------------*\n")
+	myfile.write("\t\t| 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py' completed.          |\n")
+	myfile.write("\t\t*========================================================================================================*\n")
