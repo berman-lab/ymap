@@ -43,7 +43,7 @@ P_chr_SNP_keep           = cell(length(chr_size),1);
 H_chr_SNP_data_positions = cell(length(chr_size),1);
 H_chr_SNP_alleleA        = cell(length(chr_size),1);
 H_chr_SNP_alleleB        = cell(length(chr_size),1);
-H_chr_SNP_needToFlip     = cell(length(chr_size),1);
+H_chr_SNP_hapmapEntry    = cell(length(chr_size),1);
 
 for chrID = 1:length(chr_size)
 	if (chr_in_use(chrID) == 1)
@@ -70,7 +70,7 @@ for chrID = 1:length(chr_size)
 		H_chr_SNP_data_positions{chrID} = zeros(chr_size(chrID),1);
 		H_chr_SNP_alleleA{       chrID} = cell( chr_size(chrID),1);
 		H_chr_SNP_alleleB{       chrID} = cell( chr_size(chrID),1);
-		H_chr_SNP_needToFlip{    chrID} = zeros(chr_size(chrID),1);
+		H_chr_SNP_hapmapEntry{   chrID} = zeros(chr_size(chrID),1);
 		H_chr_lines_analyzed(    chrID) = 0;
 	end;
 end;
@@ -142,11 +142,10 @@ while not (feof(C_data))
 		C_SNP_countT     = sscanf(C_dataLine, '%s',4);   for i = 1:size(sscanf(C_dataLine,'%s',3),2);   C_SNP_countT(1)     = [];   end;
 		C_SNP_countG     = sscanf(C_dataLine, '%s',5);   for i = 1:size(sscanf(C_dataLine,'%s',4),2);   C_SNP_countG(1)     = [];   end;
 		C_SNP_countC     = sscanf(C_dataLine, '%s',6);   for i = 1:size(sscanf(C_dataLine,'%s',5),2);   C_SNP_countC(1)     = [];   end;
+		C_SNP_phased     = sscanf(C_dataLine, '%s',7);   for i = 1:size(sscanf(C_dataLine,'%s',6),2);   C_SNP_phased(1)     = [];   end;
 		C_chr_num        = find(strcmp(C_SNP_chr_name, chr_name));
 		if (length(C_chr_num) > 0)
-			if (C_chr_num ~= old_chr)
-				fprintf(['\tchr = ' num2str(C_chr_num) '\n']);
-			end;
+			if (C_chr_num ~= old_chr);   fprintf(['\tchr = ' num2str(C_chr_num) '\n']);   end;
 			C_SNP_countA                                                         = str2num(C_SNP_countA);
 			C_SNP_countT                                                         = str2num(C_SNP_countT);
 			C_SNP_countG                                                         = str2num(C_SNP_countG);
@@ -166,6 +165,7 @@ while not (feof(C_data))
 			end;
 			C_chr_baseCall{          C_chr_num}{C_chr_lines_analyzed(C_chr_num)} = C_chr_read_id;
 			old_chr = C_chr_num;
+			
         else
             old_chr = 0;
         end;
@@ -184,23 +184,28 @@ while not (feof(H_data))
 	H_dataLine = fgetl(H_data);
 	if (length(H_dataLine) > 0)
 		% process the loaded line into data channels.
-		H_SNP_chr_name   = sscanf(H_dataLine, '%s',1);
-		H_SNP_coordinate = sscanf(H_dataLine, '%s',2);   for i = 1:size(sscanf(H_dataLine,'%s',1),2);   H_SNP_coordinate(1) = [];   end;
-		H_SNP_alleleA    = sscanf(H_dataLine, '%s',3);   for i = 1:size(sscanf(H_dataLine,'%s',2),2);   H_SNP_alleleA(1)    = [];   end;
-		H_SNP_alleleB    = sscanf(H_dataLine, '%s',4);   for i = 1:size(sscanf(H_dataLine,'%s',3),2);   H_SNP_alleleB(1)    = [];   end;
-		H_SNP_needToFlip = sscanf(H_dataLine, '%s',5);   for i = 1:size(sscanf(H_dataLine,'%s',4),2);   H_SNP_needToFlip(1) = [];   end;
-		H_chr_num        = find(strcmp(H_SNP_chr_name, chr_name));
+		H_SNP_chr_name    = sscanf(H_dataLine, '%s',1);
+		H_SNP_coordinate  = sscanf(H_dataLine, '%s',2);   for i = 1:size(sscanf(H_dataLine,'%s',1),2);   H_SNP_coordinate(1)  = [];   end;
+		H_SNP_alleleA     = sscanf(H_dataLine, '%s',3);   for i = 1:size(sscanf(H_dataLine,'%s',2),2);   H_SNP_alleleA(1)     = [];   end;
+		H_SNP_alleleB     = sscanf(H_dataLine, '%s',4);   for i = 1:size(sscanf(H_dataLine,'%s',3),2);   H_SNP_alleleB(1)     = [];   end;
+		H_SNP_hapmapEntry = H_dataLine                    for i = 1:size(sscanf(H_dataLine,'%s',4),2);   H_SNP_hapmapEntry(1) = [];   end;
+		H_chr_num         = find(strcmp(H_SNP_chr_name, chr_name));
+
+		%
+		%% darren: Need to make hapmapEntry consensus determination here.
+		%
+
 		if (length(H_chr_num) > 0)
 			if (H_chr_num ~= old_chr)
 				fprintf(['\tchr = ' num2str(H_chr_num) '\n']);
 			end;
 			H_SNP_coordinate                                                     = str2num(H_SNP_coordinate);
-			H_SNP_needToFlip                                                     = str2num(H_SNP_needToFlip);
+			H_SNP_hapmapEntry                                                    = str2num(H_SNP_hapmapEntry);
 			H_chr_lines_analyzed(    H_chr_num)                                  = H_chr_lines_analyzed(H_chr_num)+1;
 			H_chr_SNP_data_positions{H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_coordinate;
 			H_chr_SNP_alleleA{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleA;
 			H_chr_SNP_alleleB{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleB;
-			H_chr_SNP_needToFlip{    H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_needToFlip;
+			H_chr_SNP_hapmapEntry{   H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_hapmapEntry;
 			old_chr = H_chr_num;
 		else
 			old_chr = 0;
@@ -236,7 +241,7 @@ for chrID = 1:length(chr_size)
 
 		H_chr_SNP_alleleA{       chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
 		H_chr_SNP_alleleB{       chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
-		H_chr_SNP_needToFlip{    chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
+		H_chr_SNP_hapmapEntry{   chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
 		H_chr_SNP_data_positions{chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
 	end;
 end;
@@ -263,7 +268,7 @@ for chrID = 1:length(chr_size)
 			if (found == true)
 				C_chr_SNP_homologA{    chrID}{projectDatumID} = H_chr_SNP_alleleA{       chrID}{hapmapDatumID};;
 				C_chr_SNP_homologB{    chrID}{projectDatumID} = H_chr_SNP_alleleB{       chrID}{hapmapDatumID};;
-				C_chr_SNP_flipHomologs{chrID}(projectDatumID) = H_chr_SNP_needToFlip{    chrID}(hapmapDatumID);;
+				C_chr_SNP_flipHomologs{chrID}(projectDatumID) = H_chr_SNP_hapmapEntry{   chrID}(hapmapDatumID);;
 				C_chr_SNP_keep{        chrID}(projectDatumID) = 1;
 				start = projectDatumID;
 			else
@@ -306,7 +311,7 @@ for chrID = 1:length(chr_size)
 			if (found == true)
 				P_chr_SNP_homologA{    chrID}{projectDatumID} = H_chr_SNP_alleleA{       chrID}{hapmapDatumID};;
 				P_chr_SNP_homologB{    chrID}{projectDatumID} = H_chr_SNP_alleleB{       chrID}{hapmapDatumID};;
-				P_chr_SNP_flipHomologs{chrID}(projectDatumID) = H_chr_SNP_needToFlip{    chrID}(hapmapDatumID);;
+				P_chr_SNP_flipHomologs{chrID}(projectDatumID) = H_chr_SNP_hapmapEntry{   chrID}(hapmapDatumID);;
 				P_chr_SNP_keep{        chrID}(projectDatumID) = 1;
 				start = projectDatumID;
 			else

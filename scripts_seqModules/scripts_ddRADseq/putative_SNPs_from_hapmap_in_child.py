@@ -298,10 +298,10 @@ with open(logName, "a") as myfile:
 for SNP in hapmap_loci:
 	if SNP in child_SNPs_small:
 		SNP_data = child_SNPs[child_SNPs_small.index(SNP)];
-		print SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5]+"\t+";
+		print SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5];
 	if SNP in child_SNPs_unphased_small:
 		SNP_data = child_SNPs_unphased[child_SNPs_unphased_small.index(SNP)];
-		print SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5]+"\t-";
+		print SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5];
 
 #------------------------------------------------------------------------------------------------------------
 # End of main code block.
