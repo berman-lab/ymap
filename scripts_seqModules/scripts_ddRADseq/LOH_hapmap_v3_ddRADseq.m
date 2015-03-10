@@ -645,7 +645,7 @@ for chr = 1:num_chrs
 
 		set(gca,'FontSize',12);
 		if (chr == find(chr_posY == max(chr_posY)))
-			title([ project ' CNV map'],'Interpreter','none','FontSize',24);
+			title([ project ' SNP map'],'Interpreter','none','FontSize',24);
 		end;
 		hold on;
 		% standard : end axes labels etc.
