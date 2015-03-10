@@ -50,8 +50,8 @@ def process_HapmapLine(entry_line):
 	H_chr_name    = hapmap_line[0];   # chromosome   : Ca21chrR_C_albicans_SC5314
 	H_position    = hapmap_line[1];   # coordinate   : 2286371
 	H_status_list = [];
-	for entry = 4:len(hapmap_line):
-		H_status_list.append(int(hapmap_line[entry]));   # entry status : [0,1] = good; [10,11,12] = bad.
+	for entry in range(4,(len(hapmap_line)+1)):
+		H_status_list.append(int(hapmap_line[entry-1]));   # entry status : [0,1] = good; [10,11,12] = bad.
 	## Determine consensus hapmap entry.
 	# First remove non-useful entries.
 	H_status_list = [x for x in H_status_list if x != 10];
