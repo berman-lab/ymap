@@ -22,9 +22,9 @@ Low_quality_ploidy_estimate = true;
 Output_CGD_annotations      = false;   % Generate CGD annotation files for analyzed datasets.
 
 fprintf('\n');
-fprintf('################################\n');
-fprintf('## CNV_SNP_hapmap_v5_RADseq.m ##\n');
-fprintf('################################\n');
+fprintf('#########################################\n');
+fprintf('## CNV_SNP_hapmap_v5_RADseq_RedGreen.m ##\n');
+fprintf('#########################################\n');
 
 
 %% =========================================================================================
@@ -193,6 +193,7 @@ else
 	new_bases_per_bin = bases_per_bin;
 end;
 
+
 %% =========================================================================================
 % Test adjacent segments for no change in copy number estimate.
 %...........................................................................................
@@ -341,19 +342,21 @@ for chr = 1:num_chrs
                                         plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
                                 end;
                         end;
-                else
-                        for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-                                datumY_C = chr_SNPdata{chr,2}(i)*maxY;
-                                datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-                                if (useParent)
-                                        plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
-                                        plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-                                else
-                                        plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
-                                        plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-                                end;
-                        end;
-                end;
+		elseif (useParent)
+			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
+				plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+				plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+			end;
+		else
+			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
+				plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+				plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+			end;
+		end;
 		% end standard : draw color bars.
 
 
@@ -628,20 +631,22 @@ for chr = 1:num_chrs
 						plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
+			elseif (useParent)
+				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
+					plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+				end;
 			else
 				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
 					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
 					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-					if (useParent)
-						plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
-						plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-					else
-						plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
-						plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-					end;
+					plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 				end;
 			end;
-			% end linear : draw color bars.
+			% end linear : draw colorbars.
 
 			% linear : cgh plot section.
 			c_ = [0 0 0];

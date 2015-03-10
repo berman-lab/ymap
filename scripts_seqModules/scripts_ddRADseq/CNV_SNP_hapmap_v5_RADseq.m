@@ -342,20 +342,22 @@ for chr = 1:num_chrs
                                         plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
                                 end;
                         end;
-                else
-                        for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-                                datumY_C = chr_SNPdata{chr,2}(i)*maxY;
-                                datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-                                if (useParent)
-                                        plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
-                                        plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-                                else
-                                        plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
-                                        plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-                                end;
-                        end;
+                elseif (useParent)
+			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
+				plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+				plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+			end;
+		else
+			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
+				plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+				plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+			end;
                 end;
-		% end standard : draw color bars.
+		% end standard : draw colorbars.
 
 
 		%% standard : cgh plot section.
@@ -629,20 +631,22 @@ for chr = 1:num_chrs
 						plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
+			elseif (useParent)
+				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
+					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
+					plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+				end;
 			else
 				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
 					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
 					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-					if (useParent)
-						plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
-						plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-					else
-						plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
-						plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
-					end;
+					plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 				end;
 			end;
-			% end linear : draw color bars.
+			% end linear : draw colorbars.
 
 			% linear : cgh plot section.
 			c_ = [0 0 0];
