@@ -20,6 +20,7 @@ H_datafile = [hapmapDir   'SNPdata_parent.txt'        ];
 %%============================================================================================================
 % Preallocate data vectors the length of each chromosome.
 %-------------------------------------------------------------------------------------------------------------
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Preallocate data vectors.\n']);
 fprintf('Preallocate data vectors for each chromosome.\n');
 C_chr_SNP_data_positions = cell(length(chr_size),1);   % coordinate of SNP.
 C_chr_SNP_data_ratios    = cell(length(chr_size),1);   % allelic ratio of SNP.
@@ -78,7 +79,7 @@ end;
 %%============================================================================================================
 % Process parent project dataset.
 %-------------------------------------------------------------------------------------------------------------
-fprintf('Load parent project information.\n');
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Process parent project dataset.\n']);
 P_data      = fopen(P_datafile, 'r');
 allele_list = ['A' 'T' 'G' 'C'];
 old_chr     = 0;
@@ -127,7 +128,7 @@ fclose(P_data);
 %%============================================================================================================
 % Process child project dataset.
 %-------------------------------------------------------------------------------------------------------------
-fprintf('Load child project information.\n');
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Process child project dataset.\n']);
 C_data      = fopen(C_datafile, 'r');
 allele_list = ['A' 'T' 'G' 'C'];
 old_chr     = 0;
@@ -176,7 +177,7 @@ fclose(C_data);
 %%============================================================================================================
 % Process hapmap dataset.
 %-------------------------------------------------------------------------------------------------------------
-fprintf('Load hapmap information.\n');
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Process hapmap dataset.\n']);
 H_data      = fopen(H_datafile, 'r');
 old_chr     = 0;
 while not (feof(H_data))
@@ -212,6 +213,7 @@ fclose(H_data);
 %%============================================================================================================
 % Clean up data vectors.
 %-------------------------------------------------------------------------------------------------------------
+fprintf(['process_2dataset_hapmap_allelicRatios.m: clean up data.\n']);
 for chrID = 1:length(chr_size)
 	if (chr_in_use(chrID) == 1)
 		C_chr_SNP_data_ratios{   chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
@@ -243,7 +245,7 @@ end;
 %%============================================================================================================
 % Determine child dataset values at hapmap loci.
 %-------------------------------------------------------------------------------------------------------------
-fprintf('Determine child dataset values at hapmap loci.\n');
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Determine child values at hapmap loci.\n']);
 start = 1;
 for chrID = 1:length(chr_size)
 	if (chr_in_use(chrID) == 1)
@@ -286,7 +288,7 @@ end;
 %%============================================================================================================
 % Determine parent dataset values at hapmap loci.
 %-------------------------------------------------------------------------------------------------------------
-fprintf('Determine parent dataset values at hapmap loci.\n');
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Determine parent values at hapmap loci.\n']);
 start = 1;
 for chrID = 1:length(chr_size)
 	if (chr_in_use(chrID) == 1)
@@ -329,5 +331,6 @@ end;
 %%============================================================================================================
 % Save processed data file.
 %-------------------------------------------------------------------------------------------------------------
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Save processed data.\n']);
 save([project1dir 'SNP_' SNP_verString '.all3.mat'],'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs', ...
                                                     'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count','P_chr_baseCall','P_chr_SNP_homologA','P_chr_SNP_homologB','P_chr_SNP_flipHomologs');

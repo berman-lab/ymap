@@ -11,6 +11,7 @@ P_datafile = [project2dir 'putative_SNPs_v4.txt'];
 %%============================================================================================================
 % Preallocate data vectors the length of each chromosome.
 %-------------------------------------------------------------------------------------------------------------
+fprintf(['process_2dataset_allelicRatios.m: Preallocate data vectors.\n']);
 C_chr_SNP_data_positions = cell(length(chr_size),1);
 C_chr_SNP_data_ratios    = cell(length(chr_size),1);
 C_chr_count              = cell(length(chr_size),1);
@@ -34,6 +35,7 @@ end;
 %%============================================================================================================
 % Process project 1 dataset.
 %-------------------------------------------------------------------------------------------------------------
+fprintf(['process_2dataset_allelicRatios.m: Process project 1 dataset.\n']);
 C_data     = fopen(C_datafile, 'r');
 while not (feof(C_data))
 	C_dataLine = fgetl(C_data);
@@ -67,6 +69,7 @@ fclose(C_data);
 %%============================================================================================================
 % Process project 2 dataset.
 %-------------------------------------------------------------------------------------------------------------
+fprintf(['process_2dataset_allelicRatios.m: Process project 2 dataset.\n']);
 P_data     = fopen(P_datafile, 'r');
 while not (feof(P_data))
 	P_dataLine = fgetl(P_data);
@@ -100,6 +103,7 @@ fclose(P_data);
 %%============================================================================================================
 % Clean up data vectors.
 %-------------------------------------------------------------------------------------------------------------
+fprintf(['process_2dataset_allelicRatios.m: Clean up data.\n']);
 for chrID = 1:length(chr_size)
 	if (chr_in_use(chrID) == 1)
 		C_chr_SNP_data_ratios{   chrID}(C_chr_SNP_data_positions{chrID} == 0) = [];
@@ -122,4 +126,5 @@ end;
 %%============================================================================================================
 % Save processed data file.
 %-------------------------------------------------------------------------------------------------------------
+fprintf(['process_2dataset_allelicRatios.m: Save data.\n']);
 save([project1dir 'SNP_' SNP_verString '.all1.mat'],'C_chr_SNP_data_ratios','C_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_SNP_data_positions','C_chr_count','P_chr_count');
