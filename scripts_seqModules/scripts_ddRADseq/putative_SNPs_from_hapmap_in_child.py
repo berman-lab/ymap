@@ -41,15 +41,34 @@ def process_HapmapLine(entry_line):
 	global chrCount;
 	# Process 'SNPdata_parent.txt' file line.
 	# example lines:
-	#       chromosome                   coord   HomA   HomB   Status
-	#       Ca21chr1_C_albicans_SC5314   812     C      T      0
-	#       Ca21chr1_C_albicans_SC5314   816     T      C      0
-	#       Ca21chr1_C_albicans_SC5314   879     G      A      0
-	hapmap_line = string.strip(entry_line);
-	hapmap_line = hapmap_line.split('\t');
-	H_chr_name  = hapmap_line[0];   # chromosome   : Ca21chrR_C_albicans_SC5314
-	H_position  = hapmap_line[1];   # coordinate   : 2286371
-	H_status    = hapmap_line[4];   # entry status : [0,1] = good; [10,11,12] = bad.
+	#       chromosome                   coord   HomA   HomB   Status1   (Status2 ...)
+	#       Ca21chr1_C_albicans_SC5314   812     C      T      0         (1       ...)
+	#       Ca21chr1_C_albicans_SC5314   816     T      C      0         (1       ...)
+	#       Ca21chr1_C_albicans_SC5314   879     G      A      0         (0       ...)
+	hapmap_line   = string.strip(entry_line);
+	hapmap_line   = hapmap_line.split('\t');
+	H_chr_name    = hapmap_line[0];   # chromosome   : Ca21chrR_C_albicans_SC5314
+	H_position    = hapmap_line[1];   # coordinate   : 2286371
+	H_status_list = [];
+	for entry = 4:len(hapmap_line):
+		H_status_list.append(int(hapmap_line[entry]));   # entry status : [0,1] = good; [10,11,12] = bad.
+	## Determine consensus hapmap entry.
+	# First remove non-useful entries.
+	H_status_list = [x for x in H_status_list if x != 10];
+	H_status_list = [x for x in H_status_list if x != 11];
+	H_status_list = [x for x in H_status_list if x != 12];
+	if (len(H_status_list) == 0):
+		# No useful hapmap entries for this locus.
+		H_status = 10;
+	elif (H_status_list.count(1) > H_status_list.count(0)):
+		# More hapmap entries indicate phasing 1 for this locus.
+		H_status = 1;
+	elif (H_status_list.count(1) == H_status_list.count(0)):
+		# Useful hapmap entries are ambiguous, so random phasing is chosen.
+		H_status = random.randrange(0,2);
+	else:
+		# More hapmap entries indicate phasing 0 for this locus.
+		H_status = 0;
 	# Determine chrID associated with chromosome name.
 	H_chr = 0;
 	for x in range(0,chrCount):
@@ -59,15 +78,16 @@ def process_HapmapLine(entry_line):
 	H_chrName = chrName[H_chr-1];
 	return H_chr,H_chrName,H_position,H_status;
 
-import string, sys, time
+import string, sys, time, random;
+random.seed();
 
-genome             = sys.argv[ 1];
-genomeUser         = sys.argv[ 2];
-projectChild       = sys.argv[ 3];
-projectChildUser   = sys.argv[ 4];
-hapmap             = sys.argv[ 5];
-HapmapUser         = sys.argv[ 6];
-main_dir           = sys.argv[ 7];
+genome             = sys.argv[1];
+genomeUser         = sys.argv[2];
+projectChild       = sys.argv[3];
+projectChildUser   = sys.argv[4];
+hapmap             = sys.argv[5];
+HapmapUser         = sys.argv[6];
+main_dir           = sys.argv[7];
 
 logName            = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt";
 inputFile_H        = main_dir+"users/"+HapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
@@ -206,7 +226,7 @@ for line_H in data_H:
 			if H_chrID != old_H_chrID:
 				with open(logName, "a") as myfile:
 					myfile.write("\t\t|\t\tchr = "+str(H_chrName)+"\n");
-			if int(H_status) in [0, 1]:
+			if H_status in [0, 1]:
 				if H_chrID > 0:
 					hapmap_loci.append([H_chrName,H_position]);
 			old_H_chrID = H_chrID;
