@@ -50,16 +50,30 @@ def process_HapmapLine(entry_line):
 	H_chr_name    = hapmap_line[0];   # chromosome   : Ca21chrR_C_albicans_SC5314
 	H_position    = hapmap_line[1];   # coordinate   : 2286371
 	H_status_list = [];
-	for entry in range(4,(len(hapmap_line)+1)):
-		H_status_list.append(int(hapmap_line[entry-1]));   # entry status : [0,1] = good; [10,11,12] = bad.
+	for entry in range(4,(len(hapmap_line))):
+		H_status_list.append(int(hapmap_line[entry]));
+		# entry values
+		#    0  : correct phase.
+		#    1  : incorrect phase.
+		#    10 : no phase information, due to no data at coodinate in child dataset.
+		#    11 : no phase information, due to coordinate not matching a LOH fragment in child dataset.
+		#    12 : no phase information, due to surprise allele in child dataset.
+
 	## Determine consensus hapmap entry.
-	# First remove non-useful entries.
-	H_status_list = [x for x in H_status_list if x != 10];
-	H_status_list = [x for x in H_status_list if x != 11];
-	H_status_list = [x for x in H_status_list if x != 12];
-	if (len(H_status_list) == 0):
-		# No useful hapmap entries for this locus.
-		H_status = 10;
+	if (H_status_list.count(1) == 0) and (H_status_list.count(0) == 0):
+		# No useful hapmap entries for this locus...
+		if (H_status_list.count(11) > H_status_list.count(10)) and (H_status_list.count(11) > H_status_list.count(12)):
+			# ...because the coordinate was not in defined LOH regions during setup of hapmap.
+			H_status = 11;
+		elif (H_status_list.count(10) > H_status_list.count(11)) and (H_status_list.count(10) > H_status_list.count(12)):
+			# ...because the coordinate had no data during setup of hapmap.
+			H_status = 10;
+		elif (H_status_list.count(12) > H_status_list.count(10)) and (H_status_list.count(12) > H_status_list.count(11)):
+			# ...because the coordinate had a surprise allele during setup of hapmap.
+			H_status = 12;
+		else:
+			# ...because some undetermined combination of errors at this coordinate.
+			H_status = 13;
 	elif (H_status_list.count(1) > H_status_list.count(0)):
 		# More hapmap entries indicate phasing 1 for this locus.
 		H_status = 1;
@@ -216,9 +230,10 @@ for x in range(0,chrCount):
 with open(logName, "a") as myfile:
         myfile.write("\t\t|\tLoading SNP coordinates from hapmap.\n");
 print '### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, countA, countT, countG, countC]';
-data_H      = open(inputFile_H,"r");
-old_H_chrID = 0;
-hapmap_loci = [];
+data_H               = open(inputFile_H,"r");
+old_H_chrID          = 0;
+hapmap_loci          = [];
+hapmap_loci_unphased = [];
 for line_H in data_H:
 	if (len(line_H) > 0):
 		if (line_H[0] != "#"):
@@ -226,20 +241,24 @@ for line_H in data_H:
 			if H_chrID != old_H_chrID:
 				with open(logName, "a") as myfile:
 					myfile.write("\t\t|\t\tchr = "+str(H_chrName)+"\n");
-			if H_status in [0, 1]:
-				if H_chrID > 0:
+			if H_chrID > 0:
+				if H_status in [0, 1]:
 					hapmap_loci.append([H_chrName,H_position]);
+				elif H_status in [10,11,12,13]:
+					hapmap_loci_unphased.append([H_chrName,H_position]);
 			old_H_chrID = H_chrID;
 data_H.close();
 
 # Process child dataset for matches to hapmap.
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tScreening through child dataset for coordinates matching hapmap loci.");
-data_C           = open(inputFile_C,"r");
-old_C_chrID      = 0;
-child_SNPs       = [];
-child_SNPs_small = [];
-counter          = 0;
+data_C                    = open(inputFile_C,"r");
+old_C_chrID               = 0;
+child_SNPs                = [];
+child_SNPs_small          = [];
+child_SNPs_unphased       = [];
+child_SNPs_unphased_small = [];
+counter                   = 0;
 for line_C in data_C:
 	if (len(line_C) > 0):
 		if (line_C[0] != "#"):
@@ -249,11 +268,16 @@ for line_C in data_C:
 					myfile.write("\n\t\t|\t\tchr = "+str(C_chrName)+"\n");
 				counter = 0;
 			if (C_chrID > 0) and (int(C_countA)+int(C_countT)+int(C_countG)+int(C_countC) >= 20):   # chromosome is identified and in use; read depth >= 20.
+				testval = 0;
 				if [C_chrName,C_position] in hapmap_loci:
 					child_SNPs.append([C_chrName,C_position,C_countA,C_countT,C_countG,C_countC]);
 					child_SNPs_small.append([C_chrName,C_position]);
-				#	with open(logName, "a") as myfile:
-				#		myfile.write("\t\t|\t\tline_C  = '"+line_C.strip()+"'\n");
+					testval = 1;
+				if [C_chrName,C_position] in hapmap_loci_unphased:
+					child_SNPs_unphased.append([C_chrName,C_position,C_countA,C_countT,C_countG,C_countC]);
+					child_SNPs_unphased_small.append([C_chrName,C_position]);
+					testval = 1;
+				if (testval == 1):
 					if counter == 0:
 						with open(logName, "a") as myfile:
 							myfile.write("\t\t|\t\t");
@@ -274,7 +298,10 @@ with open(logName, "a") as myfile:
 for SNP in hapmap_loci:
 	if SNP in child_SNPs_small:
 		SNP_data = child_SNPs[child_SNPs_small.index(SNP)];
-		print SNP[0]+"\t"+SNP[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5];
+		print SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5]+"\t+";
+	if SNP in child_SNPs_unphased_small:
+		SNP_data = child_SNPs_unphased[child_SNPs_unphased_small.index(SNP)];
+		print SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5]+"\t-";
 
 #------------------------------------------------------------------------------------------------------------
 # End of main code block.
