@@ -34,8 +34,8 @@ echo "" >> $logName;
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 
-echo "Running 'scripts_seqModules/scripts_ddRADseq/project.paired_WGseq.install_3.sh'" >> $logName;
-echo "Variables passed via command-line from 'scripts_seqModules/scripts_ddRADseq/project.paired_WGseq.install_2.php' :" >> $logName;
+echo "Running 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_3.sh'" >> $logName;
+echo "Variables passed via command-line from 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_2.php' :" >> $logName;
 echo "\tuser     = '"$user"'" >> $logName;
 echo "\tproject  = '"$project"'" >> $logName;
 echo "\tmain_dir = '"$main_dir"'" >> $logName;
@@ -61,6 +61,21 @@ then
 else
 	echo "\t\thapmap = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
+	# Determine location of hapmap being used.
+	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+		hapmapUser=$user;
+		hapmapUsed=1
+	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
+		hapmapUser="default";
+		hapmapUsed=1;
+	else
+		hapmapUsed=0;
+	fi
+	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
 
 # Determine location of genome being used.
@@ -130,11 +145,11 @@ else
 
 
 	##==============================================================================
-	## Initial processing of paired-WGseq dataset.
+	## Initial processing of paired-ddRADseq dataset.
 	##------------------------------------------------------------------------------
-	echo "#=================================================#" >> $logName;
-	echo "# Initial processing of paired-end WGseq dataset. #" >> $logName;
-	echo "#=================================================#" >> $logName;
+	echo "#====================================================#" >> $logName;
+	echo "# Initial processing of paired-end ddRADseq dataset. #" >> $logName;
+	echo "#====================================================#" >> $logName;
 
 	# Align fastq against genome.
 	echo "[[=- Align with Bowtie -=]]" >> $logName;

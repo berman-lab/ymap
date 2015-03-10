@@ -63,16 +63,16 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 # Determine location of hapmap being used.
 if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
 then
-    hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
-    hapmapUser=$user;
-    hapmapUsed=1
+	hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+	hapmapUser=$user;
+	hapmapUsed=1
 elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
 then
-    hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
-    hapmapUser="default";
-    hapmapUsed=1;
+	hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
+	hapmapUser="default";
+	hapmapUsed=1;
 else
-    hapmapUsed=0;
+	hapmapUsed=0;
 fi
 echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 
@@ -104,7 +104,7 @@ fi
 ##------------------------------------------------------------------------------
 if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]
 then
-	echo "\tparent or hapmap data already preprocessed with python script: 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
+	echo "\tParent or hapmap data already preprocessed with python script: 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
 	echo "\tSNP data already preprocessed with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 else
 	if [ -f $parentDirectory"putative_SNPs_v4.txt" ]
@@ -126,7 +126,7 @@ else
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
 	# preprocess dataset SNP data.
-	echo "\Processing SNP data with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
+	echo "\tProcessing SNP data with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 	python $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	chmod 0777 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	echo "\tpre-processing complete." >> $logName;
