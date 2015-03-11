@@ -188,7 +188,7 @@ while not (feof(H_data))
 		H_SNP_coordinate  = sscanf(H_dataLine, '%s',2);   for i = 1:size(sscanf(H_dataLine,'%s',1),2);   H_SNP_coordinate(1)  = [];   end;
 		H_SNP_alleleA     = sscanf(H_dataLine, '%s',3);   for i = 1:size(sscanf(H_dataLine,'%s',2),2);   H_SNP_alleleA(1)     = [];   end;
 		H_SNP_alleleB     = sscanf(H_dataLine, '%s',4);   for i = 1:size(sscanf(H_dataLine,'%s',3),2);   H_SNP_alleleB(1)     = [];   end;
-		H_SNP_hapmapEntry = H_dataLine                    for i = 1:size(sscanf(H_dataLine,'%s',4),2);   H_SNP_hapmapEntry(1) = [];   end;
+		H_SNP_hapmapEntry = H_dataLine;                   for i = 1:size(sscanf(H_dataLine,'%s',4),2);   H_SNP_hapmapEntry(1) = [];   end;
 		H_chr_num         = find(strcmp(H_SNP_chr_name, chr_name));
 
 		%
