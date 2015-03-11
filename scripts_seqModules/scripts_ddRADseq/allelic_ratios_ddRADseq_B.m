@@ -434,7 +434,7 @@ if (useHapmap)
 	% C_chr_baseCall           = majority basecall of SNP.
 	% C_chr_SNP_homologA       = hapmap homolog a basecall.
 	% C_chr_SNP_homologB       = hapmap homolog b basecall.
-	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?
+	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?   0 = 'correct phase, no', 1 = 'incorrect phase, yes', 10 = 'no phasing info'.
 else
 %
 % Run when compared vs. a parent dataset or vs. itself. 
@@ -490,252 +490,166 @@ if (useHapmap)
 					homologA                        = C_chr_SNP_homologA{    chr}{i};
 					homologB                        = C_chr_SNP_homologB{    chr}{i};
 					flipper                         = C_chr_SNP_flipHomologs{chr}(i);
-					if (flipper)
+					if (flipper == 1)
 						temp                    = homologA;
 						homologA                = homologB;
 						homologB                = temp;
+					elseif (flipper == 10)                     % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
+						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
 					end;
 					allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
-					if (localCopyEstimate <= 0)
-						colorList = [1 1 1];
+					if (localCopyEstimate <= 0);                        colorList = colorNoData;
 					elseif (localCopyEstimate == 1)
-						if (baseCall == homologA)
-							colorList = colorA;
-						elseif (baseCall == homologB)
-							colorList = colorB;
-						else
-							colorList = hom_unphased_color;
+						if (baseCall == homologA);                  colorList = colorA;
+						elseif (baseCall == homologB);              colorList = colorB;
+						else;                                       colorList = unphased_color_1of1;
 						end;
 					elseif (localCopyEstimate == 2)
 						if (baseCall == homologA)
-							if (allelicFraction > 3/4)
-								colorList = colorAA;
-							else
-								colorList = colorAB;
+							if (allelicFraction > 3/4);         colorList = colorAA;
+							else;                               colorList = colorAB;
 							end;
 						elseif (baseCall == homologB)
-							if (allelicFraction > 3/4)
-								colorList = colorBB;
-							else
-								colorList = colorAB;
+							if (allelicFraction > 3/4);         colorList = colorBB;
+							else;                               colorList = colorAB;
 							end;
 						else
-							if (allelicFraction > 3/4)
-								colorList = hom_unphased_color;
-							else
-								colorList = het_unphased_color;
+							if (allelicFraction > 3/4);         colorList = unphased_color_2of2;
+							else;                               colorList = unphased_color_1of2;
 							end;
 						end;
 					elseif (localCopyEstimate == 3)
 						if (baseCall == homologA)
-							if (allelicFraction > 5/6)
-								colorList = colorAAA;
-							else
-								colorList = colorAAB;
+							if (allelicFraction > 5/6);         colorList = colorAAA;
+							else;                               colorList = colorAAB;
 							end;
 						elseif (baseCall == homologB)
-							if (allelicFraction > 5/6)
-								colorList = colorBBB;
-							else
-								colorList = colorABB;
+							if (allelicFraction > 5/6);         colorList = colorBBB;
+							else;                               colorList = colorABB;
 							end;
 						else
-							if (allelicFraction > 5/6)
-								colorList = unphased_color_3of3;
-							else
-								colorList = unphased_color_2of3;
+							if (allelicFraction > 5/6);         colorList = unphased_color_3of3;
+							else;                               colorList = unphased_color_2of3;
 							end;
 						end;
 					elseif (localCopyEstimate == 4)
 						if (baseCall == homologA)
-							if (allelicFraction > 7/8)
-								colorList = colorAAAA;
-							elseif (allelicFraction > 5/8)
-								colorList = colorAAAB;
-							else
-								colorList = colorAABB;
+							if (allelicFraction > 7/8);         colorList = colorAAAA;
+							elseif (allelicFraction > 5/8);     colorList = colorAAAB;
+							else;                               colorList = colorAABB;
 							end;
 						elseif (baseCall == homologB)
-							if (allelicFraction > 7/8)
-								colorList = colorBBBB;
-							elseif (allelicFraction > 5/8)
-								colorList = colorABBB;
-							else
-								colorList = colorAABB;
+							if (allelicFraction > 7/8);         colorList = colorBBBB;
+							elseif (allelicFraction > 5/8);     colorList = colorABBB;
+							else;                               colorList = colorAABB;
 							end;
 						else
-							if (allelicFraction > 7/8)
-								colorList = unphased_color_4of4;
-							elseif (allelicFraction > 5/8)
-								colorList = unphased_color_3of4;
-							else
-								colorList = unphased_color_2of4;
+							if (allelicFraction > 7/8);         colorList = unphased_color_4of4;
+							elseif (allelicFraction > 5/8);     colorList = unphased_color_3of4;
+							else;                               colorList = unphased_color_2of4;
 							end;
 						end;
 					elseif (localCopyEstimate == 5)
 						if (baseCall == homologA)
-							if (allelicFraction > 9/10)
-								colorList = colorAAAAA;
-							elseif (allelicFraction > 7/10)
-								colorList = colorAAAAB;
-							else
-								colorList = colorAAABB;
+							if (allelicFraction > 9/10);        colorList = colorAAAAA;
+							elseif (allelicFraction > 7/10);    colorList = colorAAAAB;
+							else;                               colorList = colorAAABB;
 							end;
 						elseif (baseCall == homologB)
-							if (allelicFraction > 9/10)
-								colorList = colorBBBBB;
-							elseif (allelicFraction > 7/10)
-								colorList = colorABBBB;
-							else
-								colorList = colorAABBB;
+							if (allelicFraction > 9/10);        colorList = colorBBBBB;
+							elseif (allelicFraction > 7/10);    colorList = colorABBBB;
+							else;                               colorList = colorAABBB;
 							end;
 						else
-							if (allelicFraction > 9/10)
-								colorList = unphased_color_5of5;
-							elseif (allelicFraction > 7/10)
-								colorList = unphased_color_4of5;
-							else
-								colorList = unphased_color_3of5;
+							if (allelicFraction > 9/10);        colorList = unphased_color_5of5;
+							elseif (allelicFraction > 7/10);    colorList = unphased_color_4of5;
+							else;                               colorList = unphased_color_3of5;
 							end;
 						end;
 					elseif (localCopyEstimate == 6)
 						if (baseCall == homologA)
-							if (allelicFraction > 11/12)
-								colorList = colorAAAAAA;
-							elseif (allelicFraction > 9/12)
-								colorList = colorAAAAAB;
-							elseif (allelicFraction > 7/12)
-								colorList = colorAAAABB;
-							else
-								colorList = colorAAABBB;
+							if (allelicFraction > 11/12);       colorList = colorAAAAAA;
+							elseif (allelicFraction > 9/12);    colorList = colorAAAAAB;
+							elseif (allelicFraction > 7/12);    colorList = colorAAAABB;
+							else;                               colorList = colorAAABBB;
 							end;
 						elseif (baseCall == homologB)
-							if (allelicFraction > 11/12)
-								colorList = colorBBBBBB;
-							elseif (allelicFraction > 9/12)
-								colorList = colorABBBBB;
-							elseif (allelicFraction > 7/12)
-								colorList = colorAABBBB;
-							else
-								colorList = colorAAABBB;
+							if (allelicFraction > 11/12);       colorList = colorBBBBBB;
+							elseif (allelicFraction > 9/12);    colorList = colorABBBBB;
+							elseif (allelicFraction > 7/12);    colorList = colorAABBBB;
+							else;                               colorList = colorAAABBB;
 							end;
 						else
-							if (allelicFraction > 11/12)
-								colorList = unphased_color_6of6;
-							elseif (allelicFraction > 9/12)
-								colorList = unphased_color_5of6;
-							elseif (allelicFraction > 7/12)
-								colorList = unphased_color_4of6;
-							else
-								colorList = unphased_color_3of6;
+							if (allelicFraction > 11/12);       colorList = unphased_color_6of6;
+							elseif (allelicFraction > 9/12);    colorList = unphased_color_5of6;
+							elseif (allelicFraction > 7/12);    colorList = unphased_color_4of6;
+							else;                               colorList = unphased_color_3of6;
 							end;
 						end;
 					elseif (localCopyEstimate == 7)
 						if (baseCall == homologA)
-							if (allelicFraction > 13/14)
-								colorList = colorAAAAAAA;
-							elseif (allelicFraction > 11/14)
-								colorList = colorAAAAAAB;
-							elseif (allelicFraction > 9/14)
-								colorList = colorAAAAABB;
-							else
-								colorList = colorAAAABBB;
+							if (allelicFraction > 13/14);       colorList = colorAAAAAAA;
+							elseif (allelicFraction > 11/14);   colorList = colorAAAAAAB;
+							elseif (allelicFraction > 9/14);    colorList = colorAAAAABB;
+							else;                               colorList = colorAAAABBB;
 							end;
 						elseif (baseCall == homologB)
-							if (allelicFraction > 13/14)
-								colorList = colorBBBBBBB;
-							elseif (allelicFraction > 11/14)
-								colorList = colorABBBBBB;
-							elseif (allelicFraction > 9/14)
-								colorList = colorAABBBBB;
-							else
-								colorList = colorAAABBBB;
+							if (allelicFraction > 13/14);       colorList = colorBBBBBBB;
+							elseif (allelicFraction > 11/14);   colorList = colorABBBBBB;
+							elseif (allelicFraction > 9/14);    colorList = colorAABBBBB;
+							else;                               colorList = colorAAABBBB;
 							end;
 						else
-							if (allelicFraction > 13/14)
-								colorList = unphased_color_7of7;
-							elseif (allelicFraction > 11/14)
-								colorList = unphased_color_6of7;
-							elseif (allelicFraction > 9/14)
-								colorList = unphased_color_5of7;
-							else
-								colorList = unphased_color_4of7;
+							if (allelicFraction > 13/14);       colorList = unphased_color_7of7;
+							elseif (allelicFraction > 11/14);   colorList = unphased_color_6of7;
+							elseif (allelicFraction > 9/14);    colorList = unphased_color_5of7;
+							else;                               colorList = unphased_color_4of7;
 							end;
 						end;
 					elseif (localCopyEstimate == 8)
 						if (baseCall == homologA)
-							if (allelicFraction > 15/16)
-								colorList = colorAAAAAAAA;
-							elseif (allelicFraction > 13/16)
-								colorList = colorAAAAAAAB;
-							elseif (allelicFraction > 11/16)
-								colorList = colorAAAAAABB;
-							elseif (allelicFraction > 9/16)
-								colorList = colorAAAAABBB;
-							else
-								colorList = colorAAAABBBB;
+							if (allelicFraction > 15/16);       colorList = colorAAAAAAAA;
+							elseif (allelicFraction > 13/16);   colorList = colorAAAAAAAB;
+							elseif (allelicFraction > 11/16);   colorList = colorAAAAAABB;
+							elseif (allelicFraction > 9/16);    colorList = colorAAAAABBB;
+							else;                               colorList = colorAAAABBBB;
 							end;
 						elseif (baseCall == homologB)
-							if (allelicFraction > 15/16)
-								colorList = colorBBBBBBBB;
-							elseif (allelicFraction > 13/16)
-								colorList = colorABBBBBBB;
-							elseif (allelicFraction > 11/16)
-								colorList = colorAABBBBBB;
-							elseif (allelicFraction > 9/16)
-								colorList = colorAAABBBBB;
-							else
-								colorList = colorAAAABBBB;
+							if (allelicFraction > 15/16);       colorList = colorBBBBBBBB;
+							elseif (allelicFraction > 13/16);   colorList = colorABBBBBBB;
+							elseif (allelicFraction > 11/16);   colorList = colorAABBBBBB;
+							elseif (allelicFraction > 9/16);    colorList = colorAAABBBBB;
+							else;                               colorList = colorAAAABBBB;
 							end;
 						else
-							if (allelicFraction > 15/16)
-								colorList = unphased_color_8of8;
-							elseif (allelicFraction > 13/16)
-								colorList = unphased_color_7of8;
-							elseif (allelicFraction > 11/16)
-								colorList = unphased_color_6of8;
-							elseif (allelicFraction > 9/16)
-								colorList = unphased_color_5of8;
-							else
-								colorList = unphased_color_4of8;
+							if (allelicFraction > 15/16);       colorList = unphased_color_8of8;
+							elseif (allelicFraction > 13/16);   colorList = unphased_color_7of8;
+							elseif (allelicFraction > 11/16);   colorList = unphased_color_6of8;
+							elseif (allelicFraction > 9/16);    colorList = unphased_color_5of8;
+							else;                               colorList = unphased_color_4of8;
 							end;
 						end;
 					elseif (localCopyEstimate >= 9)
 						if (baseCall == homologA)
-							if (allelicFraction > 17/18)
-								colorList = colorAAAAAAAAA;
-							elseif (allelicFraction > 15/18)
-								colorList = colorAAAAAAAAB;
-							elseif (allelicFraction > 13/18)
-								colorList = colorAAAAAAABB;
-							elseif (allelicFraction > 11/18)
-								colorList = colorAAAAAABBB;
-							else
-								colorList = colorAAAAABBBB;
+							if (allelicFraction > 17/18);       colorList = colorAAAAAAAAA;
+							elseif (allelicFraction > 15/18);   colorList = colorAAAAAAAAB;
+							elseif (allelicFraction > 13/18);   colorList = colorAAAAAAABB;
+							elseif (allelicFraction > 11/18);   colorList = colorAAAAAABBB;
+							else;                               colorList = colorAAAAABBBB;
 							end;
 						elseif (baseCall == homologB)
-							if (allelicFraction > 17/18)
-								colorList = colorBBBBBBBBB;
-							elseif (allelicFraction > 15/18)
-								colorList = colorABBBBBBBB;
-							elseif (allelicFraction > 13/18)
-								colorList = colorAABBBBBBB;
-							elseif (allelicFraction > 11/18)
-								colorList = colorAAABBBBBB;
-							else
-								colorList = colorAAAABBBBB;
+							if (allelicFraction > 17/18);       colorList = colorBBBBBBBBB;
+							elseif (allelicFraction > 15/18);   colorList = colorABBBBBBBB;
+							elseif (allelicFraction > 13/18);   colorList = colorAABBBBBBB;
+							elseif (allelicFraction > 11/18);   colorList = colorAAABBBBBB;
+							else;                               colorList = colorAAAABBBBB;
 							end;
 						else
-							if (allelicFraction > 17/18)
-								colorList = unphased_color_9of9;
-							elseif (allelicFraction > 15/18)
-								colorList = unphased_color_8of9;
-							elseif (allelicFraction > 13/18)
-								colorList = unphased_color_7of9;
-							elseif (allelicFraction > 11/18)
-								colorList = unphased_color_6of9;
-							else
-								colorList = unphased_color_5of9;
+							if (allelicFraction > 17/18);       colorList = unphased_color_9of9;
+							elseif (allelicFraction > 15/18);   colorList = unphased_color_8of9;
+							elseif (allelicFraction > 13/18);   colorList = unphased_color_7of9;
+							elseif (allelicFraction > 11/18);   colorList = unphased_color_6of9;
+							else;                               colorList = unphased_color_5of9;
 							end;
 						end;
 					end;

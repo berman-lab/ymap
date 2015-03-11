@@ -111,87 +111,59 @@ if (useHapmap)
 					homologA                        = C_chr_SNP_homologA{    chr}{i};
 					homologB                        = C_chr_SNP_homologB{    chr}{i};
 					flipper                         = C_chr_SNP_flipHomologs{chr}(i);
-					if (flipper)
+					if (flipper == 1)                          % Variable 'flipper' value of '1' means the homologs are phased wrong.
 						temp                    = homologA;
 						homologA                = homologB;
 						homologB                = temp;
+					elseif (flipper == 10)                     % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
+						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
 					end;
 					allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
-					if (localCopyEstimate <= 0)
-						colorList = [1 1 1];
-					elseif (localCopyEstimate == 1)
-						colorList = hom_color;
+					if (localCopyEstimate <= 0);                colorList = colorNoData;
+					elseif (localCopyEstimate == 1);            colorList = color_1of1;
 					elseif (localCopyEstimate == 2)
-						if (allelicFraction > 3/4)
-							colorList = hom_color;
-						else
-							colorList = het_color;
+						if (allelicFraction > 3/4);         colorList = color_2of2;
+						else;                               colorList = color_1of2;
 						end;
 					elseif (localCopyEstimate == 3)
-						if (allelicFraction > 5/6)
-							colorList = color_3of3;
-						else
-							colorList = color_2of3;
+						if (allelicFraction > 5/6);         colorList = color_3of3;
+						else;                               colorList = color_2of3;
 						end;
 					elseif (localCopyEstimate == 4)
-						if (allelicFraction > 7/8)
-							colorList = color_4of4;
-						elseif (allelicFraction > 5/8)
-							colorList = color_3of4;
-						else
-							colorList = color_2of4;
+						if (allelicFraction > 7/8);         colorList = color_4of4;
+						elseif (allelicFraction > 5/8);     colorList = color_3of4;
+						else;                               colorList = color_2of4;
 						end;
 					elseif (localCopyEstimate == 5)
-						if (allelicFraction > 9/10)
-							colorList = color_5of5;
-						elseif (allelicFraction > 7/10)
-							colorList = color_4of5;
-						else
-							colorList = color_3of5;
+						if (allelicFraction > 9/10);        colorList = color_5of5;
+						elseif (allelicFraction > 7/10);    colorList = color_4of5;
+						else;                               colorList = color_3of5;
 						end;
 					elseif (localCopyEstimate == 6)
-						if (allelicFraction > 11/12)
-							colorList = color_6of6;
-						elseif (allelicFraction > 9/12)
-							colorList = color_5of6;
-						elseif (allelicFraction > 7/12)
-							colorList = color_4of6;
-						else
-							colorList = color_3of6;
+						if (allelicFraction > 11/12);       colorList = color_6of6;
+						elseif (allelicFraction > 9/12);    colorList = color_5of6;
+						elseif (allelicFraction > 7/12);    colorList = color_4of6;
+						else;                               colorList = color_3of6;
 						end;
 					elseif (localCopyEstimate == 7)
-						if (allelicFraction > 13/14)
-							colorList = color_7of7;
-						elseif (allelicFraction > 11/14)
-							colorList = color_6of7;
-						elseif (allelicFraction > 9/14)
-							colorList = color_5of7;
-						else
-							colorList = color_4of7;
+						if (allelicFraction > 13/14);       colorList = color_7of7;
+						elseif (allelicFraction > 11/14);   colorList = color_6of7;
+						elseif (allelicFraction > 9/14);    colorList = color_5of7;
+						else;                               colorList = color_4of7;
 						end;
 					elseif (localCopyEstimate == 8)
-						if (allelicFraction > 15/16)
-							colorList = color_8of8;
-						elseif (allelicFraction > 13/16)
-							colorList = color_7of8;
-						elseif (allelicFraction > 11/16)
-							colorList = color_6of8;
-						elseif (allelicFraction > 9/16)
-							colorList = color_5of8;
-						else
-							colorList = color_4of8;
+						if (allelicFraction > 15/16);       colorList = color_8of8;
+						elseif (allelicFraction > 13/16);   colorList = color_7of8;
+						elseif (allelicFraction > 11/16);   colorList = color_6of8;
+						elseif (allelicFraction > 9/16);    colorList = color_5of8;
+						else;                               colorList = color_4of8;
 						end;
 					elseif (localCopyEstimate >= 9)
-						if (allelicFraction > 17/18)
-							colorList = color_9of9;
-						elseif (allelicFraction > 15/18)
-							colorList = color_8of9;
-						elseif (allelicFraction > 13/18)
-							colorList = color_7of9;
-						elseif (allelicFraction > 11/18)
-							colorList = color_6of9;
-						else
-							colorList = color_5of9;
+						if (allelicFraction > 17/18);       colorList = color_9of9;
+						elseif (allelicFraction > 15/18);   colorList = color_8of9;
+						elseif (allelicFraction > 13/18);   colorList = color_7of9;
+						elseif (allelicFraction > 11/18);   colorList = color_6of9;
+						else;                               colorList = color_5of9;
 						end;
 					end;
 

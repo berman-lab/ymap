@@ -219,7 +219,20 @@ end;
 %	X:Y = C_chr_SNP_data_positions:C_chr_SNP_data_ratios
 %
 
-%% -----------------------------------------------------------------------------------------
+%% ----------------------------------------------------------------------------------------
+% Clean up ratio data by discarding perfectly homozygous data.
+%------------------------------------------------------------------------------------------
+for chr = 1:num_chrs
+	if (chr_in_use(chr) == 1)
+		C_chr_SNP_data_positions{chr}(C_chr_SNP_data_ratios{chr} == 0) = [];
+		C_chr_SNP_data_ratios{   chr}(C_chr_SNP_data_ratios{chr} == 0) = [];
+		C_chr_SNP_data_positions{chr}(C_chr_SNP_data_ratios{chr} == 1) = [];
+		C_chr_SNP_data_ratios{   chr}(C_chr_SNP_data_ratios{chr} == 1) = [];
+	end;
+end;
+
+
+%% ----------------------------------------------------------------------------------------
 % Setup for main figure generation.
 %------------------------------------------------------------------------------------------
 % threshold for full color saturation in SNP/LOH figure.
@@ -303,8 +316,8 @@ for chr = 1:num_chrs
 		% standard : show allelic ratio data.
 		chr_length                     = ceil(chr_size(chr)/bases_per_bin);
 		dataX                          = (C_chr_SNP_data_positions{chr}/bases_per_bin)';
-		dataY1                         = C_chr_SNP_data_ratios{chr};
-		dataY2                         = (dataY1*maxY)';
+		dataY1                         = (C_chr_SNP_data_ratios{chr}*maxY)';
+		dataY2                         = maxY - dataY1;
 		dataX(C_chr_count{chr}  <= 20) = [];
 		dataY2(C_chr_count{chr} <= 20) = [];
 		if (length(dataX) > 0)

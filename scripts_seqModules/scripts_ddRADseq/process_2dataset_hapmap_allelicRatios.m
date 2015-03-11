@@ -194,7 +194,22 @@ while not (feof(H_data))
 		%
 		%% darren: Need to make hapmapEntry consensus determination here.
 		%
-
+		H_SNP_hapmapEntry_list   = strsplit(strtrim(H_SNP_hapmapEntry));
+		H_SNP_hapmapEntry_values = [];
+		for i = 1:length(H_SNP_hapmapEntry_list)
+			H_SNP_hapmapEntry_values = [H_SNP_hapmapEntry_values str2num(H_SNP_hapmapEntry_list{i})];
+		end;
+		count_0     = length(find(H_SNP_hapmapEntry_values == 0 ));   % 0  : correct phase.
+		count_1     = length(find(H_SNP_hapmapEntry_values == 1 ));   % 1  : incorrect phase.
+		count_10    = length(find(H_SNP_hapmapEntry_values == 10));   % 10 : no phase information, due to no data at coodinate in child dataset.
+		count_11    = length(find(H_SNP_hapmapEntry_values == 11));   % 11 : no phase information, due to coordinate not matching a LOH fragment in child dataset.
+		count_12    = length(find(H_SNP_hapmapEntry_values == 12));   % 12 : no phase information, due to surprise allele in child dataset.
+		count_error = count_10 + count_11 + count12;
+		if (count_0 > count_1)       H_SNP_hapmapEntry_consensus = 0;               % More evidence for correct phasing.
+		elseif (count_1 > count_0)   H_SNP_hapmapEntry_consensus = 1;               % More evidence for incorrect phasing.
+		elseif (count_0 == 0)        H_SNP_hapmapEntry_consensus = 10;              % No phasing information. All error codes will be treated the same.
+		else                         H_SNP_hapmapEntry_consensus = round(rand());   % Equal non-zero evidence for correct and incorrect phasing, so choose 0 or 1 at random.
+		end;
 		if (length(H_chr_num) > 0)
 			if (H_chr_num ~= old_chr)
 				fprintf(['\tchr = ' num2str(H_chr_num) '\n']);
@@ -205,7 +220,7 @@ while not (feof(H_data))
 			H_chr_SNP_data_positions{H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_coordinate;
 			H_chr_SNP_alleleA{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleA;
 			H_chr_SNP_alleleB{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleB;
-			H_chr_SNP_hapmapEntry{   H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_hapmapEntry;
+			H_chr_SNP_hapmapEntry{   H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_hapmapEntry_consensus;
 			old_chr = H_chr_num;
 		else
 			old_chr = 0;
