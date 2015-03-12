@@ -196,165 +196,6 @@ else
 end;
 
 
-%%================================================================================================
-% Load pre-processed ddRADseq fragment GC-bias data for genome.
-%-------------------------------------------------------------------------------------------------
-fprintf(['ddRADseq_bins_GC_ratios_file :\n\t' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.MfeI_MboI.txt\n']);
-GC_ratios_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.MfeI_MboI.txt'], 'r');
-fprintf(['\t' num2str(GC_ratios_fid) '\n']);
-fragID = 0;
-while not (feof(GC_ratios_fid))
-	dataLine = fgetl(GC_ratios_fid);
-	if (length(dataLine) > 0)
-		if (dataLine(1) ~= '#')
-			% The number of valid lines found so far...  the number of usable restriction fragments with data so far.
-			fragID              = fragID + 1;
-			chr                 = str2num(sscanf(dataLine, '%s',1));
-			fragment_start      = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-			fragment_end        = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
-			GCratio             = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      GCratio(1)        = []; end;    GCratio        = str2num(GCratio);
-			GCratioData(fragID) = GCratio;
-		end;
-	end;
-end;
-fclose(GC_ratios_fid);
-
-
-%%================================================================================================
-% Load pre-processed ddRADseq fragment repetitiveness data for genome.
-%-------------------------------------------------------------------------------------------------
-fprintf(['ddRADseq_bins_repetitiveness_file :\n\t' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.MfeI_MboI.txt\n']);
-repetitiveness_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.MfeI_MboI.txt'], 'r');
-fprintf(['\t' num2str(repetitiveness_fid) '\n']);
-fragID = 0;
-while not (feof(repetitiveness_fid))
-	dataLine = fgetl(repetitiveness_fid);
-	if (length(dataLine) > 0)
-		if (dataLine(1) ~= '#')
-			% The number of valid lines found so far...  the number of usable restriction fragments with data so far.
-			fragID                     = fragID + 1;
-			chr                        = str2num(sscanf(dataLine, '%s',1));
-			fragment_start             = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-			fragment_end               = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
-			repetitiveness             = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      repetitiveness(1) = []; end;    repetitiveness = str2num(repetitiveness);
-			repetitivenessData(fragID) = repetitiveness;
-		end;
-	end;
-end;
-fclose(repetitiveness_fid);
-
-
-%%================================================================================================
-% Calculate distance from fragment center to nearest end of chromosome.
-%-------------------------------------------------------------------------------------------------
-fragment_data = project_fragments_CNV;
-numFragments  = length(fragment_data);
-for fragID = 1:numFragments
-	%	fragment_data(count).chr        = chr_num;
-	%	fragment_data(count).startbp    = bp_start;
-	%	fragment_data(count).endbp      = bp_end;
-	%	chr_size
-	frag_chrSize               = chr_size(fragment_data(fragID).chr);
-	frag_center                = (fragment_data(fragID).startbp + fragment_data(fragID).endbp)/2;
-	frag_nearestChrEnd         = min(frag_center, frag_chrSize - frag_center);
-	chrEndDistanceData(fragID) = frag_nearestChrEnd;
-end;
-
-
-%%================================================================================================
-% Add reference depth and GC-content data to common data structure : 'fragment_data'
-%-------------------------------------------------------------------------------------------------
-fragment_data = project_fragments_CNV;
-numFragments  = length(fragment_data);
-for fragID = 1:numFragments
-	% Add parent read depth to common data structure.
-	fragment_data(fragID).ave_reads_parent = parent_fragments_CNV(fragID).ave_reads;
-
-	% Add GCratio data to common data structure.
-	fragment_data(fragID).GC_bias          = GCratioData(fragID);
-
-	% Add nearest end distance data to common data structure.
-	fragment_data(fragID).nearestEnd       = chrEndDistanceData(fragID);
-
-	% Initialize all data as being usable.
-	fragment_data(fragID).usable           = 1;
-	fragment_data(fragID).usable_parent    = 1;
-end;
-
-
-%%================================================================================================
-% Determine which fragments have usable data.
-%-------------------------------------------------------------------------------------------------
-fprintf('Gathering [fragment length], [CNV], & [GC bias] data for plotting bias and correction.\n');
-for fragID = 1:numFragments
-%	if ((fragment_data(fragID).length == 0) || (fragment_data(fragID).ave_reads == 0) || (fragment_data(fragID).ave_reads_parent == 0))
-	if (fragment_data(fragID).length == 0)
-		fragment_data(fragID).usable        = 0;
-		fragment_data(fragID).usable_parent = 0;
-	end;
-end;
-
-
-%% ===============================================================================================
-% Construct figures illustrating LOWESS fitting and normalization.
-%-------------------------------------------------------------------------------------------------
-fprintf('Generating figure with plot of length vs. coverage data.\n');
-% subplot handle list.
-sh = zeros(11,1);
-
-
-%% ****************************************************************************************************************************************************************************
-% *****************************************************************************************************************************************************************************
-% *****************************************************************************************************************************************************************************
-
-
-%% ===============================================================================================
-% Prepare for LOWESS fitting 1 : correcting fragment_length bias.
-%-------------------------------------------------------------------------------------------------
-fprintf('\tPreparing for LOWESS fitting 1 : fragment length vs. average read depth.\n');
-X_length                    = zeros(1,numFragments);
-Y_reads_project             = zeros(1,numFragments);
-Y_reads_parent              = zeros(1,numFragments);
-for fragID = 1:numFragments
-	X_length(fragID)        = fragment_data(fragID).length; 
-	Y_reads_project(fragID) = fragment_data(fragID).ave_reads;
-	Y_reads_parent(fragID)  = fragment_data(fragID).ave_reads_parent;
-end;
-X_length_trimmed            = X_length;
-Y_reads_project_trimmed     = Y_reads_project;
-Y_reads_parent_trimmed      = Y_reads_parent;
-%------------------------------------------------------------*
-% Trim dataset before LOWESS fitting 1.                      |
-%------------------------------------------------------------*
-	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-		% Remove fragments longer than 10000bp.
-		Y_reads_project_trimmed( X_length_trimmed > 10000)      = [];
-		Y_reads_parent_trimmed(  X_length_trimmed > 10000)      = [];
-		X_length_trimmed(        X_length_trimmed > 10000)      = [];
-	else
-		% Remove fragments longer than 1000bp.
-		Y_reads_project_trimmed( X_length_trimmed > 1000)       = [];
-		Y_reads_parent_trimmed(  X_length_trimmed > 1000)       = [];
-		X_length_trimmed(        X_length_trimmed > 1000)       = [];
-	end;
-%------------------------------------------------------------*
-%	% Remove fragments with zero average reads in project.
-%	Y_reads_parent_trimmed(  Y_reads_project_trimmed == 0)  = [];
-%	X_length_trimmed(        Y_reads_project_trimmed == 0)  = [];
-%	Y_reads_project_trimmed( Y_reads_project_trimmed == 0)  = [];
-%------------------------------------------------------------*
-%	% Remove fragments with less than 1.5 average reads in project.
-%	Y_reads_parent_trimmed(  Y_reads_project_trimmed < 1.5) = [];
-%	X_length_trimmed(        Y_reads_project_trimmed < 1.5) = [];
-%	Y_reads_project_trimmed( Y_reads_project_trimmed < 1.5) = [];
-%------------------------------------------------------------*
-%	% Remove fragments with less than 1.5 average reads in parent.
-%	X_length_trimmed(        Y_reads_parent_trimmed < 1.5)  = [];
-%	Y_reads_project_trimmed( Y_reads_parent_trimmed < 1.5)  = [];
-%	Y_reads_parent_trimmed(  Y_reads_parent_trimmed < 1.5)  = [];
-%------------------------------------------------------------*
-
-
 %% ====================================================================
 % Load bias selections from 'dataBiases.txt' file.
 %----------------------------------------------------------------------
@@ -372,83 +213,199 @@ else
 	bias4      = fgetl(biases_fid);
 	fclose(biases_fid);
 
-	if (strcmp(bias1,'True') == 1)	performLengthbiasCorrection = true;
-	else							performLengthbiasCorrection = false;
+	if (strcmp(bias1,'True') == 1)  performLengthbiasCorrection = true;
+	else                                                    performLengthbiasCorrection = false;
 	end;
-	if (strcmp(bias2,'True') == 1)	performGCbiasCorrection     = true;
-	else							performGCbiasCorrection     = false;
+	if (strcmp(bias2,'True') == 1)  performGCbiasCorrection     = true;
+	else                                                    performGCbiasCorrection     = false;
 	end;
-	if (strcmp(bias3,'True') == 1)	performRepetbiasCorrection  = true;
-	else							performRepetbiasCorrection  = false;
+	if (strcmp(bias3,'True') == 1)  performRepetbiasCorrection  = true;
+	else                                                    performRepetbiasCorrection  = false;
 	end;
-	if (strcmp(bias4,'True') == 1)	performEndbiasCorrection    = true;
-	else							performEndbiasCorrection    = false;
+	if (strcmp(bias4,'True') == 1)  performEndbiasCorrection    = true;
+	else                                                    performEndbiasCorrection    = false;
 	end;
 end;
 fprintf(['Length_flag = ' num2str(performLengthbiasCorrection) '; GC_flag = ' num2str(performGCbiasCorrection) '; Repet_flag = ' num2str(performRepetbiasCorrection) '; End_flag = ' num2str(performEndbiasCorrection) '.\n']);
 
 
-%% ===============================================================================================
-% LOWESS fitting project 1 : correcting fragment_length bias.
-%-------------------------------------------------------------------------------------------------
-fig1 = figure(1);
-figure(fig1);
-% Perform LOWESS fitting.
-fprintf('Subplot 1/15 : [EXPERIMENT] (Ave read depth) vs. (Fragment length).\n');
-sh(1) = subplot(3,4,[1 2]);
-fprintf('\tLOWESS fitting to trimmed project data.\n');
-[newX1_project, newY1_project] = optimize_mylowess(X_length_trimmed,Y_reads_project_trimmed,60, fit_length);   % divides span range from 0.01 to 0.99 then examines first 5.
-fprintf('\tLOWESS fitting to project data complete.\n');
-% Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
-Y_target                    = 1;
-Y_fitCurve1_project         = interp1(newX1_project,newY1_project,X_length,'spline');
-Y_reads_project_corrected_1 = Y_reads_project./Y_fitCurve1_project*Y_target;
-%-------------------------------------------------------------------------------------------------
-% Plotting raw average read depth vs. fragment length for project.
-%-------------------------------------------------------------------------------------------------
-plot(X_length,Y_reads_project,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize', 1);
-hold on;
-plot(newX1_project, newY1_project,'color','k','linestyle','-', 'linewidth',1);
-% plot(TGF_X1, TGF1_Y1,'color','r','linestyle','-', 'linewidth',1);
-% plot(TGF_X1, TGF1_Y2,'color','g','linestyle','-', 'linewidth',1);
-% plot(TGF_X1, TGF1_Y3,'color','b','linestyle','-', 'linewidth',1);
-hold off;
-axis normal;
-h = title('Examine bias between ddRADseq fragment length and read count. [EXP]');   set(h, 'FontSize', 10);
-h = ylabel('Average Reads');     set(h, 'FontSize', 10);
-h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
-set(gca,'FontSize',10);
-if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-	ylim([0 200]);
-	xlim([0 10000]);
-else
-	ylim([1 4*max(newY1_project)]);
-	xlim([0 1000]);
-end;
+if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat'],'file') == 0) && (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV_2.project.mat'],'file') == 0)
+	%%================================================================================================
+	% Load pre-processed ddRADseq fragment GC-bias data for genome.
+	%-------------------------------------------------------------------------------------------------
+	fprintf(['ddRADseq_bins_GC_ratios_file :\n\t' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.MfeI_MboI.txt\n']);
+	GC_ratios_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.MfeI_MboI.txt'], 'r');
+	fprintf(['\t' num2str(GC_ratios_fid) '\n']);
+	fragID = 0;
+	while not (feof(GC_ratios_fid))
+		dataLine = fgetl(GC_ratios_fid);
+		if (length(dataLine) > 0)
+			if (dataLine(1) ~= '#')
+				% The number of valid lines found so far...  the number of usable restriction fragments with data so far.
+				fragID              = fragID + 1;
+				chr                 = str2num(sscanf(dataLine, '%s',1));
+				fragment_start      = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
+				fragment_end        = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
+				GCratio             = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      GCratio(1)        = []; end;    GCratio        = str2num(GCratio);
+				GCratioData(fragID) = GCratio;
+			end;
+		end;
+	end;
+	fclose(GC_ratios_fid);
 
-if (useParent)
+
+	%%================================================================================================
+	% Load pre-processed ddRADseq fragment repetitiveness data for genome.
 	%-------------------------------------------------------------------------------------------------
-	% LOWESS fitting parent 1 : correcting fragment_length bias.
+	fprintf(['ddRADseq_bins_repetitiveness_file :\n\t' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.MfeI_MboI.txt\n']);
+	repetitiveness_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.MfeI_MboI.txt'], 'r');
+	fprintf(['\t' num2str(repetitiveness_fid) '\n']);
+	fragID = 0;
+	while not (feof(repetitiveness_fid))
+		dataLine = fgetl(repetitiveness_fid);
+		if (length(dataLine) > 0)
+			if (dataLine(1) ~= '#')
+				% The number of valid lines found so far...  the number of usable restriction fragments with data so far.
+				fragID                     = fragID + 1;
+				chr                        = str2num(sscanf(dataLine, '%s',1));
+				fragment_start             = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
+				fragment_end               = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
+				repetitiveness             = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      repetitiveness(1) = []; end;    repetitiveness = str2num(repetitiveness);
+				repetitivenessData(fragID) = repetitiveness;
+			end;
+		end;
+	end;
+	fclose(repetitiveness_fid);
+
+
+	%%================================================================================================
+	% Calculate distance from fragment center to nearest end of chromosome.
 	%-------------------------------------------------------------------------------------------------
-	%% Perform LOWESS fitting.
-	fprintf('Subplot 2/15 : [REFERENCE] (Ave read count) vs. (Fragment length).\n');
-	sh(2) = subplot(3,4,[3 4]);
-	fprintf('\tLOWESS fitting to reference data.\n');
-	[newX1_parent, newY1_parent] = optimize_mylowess(X_length_trimmed,Y_reads_parent_trimmed,60, fit_length);
-	fprintf('\tLOWESS fitting to referemce data complete.\n');
+	fragment_data = project_fragments_CNV;
+	numFragments  = length(fragment_data);
+	for fragID = 1:numFragments
+		%	fragment_data(count).chr        = chr_num;
+		%	fragment_data(count).startbp    = bp_start;
+		%	fragment_data(count).endbp      = bp_end;
+		%	chr_size
+		frag_chrSize               = chr_size(fragment_data(fragID).chr);
+		frag_center                = (fragment_data(fragID).startbp + fragment_data(fragID).endbp)/2;
+		frag_nearestChrEnd         = min(frag_center, frag_chrSize - frag_center);
+		chrEndDistanceData(fragID) = frag_nearestChrEnd;
+	end;
+
+
+	%%================================================================================================
+	% Add reference depth and GC-content data to common data structure : 'fragment_data'
+	%-------------------------------------------------------------------------------------------------
+	fragment_data = project_fragments_CNV;
+	numFragments  = length(fragment_data);
+	for fragID = 1:numFragments
+		% Add parent read depth to common data structure.
+		fragment_data(fragID).ave_reads_parent = parent_fragments_CNV(fragID).ave_reads;
+
+		% Add GCratio data to common data structure.
+		fragment_data(fragID).GC_bias          = GCratioData(fragID);
+
+		% Add nearest end distance data to common data structure.
+		fragment_data(fragID).nearestEnd       = chrEndDistanceData(fragID);
+
+		% Initialize all data as being usable.
+		fragment_data(fragID).usable           = 1;
+		fragment_data(fragID).usable_parent    = 1;
+	end;
+
+
+	%%================================================================================================
+	% Determine which fragments have usable data.
+	%-------------------------------------------------------------------------------------------------
+	fprintf('Gathering [fragment length], [CNV], & [GC bias] data for plotting bias and correction.\n');
+	for fragID = 1:numFragments
+		if (fragment_data(fragID).length == 0)
+			fragment_data(fragID).usable        = 0;
+			fragment_data(fragID).usable_parent = 0;
+		end;
+	end;
+
+
+	%% ===============================================================================================
+	% Construct figures illustrating LOWESS fitting and normalization.
+	%-------------------------------------------------------------------------------------------------
+	fprintf('Generating figure with plot of length vs. coverage data.\n');
+	% subplot handle list.
+	sh = zeros(11,1);
+
+
+	%% ****************************************************************************************************************************************************************************
+	% *****************************************************************************************************************************************************************************
+	% *****************************************************************************************************************************************************************************
+
+
+	%% ===============================================================================================
+	% Prepare for LOWESS fitting 1 : correcting fragment_length bias.
+	%-------------------------------------------------------------------------------------------------
+	fprintf('\tPreparing for LOWESS fitting 1 : fragment length vs. average read depth.\n');
+	X_length                    = zeros(1,numFragments);
+	Y_reads_project             = zeros(1,numFragments);
+	Y_reads_parent              = zeros(1,numFragments);
+	for fragID = 1:numFragments
+		X_length(fragID)        = fragment_data(fragID).length; 
+		Y_reads_project(fragID) = fragment_data(fragID).ave_reads;
+		Y_reads_parent(fragID)  = fragment_data(fragID).ave_reads_parent;
+	end;
+	X_length_trimmed            = X_length;
+	Y_reads_project_trimmed     = Y_reads_project;
+	Y_reads_parent_trimmed      = Y_reads_parent;
+	%------------------------------------------------------------*
+	% Trim dataset before LOWESS fitting 1.                      |
+	%------------------------------------------------------------*
+	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+		% Remove fragments longer than 10000bp.
+		Y_reads_project_trimmed( X_length_trimmed > 10000)      = [];
+		Y_reads_parent_trimmed(  X_length_trimmed > 10000)      = [];
+		X_length_trimmed(        X_length_trimmed > 10000)      = [];
+	else
+		% Remove fragments longer than 1000bp.
+		Y_reads_project_trimmed( X_length_trimmed > 1000)       = [];
+		Y_reads_parent_trimmed(  X_length_trimmed > 1000)       = [];
+		X_length_trimmed(        X_length_trimmed > 1000)       = [];
+	end;
+	%------------------------------------------------------------*
+
+
+	%% ===============================================================================================
+	% LOWESS fitting project 1 : correcting fragment_length bias.
+	%-------------------------------------------------------------------------------------------------
+	fig1 = figure(1);
+	figure(fig1);
+	% Perform LOWESS fitting.
+	fprintf('Subplot 1/15 : [EXPERIMENT] (Ave read depth) vs. (Fragment length).\n');
+	sh(1) = subplot(3,4,[1 2]);
+	fprintf('\tLOWESS fitting to trimmed project data.\n');
+	if (exist([main_dir 'users/' user '/projects/' project '/Lowess_1.mat'],'file') == 0)
+		[newX1, newY1] = optimize_mylowess(X_length_trimmed,Y_reads_project_trimmed,60, fit_length);   % divides span range from 0.01 to 0.99 then examines first 5.
+		save([main_dir 'users/' user '/projects/' project '/Lowess_1.mat'], 'newX1','newY1');
+	else
+		load([main_dir 'users/' user '/projects/' project '/Lowess_1.mat']);
+	end;
+	newX1_project = newX1;   newY1_project = newY1;
+	fprintf('\tLOWESS fitting to project data complete.\n');
 	% Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
-	Y_target                   = 1;
-	Y_fitCurve1_parent         = interp1(newX1_parent,newY1_parent,X_length,'spline');
-	Y_reads_parent_corrected_1 = Y_reads_parent./Y_fitCurve1_parent*Y_target;
+	Y_target                    = 1;
+	Y_fitCurve1_project         = interp1(newX1_project,newY1_project,X_length,'spline');
+	Y_reads_project_corrected_1 = Y_reads_project./Y_fitCurve1_project*Y_target;
 	%-------------------------------------------------------------------------------------------------
-	% Plotting raw average read depth vs. fragment length for parent.
+	% Plotting raw average read depth vs. fragment length for project.
 	%-------------------------------------------------------------------------------------------------
-	plot(X_length,Y_reads_parent,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize', 1);
+	plot(X_length,Y_reads_project,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize', 1);
 	hold on;
-	plot(newX1_parent, newY1_parent,'color','k','linestyle','-', 'linewidth',1);
+	plot(newX1_project, newY1_project,'color','k','linestyle','-', 'linewidth',1);
+	% plot(TGF_X1, TGF1_Y1,'color','r','linestyle','-', 'linewidth',1);
+	% plot(TGF_X1, TGF1_Y2,'color','g','linestyle','-', 'linewidth',1);
+	% plot(TGF_X1, TGF1_Y3,'color','b','linestyle','-', 'linewidth',1);
 	hold off;
 	axis normal;
-	h = title('Examine bias between ddRADseq fragment length and read count. [REF]');   set(h, 'FontSize', 10);
+	h = title('Examine bias between ddRADseq fragment length and read count. [EXP]');   set(h, 'FontSize', 10);
 	h = ylabel('Average Reads');     set(h, 'FontSize', 10);
 	h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
 	set(gca,'FontSize',10);
@@ -459,91 +416,72 @@ if (useParent)
 		ylim([1 4*max(newY1_project)]);
 		xlim([0 1000]);
 	end;
-end;
 
-
-if (performLengthbiasCorrection)
-	%-------------------------------------------------------------------------------------------------
-	% Plotting length-bias corrected read depth vs. fragment length for project.
-	%-------------------------------------------------------------------------------------------------
-	fprintf('Subplot 3/15 : [EXPERIMENT] (Ave read count, with bias corrected) vs. (Fragment length).\n');
-	sh(3) = subplot(3,4,[5 6]);
-	hold on;
-	for fragID = 1:numFragments
-		% Add corrected ave_data to fragment data structure.
-		fragment_data(fragID).ave_reads_corrected_1 = Y_reads_project_corrected_1(fragID);
-		% Define data as no useful if correction fit term falls below 5 reads.
-		if (Y_fitCurve1_project(fragID)         <= 1    );   fragment_data(fragID).usable = 0;   end;
-		if (Y_reads_project_corrected_1(fragID) <= 0    );   fragment_data(fragID).usable = 0;   end;
-		if (X_length(fragID)                    <  50   );   fragment_data(fragID).usable = 0;   end;
-		if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-			if (X_length(fragID)                >  10000);   fragment_data(fragID).usable = 0;   end;
-		else
-			if (X_length(fragID)                >  1000 );   fragment_data(fragID).usable = 0;   end;
-		end;
-
-		% Plot each corrected data point, colored depending on if data is useful or not.
-		X_datum = fragment_data(fragID).length;                  % X_Length
-		Y_datum = fragment_data(fragID).ave_reads_corrected_1;   % Y_reads_corrected_1
-		if (fragment_data(fragID).usable == 1)
-			plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',0.2);
-		else
-			plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.0], 'MarkerSize',0.2);
-		end;
-		if (mod(fragID,1000) == 0)
-			fprintf('.');
-		end;
-	end;
-	fprintf('\n');
-	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-		plot([1 10000],[1 1],'color','k','linestyle','-', 'linewidth',1);
-	else
-		plot([1 1000],[1 1],'color','k','linestyle','-', 'linewidth',1);
-	end;
-	hold off;
-	axis normal;
-	h = title('Corrected Read count vs. ddRADseq fragment length. [EXPERIMENT]');   set(h, 'FontSize', 10);
-	h = ylabel('Corrected Reads');   set(h, 'FontSize', 10);
-	h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
-	set(gca,'FontSize',10);
-	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-		ylim([0 12]);
-		xlim([0 10000]);
-	else
-		ylim([0 3]);
-		xlim([0 1000]);
-	end;
 	if (useParent)
 		%-------------------------------------------------------------------------------------------------
-		% Plotting corrected read depth vs. fragment length for parent.
+		% LOWESS fitting parent 1 : correcting fragment_length bias.
 		%-------------------------------------------------------------------------------------------------
-		fprintf('Subplot 4/15 : [REFERENCE] (Ave read count, with bias corrected) vs. (Fragment length).\n');
-		sh(4) = subplot(3,4,[7 8]);
-		hold on;
-		Y_target = 1;
-		% Calculate bias_corrected ave_read_copy data for plotting and later analysis.
-		Y_fitCurve1_parent         = interp1(newX1_parent,newY1_parent,X_length,'spline');   
+		%% Perform LOWESS fitting.
+		fprintf('Subplot 2/15 : [REFERENCE] (Ave read count) vs. (Fragment length).\n');
+		sh(2) = subplot(3,4,[3 4]);
+		fprintf('\tLOWESS fitting to reference data.\n');
+		if (exist([main_dir 'users/' parentUser '/projects/' parent '/Lowess_1.mat'],'file') == 0)
+			[newX1, newY1] = optimize_mylowess(X_length_trimmed,Y_reads_parent_trimmed,60, fit_length);
+			save([main_dir 'users/' parentUser '/projects/' parent '/Lowess_1.mat'], 'newX1','newY1');
+		else
+			load([main_dir 'users/' parentUser '/projects/' parent '/Lowess_1.mat']);
+		end;
+		newX1_parent = newX1;   newY1_parent = newY1;
+		fprintf('\tLOWESS fitting to referemce data complete.\n');
+		% Calculate length_bia_corrected ave_read_count data for plotting and later analysis.
+		Y_target                   = 1;
+		Y_fitCurve1_parent         = interp1(newX1_parent,newY1_parent,X_length,'spline');
 		Y_reads_parent_corrected_1 = Y_reads_parent./Y_fitCurve1_parent*Y_target;
-		fprintf(['\tlength(Y_fitCurve1_parent)         = ' num2str(length(Y_fitCurve1_parent))         '\n']);
-		fprintf(['\tlength(Y_reads_parent_corrected_1) = ' num2str(length(Y_reads_parent_corrected_1)) '\n']);
-		fprintf('\t');
+		%-------------------------------------------------------------------------------------------------
+		% Plotting raw average read depth vs. fragment length for parent.
+		%-------------------------------------------------------------------------------------------------
+		plot(X_length,Y_reads_parent,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize', 1);
+		hold on;
+		plot(newX1_parent, newY1_parent,'color','k','linestyle','-', 'linewidth',1);
+		hold off;
+		axis normal;
+		h = title('Examine bias between ddRADseq fragment length and read count. [REF]');   set(h, 'FontSize', 10);
+		h = ylabel('Average Reads');     set(h, 'FontSize', 10);
+		h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
+		set(gca,'FontSize',10);
+		if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+			ylim([0 200]);
+			xlim([0 10000]);
+		else
+			ylim([1 4*max(newY1_project)]);
+			xlim([0 1000]);
+		end;
+	end;
+
+
+	if (performLengthbiasCorrection)
+		%-------------------------------------------------------------------------------------------------
+		% Plotting length-bias corrected read depth vs. fragment length for project.
+		%-------------------------------------------------------------------------------------------------
+		fprintf('Subplot 3/15 : [EXPERIMENT] (Ave read count, with bias corrected) vs. (Fragment length).\n');
+		sh(3) = subplot(3,4,[5 6]);
+		hold on;
 		for fragID = 1:numFragments
 			% Add corrected ave_data to fragment data structure.
-			fragment_data(fragID).ave_reads_parent_corrected_1 = Y_reads_parent_corrected_1(fragID);
-			% Define data as not useful if correction fit term falls below 5 reads.
-			fragment_data(fragID).usable_parent = 1;
-			if (Y_fitCurve1_parent(fragID)         <= 1    );   fragment_data(fragID).usable_parent = 0;   end;
-			if (Y_reads_parent_corrected_1(fragID) <= 0    );   fragment_data(fragID).usable_parent = 0;   end;
-			if (X_length(fragID)                   <  50   );   fragment_data(fragID).usable_parent = 0;   end;
+			fragment_data(fragID).ave_reads_corrected_1 = Y_reads_project_corrected_1(fragID);
+			% Define data as no useful if correction fit term falls below 5 reads.
+			if (Y_fitCurve1_project(fragID)         <= 1    );   fragment_data(fragID).usable = 0;   end;
+			if (Y_reads_project_corrected_1(fragID) <= 0    );   fragment_data(fragID).usable = 0;   end;
+			if (X_length(fragID)                    <  50   );   fragment_data(fragID).usable = 0;   end;
 			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-				if (X_length(fragID)               >  10000);   fragment_data(fragID).usable_parent = 0;   end;
+				if (X_length(fragID)                >  10000);   fragment_data(fragID).usable = 0;   end;
 			else
-				if (X_length(fragID)               >  1000 );   fragment_data(fragID).usable_parent = 0;   end;
+				if (X_length(fragID)                >  1000 );   fragment_data(fragID).usable = 0;   end;
 			end;
 			% Plot each corrected data point, colored depending on if data is useful or not.
-			X_datum = fragment_data(fragID).length;                         % X_Length
-			Y_datum = fragment_data(fragID).ave_reads_parent_corrected_1;   % Y_reads_parent_corrected_1
-			if (fragment_data(fragID).usable_parent == 1)
+			X_datum = fragment_data(fragID).length;                  % X_Length
+			Y_datum = fragment_data(fragID).ave_reads_corrected_1;   % Y_reads_corrected_1
+			if (fragment_data(fragID).usable == 1)
 				plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',0.2);
 			else
 				plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.0], 'MarkerSize',0.2);
@@ -560,7 +498,7 @@ if (performLengthbiasCorrection)
 		end;
 		hold off;
 		axis normal;
-		h = title('Corrected Read count vs. ddRADseq fragment length. [REFERENCE]');   set(h, 'FontSize', 10);
+		h = title('Corrected Read count vs. ddRADseq fragment length. [EXPERIMENT]');   set(h, 'FontSize', 10);
 		h = ylabel('Corrected Reads');   set(h, 'FontSize', 10);
 		h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
 		set(gca,'FontSize',10);
@@ -571,134 +509,158 @@ if (performLengthbiasCorrection)
 			ylim([0 3]);
 			xlim([0 1000]);
 		end;
-	end;
-else
-	% Skip length bias correction.
-	for fragID = 1:numFragments
-		fragment_data(fragID).ave_reads_corrected_1            = fragment_data(fragID).ave_reads;
+
 		if (useParent)
-			fragment_data(fragID).ave_reads_parent_corrected_1 = fragment_data(fragID).ave_reads_parent;
-		end;
-	end;
-end;
-
-
-%%================================================================================================
-% Prepare for LOWESS fitting 2 : correcting repetitiveness.
-%-------------------------------------------------------------------------------------------------
-if (performRepetbiasCorrection)
-	fprintf('\tPreparing for LOWESS fitting 2 : repetitiveness vs. corrected_count_1.\n');
-	X_repet_project = zeros(1,numFragments);
-	Y_reads_project = zeros(1,numFragments);
-	usable_project  = zeros(1,numFragments);
-	if (useParent)
-		X_repet_parent = zeros(1,numFragments);
-		Y_reads_parent = zeros(1,numFragments);
-		usable_parent  = zeros(1,numFragments);
-	end;
-	for fragID = 1:numFragments
-		X_repet_project(fragID) = fragment_data(fragID).repet;
-		Y_reads_project(fragID) = fragment_data(fragID).ave_reads_corrected_1;
-		usable_project(fragID)  = fragment_data(fragID).usable;
-		if (useParent)
-			X_repet_parent(fragID)  = fragment_data(fragID).repet;
-			Y_reads_parent(fragID)  = fragment_data(fragID).ave_reads_parent_corrected_1;
-			usable_parent(fragID)   = fragment_data(fragID).usable_parent;
-		 end;
-	end;
-	X_repet_project_trimmed = X_repet_project;
-	Y_reads_project_trimmed = Y_reads_project;
-	if (useParent)
-		X_repet_parent_trimmed = X_repet_parent;
-		Y_reads_parent_trimmed = Y_reads_parent;
-	end;
-	%------------------------------------------------------------*
-	% Trim dataset before LOWESS fitting 2.                      |
-	%------------------------------------------------------------*
-	X_repet_project_trimmed(usable_project == 0) = [];
-	Y_reads_project_trimmed(usable_project == 0) = [];
-	if (useParent)
-		X_repet_parent_trimmed(usable_parent == 0) = [];
-		Y_reads_parent_trimmed(usable_parent == 0) = [];
-	end;
-	%------------------------------------------------------------*
-
-	%-------------------------------------------------------------------------------------------------
-	% LOWESS fitting project 3 : correcting repetitiveness_bias.
-	%-------------------------------------------------------------------------------------------------
-	% Perform LOWESS fitting.
-	fprintf('\tLOWESS fitting to project data.\n');
-	if (length(X_repet_project_trimmed) > 0)
-		[newX2_project, newY2_project] = optimize_mylowess(X_repet_project_trimmed,Y_reads_project_trimmed,10, 0);
-	else
-		newX2_project = [];
-		newY2_project = [];
-	end;
-	fprintf('\tLOWESS fitting to project data complete.\n');
-	% Calculate length_bia_corrected GC_bias_corrected repetitiveness_bias_corrected ave_read_count data for plotting and later analysis.
-	Y_target                    = 1;
-	Y_fitCurve2_project         = interp1(newX2_project,newY2_project,X_repet_project,'spline');
-	Y_reads_project_corrected_2 = Y_reads_project./Y_fitCurve2_project*Y_target;
-	%-------------------------------------------------------------------------------------------------
-	% Show repetitiveness bias vs. corrected_2 read depth for project.
-	%-------------------------------------------------------------------------------------------------
-	fprintf('Subplot 9/15 : [EXP] (Corrected reads 2) vs. (Fragment repetitiveness).\n');
-	sh(9) = subplot(3,4,9);
-	hold on;
-	for fragID = 1:numFragments
-		if (fragment_data(fragID).usable == 1)
-			if (fragment_data(fragID).ave_reads_corrected_1 < Y_fitCurve2_project(fragID))
-				plot(fragment_data(fragID).repet,fragment_data(fragID).ave_reads_corrected_1,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+			%-------------------------------------------------------------------------------------------------
+			% Plotting corrected read depth vs. fragment length for parent.
+			%-------------------------------------------------------------------------------------------------
+			fprintf('Subplot 4/15 : [REFERENCE] (Ave read count, with bias corrected) vs. (Fragment length).\n');
+			sh(4) = subplot(3,4,[7 8]);
+			hold on;
+			Y_target = 1;
+			% Calculate bias_corrected ave_read_copy data for plotting and later analysis.
+			Y_fitCurve1_parent         = interp1(newX1_parent,newY1_parent,X_length,'spline');   
+			Y_reads_parent_corrected_1 = Y_reads_parent./Y_fitCurve1_parent*Y_target;
+			fprintf(['\tlength(Y_fitCurve1_parent)         = ' num2str(length(Y_fitCurve1_parent))         '\n']);
+			fprintf(['\tlength(Y_reads_parent_corrected_1) = ' num2str(length(Y_reads_parent_corrected_1)) '\n']);
+			fprintf('\t');
+			for fragID = 1:numFragments
+				% Add corrected ave_data to fragment data structure.
+				fragment_data(fragID).ave_reads_parent_corrected_1 = Y_reads_parent_corrected_1(fragID);
+				% Define data as not useful if correction fit term falls below 5 reads.
+				fragment_data(fragID).usable_parent = 1;
+				if (Y_fitCurve1_parent(fragID)         <= 1    );   fragment_data(fragID).usable_parent = 0;   end;
+				if (Y_reads_parent_corrected_1(fragID) <= 0    );   fragment_data(fragID).usable_parent = 0;   end;
+				if (X_length(fragID)                   <  50   );   fragment_data(fragID).usable_parent = 0;   end;
+				if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+					if (X_length(fragID)               >  10000);   fragment_data(fragID).usable_parent = 0;   end;
+				else
+					if (X_length(fragID)               >  1000 );   fragment_data(fragID).usable_parent = 0;   end;
+				end;
+				% Plot each corrected data point, colored depending on if data is useful or not.
+				X_datum = fragment_data(fragID).length;                         % X_Length
+				Y_datum = fragment_data(fragID).ave_reads_parent_corrected_1;   % Y_reads_parent_corrected_1
+				if (fragment_data(fragID).usable_parent == 1)
+					plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',0.2);
+				else
+					plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.0], 'MarkerSize',0.2);
+				end;
+				if (mod(fragID,1000) == 0)
+					fprintf('.');
+				end;
+			end;
+			fprintf('\n');
+			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+				plot([1 10000],[1 1],'color','k','linestyle','-', 'linewidth',1);
 			else
-				plot(fragment_data(fragID).repet,fragment_data(fragID).ave_reads_corrected_1,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+				plot([1 1000],[1 1],'color','k','linestyle','-', 'linewidth',1);
+			end;
+			hold off;
+			axis normal;
+			h = title('Corrected Read count vs. ddRADseq fragment length. [REFERENCE]');   set(h, 'FontSize', 10);
+			h = ylabel('Corrected Reads');   set(h, 'FontSize', 10);
+			h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
+			set(gca,'FontSize',10);
+			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+				ylim([0 12]);
+				xlim([0 10000]);
+			else
+				ylim([0 3]);
+				xlim([0 1000]);
+			end;
+		end;
+	else
+		% Skip length bias correction.
+		for fragID = 1:numFragments
+			fragment_data(fragID).ave_reads_corrected_1            = fragment_data(fragID).ave_reads;
+			if (useParent)
+				fragment_data(fragID).ave_reads_parent_corrected_1 = fragment_data(fragID).ave_reads_parent;
 			end;
 		end;
 	end;
-	plot(newX2_project,newY2_project,'color','k','linestyle','-', 'linewidth',1);
-	hold off;
-	axis normal;
-	h = title('Repetitiveness vs. Corrected reads 1. [EXP]');   set(h, 'FontSize', 10);
-	h = ylabel('Corrected reads 1');  set(h, 'FontSize', 10);
-	h = xlabel('Repetitiveness');     set(h, 'FontSize', 10);
-	set(gca,'FontSize',10);
-	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-		ylim([0 12]);
-		xlim([0 20000]);
-	else
-		ylim([0 3]);
-		xlim([0 20000]);
-	end;
-	if (useParent)
+
+
+	%%================================================================================================
+	% Prepare for LOWESS fitting 2 : correcting repetitiveness.
+	%-------------------------------------------------------------------------------------------------
+	if (performRepetbiasCorrection)
+		fprintf('\tPreparing for LOWESS fitting 2 : repetitiveness vs. corrected_count_1.\n');
+		X_repet_project = zeros(1,numFragments);
+		Y_reads_project = zeros(1,numFragments);
+		usable_project  = zeros(1,numFragments);
+		if (useParent)
+			X_repet_parent = zeros(1,numFragments);
+			Y_reads_parent = zeros(1,numFragments);
+			usable_parent  = zeros(1,numFragments);
+		end;
+		for fragID = 1:numFragments
+			X_repet_project(fragID) = fragment_data(fragID).repet;
+			Y_reads_project(fragID) = fragment_data(fragID).ave_reads_corrected_1;
+			usable_project(fragID)  = fragment_data(fragID).usable;
+			if (useParent)
+				X_repet_parent(fragID)  = fragment_data(fragID).repet;
+				Y_reads_parent(fragID)  = fragment_data(fragID).ave_reads_parent_corrected_1;
+				usable_parent(fragID)   = fragment_data(fragID).usable_parent;
+			 end;
+		end;
+		X_repet_project_trimmed = X_repet_project;
+		Y_reads_project_trimmed = Y_reads_project;
+		if (useParent)
+			X_repet_parent_trimmed = X_repet_parent;
+			Y_reads_parent_trimmed = Y_reads_parent;
+		end;
+		%------------------------------------------------------------*
+		% Trim dataset before LOWESS fitting 2.                      |
+		%------------------------------------------------------------*
+		X_repet_project_trimmed(usable_project == 0) = [];
+		Y_reads_project_trimmed(usable_project == 0) = [];
+		if (useParent)
+			X_repet_parent_trimmed(usable_parent == 0) = [];
+			Y_reads_parent_trimmed(usable_parent == 0) = [];
+		end;
+		%------------------------------------------------------------*
+
 		%-------------------------------------------------------------------------------------------------
-		% LOWESS fitting parent 3 : correcting repetitivess_bias.
+		% LOWESS fitting project 2 : correcting repetitiveness_bias.
 		%-------------------------------------------------------------------------------------------------
 		% Perform LOWESS fitting.
-		fprintf('\tLOWESS fitting to parent data.\n');
-		[newX2_parent, newY2_parent] = optimize_mylowess(X_repet_parent_trimmed,Y_reads_parent_trimmed,10, 0);
-		fprintf('\tLOWESS fitting to parent data complete.\n');
+		fprintf('\tLOWESS fitting to project data.\n');
+		if (length(X_repet_project_trimmed) > 0)
+			if (exist([main_dir 'users/' user '/projects/' project '/Lowess_2.mat'],'file') == 0)
+				[newX2, newY2] = optimize_mylowess(X_repet_project_trimmed,Y_reads_project_trimmed,10, 0);
+				save([main_dir 'users/' user '/projects/' project '/Lowess_2.mat'], 'newX2','newY2');
+			else
+				load([main_dir 'users/' user '/projects/' project '/Lowess_2.mat']);
+			end;
+			newX2_project = newX2;   newY2_project = newY2;
+		else
+			newX2_project = [];
+			newY2_project = [];
+		end;
+		fprintf('\tLOWESS fitting to project data complete.\n');
 		% Calculate length_bia_corrected GC_bias_corrected repetitiveness_bias_corrected ave_read_count data for plotting and later analysis.
-		Y_target                   = 1;
-		Y_fitCurve2_parent         = interp1(newX2_parent,newY2_parent,X_repet_parent,'spline');
-		Y_reads_parent_corrected_2 = Y_reads_parent./Y_fitCurve2_parent*Y_target;
+		Y_target                    = 1;
+		Y_fitCurve2_project         = interp1(newX2_project,newY2_project,X_repet_project,'spline');
+		Y_reads_project_corrected_2 = Y_reads_project./Y_fitCurve2_project*Y_target;
 		%-------------------------------------------------------------------------------------------------
-		% Show repetitiveness bias vs. corrected_1 read depth for parent.
+		% Show repetitiveness bias vs. corrected_2 read depth for project.
 		%-------------------------------------------------------------------------------------------------
-		fprintf('Subplot 10/15 : [REF] (Corrected reads 1) vs. (Fragment repetitiveness).\n');
-		sh(10) = subplot(3,4,11);
+		fprintf('Subplot 9/15 : [EXP] (Corrected reads 2) vs. (Fragment repetitiveness).\n');
+		sh(9) = subplot(3,4,9);
 		hold on;
 		for fragID = 1:numFragments
 			if (fragment_data(fragID).usable == 1)
-				if (fragment_data(fragID).ave_reads_parent_corrected_1 < Y_fitCurve2_parent(fragID))
-					plot(fragment_data(fragID).repet,fragment_data(fragID).ave_reads_parent_corrected_1,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+				if (fragment_data(fragID).ave_reads_corrected_1 < Y_fitCurve2_project(fragID))
+					plot(fragment_data(fragID).repet,fragment_data(fragID).ave_reads_corrected_1,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
 				else
-					plot(fragment_data(fragID).repet,fragment_data(fragID).ave_reads_parent_corrected_1,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+					plot(fragment_data(fragID).repet,fragment_data(fragID).ave_reads_corrected_1,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
 				end;
 			end;
 		end;
-		plot(newX2_parent,newY2_parent,'color','k','linestyle','-', 'linewidth',1);
+		plot(newX2_project,newY2_project,'color','k','linestyle','-', 'linewidth',1);
 		hold off;
 		axis normal;
-		h = title('Repetitiveness vs. Corrected reads 1. [REF]');   set(h, 'FontSize', 10);
+		h = title('Repetitiveness vs. Corrected reads 1. [EXP]');   set(h, 'FontSize', 10);
 		h = ylabel('Corrected reads 1');  set(h, 'FontSize', 10);
 		h = xlabel('Repetitiveness');     set(h, 'FontSize', 10);
 		set(gca,'FontSize',10);
@@ -709,65 +671,68 @@ if (performRepetbiasCorrection)
 			ylim([0 3]);
 			xlim([0 20000]);
 		end;
-	end;
 
-	%-------------------------------------------------------------------------------------------------
-	% Plotting length-GC-bias corrected read depth vs. repetitiveness for project.
-	%-------------------------------------------------------------------------------------------------
-	fprintf('Subplot 11/15 : [EXP] (Corrected reads 3) vs. (Fragment repetitiveness).\n');
-	sh(11) = subplot(3,4,10);
-	hold on;
-	for fragID = 1:numFragments
-		% Add corrected ave_data to fragment data structure.
-		fragment_data(fragID).ave_reads_corrected_2 = Y_reads_project_corrected_2(fragID);
-
-		% Plot each corrected data point, colored depending on if data is useful or not.
-		X_datum = fragment_data(fragID).repet;                   % X_repetitiveness
-		Y_datum = fragment_data(fragID).ave_reads_corrected_2;   % Y_reads_corrected_2
-		if (fragment_data(fragID).usable == 1)
-			if (Y_datum < 1)
-				plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+		if (useParent)
+			%-------------------------------------------------------------------------------------------------
+			% LOWESS fitting parent 2 : correcting repetitivess_bias.
+			%-------------------------------------------------------------------------------------------------
+			% Perform LOWESS fitting.
+			fprintf('\tLOWESS fitting to parent data.\n');
+			if (exist([main_dir 'users/' parentUser '/projects/' parent '/Lowess_2.mat'],'file') == 0)
+				[newX2, newY2] = optimize_mylowess(X_repet_parent_trimmed,Y_reads_parent_trimmed,10, 0);
+				save([main_dir 'users/' parentUser '/projects/' parent '/Lowess_2.mat'], 'newX2','newY2');
 			else
-				plot(X_datum,Y_datum,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+				load([main_dir 'users/' parentUser '/projects/' parent '/Lowess_2.mat']);
 			end;
-		%   plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',0.2);
-		%else
-		%   plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.0], 'MarkerSize',0.2);
+			newX2_parent = newX2;   newY2_parent = newY2;
+			fprintf('\tLOWESS fitting to parent data complete.\n');
+			% Calculate length_bia_corrected GC_bias_corrected repetitiveness_bias_corrected ave_read_count data for plotting and later analysis.
+			Y_target                   = 1;
+			Y_fitCurve2_parent         = interp1(newX2_parent,newY2_parent,X_repet_parent,'spline');
+			Y_reads_parent_corrected_2 = Y_reads_parent./Y_fitCurve2_parent*Y_target;
+			%-------------------------------------------------------------------------------------------------
+			% Show repetitiveness bias vs. corrected_1 read depth for parent.
+			%-------------------------------------------------------------------------------------------------
+			fprintf('Subplot 10/15 : [REF] (Corrected reads 1) vs. (Fragment repetitiveness).\n');
+			sh(10) = subplot(3,4,11);
+			hold on;
+			for fragID = 1:numFragments
+				if (fragment_data(fragID).usable == 1)
+					if (fragment_data(fragID).ave_reads_parent_corrected_1 < Y_fitCurve2_parent(fragID))
+						plot(fragment_data(fragID).repet,fragment_data(fragID).ave_reads_parent_corrected_1,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+					else
+						plot(fragment_data(fragID).repet,fragment_data(fragID).ave_reads_parent_corrected_1,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+					end;
+				end;
+			end;
+			plot(newX2_parent,newY2_parent,'color','k','linestyle','-', 'linewidth',1);
+			hold off;
+			axis normal;
+			h = title('Repetitiveness vs. Corrected reads 1. [REF]');   set(h, 'FontSize', 10);
+			h = ylabel('Corrected reads 1');  set(h, 'FontSize', 10);
+			h = xlabel('Repetitiveness');     set(h, 'FontSize', 10);
+			set(gca,'FontSize',10);
+			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+				ylim([0 12]);
+				xlim([0 20000]);
+			else
+				ylim([0 3]);
+				xlim([0 20000]);
+			end;
 		end;
 
-		if (mod(fragID,1000) == 0)
-			fprintf('.');
-		end;
-	end;
-	fprintf('\n');
-	plot([0 20000],[1 1],'color','k','linestyle','-', 'linewidth',1);
-	hold off;
-	axis normal;
-	h = title('Repetitiveness bias corrected. [EXPERIMENT]');   set(h, 'FontSize', 10);
-	h = ylabel('Corrected Reads 2');   set(h, 'FontSize', 10);
-	h = xlabel('Repetitiveness');      set(h, 'FontSize', 10);
-	set(gca,'FontSize',10);
-	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-		ylim([0 12]);
-		xlim([0 20000]);
-	else
-		ylim([0 3]);
-		xlim([0 20000]);
-	end;
-	if (useParent)
 		%-------------------------------------------------------------------------------------------------
-		% Plotting length-bias corrected read depth vs. repetitiveness for parent.
+		% Plotting length-GC-bias corrected read depth vs. repetitiveness for project.
 		%-------------------------------------------------------------------------------------------------
-		fprintf('Subplot 12/15 : [REF] (Corrected reads 3) vs. (Fragment repetitiveness).\n');
-		sh(12) = subplot(3,4,12);
+		fprintf('Subplot 11/15 : [EXP] (Corrected reads 3) vs. (Fragment repetitiveness).\n');
+		sh(11) = subplot(3,4,10);
 		hold on;
 		for fragID = 1:numFragments
 			% Add corrected ave_data to fragment data structure.
-			fragment_data(fragID).ave_reads_parent_corrected_2 = Y_reads_parent_corrected_2(fragID);
-
+				fragment_data(fragID).ave_reads_corrected_2 = Y_reads_project_corrected_2(fragID);
 			% Plot each corrected data point, colored depending on if data is useful or not.
-			X_datum = fragment_data(fragID).repet;                          % Repetitiveness
-			Y_datum = fragment_data(fragID).ave_reads_parent_corrected_2;   % Y_reads_parent_corrected_2
+			X_datum = fragment_data(fragID).repet;                   % X_repetitiveness
+			Y_datum = fragment_data(fragID).ave_reads_corrected_2;   % Y_reads_corrected_2
 			if (fragment_data(fragID).usable == 1)
 				if (Y_datum < 1)
 					plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
@@ -783,9 +748,9 @@ if (performRepetbiasCorrection)
 		plot([0 20000],[1 1],'color','k','linestyle','-', 'linewidth',1);
 		hold off;
 		axis normal;
-		h = title('Repetitiveness bias corrected. [REF]');   set(h, 'FontSize', 10);
-		h = ylabel('Corrected Reads 2');               set(h, 'FontSize', 10);
-		h = xlabel('Repetitiveness');                  set(h, 'FontSize', 10);
+		h = title('Repetitiveness bias corrected. [EXPERIMENT]');   set(h, 'FontSize', 10);
+		h = ylabel('Corrected Reads 2');   set(h, 'FontSize', 10);
+		h = xlabel('Repetitiveness');      set(h, 'FontSize', 10);
 		set(gca,'FontSize',10);
 		if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
 			ylim([0 12]);
@@ -794,150 +759,155 @@ if (performRepetbiasCorrection)
 			ylim([0 3]);
 			xlim([0 20000]);
 		end;
-	end;
-else
-	% skip repetitiveness correction.
-	for fragID = 1:numFragments
-		fragment_data(fragID).ave_reads_corrected_2            = fragment_data(fragID).ave_reads_corrected_1;
+
 		if (useParent)
-			fragment_data(fragID).ave_reads_parent_corrected_2 = fragment_data(fragID).ave_reads_parent_corrected_1;
-		end;
-	end;
-end;
-%-------------------------------------------------------------------------------------------------
-% Saving bias correction figure 1.
-%-------------------------------------------------------------------------------------------------
-if (performLengthbiasCorrection) || (performRepetbiasCorrection)
-	fprintf('Saving bias figure 1.\n');
-	set(fig1,'PaperPosition',[0 0 8 5]*4);
-	saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.eps'], 'epsc');
-	saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.png'], 'png');
-	delete(fig1);
-end;
-
-
-%%================================================================================================
-% Prepare for LOWESS fitting 3 : correcting GC_bias.
-%-------------------------------------------------------------------------------------------------
-fig2 = figure(2);
-figure(fig2);
-if (performGCbiasCorrection)
-	fprintf('\tPreparing for LOWESS fitting 3 : GC_ratio vs. corrected_count_2.\n');
-	X_GCbias_project = zeros(1,numFragments);
-	Y_reads_project  = zeros(1,numFragments);
-	usable_project   = zeros(1,numFragments);
-	if (useParent)
-		X_GCbias_parent  = zeros(1,numFragments);
-		Y_reads_parent   = zeros(1,numFragments);
-		usable_parent    = zeros(1,numFragments);
-	end;
-	for fragID = 1:numFragments
-		X_GCbias_project(fragID) = fragment_data(fragID).GC_bias;
-		Y_reads_project(fragID)  = fragment_data(fragID).ave_reads_corrected_2;
-		usable_project(fragID)   = fragment_data(fragID).usable;
-		if (useParent)
-			X_GCbias_parent(fragID)  = fragment_data(fragID).GC_bias;
-			Y_reads_parent(fragID)   = fragment_data(fragID).ave_reads_parent_corrected_2;
-			usable_parent(fragID)    = fragment_data(fragID).usable_parent;
-		end;
-	end;
-	X_GCbias_project_trimmed = X_GCbias_project;
-	Y_reads_project_trimmed  = Y_reads_project;
-	if (useParent)
-		X_GCbias_parent_trimmed  = X_GCbias_parent;
-		Y_reads_parent_trimmed   = Y_reads_parent;
-	end;
-	%------------------------------------------------------------*
-	% Trim dataset before LOWESS fitting 3.                      |
-	%------------------------------------------------------------*
-	X_GCbias_project_trimmed(usable_project == 0) = [];
-	Y_reads_project_trimmed( usable_project == 0) = [];
-	if (useParent)
-		X_GCbias_parent_trimmed( usable_parent  == 0) = [];
-		Y_reads_parent_trimmed(  usable_parent  == 0) = [];
-	end;
-	%------------------------------------------------------------*
-
-	%-------------------------------------------------------------------------------------------------
-	% LOWESS fitting project 3 : correcting GC_bias.
-	%-------------------------------------------------------------------------------------------------
-	% Perform LOWESS fitting.
-	fprintf('\tLOWESS fitting to project data.\n');
-	if (length(X_GCbias_project_trimmed) > 0)
-		[newX3_project, newY3_project] = optimize_mylowess(X_GCbias_project_trimmed,Y_reads_project_trimmed,10, 0);
-	else
-		newX3_project = [];
-		newY3_project = [];
-	end;
-	fprintf('\tLOWESS fitting to project data complete.\n');
-	% Calculate GC_bias_corrected length_bia_corrected ave_read_count data for plotting and later analysis.
-	Y_target                    = 1;
-	if (length(newX3_project) > 1)
-		Y_fitCurve3_project         = interp1(newX3_project,newY3_project,X_GCbias_project,'spline');
-		Y_reads_project_corrected_3 = Y_reads_project./Y_fitCurve3_project*Y_target;
-	else
-		Y_reads_project_corrected_3 = Y_reads_project;
-	end;
-	%-------------------------------------------------------------------------------------------------
-	% Show GC bias vs. corrected_2 read depth for project.
-	%-------------------------------------------------------------------------------------------------
-	fprintf('Subplot 5/15 : [EXP] (Corrected reads 2) vs. (Fragment GC ratio).\n');
-	sh(5) = subplot(3,4,1);
-	hold on;
-	for fragID = 1:numFragments
-		if (fragment_data(fragID).usable == 1)
-			if (fragment_data(fragID).ave_reads_corrected_2 < Y_fitCurve3_project(fragID))
-				plot(fragment_data(fragID).GC_bias,fragment_data(fragID).ave_reads_corrected_2,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+			%-------------------------------------------------------------------------------------------------
+			% Plotting length-bias corrected read depth vs. repetitiveness for parent.
+			%-------------------------------------------------------------------------------------------------
+			fprintf('Subplot 12/15 : [REF] (Corrected reads 3) vs. (Fragment repetitiveness).\n');
+			sh(12) = subplot(3,4,12);
+			hold on;
+			for fragID = 1:numFragments
+				% Add corrected ave_data to fragment data structure.
+				fragment_data(fragID).ave_reads_parent_corrected_2 = Y_reads_parent_corrected_2(fragID);
+				% Plot each corrected data point, colored depending on if data is useful or not.
+				X_datum = fragment_data(fragID).repet;                          % Repetitiveness
+				Y_datum = fragment_data(fragID).ave_reads_parent_corrected_2;   % Y_reads_parent_corrected_2
+				if (fragment_data(fragID).usable == 1)
+					if (Y_datum < 1)
+						plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+					else
+						plot(X_datum,Y_datum,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+					end;
+				end;
+				if (mod(fragID,1000) == 0)
+					fprintf('.');
+				end;
+			end;
+			fprintf('\n');
+			plot([0 20000],[1 1],'color','k','linestyle','-', 'linewidth',1);
+			hold off;
+			axis normal;
+			h = title('Repetitiveness bias corrected. [REF]');   set(h, 'FontSize', 10);
+			h = ylabel('Corrected Reads 2');               set(h, 'FontSize', 10);
+			h = xlabel('Repetitiveness');                  set(h, 'FontSize', 10);
+			set(gca,'FontSize',10);
+			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+				ylim([0 12]);
+				xlim([0 20000]);
 			else
-				plot(fragment_data(fragID).GC_bias,fragment_data(fragID).ave_reads_corrected_2,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+				ylim([0 3]);
+				xlim([0 20000]);
+			end;
+		end;
+	else
+		% skip repetitiveness correction.
+		for fragID = 1:numFragments
+			fragment_data(fragID).ave_reads_corrected_2            = fragment_data(fragID).ave_reads_corrected_1;
+			if (useParent)
+				fragment_data(fragID).ave_reads_parent_corrected_2 = fragment_data(fragID).ave_reads_parent_corrected_1;
 			end;
 		end;
 	end;
-	plot(newX3_project,newY3_project,'color','k','linestyle','-', 'linewidth',1);
-	hold off;
-	axis normal;
-	h = title('GC ratio vs. Corrected reads 2. [EXP]');   set(h, 'FontSize', 10);
-	h = ylabel('Corrected reads 2');  set(h, 'FontSize', 10);
-	h = xlabel('GC ratio');           set(h, 'FontSize', 10);
-	set(gca,'FontSize',10);
-	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-		ylim([0 12]);
-		xlim([0 1]);
-	else
-		ylim([0 3]);
-		xlim([0 1]);
+	%-------------------------------------------------------------------------------------------------
+	% Saving bias correction figure 1.
+	%-------------------------------------------------------------------------------------------------
+	if (performLengthbiasCorrection) || (performRepetbiasCorrection)
+		fprintf('Saving bias figure 1.\n');
+		set(fig1,'PaperPosition',[0 0 8 5]*4);
+		saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.eps'], 'epsc');
+		saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.png'], 'png');
+		delete(fig1);
 	end;
-	if (useParent)
+
+
+	%%================================================================================================
+	% Prepare for LOWESS fitting 3 : correcting GC_bias.
+	%-------------------------------------------------------------------------------------------------
+	fig2 = figure(2);
+	figure(fig2);
+	if (performGCbiasCorrection)
+		fprintf('\tPreparing for LOWESS fitting 3 : GC_ratio vs. corrected_count_2.\n');
+		X_GCbias_project = zeros(1,numFragments);
+		Y_reads_project  = zeros(1,numFragments);
+		usable_project   = zeros(1,numFragments);
+		if (useParent)
+			X_GCbias_parent  = zeros(1,numFragments);
+			Y_reads_parent   = zeros(1,numFragments);
+			usable_parent    = zeros(1,numFragments);
+		end;
+		for fragID = 1:numFragments
+			X_GCbias_project(fragID) = fragment_data(fragID).GC_bias;
+			Y_reads_project(fragID)  = fragment_data(fragID).ave_reads_corrected_2;
+			usable_project(fragID)   = fragment_data(fragID).usable;
+			if (useParent)
+				X_GCbias_parent(fragID)  = fragment_data(fragID).GC_bias;
+				Y_reads_parent(fragID)   = fragment_data(fragID).ave_reads_parent_corrected_2;
+				usable_parent(fragID)    = fragment_data(fragID).usable_parent;
+			end;
+		end;
+		X_GCbias_project_trimmed = X_GCbias_project;
+		Y_reads_project_trimmed  = Y_reads_project;
+		if (useParent)
+			X_GCbias_parent_trimmed  = X_GCbias_parent;
+			Y_reads_parent_trimmed   = Y_reads_parent;
+		end;
+		%------------------------------------------------------------*
+		% Trim dataset before LOWESS fitting 3.                      |
+		%------------------------------------------------------------*
+		X_GCbias_project_trimmed(usable_project == 0) = [];
+		Y_reads_project_trimmed( usable_project == 0) = [];
+		if (useParent)
+			X_GCbias_parent_trimmed( usable_parent  == 0) = [];
+			Y_reads_parent_trimmed(  usable_parent  == 0) = [];
+		end;
+		%------------------------------------------------------------*
+
 		%-------------------------------------------------------------------------------------------------
-		% LOWESS fitting parent 3 : correcting GC_bias.
+		% LOWESS fitting project 3 : correcting GC_bias.
 		%-------------------------------------------------------------------------------------------------
 		% Perform LOWESS fitting.
-		fprintf('\tLOWESS fitting to parent data.\n');
-		[newX3_parent, newY3_parent] = optimize_mylowess(X_GCbias_parent_trimmed,Y_reads_parent_trimmed,10, 0);
-		fprintf('\tLOWESS fitting to parent data complete.\n');
+		fprintf('\tLOWESS fitting to project data.\n');
+		if (length(X_GCbias_project_trimmed) > 0)
+			if (exist([main_dir 'users/' user '/projects/' project '/Lowess_3.mat'],'file') == 0)
+				[newX3, newY3] = optimize_mylowess(X_GCbias_project_trimmed,Y_reads_project_trimmed,10, 0);
+				save([main_dir 'users/' user '/projects/' project '/Lowess_3.mat'], 'newX3','newY3');
+			else
+				load([main_dir 'users/' user '/projects/' project '/Lowess_3.mat']);
+			end;
+			newX3_project = newX3;   newY3_project = newY3;
+		else
+			newX3_project = [];
+			newY3_project = [];
+		end;
+		fprintf('\tLOWESS fitting to project data complete.\n');
 		% Calculate GC_bias_corrected length_bia_corrected ave_read_count data for plotting and later analysis.
-		Y_target                   = 1;
-		Y_fitCurve3_parent         = interp1(newX3_parent,newY3_parent,X_GCbias_parent,'spline');
-		Y_reads_parent_corrected_3 = Y_reads_parent./Y_fitCurve3_parent*Y_target;
+		Y_target                    = 1;
+		if (length(newX3_project) > 1)
+			Y_fitCurve3_project         = interp1(newX3_project,newY3_project,X_GCbias_project,'spline');
+			Y_reads_project_corrected_3 = Y_reads_project./Y_fitCurve3_project*Y_target;
+		else
+			Y_reads_project_corrected_3 = Y_reads_project;
+		end;
 		%-------------------------------------------------------------------------------------------------
-		% Show GC bias vs. corrected_2 read depth for parent.
+		% Show GC bias vs. corrected_2 read depth for project.
 		%-------------------------------------------------------------------------------------------------
-		fprintf('Subplot 6/15 : [REF] (Corrected reads 2) vs. (Fragment GC ratio).\n');
-		sh(6) = subplot(3,4,3);
+		fprintf('Subplot 5/15 : [EXP] (Corrected reads 2) vs. (Fragment GC ratio).\n');
+		sh(5) = subplot(3,4,1);
 		hold on;
 		for fragID = 1:numFragments
 			if (fragment_data(fragID).usable == 1)
-				if (fragment_data(fragID).ave_reads_parent_corrected_2 < Y_fitCurve3_parent(fragID))
-					plot(fragment_data(fragID).GC_bias,fragment_data(fragID).ave_reads_parent_corrected_2,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+				if (fragment_data(fragID).ave_reads_corrected_2 < Y_fitCurve3_project(fragID))
+					plot(fragment_data(fragID).GC_bias,fragment_data(fragID).ave_reads_corrected_2,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
 				else
-					plot(fragment_data(fragID).GC_bias,fragment_data(fragID).ave_reads_parent_corrected_2,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+					plot(fragment_data(fragID).GC_bias,fragment_data(fragID).ave_reads_corrected_2,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
 				end;
 			end;
 		end;
-		plot(newX3_parent,newY3_parent,'color','k','linestyle','-', 'linewidth',1);
+		plot(newX3_project,newY3_project,'color','k','linestyle','-', 'linewidth',1);
 		hold off;
 		axis normal;
-		h = title('GC ratio vs. Corrected reads 2. [REF]');   set(h, 'FontSize', 10);
+		h = title('GC ratio vs. Corrected reads 2. [EXP]');   set(h, 'FontSize', 10);
 		h = ylabel('Corrected reads 2');  set(h, 'FontSize', 10);
 		h = xlabel('GC ratio');           set(h, 'FontSize', 10);
 		set(gca,'FontSize',10);
@@ -948,61 +918,67 @@ if (performGCbiasCorrection)
 			ylim([0 3]);
 			xlim([0 1]);
 		end;
-	end;
-
-	%-------------------------------------------------------------------------------------------------
-	% Plotting length-bias corrected read depth vs. GC-content for project.
-	%-------------------------------------------------------------------------------------------------
-	fprintf('Subplot 7/15 : [EXP] (Corrected reads 3) vs. (Fragment GC ratio).\n');
-	sh(7) = subplot(3,4,2);
-	hold on;
-	for fragID = 1:numFragments
-		% Add corrected ave_data to fragment data structure.
-		fragment_data(fragID).ave_reads_corrected_3 = Y_reads_project_corrected_3(fragID);
-
-		% Plot each corrected data point, colored depending on if data is useful or not.
-		X_datum = fragment_data(fragID).GC_bias;                 % X_GCbias
-		Y_datum = fragment_data(fragID).ave_reads_corrected_3;   % Y_reads_corrected_3
-		if (fragment_data(fragID).usable == 1)
-			if (Y_datum < 1)
-				plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+		if (useParent)
+			%-------------------------------------------------------------------------------------------------
+			% LOWESS fitting parent 3 : correcting GC_bias.
+			%-------------------------------------------------------------------------------------------------
+			% Perform LOWESS fitting.
+			fprintf('\tLOWESS fitting to parent data.\n');
+			if (exist([main_dir 'users/' parentUser '/projects/' parent '/Lowess_3.mat'],'file') == 0)
+				[newX3, newY3] = optimize_mylowess(X_GCbias_parent_trimmed,Y_reads_parent_trimmed,10, 0);
+				save([main_dir 'users/' parentUser '/projects/' parent '/Lowess_3.mat'], 'newX3','newY3');
 			else
-				plot(X_datum,Y_datum,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+				load([main_dir 'users/' parentUser '/projects/' parent '/Lowess_3.mat']);
+			end;
+			newX3_parent = newX3;   newY3_parent = newY3;
+			fprintf('\tLOWESS fitting to parent data complete.\n');
+			% Calculate GC_bias_corrected length_bia_corrected ave_read_count data for plotting and later analysis.
+			Y_target                   = 1;
+			Y_fitCurve3_parent         = interp1(newX3_parent,newY3_parent,X_GCbias_parent,'spline');
+			Y_reads_parent_corrected_3 = Y_reads_parent./Y_fitCurve3_parent*Y_target;
+			%-------------------------------------------------------------------------------------------------
+			% Show GC bias vs. corrected_2 read depth for parent.
+			%-------------------------------------------------------------------------------------------------
+			fprintf('Subplot 6/15 : [REF] (Corrected reads 2) vs. (Fragment GC ratio).\n');
+			sh(6) = subplot(3,4,3);
+			hold on;
+			for fragID = 1:numFragments
+				if (fragment_data(fragID).usable == 1)
+					if (fragment_data(fragID).ave_reads_parent_corrected_2 < Y_fitCurve3_parent(fragID))
+						plot(fragment_data(fragID).GC_bias,fragment_data(fragID).ave_reads_parent_corrected_2,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+					else
+						plot(fragment_data(fragID).GC_bias,fragment_data(fragID).ave_reads_parent_corrected_2,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+					end;
+				end;
+			end;
+			plot(newX3_parent,newY3_parent,'color','k','linestyle','-', 'linewidth',1);
+			hold off;
+			axis normal;
+			h = title('GC ratio vs. Corrected reads 2. [REF]');   set(h, 'FontSize', 10);
+			h = ylabel('Corrected reads 2');  set(h, 'FontSize', 10);
+			h = xlabel('GC ratio');           set(h, 'FontSize', 10);
+			set(gca,'FontSize',10);
+			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+				ylim([0 12]);
+				xlim([0 1]);
+			else
+				ylim([0 3]);
+				xlim([0 1]);
 			end;
 		end;
-		if (mod(fragID,1000) == 0)
-			fprintf('.');
-		end;
-	end;
-	fprintf('\n');
-	plot([0 1],[1 1],'color','k','linestyle','-', 'linewidth',1);
-	hold off;
-	axis normal;
-	h = title('GC ratio bias corrected. [EXPERIMENT]');   set(h, 'FontSize', 10);
-	h = ylabel('Corrected Reads 3');   set(h, 'FontSize', 10);
-	h = xlabel('GC ratio');            set(h, 'FontSize', 10);
-	set(gca,'FontSize',10);
-	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-		ylim([0 12]);
-		xlim([0 1]);
-	else
-		ylim([0 3]);
-		xlim([0 1]);
-	end;
-	if (useParent)
+
 		%-------------------------------------------------------------------------------------------------
-		% Plotting length-bias corrected read depth vs. GC-content for parent.
+		% Plotting length-bias corrected read depth vs. GC-content for project.
 		%-------------------------------------------------------------------------------------------------
-		fprintf('Subplot 8/15 : [REF] (Corrected reads 3) vs. (Fragment GC ratio).\n');
-		sh(8) = subplot(3,4,4);
+		fprintf('Subplot 7/15 : [EXP] (Corrected reads 3) vs. (Fragment GC ratio).\n');
+		sh(7) = subplot(3,4,2);
 		hold on;
 		for fragID = 1:numFragments
 			% Add corrected ave_data to fragment data structure.
-			fragment_data(fragID).ave_reads_parent_corrected_3 = Y_reads_parent_corrected_3(fragID);
-
+			fragment_data(fragID).ave_reads_corrected_3 = Y_reads_project_corrected_3(fragID);
 			% Plot each corrected data point, colored depending on if data is useful or not.
-			X_datum = fragment_data(fragID).GC_bias;                        % X_GCbias
-			Y_datum = fragment_data(fragID).ave_reads_parent_corrected_3;   % Y_reads_parent_corrected_3
+			X_datum = fragment_data(fragID).GC_bias;                 % X_GCbias
+			Y_datum = fragment_data(fragID).ave_reads_corrected_3;   % Y_reads_corrected_3
 			if (fragment_data(fragID).usable == 1)
 				if (Y_datum < 1)
 					plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
@@ -1018,9 +994,9 @@ if (performGCbiasCorrection)
 		plot([0 1],[1 1],'color','k','linestyle','-', 'linewidth',1);
 		hold off;
 		axis normal;
-		h = title('GC ratio bias corrected. [REF]');   set(h, 'FontSize', 10);
-		h = ylabel('Corrected Reads 3');               set(h, 'FontSize', 10);
-		h = xlabel('GC ratio');                        set(h, 'FontSize', 10);
+		h = title('GC ratio bias corrected. [EXPERIMENT]');   set(h, 'FontSize', 10);
+		h = ylabel('Corrected Reads 3');   set(h, 'FontSize', 10);
+		h = xlabel('GC ratio');            set(h, 'FontSize', 10);
 		set(gca,'FontSize',10);
 		if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
 			ylim([0 12]);
@@ -1029,63 +1005,68 @@ if (performGCbiasCorrection)
 			ylim([0 3]);
 			xlim([0 1]);
 		end;
-	end;
-else
-	% skip GCbias correction.
-	for fragID = 1:numFragments
-		fragment_data(fragID).ave_reads_corrected_3            = fragment_data(fragID).ave_reads_corrected_2;
+
 		if (useParent)
-			fragment_data(fragID).ave_reads_parent_corrected_3 = fragment_data(fragID).ave_reads_parent_corrected_2;
+			%-------------------------------------------------------------------------------------------------
+			% Plotting length-bias corrected read depth vs. GC-content for parent.
+			%-------------------------------------------------------------------------------------------------
+			fprintf('Subplot 8/15 : [REF] (Corrected reads 3) vs. (Fragment GC ratio).\n');
+			sh(8) = subplot(3,4,4);
+			hold on;
+			for fragID = 1:numFragments
+				% Add corrected ave_data to fragment data structure.
+				fragment_data(fragID).ave_reads_parent_corrected_3 = Y_reads_parent_corrected_3(fragID);
+				% Plot each corrected data point, colored depending on if data is useful or not.
+				X_datum = fragment_data(fragID).GC_bias;                        % X_GCbias
+				Y_datum = fragment_data(fragID).ave_reads_parent_corrected_3;   % Y_reads_parent_corrected_3
+				if (fragment_data(fragID).usable == 1)
+					if (Y_datum < 1)
+						plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+					else
+						plot(X_datum,Y_datum,'.', 'color', [0.0, 0.45, 0.55], 'MarkerSize',1);
+					end;
+				end;
+				if (mod(fragID,1000) == 0)
+					fprintf('.');
+				end;
+			end;
+			fprintf('\n');
+			plot([0 1],[1 1],'color','k','linestyle','-', 'linewidth',1);
+			hold off;
+			axis normal;
+			h = title('GC ratio bias corrected. [REF]');   set(h, 'FontSize', 10);
+			h = ylabel('Corrected Reads 3');               set(h, 'FontSize', 10);
+			h = xlabel('GC ratio');                        set(h, 'FontSize', 10);
+			set(gca,'FontSize',10);
+			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+				ylim([0 12]);
+				xlim([0 1]);
+			else
+				ylim([0 3]);
+				xlim([0 1]);
+			end;
+		end;
+	else
+		% skip GCbias correction.
+		for fragID = 1:numFragments
+			fragment_data(fragID).ave_reads_corrected_3            = fragment_data(fragID).ave_reads_corrected_2;
+			if (useParent)
+				fragment_data(fragID).ave_reads_parent_corrected_3 = fragment_data(fragID).ave_reads_parent_corrected_2;
+			end;
 		end;
 	end;
-end;
 
 
-%-------------------------------------------------------------------------------------------------
-% Subfigures illustrating all bias corrections, before reference normalization.
-%-------------------------------------------------------------------------------------------------
-fprintf('Subplot 13/15 : [EXP] (Corrected reads 3) vs. (Fragment length).\n');
-sh(9) = subplot(3,4,[5 6]);
-hold on;
-for fragID = 1:numFragments
-	% Plot each corrected data point, colored depending on if data is useful or not.
-	X_datum = fragment_data(fragID).length;
-	Y_datum = fragment_data(fragID).ave_reads_corrected_3;
-	if (fragment_data(fragID).usable == 1)
-		plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
-	else
-		plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.0], 'MarkerSize',1);
-	end;
-end;
-if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-	plot([0 10000],[1 1],'color','k','linestyle','-', 'linewidth',1);
-else
-	plot([0 1000],[1 1],'color','k','linestyle','-', 'linewidth',1);
-end;
-hold off;
-axis normal;
-h = title('Corrected_3 read count vs. ddRADseq fragment length. [EXP]');   set(h, 'FontSize', 10);
-h = ylabel('Corrected reads');   set(h, 'FontSize', 10);
-h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
-set(gca,'FontSize',10);
-if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-    ylim([0 12]);
-    xlim([0 10000]);
-else
-    ylim([0 3]);
-    xlim([0 1000]);
-end;
-if (useParent)
 	%-------------------------------------------------------------------------------------------------
-	% Show corrected_3 read depth vs. fragment length for parent.
+	% Subfigures illustrating all bias corrections, before reference normalization.
 	%-------------------------------------------------------------------------------------------------
-	fprintf('Subplot 14/15 : [REF] (Corrected reads 3) vs. (Fragment length).\n');
-	sh(10) = subplot(3,4,[7 8]);
+	fprintf('Subplot 13/15 : [EXP] (Corrected reads 3) vs. (Fragment length).\n');
+	sh(9) = subplot(3,4,[5 6]);
 	hold on;
 	for fragID = 1:numFragments
 		% Plot each corrected data point, colored depending on if data is useful or not.
 		X_datum = fragment_data(fragID).length;
-		Y_datum = fragment_data(fragID).ave_reads_parent_corrected_3;
+		Y_datum = fragment_data(fragID).ave_reads_corrected_3;
 		if (fragment_data(fragID).usable == 1)
 			plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
 		else
@@ -1099,7 +1080,100 @@ if (useParent)
 	end;
 	hold off;
 	axis normal;
-	h = title('Corrected_3 read count vs. ddRADseq fragment length. [REF]');   set(h, 'FontSize', 10);
+	h = title('Corrected_3 read count vs. ddRADseq fragment length. [EXP]');   set(h, 'FontSize', 10);
+	h = ylabel('Corrected reads');   set(h, 'FontSize', 10);
+	h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
+	set(gca,'FontSize',10);
+	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+	    ylim([0 12]);
+	    xlim([0 10000]);
+	else
+	    ylim([0 3]);
+	    xlim([0 1000]);
+	end;
+
+	if (useParent)
+		%-------------------------------------------------------------------------------------------------
+		% Show corrected_3 read depth vs. fragment length for parent.
+		%-------------------------------------------------------------------------------------------------
+		fprintf('Subplot 14/15 : [REF] (Corrected reads 3) vs. (Fragment length).\n');
+		sh(10) = subplot(3,4,[7 8]);
+		hold on;
+		for fragID = 1:numFragments
+			% Plot each corrected data point, colored depending on if data is useful or not.
+			X_datum = fragment_data(fragID).length;
+			Y_datum = fragment_data(fragID).ave_reads_parent_corrected_3;
+			if (fragment_data(fragID).usable == 1)
+				plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+			else
+				plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.0], 'MarkerSize',1);
+			end;
+		end;
+		if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+			plot([0 10000],[1 1],'color','k','linestyle','-', 'linewidth',1);
+		else
+			plot([0 1000],[1 1],'color','k','linestyle','-', 'linewidth',1);
+		end;
+		hold off;
+		axis normal;
+		h = title('Corrected_3 read count vs. ddRADseq fragment length. [REF]');   set(h, 'FontSize', 10);
+		h = ylabel('Corrected reads');   set(h, 'FontSize', 10);
+		h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
+		set(gca,'FontSize',10);
+		if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+			ylim([0 12]);
+			xlim([0 10000]);
+		else
+			ylim([0 3]);
+			xlim([0 1000]);
+		end;
+	end;
+
+
+	%-------------------------------------------------------------------------------------------------
+	% Final subfigure showing corrected project data divided by corrected parent data.
+	%-------------------------------------------------------------------------------------------------
+	fprintf('Subplot 15/15 : [REF] (Corrected reads 3) vs. (Fragment length).\n');
+	sh(15) = subplot(3,4,[10 11]);
+	hold on;
+	finalFrag_data     = zeros(1,numFragments);
+	finalFrag_tracking = ones(1,numFragments);
+	for fragID = 1:numFragments
+		if (useParent)
+			if ((fragment_data(fragID).ave_reads_corrected_3 == 0) || (fragment_data(fragID).ave_reads_parent_corrected_3 == 0))
+				finalFrag_tracking(fragID) = 0;
+			end;
+			Y_datum_final              = fragment_data(fragID).ave_reads_corrected_3/fragment_data(fragID).ave_reads_parent_corrected_3;
+			finalFrag_data(fragID)     = Y_datum_final;
+		else
+			Y_datum_final              = fragment_data(fragID).ave_reads_corrected_3;
+			finalFrag_data(fragID)     = Y_datum_final;
+			finalFrag_tracking(fragID) = 2;
+		end;
+		% Plot each corrected data point, colored depending on if data is useful or not.
+		X_datum = fragment_data(fragID).length;
+		Y_datum = Y_datum_final;
+		if ((fragment_data(fragID).usable == 1) && (fragment_data(fragID).usable_parent == 1))
+			plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
+		elseif ((fragment_data(fragID).usable == 1) && (fragment_data(fragID).usable_parent == 0))
+			plot(X_datum,Y_datum,'.', 'color', [1.0, 0.5, 0.0], 'MarkerSize',1);
+			finalFrag_tracking(fragID) = 0;
+		elseif ((fragment_data(fragID).usable == 0) && (fragment_data(fragID).usable_parent == 1))
+			plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.5], 'MarkerSize',1);
+			finalFrag_tracking(fragID) = 0;
+		else
+			plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.0], 'MarkerSize',1);
+			finalFrag_tracking(fragID) = 0;
+		end;
+	end;
+	if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+		plot([0 10000],[1 1],'color','k','linestyle','-', 'linewidth',1);
+	else
+		plot([0 1000],[1 1],'color','k','linestyle','-', 'linewidth',1);
+	end;
+	hold off;
+	axis normal;
+	h = title('Final Corrected Read count vs. ddRADseq fragment length.');   set(h, 'FontSize', 10);
 	h = ylabel('Corrected reads');   set(h, 'FontSize', 10);
 	h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
 	set(gca,'FontSize',10);
@@ -1110,98 +1184,35 @@ if (useParent)
 		ylim([0 3]);
 		xlim([0 1000]);
 	end;
-end;
 
-%-------------------------------------------------------------------------------------------------
-% Final subfigure showing corrected project data divided by corrected parent data.
-%-------------------------------------------------------------------------------------------------
-fprintf('Subplot 15/15 : [REF] (Corrected reads 3) vs. (Fragment length).\n');
-sh(15) = subplot(3,4,[10 11]);
-hold on;
-finalFrag_data     = zeros(1,numFragments);
-finalFrag_tracking = ones(1,numFragments);
-for fragID = 1:numFragments
-	if (useParent)
-		if ((fragment_data(fragID).ave_reads_corrected_3 == 0) || (fragment_data(fragID).ave_reads_parent_corrected_3 == 0))
-			finalFrag_tracking(fragID) = 0;
-		end;
-		Y_datum_final              = fragment_data(fragID).ave_reads_corrected_3/fragment_data(fragID).ave_reads_parent_corrected_3;
-		finalFrag_data(fragID)     = Y_datum_final;
-	else
-		Y_datum_final              = fragment_data(fragID).ave_reads_corrected_3;
-		finalFrag_data(fragID)     = Y_datum_final;
-		finalFrag_tracking(fragID) = 2;
+
+	% Calculate median of final project:parent ratio data per fragment.
+	% testData1                               = finalFrag_data
+	finalFrag_data(finalFrag_tracking == 0) = [];
+	% testData2                               = finalFrag_data
+	finalFrag_median                          = median(finalFrag_data);
+	fprintf(['\n***\n*** median CNV value of fragments = ' num2str(finalFrag_median) '\n***\n\n']);
+
+
+	%-------------------------------------------------------------------------------------------------
+	% Saving bias correction figure 2.
+	%-------------------------------------------------------------------------------------------------
+	if (performGCbiasCorrection)
+		fprintf('Saving bias figure 2.\n');
+		set(fig2,'PaperPosition',[0 0 8 5]*4);
+		saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.eps'], 'epsc');
+		saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.png'], 'png');
+		delete(fig2);
 	end;
 
-	% Plot each corrected data point, colored depending on if data is useful or not.
-	X_datum = fragment_data(fragID).length;
-	Y_datum = Y_datum_final;
-	if ((fragment_data(fragID).usable == 1) && (fragment_data(fragID).usable_parent == 1))
-		plot(X_datum,Y_datum,'.', 'color', [0.0, 0.66667, 0.33333], 'MarkerSize',1);
-	elseif ((fragment_data(fragID).usable == 1) && (fragment_data(fragID).usable_parent == 0))
-		plot(X_datum,Y_datum,'.', 'color', [1.0, 0.5, 0.0], 'MarkerSize',1);
-		finalFrag_tracking(fragID) = 0;
-	elseif ((fragment_data(fragID).usable == 0) && (fragment_data(fragID).usable_parent == 1))
-		plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.5], 'MarkerSize',1);
-		finalFrag_tracking(fragID) = 0;
-	else
-		plot(X_datum,Y_datum,'.', 'color', [1.0, 0.0, 0.0], 'MarkerSize',1);
-		finalFrag_tracking(fragID) = 0;
-	end;
-end;
-if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-	plot([0 10000],[1 1],'color','k','linestyle','-', 'linewidth',1);
+	%% Save fragment_data for project again, now that we've assigned usable vs. not usable.
+	fragments_CNV = fragment_data;
+	save([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat'], 'fragments_CNV');
 else
-	plot([0 1000],[1 1],'color','k','linestyle','-', 'linewidth',1);
+	fprintf('\nProject corrected_CNV_data MAT file found, loading.\n');
+	load([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat']);
+	fragments_data = fragments_CNV;
 end;
-hold off;
-axis normal;
-h = title('Final Corrected Read count vs. ddRADseq fragment length.');   set(h, 'FontSize', 10);
-h = ylabel('Corrected reads');   set(h, 'FontSize', 10);
-h = xlabel('Fragment Length');   set(h, 'FontSize', 10);
-set(gca,'FontSize',10);
-if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-	ylim([0 12]);
-	xlim([0 10000]);
-else
-	ylim([0 3]);
-	xlim([0 1000]);
-end;
-
-
-% Calculate median of final project:parent ratio data per fragment.
-% testData1                               = finalFrag_data
-finalFrag_data(finalFrag_tracking == 0) = [];
-% testData2                               = finalFrag_data
-finalFrag_median                          = median(finalFrag_data);
-fprintf(['\n***\n*** median CNV value of fragments = ' num2str(finalFrag_median) '\n***\n\n']);
-
-
-%-------------------------------------------------------------------------------------------------
-% Saving bias correction figure 2.
-%-------------------------------------------------------------------------------------------------
-if (performGCbiasCorrection)
-	fprintf('Saving bias figure 2.\n');
-	set(fig2,'PaperPosition',[0 0 8 5]*4);
-	saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.eps'], 'epsc');
-	saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.png'], 'png');
-	delete(fig2);
-end;
-
-%
-%%
-%%%
-%%%%
-%%%%
-%%%%
-%%%
-%%
-%
-
-
-%% Save fragment_data for project again, now that we've assigned usable vs. not usable.
-fragments_CNV = fragment_data;
-save([main_dir 'users/' user '/projects/' project '/fragment_CNV_data.mat'], 'fragments_CNV');
 
 
 %%=========================================================================
@@ -1241,10 +1252,11 @@ fprintf(['\n\n@#$\n@#$ Data display level = ' num2str(DataDisplayLevel) '\n@#$\n
 % performLengthbiasCorrection
 % performGCbiasCorrection
 
+
 %-------------------------------------------------------------------------------------------------
 % Distribute project and parent data into standard bins, then save as 'corrected_CNV.project.mat'.
 %-------------------------------------------------------------------------------------------------
-if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat'],'file') == 0)
+if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV_2.project.mat'],'file') == 0)
 	fprintf('\nMAT file containing project CNV information not found, regenerating from prior data files.\n');
 	% Convert bias corrected ave_copy_number per restriction digest fragment into CNV data for plotting
 	fprintf('\n# Adding fragment corrected_ave_read_copy values to map bins.');
@@ -1346,250 +1358,265 @@ if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.m
 	end;
 	fprintf('\n# Fragment corrected_ave_read_copy values have been added to map bins.');
 
-	save([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat'],'chr_CNVdata_RADseq');
+	save([main_dir 'users/' user '/projects/' project '/corrected_CNV_2.project.mat'],'chr_CNVdata_RADseq');
 else
 	fprintf('\nProject CNV MAT file found, loading.\n');
-	load([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.mat']);
+	load([main_dir 'users/' user '/projects/' project '/corrected_CNV_2.project.mat']);
+	% chr_CNVdata_RADseq;
 end;
-% chr_CNVdata_RADseq;
 
 
-if (Smooth_place == 1)
+if (exist([main_dir 'users/' user '/projects/' project '/Common_CNV.mat'],'file') == 0)
+	if (Smooth_place == 1)
+		%%================================================================================================
+		% Smooth CNV standard_bin values for project and parent separately.
+		%.................................................................................................
+		% Left-end bin:
+		%     (33.333% bin-1) + (66.667% bin)
+		% Middle bins:
+		%     (25% bin-1) + (50% bin) + (25% bin+1)
+		% Right-end bin:
+		%     (66.667% bin) + (33.333% bin+1)
+		%-------------------------------------------------------------------------------------------------
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				% project standard_bins data : chr_CNVdata_RADseq{chr,1}(pos)
+				% parent standard_bins data  : chr_CNVdata_RADseq{chr,3}(pos)
+				%% Left-end bin.
+				pos                = 1;
+				valueCurrent       = chr_CNVdata_RADseq{chr,1}(pos  );
+				valueRight         = chr_CNVdata_RADseq{chr,1}(pos+1);
+				chr_CNVdata_RADseq{chr,1}(pos) = valueCurrent*2/3       + valueRight/3;
+				parentValueCurrent = chr_CNVdata_RADseq{chr,3}(pos  );
+				parentValueRight   = chr_CNVdata_RADseq{chr,3}(pos+1);
+				chr_CNVdata_RADseq{chr,3}(pos) = parentValueCurrent*2/3 + parentValueRight/3;
+				%% Middle bins.
+				for pos = 2:(length(chr_CNVdata_RADseq{chr,1})-1)
+					valueLeft      = chr_CNVdata_RADseq{chr,1}(pos-1);
+					valueCurrent   = chr_CNVdata_RADseq{chr,1}(pos  );
+					valueRight     = chr_CNVdata_RADseq{chr,1}(pos+1);
+					chr_CNVdata_RADseq{chr,1}(pos) = valueLeft/4       + valueCurrent/2       + valueRight/4;
+					parentValueLeft      = chr_CNVdata_RADseq{chr,3}(pos-1);
+					parentValueCurrent   = chr_CNVdata_RADseq{chr,3}(pos  );
+					parentValueRight     = chr_CNVdata_RADseq{chr,3}(pos+1);
+					chr_CNVdata_RADseq{chr,3}(pos) = parentValueLeft/4 + parentValueCurrent/2 + parentValueRight/4;
+				end;
+				%% Right-end bin.
+				pos                = length(chr_CNVdata_RADseq{chr,1});
+				valueRight         = chr_CNVdata_RADseq{chr,1}(pos-1);
+				valueCurrent       = chr_CNVdata_RADseq{chr,1}(pos  );
+				chr_CNVdata_RADseq{chr,1}(pos) = valueLeft/3       + valueCurrent*2/3;
+				parentValueRight   = chr_CNVdata_RADseq{chr,3}(pos-1);
+				parentValueCurrent = chr_CNVdata_RADseq{chr,3}(pos  );
+				chr_CNVdata_RADseq{chr,3}(pos) = parentValueLeft/3 + parentValueCurrent*2/3;
+			end;
+		end;
+	end;
+
+
+	%% -----------------------------------------------------------------------------------------
+	% Convert 'chr_CNVdata_RADseq' to 'CNVplot2' for saving to 'Common_CNV' file and figure generation.
+	%-------------------------------------------------------------------------------------------
+	for chr = 1:num_chrs
+		CNVplot2{chr}     = zeros(1,length(chr_CNVdata_RADseq{chr,1}));
+		CNV_tracking{chr} = zeros(1,length(chr_CNVdata_RADseq{chr,1}));
+	end;
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			for pos = 1:length(chr_CNVdata_RADseq{chr,1})
+				% Plot the sum of the data in each region, divided by the number of data points in each region; then divided by this value calculated for SC5314 data.
+				if ((chr_CNVdata_RADseq{chr,2}(pos) == 0) || (chr_CNVdata_RADseq{chr,4}(pos) == 0))
+					% No data elements => null value is plotted.
+					CNVplot2{chr}(pos)     = 0;
+				else
+					% project : sum of data elements is divided by the number of data elements.
+					CNVplot1a{chr}(pos)    = chr_CNVdata_RADseq{chr,1}(pos)/chr_CNVdata_RADseq{chr,2}(pos);
+					% parent  : sum of data elements is divided by the number of data elements.
+					CNVplot1b{chr}(pos)    = chr_CNVdata_RADseq{chr,3}(pos)/chr_CNVdata_RADseq{chr,4}(pos);
+					if (useParent)
+						% divide project_standard_bin by parent_standard_bin value for final normalization.
+						CNVplot2{chr}(pos) = CNVplot1a{chr}(pos)/CNVplot1b{chr}(pos);
+					else
+						CNVplot2{chr}(pos) = CNVplot1a{chr}(pos);
+					end;
+					CNV_tracking{chr}(pos) = 1;
+				end;
+			end;
+		end;
+	end;
+
+	if (Smooth_place == 2)
+		%%================================================================================================
+		% Smooth CNV standard_bin values for project and parent separately.
+		%.................................................................................................
+		% Left-end bin:
+		%     (33.333% bin-1) + (66.667% bin)
+		% Middle bins:
+		%     (25% bin-1) + (50% bin) + (25% bin+1)
+		% Right-end bin:
+		%     (66.667% bin) + (33.333% bin+1)
+		%-------------------------------------------------------------------------------------------------
+		CNVplot2_temp = CNVplot2;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				% project standard_bins data : chr_CNVdata_RADseq{chr,1}(pos)
+				% parent standard_bins data  : chr_CNVdata_RADseq{chr,3}(pos)
+				%% Left-end bin.
+				pos                = 1;
+				valueCurrent       = CNVplot2_temp{chr}(pos);
+				valueRight         = CNVplot2_temp{chr}(pos+1);
+				CNVplot2{chr}(pos) = valueCurrent*2/3       + valueRight/3;
+				%% Middle bins.
+				for pos = 2:(length(CNVplot2_temp{chr})-1)
+					valueLeft      = CNVplot2_temp{chr}(pos-1);
+					valueCurrent   = CNVplot2_temp{chr}(pos);
+					valueRight     = CNVplot2_temp{chr}(pos+1);
+					CNVplot2{chr}(pos) = valueLeft/4       + valueCurrent/2       + valueRight/4;
+				end;
+				%% Right-end bin.
+				pos                = length(CNVplot2_temp{chr});
+				valueRight         = CNVplot2_temp{chr}(pos-1);
+				valueCurrent       = CNVplot2_temp{chr}(pos);
+				CNVplot2{chr}(pos) = valueLeft/3       + valueCurrent*2/3;
+			end;
+		end;
+	end;
+
+
 	%%================================================================================================
-	% Smooth CNV standard_bin values for project and parent separately.
-	%.................................................................................................
-	% Left-end bin:
-	%     (33.333% bin-1) + (66.667% bin)
-	% Middle bins:
-	%     (25% bin-1) + (50% bin) + (25% bin+1)
-	% Right-end bin:
-	%     (66.667% bin) + (33.333% bin+1)
+	% Correct chromosome end bias.
 	%-------------------------------------------------------------------------------------------------
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			% project standard_bins data : chr_CNVdata_RADseq{chr,1}(pos)
-			% parent standard_bins data  : chr_CNVdata_RADseq{chr,3}(pos)
-			%% Left-end bin.
-			pos                = 1;
-			valueCurrent       = chr_CNVdata_RADseq{chr,1}(pos  );
-			valueRight         = chr_CNVdata_RADseq{chr,1}(pos+1);
-			chr_CNVdata_RADseq{chr,1}(pos) = valueCurrent*2/3       + valueRight/3;
-			parentValueCurrent = chr_CNVdata_RADseq{chr,3}(pos  );
-			parentValueRight   = chr_CNVdata_RADseq{chr,3}(pos+1);
-			chr_CNVdata_RADseq{chr,3}(pos) = parentValueCurrent*2/3 + parentValueRight/3;
-			%% Middle bins.
-			for pos = 2:(length(chr_CNVdata_RADseq{chr,1})-1)
-				valueLeft      = chr_CNVdata_RADseq{chr,1}(pos-1);
-				valueCurrent   = chr_CNVdata_RADseq{chr,1}(pos  );
-				valueRight     = chr_CNVdata_RADseq{chr,1}(pos+1);
-				chr_CNVdata_RADseq{chr,1}(pos) = valueLeft/4       + valueCurrent/2       + valueRight/4;
-				parentValueLeft      = chr_CNVdata_RADseq{chr,3}(pos-1);
-				parentValueCurrent   = chr_CNVdata_RADseq{chr,3}(pos  );
-				parentValueRight     = chr_CNVdata_RADseq{chr,3}(pos+1);
-				chr_CNVdata_RADseq{chr,3}(pos) = parentValueLeft/4 + parentValueCurrent/2 + parentValueRight/4;
+	GCfig = figure(3);
+	if (performEndbiasCorrection)
+		% Gather data for LOWESS fitting 4 : Chr end bias.
+		CGHdata_all_n1          = [];
+		chr_EndDistanceData_all = [];
+		fprintf(['num_chrs = ' num2str(num_chrs) '\n']);
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				chr_EndDistanceData{chr}               = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+				for position = 1:ceil(chr_size(chr)/bases_per_bin)
+					frag_size                          = ceil(chr_size(chr)/bases_per_bin);
+					frag_center                        = position;
+					frag_nearestChrEnd                 = min(frag_center, frag_size-frag_center);
+					chr_EndDistanceData{chr}(position) = frag_nearestChrEnd;
+				end;
+				CGHdata_all_n1                         = [CGHdata_all_n1          CNVplot2{chr}           ];
+				chr_EndDistanceData_all                = [chr_EndDistanceData_all chr_EndDistanceData{chr}];
 			end;
-			%% Right-end bin.
-			pos                = length(chr_CNVdata_RADseq{chr,1});
-			valueRight         = chr_CNVdata_RADseq{chr,1}(pos-1);
-			valueCurrent       = chr_CNVdata_RADseq{chr,1}(pos  );
-			chr_CNVdata_RADseq{chr,1}(pos) = valueLeft/3       + valueCurrent*2/3;
-			parentValueRight   = chr_CNVdata_RADseq{chr,3}(pos-1);
-			parentValueCurrent = chr_CNVdata_RADseq{chr,3}(pos  );
-			chr_CNVdata_RADseq{chr,3}(pos) = parentValueLeft/3 + parentValueCurrent*2/3;
+		end;
+		% Clean up data by: deleting CGH data beyond 6* the median value.  (rDNA, etc.)
+		CGHdata_clean                                        = CGHdata_all_n1;
+		chr_EndDistanceData_clean                            = chr_EndDistanceData_all;
+		chr_EndDistanceData_clean(CGHdata_clean     >  6   ) = [];
+		CGHdata_clean(            CGHdata_clean     >  6   ) = [];
+		chr_EndDistanceData_clean(CGHdata_clean     == 0   ) = [];
+		CGHdata_clean(            CGHdata_clean     == 0   ) = [];
+
+		% Perform LOWESS fitting : chr end bias.
+		rawData_X4     = chr_EndDistanceData_clean;
+		rawData_Y4     = CGHdata_clean;
+		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X4,1)) ',' num2str(size(rawData_X4,2)) ']:[' num2str(size(rawData_Y4,1)) ',' num2str(size(rawData_Y4,2)) ']\n']);
+		if (exist([main_dir 'users/' user '/projects/' project '/Lowess_4.mat'],'file') == 0)
+			[fitX4, fitY4] = optimize_mylowess(rawData_X4,rawData_Y4, 10, 0);
+			save([main_dir 'users/' user '/projects/' project '/Lowess_4.mat'], 'fitX4','fitY4');
+		else
+			load([main_dir 'users/' user '/projects/' project '/Lowess_4.mat']);
+		end;
+		% Correct data using normalization to LOWESS fitting
+		Y_target = 1;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				fprintf(['chr' num2str(chr) ' : ' num2str(length(CNVplot2{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+				rawData_chr_X4{chr}        = chr_EndDistanceData{chr};
+				rawData_chr_Y4{chr}        = CNVplot2{chr};
+				fitData_chr_Y4{chr}        = interp1(fitX4,fitY4,rawData_chr_X4{chr},'spline');
+				normalizedData_chr_Y4{chr} = rawData_chr_Y4{chr}./fitData_chr_Y4{chr}*Y_target;
+			end;
+		end;
+	else
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				normalizedData_chr_Y4{chr} = CNVplot2{chr};
+			end;
 		end;
 	end;
-end;
+	if (performEndbiasCorrection)
+		subplot(1,2,1);
+			hold on;
+			for chr = 1:num_chrs
+				if (chr_in_use(chr) == 1)
+					plot(rawData_chr_X4{chr},rawData_chr_Y4{chr},'k.','markersize',1);        % raw data
+				end;
+			end;
+			plot(fitX4,fitY4,'r','LineWidth',2);                        % LOWESS fit curve.
+			hold off;
+			xlabel('NearestEnd');
+			ylabel('CGH data');
+			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+				ylim([0 12]);
+				xlim([0 200]);
+			else
+				ylim([0 3]);
+				xlim([0 200]);
+			end;
+			axis square;
+			title('Reads vs. NearestEnd');
+		subplot(1,2,2);
+			hold on;
+			for chr = 1:num_chrs
+				if (chr_in_use(chr) == 1)
+					plot(rawData_chr_X4{chr},normalizedData_chr_Y4{chr},'k.','markersize',1); % corrected data.
+				end;
+			end;
+			plot([fitX4(1) fitX4(end)],[Y_target Y_target],'r','LineWidth',2);          % normalization line.
+			hold off;
+			xlabel('NearestEnd');
+			ylabel('corrected CGH data');
+			if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
+				ylim([0 12]);
+				xlim([0 200]);
+			else
+				ylim([0 3]);
+				xlim([0 200]);
+			end;
+			axis square;
+			title('NearestEnd Corrected');
+		end;
+	% move Endbias normalized data back to main pipeline.
+	if (performEndbiasCorrection)
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				CNVplot2{chr} = normalizedData_chr_Y4{chr};
+			end;
+		end;
+	end;
 
 
-%% -----------------------------------------------------------------------------------------
-% Convert 'chr_CNVdata_RADseq' to 'CNVplot2' for saving to 'Common_CNV' file and figure generation.
-%-------------------------------------------------------------------------------------------
-for chr = 1:num_chrs
-    CNVplot2{chr}     = zeros(1,length(chr_CNVdata_RADseq{chr,1}));
-    CNV_tracking{chr} = zeros(1,length(chr_CNVdata_RADseq{chr,1}));
-end;
-for chr = 1:num_chrs
-    if (chr_in_use(chr) == 1)
-        for pos = 1:length(chr_CNVdata_RADseq{chr,1})
-            % Plot the sum of the data in each region, divided by the number of data points in each region; then divided by this value calculated for SC5314 data.
-            if ((chr_CNVdata_RADseq{chr,2}(pos) == 0) || (chr_CNVdata_RADseq{chr,4}(pos) == 0))
-                % No data elements => null value is plotted.
-                CNVplot2{chr}(pos)     = 0;
-            else
-                % project : sum of data elements is divided by the number of data elements.
-                CNVplot1a{chr}(pos)    = chr_CNVdata_RADseq{chr,1}(pos)/chr_CNVdata_RADseq{chr,2}(pos);
-
-                % parent  : sum of data elements is divided by the number of data elements.
-                CNVplot1b{chr}(pos)    = chr_CNVdata_RADseq{chr,3}(pos)/chr_CNVdata_RADseq{chr,4}(pos);
-
-                if (useParent)
-                    % divide project_standard_bin by parent_standard_bin value for final normalization.
-                    CNVplot2{chr}(pos) = CNVplot1a{chr}(pos)/CNVplot1b{chr}(pos);
-                else
-                    CNVplot2{chr}(pos) = CNVplot1a{chr}(pos);
-                end;
-                CNV_tracking{chr}(pos) = 1;
-            end;
-        end;
-    end;
-end;
-
-if (Smooth_place == 2)
-	%%================================================================================================
-	% Smooth CNV standard_bin values for project and parent separately.
-	%.................................................................................................
-	% Left-end bin:
-	%     (33.333% bin-1) + (66.667% bin)
-	% Middle bins:
-	%     (25% bin-1) + (50% bin) + (25% bin+1)
-	% Right-end bin:
-	%     (66.667% bin) + (33.333% bin+1)
 	%-------------------------------------------------------------------------------------------------
-	CNVplot2_temp = CNVplot2;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			% project standard_bins data : chr_CNVdata_RADseq{chr,1}(pos)
-			% parent standard_bins data  : chr_CNVdata_RADseq{chr,3}(pos)
-			%% Left-end bin.
-			pos                = 1;
-			valueCurrent       = CNVplot2_temp{chr}(pos);
-			valueRight         = CNVplot2_temp{chr}(pos+1);
-			CNVplot2{chr}(pos) = valueCurrent*2/3       + valueRight/3;
-			%% Middle bins.
-			for pos = 2:(length(CNVplot2_temp{chr})-1)
-				valueLeft      = CNVplot2_temp{chr}(pos-1);
-				valueCurrent   = CNVplot2_temp{chr}(pos);
-				valueRight     = CNVplot2_temp{chr}(pos+1);
-				CNVplot2{chr}(pos) = valueLeft/4       + valueCurrent/2       + valueRight/4;
-			end;
-			%% Right-end bin.
-			pos                = length(CNVplot2_temp{chr});
-			valueRight         = CNVplot2_temp{chr}(pos-1);
-			valueCurrent       = CNVplot2_temp{chr}(pos);
-			CNVplot2{chr}(pos) = valueLeft/3       + valueCurrent*2/3;
-		end;
-	end;
-end;
-
-
-%%================================================================================================
-% Correct chromosome end bias.
-%-------------------------------------------------------------------------------------------------
-GCfig = figure(3);
-if (performEndbiasCorrection)
-	% Gather data for LOWESS fitting 4 : Chr end bias.
-	CGHdata_all_n1          = [];
-	chr_EndDistanceData_all = [];
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			chr_EndDistanceData{chr}               = zeros(1,ceil(chr_size(chr)/bases_per_bin));
-			for position = 1:ceil(chr_size(chr)/bases_per_bin)
-				frag_size                          = ceil(chr_size(chr)/bases_per_bin);
-				frag_center                        = position;
-				frag_nearestChrEnd                 = min(frag_center, frag_size-frag_center);
-				chr_EndDistanceData{chr}(position) = frag_nearestChrEnd;
-			end;
-			CGHdata_all_n1                         = [CGHdata_all_n1          CNVplot2{chr}           ];
-			chr_EndDistanceData_all                = [chr_EndDistanceData_all chr_EndDistanceData{chr}];
-		end;
+	% Saving bias correction figure 3.
+	%-------------------------------------------------------------------------------------------------
+	if (performEndbiasCorrection)
+		fprintf('Saving figure 3.\n');
+		set(GCfig,'PaperPosition',[0 0 8 2]*4);
+		saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.eps'], 'epsc');
+		saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.png'], 'png');
+		delete(GCfig);
 	end;
 
-	% Clean up data by: deleting CGH data beyond 6* the median value.  (rDNA, etc.)
-	CGHdata_clean                                        = CGHdata_all_n1;
-	chr_EndDistanceData_clean                            = chr_EndDistanceData_all;
-	chr_EndDistanceData_clean(CGHdata_clean     >  6   ) = [];
-	CGHdata_clean(            CGHdata_clean     >  6   ) = [];
-	chr_EndDistanceData_clean(CGHdata_clean     == 0   ) = [];
-	CGHdata_clean(            CGHdata_clean     == 0   ) = [];
-	% Perform LOWESS fitting : chr end bias.
-	rawData_X4     = chr_EndDistanceData_clean;
-	rawData_Y4     = CGHdata_clean;
-	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X4,1)) ',' num2str(size(rawData_X4,2)) ']:[' num2str(size(rawData_Y4,1)) ',' num2str(size(rawData_Y4,2)) ']\n']);
-	[fitX4, fitY4] = optimize_mylowess(rawData_X4,rawData_Y4, 10, 0);
-	% Correct data using normalization to LOWESS fitting
-	Y_target = 1;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			fprintf(['chr' num2str(chr) ' : ' num2str(length(CNVplot2{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-			rawData_chr_X4{chr}        = chr_EndDistanceData{chr};
-			rawData_chr_Y4{chr}        = CNVplot2{chr};
-			fitData_chr_Y4{chr}        = interp1(fitX4,fitY4,rawData_chr_X4{chr},'spline');
-			normalizedData_chr_Y4{chr} = rawData_chr_Y4{chr}./fitData_chr_Y4{chr}*Y_target;
-		end;
-	end;
+	% Save presented CNV data in a file format common across data types being processed.
+	fprintf('\nSaving "Common_CNV" data file.');
+	genome_CNV = genome;
+	save([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']    , 'CNVplot2','genome_CNV');
+	save([main_dir 'users/' user '/projects/' project '/ddRADseq_only1.mat'], 'CNV_tracking','chr_EndDistanceData_clean','CNVplot2');
 else
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			normalizedData_chr_Y4{chr} = CNVplot2{chr};
-		end;
-	end;
-end;
-if (performEndbiasCorrection)
-	subplot(1,2,1);
-		hold on;
-		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X4{chr},rawData_chr_Y4{chr},'k.','markersize',1);        % raw data
-			end;
-		end;
-		plot(fitX4,fitY4,'r','LineWidth',2);                        % LOWESS fit curve.
-		hold off;
-		xlabel('NearestEnd');
-		ylabel('CGH data');
-		if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-			ylim([0 12]);
-			xlim([0 200]);
-		else
-			ylim([0 3]);
-			xlim([0 200]);
-		end;
-		axis square;
-		title('Reads vs. NearestEnd');
-	subplot(1,2,2);
-		hold on;
-		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X4{chr},normalizedData_chr_Y4{chr},'k.','markersize',1); % corrected data.
-			end;
-		end;
-		plot([fitX4(1) fitX4(end)],[Y_target Y_target],'r','LineWidth',2);          % normalization line.
-		hold off;
-		xlabel('NearestEnd');
-		ylabel('corrected CGH data');
-		if (strcmp(restrictionEnzyme_string,'BamHI_BclI') == 1)
-			ylim([0 12]);
-			xlim([0 200]);
-		else
-			ylim([0 3]);
-			xlim([0 200]);
-		end;
-		axis square;
-		title('NearestEnd Corrected');
-end;
-% move Endbias normalized data back to main pipeline.
-if (performEndbiasCorrection)
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			CNVplot2{chr} = normalizedData_chr_Y4{chr};
-		end;
-	end;
-end;
-%-------------------------------------------------------------------------------------------------
-% Saving bias correction figure 3.
-%-------------------------------------------------------------------------------------------------
-if (performEndbiasCorrection)
-	fprintf('Saving figure 3.\n');
-	set(GCfig,'PaperPosition',[0 0 8 2]*4);
-	saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.eps'], 'epsc');
-	saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.png'], 'png');
-	delete(GCfig);
+	fprintf('\nFound Common_CNV MAT file, loading.');
+	load([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']);
+	load([main_dir 'users/' user '/projects/' project '/ddRADseq_only1.mat']);
+	genome = genome_CNV;
 end;
 
 
-% Save presented CNV data in a file format common across data types being processed.
-fprintf('\nSaving "Common_CNV" data file.');
-genome_CNV = genome;
-save([main_dir 'users/' user '/projects/' project '/Common_CNV.mat'], 'CNVplot2','genome_CNV');
 
 
 %% -----------------------------------------------------------------------------------------
@@ -1639,9 +1666,7 @@ end;
 
 
 % Calculate median of final CNV data per standard_bin.
-% testData3                        = CNVdata_all
 CNVdata_all(CNV_tracking_all == 0) = [];
-% testData4                        = CNVdata_all
 medianCNV                          = median(CNVdata_all);
 fprintf(['\n\n***\n*** median CNV value of standard_bins = ' num2str(medianCNV) '\n***\n\n']);
 

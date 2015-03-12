@@ -7,11 +7,12 @@ function [] = process_2dataset_hapmap_allelicRatios(project1dir, project2dir, ha
 %	% Child data at loci where parent has allelic ratio on range [0.25-0.75].
 %	C_datafile = [project1dir 'trimmed_SNPs_v4.txt'       ];
 
-% Child data at loci from hapmap.
-C_datafile = [project1dir 'trimmed_SNPs_v5.txt'       ];
 
 % Parent data at loci where allelic ratio is on range [0.25-0.75].
 P_datafile = [project1dir 'trimmed_SNPs_v4.parent.txt'];
+
+% Child data at loci from hapmap.
+C_datafile = [project1dir 'trimmed_SNPs_v5.txt'       ];
 
 % Hapmap dataset.
 H_datafile = [hapmapDir   'SNPdata_parent.txt'        ];
@@ -79,46 +80,49 @@ end;
 %%============================================================================================================
 % Process parent project dataset.
 %-------------------------------------------------------------------------------------------------------------
-fprintf(['process_2dataset_hapmap_allelicRatios.m: Process parent project dataset.\n']);
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Process parent project dataset (trimmed_SNPs_v4.parent.txt).\n']);
 P_data      = fopen(P_datafile, 'r');
 allele_list = ['A' 'T' 'G' 'C'];
 old_chr     = 0;
 while not (feof(P_data))
 	P_dataLine = fgetl(P_data);
-	if (length(P_dataLine) > 0)
-		% process the loaded line into data channels.
-		P_SNP_chr_name   = sscanf(P_dataLine, '%s',1);
-		P_SNP_coordinate = sscanf(P_dataLine, '%s',2);   for i = 1:size(sscanf(P_dataLine,'%s',1),2);   P_SNP_coordinate(1) = [];   end;
-		P_SNP_countA     = sscanf(P_dataLine, '%s',3);   for i = 1:size(sscanf(P_dataLine,'%s',2),2);   P_SNP_countA(1)     = [];   end;
-		P_SNP_countT     = sscanf(P_dataLine, '%s',4);   for i = 1:size(sscanf(P_dataLine,'%s',3),2);   P_SNP_countT(1)     = [];   end;
-		P_SNP_countG     = sscanf(P_dataLine, '%s',5);   for i = 1:size(sscanf(P_dataLine,'%s',4),2);   P_SNP_countG(1)     = [];   end;
-		P_SNP_countC     = sscanf(P_dataLine, '%s',6);   for i = 1:size(sscanf(P_dataLine,'%s',5),2);   P_SNP_countC(1)     = [];   end;
-		P_chr_num        = find(strcmp(P_SNP_chr_name, chr_name));
-		if (length(P_chr_num) > 0)
-			if (P_chr_num ~= old_chr)
-				fprintf(['\tchr = ' num2str(P_chr_num) '\n']);
-			end;
-			P_SNP_countA       = str2num(P_SNP_countA);
-			P_SNP_countT       = str2num(P_SNP_countT);
-			P_SNP_countG       = str2num(P_SNP_countG);
-			P_SNP_countC       = str2num(P_SNP_countC);
-			P_count_vector1    = [P_SNP_countA P_SNP_countT P_SNP_countG P_SNP_countC];
-			P_chr_read_max1    = max(P_count_vector1);
-			P_SNP_coordinate   = str2num(P_SNP_coordinate);
-			P_chr_lines_analyzed(P_chr_num) = P_chr_lines_analyzed(P_chr_num)+1;
-			P_chr_SNP_data_positions{P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = P_SNP_coordinate;
-			P_chr_SNP_data_ratios{   P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = P_chr_read_max1/sum(P_count_vector1);
-			P_chr_count{             P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = sum(P_count_vector1);
-			allele_call_id = find(P_count_vector1==max(P_count_vector1));
-			if (length(allele_call_id) > 1)
-				P_chr_read_id = 'N';
+	if (P_dataLine(1) ~= '#') 
+		if (length(P_dataLine) > 0)
+			% process the loaded line into data channels.
+			values           = strsplit(strtrim(P_dataLine),'	');
+			P_SNP_chr_name   = values{1};
+			P_SNP_coordinate = values{2};
+			P_SNP_countA     = values{3};
+			P_SNP_countT     = values{4};
+			P_SNP_countG     = values{5};
+			P_SNP_countC     = values{6};
+			P_chr_num        = find(strcmp(P_SNP_chr_name, chr_name));
+			if (length(P_chr_num) > 0)
+				if (P_chr_num ~= old_chr)
+					fprintf(['\tchr = ' num2str(P_chr_num) '\n']);
+				end;
+				P_SNP_countA       = str2num(P_SNP_countA);
+				P_SNP_countT       = str2num(P_SNP_countT);
+				P_SNP_countG       = str2num(P_SNP_countG);
+				P_SNP_countC       = str2num(P_SNP_countC);
+				P_count_vector1    = [P_SNP_countA P_SNP_countT P_SNP_countG P_SNP_countC];
+				P_chr_read_max1    = max(P_count_vector1);
+				P_SNP_coordinate   = str2num(P_SNP_coordinate);
+				P_chr_lines_analyzed(P_chr_num) = P_chr_lines_analyzed(P_chr_num)+1;
+				P_chr_SNP_data_positions{P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = P_SNP_coordinate;
+				P_chr_SNP_data_ratios{   P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = P_chr_read_max1/sum(P_count_vector1);
+				P_chr_count{             P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = sum(P_count_vector1);
+				allele_call_id = find(P_count_vector1==max(P_count_vector1));
+				if (length(allele_call_id) > 1)
+					P_chr_read_id = 'N';
+				else
+					P_chr_read_id = allele_list(allele_call_id);
+				end;
+				P_chr_baseCall{          P_chr_num}{P_chr_lines_analyzed(P_chr_num)} = P_chr_read_id;
+				old_chr = P_chr_num;
 			else
-				P_chr_read_id = allele_list(allele_call_id);
+				old_chr = 0;
 			end;
-			P_chr_baseCall{          P_chr_num}{P_chr_lines_analyzed(P_chr_num)} = P_chr_read_id;
-			old_chr = P_chr_num;
-		else
-			old_chr = 0;
 		end;
 	end;
 end;
@@ -128,48 +132,50 @@ fclose(P_data);
 %%============================================================================================================
 % Process child project dataset.
 %-------------------------------------------------------------------------------------------------------------
-fprintf(['process_2dataset_hapmap_allelicRatios.m: Process child project dataset.\n']);
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Process child project dataset (trimmed_SNPs_v5.txt).\n']);
 C_data      = fopen(C_datafile, 'r');
 allele_list = ['A' 'T' 'G' 'C'];
 old_chr     = 0;
 while not (feof(C_data))
 	C_dataLine = fgetl(C_data);
-	if (length(C_dataLine) > 0)
-		% process the loaded line into data channels.
-		C_SNP_chr_name   = sscanf(C_dataLine, '%s',1);
-		C_SNP_coordinate = sscanf(C_dataLine, '%s',2);   for i = 1:size(sscanf(C_dataLine,'%s',1),2);   C_SNP_coordinate(1) = [];   end;
-		C_SNP_countA     = sscanf(C_dataLine, '%s',3);   for i = 1:size(sscanf(C_dataLine,'%s',2),2);   C_SNP_countA(1)     = [];   end;
-		C_SNP_countT     = sscanf(C_dataLine, '%s',4);   for i = 1:size(sscanf(C_dataLine,'%s',3),2);   C_SNP_countT(1)     = [];   end;
-		C_SNP_countG     = sscanf(C_dataLine, '%s',5);   for i = 1:size(sscanf(C_dataLine,'%s',4),2);   C_SNP_countG(1)     = [];   end;
-		C_SNP_countC     = sscanf(C_dataLine, '%s',6);   for i = 1:size(sscanf(C_dataLine,'%s',5),2);   C_SNP_countC(1)     = [];   end;
-		C_SNP_phased     = sscanf(C_dataLine, '%s',7);   for i = 1:size(sscanf(C_dataLine,'%s',6),2);   C_SNP_phased(1)     = [];   end;
-		C_chr_num        = find(strcmp(C_SNP_chr_name, chr_name));
-		if (length(C_chr_num) > 0)
-			if (C_chr_num ~= old_chr);   fprintf(['\tchr = ' num2str(C_chr_num) '\n']);   end;
-			C_SNP_countA                                                         = str2num(C_SNP_countA);
-			C_SNP_countT                                                         = str2num(C_SNP_countT);
-			C_SNP_countG                                                         = str2num(C_SNP_countG);
-			C_SNP_countC                                                         = str2num(C_SNP_countC);
-			C_count_vector1                                                      = [C_SNP_countA C_SNP_countT C_SNP_countG C_SNP_countC];
-			C_chr_read_max1                                                      = max(C_count_vector1);
-			C_SNP_coordinate                                                     = str2num(C_SNP_coordinate);
-			C_chr_lines_analyzed(C_chr_num)                                      = C_chr_lines_analyzed(C_chr_num)+1;
-			C_chr_SNP_data_positions{C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_SNP_coordinate;
-			C_chr_SNP_data_ratios{   C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_chr_read_max1/sum(C_count_vector1);
-			C_chr_count{             C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = sum(C_count_vector1);
-			allele_call_id                                                       = find(C_count_vector1==max(C_count_vector1));
-			if (length(allele_call_id) > 1)
-				C_chr_read_id                                                = 'N';
+	if (C_dataLine(1) ~= '#')
+		if (length(C_dataLine) > 0)
+			% process the loaded line into data channels.
+			values           = strsplit(strtrim(C_dataLine),'	');
+			C_SNP_chr_name   = values{1};
+			C_SNP_coordinate = values{2};
+			C_SNP_countA     = values{3};
+			C_SNP_countT     = values{4};
+			C_SNP_countG     = values{5};
+			C_SNP_countC     = values{6};
+			C_chr_num        = find(strcmp(C_SNP_chr_name, chr_name));
+			if (length(C_chr_num) > 0)
+				if (C_chr_num ~= old_chr);   fprintf(['\tchr = ' num2str(C_chr_num) '\n']);   end;
+				C_SNP_countA                                                         = str2num(C_SNP_countA);
+				C_SNP_countT                                                         = str2num(C_SNP_countT);
+				C_SNP_countG                                                         = str2num(C_SNP_countG);
+				C_SNP_countC                                                         = str2num(C_SNP_countC);
+				C_count_vector1                                                      = [C_SNP_countA C_SNP_countT C_SNP_countG C_SNP_countC];
+				C_chr_read_max1                                                      = max(C_count_vector1);
+				C_SNP_coordinate                                                     = str2num(C_SNP_coordinate);
+				C_chr_lines_analyzed(C_chr_num)                                      = C_chr_lines_analyzed(C_chr_num)+1;
+				C_chr_SNP_data_positions{C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_SNP_coordinate;
+				C_chr_SNP_data_ratios{   C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_chr_read_max1/sum(C_count_vector1);
+				C_chr_count{             C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = sum(C_count_vector1);
+				allele_call_id                                                       = find(C_count_vector1==max(C_count_vector1));
+				if (length(allele_call_id) > 1)
+					C_chr_read_id                                                = 'N';
+				else
+					C_chr_read_id                                                = allele_list(allele_call_id);
+				end;
+				C_chr_baseCall{          C_chr_num}{C_chr_lines_analyzed(C_chr_num)} = C_chr_read_id;
+				old_chr = C_chr_num;
+				
 			else
-				C_chr_read_id                                                = allele_list(allele_call_id);
+				old_chr = 0;
 			end;
-			C_chr_baseCall{          C_chr_num}{C_chr_lines_analyzed(C_chr_num)} = C_chr_read_id;
-			old_chr = C_chr_num;
-			
-        else
-            old_chr = 0;
-        end;
-    end;
+		end;
+	end;
 end;
 fclose(C_data);
 
@@ -177,53 +183,49 @@ fclose(C_data);
 %%============================================================================================================
 % Process hapmap dataset.
 %-------------------------------------------------------------------------------------------------------------
-fprintf(['process_2dataset_hapmap_allelicRatios.m: Process hapmap dataset.\n']);
+fprintf(['process_2dataset_hapmap_allelicRatios.m: Process hapmap dataset ([Hapmap_dir]/SNPdata_parent.txt).\n']);
 H_data      = fopen(H_datafile, 'r');
 old_chr     = 0;
 while not (feof(H_data))
 	H_dataLine = fgetl(H_data);
-	if (length(H_dataLine) > 0)
-		% process the loaded line into data channels.
-		H_SNP_chr_name    = sscanf(H_dataLine, '%s',1);
-		H_SNP_coordinate  = sscanf(H_dataLine, '%s',2);   for i = 1:size(sscanf(H_dataLine,'%s',1),2);   H_SNP_coordinate(1)  = [];   end;
-		H_SNP_alleleA     = sscanf(H_dataLine, '%s',3);   for i = 1:size(sscanf(H_dataLine,'%s',2),2);   H_SNP_alleleA(1)     = [];   end;
-		H_SNP_alleleB     = sscanf(H_dataLine, '%s',4);   for i = 1:size(sscanf(H_dataLine,'%s',3),2);   H_SNP_alleleB(1)     = [];   end;
-		H_SNP_hapmapEntry = H_dataLine;                   for i = 1:size(sscanf(H_dataLine,'%s',4),2);   H_SNP_hapmapEntry(1) = [];   end;
-		H_chr_num         = find(strcmp(H_SNP_chr_name, chr_name));
-
-		%
-		%% darren: Need to make hapmapEntry consensus determination here.
-		%
-		H_SNP_hapmapEntry_list   = strsplit(strtrim(H_SNP_hapmapEntry));
-		H_SNP_hapmapEntry_values = [];
-		for i = 1:length(H_SNP_hapmapEntry_list)
-			H_SNP_hapmapEntry_values = [H_SNP_hapmapEntry_values str2num(H_SNP_hapmapEntry_list{i})];
-		end;
-		count_0     = length(find(H_SNP_hapmapEntry_values == 0 ));   % 0  : correct phase.
-		count_1     = length(find(H_SNP_hapmapEntry_values == 1 ));   % 1  : incorrect phase.
-		count_10    = length(find(H_SNP_hapmapEntry_values == 10));   % 10 : no phase information, due to no data at coodinate in child dataset.
-		count_11    = length(find(H_SNP_hapmapEntry_values == 11));   % 11 : no phase information, due to coordinate not matching a LOH fragment in child dataset.
-		count_12    = length(find(H_SNP_hapmapEntry_values == 12));   % 12 : no phase information, due to surprise allele in child dataset.
-		count_error = count_10 + count_11 + count12;
-		if (count_0 > count_1)       H_SNP_hapmapEntry_consensus = 0;               % More evidence for correct phasing.
-		elseif (count_1 > count_0)   H_SNP_hapmapEntry_consensus = 1;               % More evidence for incorrect phasing.
-		elseif (count_0 == 0)        H_SNP_hapmapEntry_consensus = 10;              % No phasing information. All error codes will be treated the same.
-		else                         H_SNP_hapmapEntry_consensus = round(rand());   % Equal non-zero evidence for correct and incorrect phasing, so choose 0 or 1 at random.
-		end;
-		if (length(H_chr_num) > 0)
-			if (H_chr_num ~= old_chr)
-				fprintf(['\tchr = ' num2str(H_chr_num) '\n']);
+	if (H_dataLine(1) ~= '#')
+		if (length(H_dataLine) > 0)
+			% process the loaded line into data channels.
+			values                   = strsplit(strtrim(H_dataLine),'	');
+			H_SNP_chr_name           = values{1};
+			H_SNP_coordinate         = str2num(values{2});
+			H_SNP_alleleA            = values{3};
+			H_SNP_alleleB            = values{4};
+			H_chr_num                = find(strcmp(H_SNP_chr_name, chr_name));
+			% darren: Make hapmapEntry consensus determination.
+			H_SNP_hapmapEntry_values = [];
+			for i = 5:length(values)
+				H_SNP_hapmapEntry_values = [H_SNP_hapmapEntry_values str2num(values{i})];
 			end;
-			H_SNP_coordinate                                                     = str2num(H_SNP_coordinate);
-			H_SNP_hapmapEntry                                                    = str2num(H_SNP_hapmapEntry);
-			H_chr_lines_analyzed(    H_chr_num)                                  = H_chr_lines_analyzed(H_chr_num)+1;
-			H_chr_SNP_data_positions{H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_coordinate;
-			H_chr_SNP_alleleA{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleA;
-			H_chr_SNP_alleleB{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleB;
-			H_chr_SNP_hapmapEntry{   H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_hapmapEntry_consensus;
-			old_chr = H_chr_num;
-		else
-			old_chr = 0;
+			count_0     = length(find(H_SNP_hapmapEntry_values == 0 ));   % 0  : correct phase.
+			count_1     = length(find(H_SNP_hapmapEntry_values == 1 ));   % 1  : incorrect phase.
+			count_10    = length(find(H_SNP_hapmapEntry_values == 10));   % 10 : no phase information, due to no data at coodinate in child dataset.
+			count_11    = length(find(H_SNP_hapmapEntry_values == 11));   % 11 : no phase information, due to coordinate not matching a LOH fragment in child dataset.
+			count_12    = length(find(H_SNP_hapmapEntry_values == 12));   % 12 : no phase information, due to surprise allele in child dataset.
+			count_error = count_10 + count_11 + count_12;
+			if (count_0 > count_1)       H_SNP_hapmapEntry_consensus = 0;               % More evidence for correct phasing.
+			elseif (count_1 > count_0)   H_SNP_hapmapEntry_consensus = 1;               % More evidence for incorrect phasing.
+			elseif (count_0 == 0)        H_SNP_hapmapEntry_consensus = 10;              % No phasing information. All error codes will be treated the same.
+			else                         H_SNP_hapmapEntry_consensus = round(rand());   % Equal non-zero evidence for correct and incorrect phasing, so choose 0 or 1 at random.
+			end;
+			if (length(H_chr_num) > 0)
+				if (H_chr_num ~= old_chr)
+					fprintf(['\tchr = ' num2str(H_chr_num) '\n']);
+				end;
+				H_chr_lines_analyzed(    H_chr_num)                                  = H_chr_lines_analyzed(H_chr_num)+1;
+				H_chr_SNP_data_positions{H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_coordinate;
+				H_chr_SNP_alleleA{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleA;
+				H_chr_SNP_alleleB{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleB;
+				H_chr_SNP_hapmapEntry{   H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_hapmapEntry_consensus;
+				old_chr = H_chr_num;
+			else
+				old_chr = 0;
+			end;
 		end;
 	end;
 end;

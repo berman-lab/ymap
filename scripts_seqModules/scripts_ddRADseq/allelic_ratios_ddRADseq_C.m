@@ -220,14 +220,21 @@ end;
 %
 
 %% ----------------------------------------------------------------------------------------
-% Clean up ratio data by discarding perfectly homozygous data.
+% Clean up ratio data by discarding perfectly homozygous data and low read depth data.
 %------------------------------------------------------------------------------------------
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		C_chr_SNP_data_positions{chr}(C_chr_SNP_data_ratios{chr} == 0) = [];
+		C_chr_count{             chr}(C_chr_SNP_data_ratios{chr} == 0) = [];
 		C_chr_SNP_data_ratios{   chr}(C_chr_SNP_data_ratios{chr} == 0) = [];
+
 		C_chr_SNP_data_positions{chr}(C_chr_SNP_data_ratios{chr} == 1) = [];
+		C_chr_count{             chr}(C_chr_SNP_data_ratios{chr} == 1) = [];
 		C_chr_SNP_data_ratios{   chr}(C_chr_SNP_data_ratios{chr} == 1) = [];
+
+		C_chr_SNP_data_positions{chr}(C_chr_count{chr} < 20) = [];
+		C_chr_SNP_data_ratios{   chr}(C_chr_count{chr} < 20) = [];
+		C_chr_count{             chr}(C_chr_count{chr} < 20) = [];
 	end;
 end;
 
@@ -318,8 +325,6 @@ for chr = 1:num_chrs
 		dataX                          = (C_chr_SNP_data_positions{chr}/bases_per_bin)';
 		dataY1                         = (C_chr_SNP_data_ratios{chr}*maxY)';
 		dataY2                         = maxY - dataY1;
-		dataX(C_chr_count{chr}  <= 20) = [];
-		dataY2(C_chr_count{chr} <= 20) = [];
 		if (length(dataX) > 0)
 			[imageX,imageY,imageC] = smoothhist2D_4([dataX dataX 0 chr_length], [dataY2 (maxY-dataY2) 0 0], 4,[chr_length maxY],[chr_length maxY]);
 			imageC_correction      = imageC*0;
