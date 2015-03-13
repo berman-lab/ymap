@@ -1424,12 +1424,10 @@ for chr = 1:num_chrs
 				else
 					subplot('Position',[0.03 (bottom+height/length(chrCopyNum{chr})*(segment-1)) width (height/length(chrCopyNum{chr}))]);
 				end;
-
-				peaks               = chrSegment_peaks{chr,segment};
-				mostLikelyGaussians = chrSegment_mostLikelyGaussians{chr,segment};
-				actual_cutoffs      = chrSegment_actual_cutoffs{chr,segment};
-				smoothed            = chrSegment_smoothed{chr,segment};
-
+				peaks                     = chrSegment_peaks{chr,segment};
+				mostLikelyGaussians       = chrSegment_mostLikelyGaussians{chr,segment};
+				actual_cutoffs            = chrSegment_actual_cutoffs{chr,segment};
+				smoothed                  = chrSegment_smoothed{chr,segment};
 				hold on;
 				segment_copyNum           = round(chrCopyNum{chr}(segment));  % copy number estimate of this segment.
 				segment_chrBreaks         = chr_breaks{chr}(segment);         % break points of this segment.
