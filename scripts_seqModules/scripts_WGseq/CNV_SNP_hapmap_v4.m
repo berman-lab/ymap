@@ -357,7 +357,7 @@ for chr = 1:num_chrs
 			% log-scale the histogram.
 			data_hist                  = log(data_hist+1);
 			data_hist                  = log(data_hist+1);
-			smoothed                   = smooth_gaussian(data_hist,12,36);
+			smoothed                   = smooth_gaussian(data_hist,10,30);
 			% make a smoothed version of just the endpoints used to ensure histogram bounds.
 			histAll2(1)                = 0;
 			histAll2(2)                = 1;
