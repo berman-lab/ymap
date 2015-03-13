@@ -756,97 +756,95 @@ else
 						if (FillColors == true)			
 							fprintf(['region_ #                = ' num2str(region_) '\n']);
 							if (show_uncalibrated == true)
-								color = colorAB;
+								color = het_color;
 							else
 								fprintf(['    copyNum              = ' num2str(copynum) '\n']);
 								    if (copynum == 0) %deletion or error
 								elseif (copynum == 1) %monosomy
-									if (region == 1); color = colorA;
-									else              color = colorB;
-									end;
+									color = color_1of1;
 									if (segment == 1)
 										set(gca,'XTick',[0 200]);
 										set(gca,'XTickLabel',{'a','b'});
 									end;
 								elseif (copynum == 2) %disomy
-									if (region == 1);     color = colorAA;
-									elseif (region == 2); color = colorAB;
-									else                  color = colorBB;
+									if (region == 1);     color = color_2of2;
+									elseif (region == 2); color = color_1of2;
+									else                  color = color_2of2;
 									end;
 									if (segment == 1)
 										set(gca,'XTick',0:100:200);
 										set(gca,'XTickLabel',{'a','ab','b'});
 									end;
 								elseif (copynum == 3) %trisomy
-									if (region == 1);     color = colorAAA;
-									elseif (region == 2); color = colorAAB;
-									elseif (region == 3); color = colorABB;
-									else                  color = colorBBB;
+									if (region == 1);     color = color_3of3;
+									elseif (region == 2); color = color_2of3;
+									elseif (region == 3); color = color_2of3;
+									else                  color = color_3of3;
 									end;
 									if (segment == 1)
 										set(gca,'XTick',[0 66.667 133.333 200]);
 										set(gca,'XTickLabel',{'a','aab','abb','b'});
 									end;
 								elseif (copynum == 4) %tetrasomy
-									if (region == 1);     color = colorAAAA;
-									elseif (region == 2); color = colorAAAB;
-									elseif (region == 3); color = colorAABB;
-									elseif (region == 4); color = colorABBB;
-									else                  color = colorBBBB;
+									if (region == 1);     color = color_4of4;
+									elseif (region == 2); color = color_3of4;
+									elseif (region == 3); color = color_2of4;
+									elseif (region == 4); color = color_3of4;
+									else                  color = color_4of4;
 									end;
 									if (segment == 1)
 										set(gca,'XTick',0:50:200);
 										set(gca,'XTickLabel',{'a', '3:1', '2:2', '1:3' 'b'});
 									end;
 								elseif (copynum == 5) %pentasomy
-									if (region == 1);     color = colorAAAAA;
-									elseif (region == 2); color = colorAAAAB;
-									elseif (region == 3); color = colorAAABB;
-									elseif (region == 4); color = colorAABBB;
-									elseif (region == 5); color = colorABBBB;
-									else                  color = colorBBBBB;
+									if (region == 1);     color = color_5of5;
+									elseif (region == 2); color = color_4of5;
+									elseif (region == 3); color = color_3of5;
+									elseif (region == 4); color = color_3of5;
+									elseif (region == 5); color = color_4of5;
+									else                  color = color_5of5;
 									end;
 									if (segment == 1)
 										set(gca,'XTick',0:40:200);
 										set(gca,'XTickLabel',{'a', '4:!', '3:2', '2:3', '1:4' 'b'});
 									end;
 								elseif (copynum == 6) %hexasomy
-									if (region == 1);     color = colorAAAAAA;
-									elseif (region == 2); color = colorAAAAAB;
-									elseif (region == 3); color = colorAAAABB;
-									elseif (region == 4); color = colorAAABBB;
-									elseif (region == 5); color = colorAABBBB;
-									elseif (region == 6); color = colorABBBBB;
-									else                  color = colorBBBBBB;
+									if (region == 1);     color = color_6of6;
+									elseif (region == 2); color = color_5of6;
+									elseif (region == 3); color = color_4of6;
+									elseif (region == 4); color = color_3of6;
+									elseif (region == 5); color = color_4of6;
+									elseif (region == 6); color = color_5of6;
+									else                  color = color_6of6;
 									end;
 									if (segment == 1)
 										set(gca,'XTick',0:33.333:200);
 										set(gca,'XTickLabel',{'a', '5:1', '4:2', '3:3', '2:4', '1:5' 'b'});
 									end;
 								elseif (copynum == 7) %heptasomy
-									if (region == 1);     color = colorAAAAAAA;
-									elseif (region == 2); color = colorAAAAAAB;
-									elseif (region == 3); color = colorAAAAABB;
-									elseif (region == 4); color = colorAAAABBB;
-									elseif (region == 5); color = colorAAABBBB;
-									elseif (region == 6); color = colorAABBBBB;
-									elseif (region == 7); color = colorABBBBBB;
-									else                  color = colorBBBBBBB;
+									if (region == 1);     color = color_7of7;
+									elseif (region == 2); color = color_6of7;
+									elseif (region == 3); color = color_5of7;
+									elseif (region == 4); color = color_4of7;
+									elseif (region == 5); color = color_4of7;
+									elseif (region == 6); color = color_5of7;
+									elseif (region == 7); color = color_6of7;
+									else                  color = color_7of7;
 									end;
 									if (segment == 1)
 										set(gca,'XTick',0:28.571:200);
 										set(gca,'XTickLabel',{'a', '', '5:2', '', '', '2:5', '' 'b'});
 									end;
 								else % if (copynum == 8) %octasomy
-									if (region == 1);     color = colorAAAAAAAA;
-									elseif (region == 2); color = colorAAAAAAAB;
-									elseif (region == 3); color = colorAAAAAABB;
-									elseif (region == 4); color = colorAAAAABBB;
-									elseif (region == 5); color = colorAAAABBBB;
-									elseif (region == 6); color = colorAAABBBBB;
-									elseif (region == 7); color = colorAABBBBBB;
-									elseif (region == 8); color = colorABBBBBBB;
-									else                  color = colorBBBBBBBB;
+									if (region == 1);     color = color_8of8;
+									elseif (region == 2); color = color_7of8;
+									elseif (region == 3); color = color_6of8;
+									elseif (region == 4); color = color_5of8;
+									elseif (region == 5); color = color_4of8;
+									elseif (region == 6); color = color_5of8;
+									elseif (region == 7); color = color_6of8;
+									elseif (region == 8); color = color_7of8;
+									else                  color = color_8of8;
 									end;
 									if (segment == 1)
 										set(gca,'XTick',0:22.222:200);
