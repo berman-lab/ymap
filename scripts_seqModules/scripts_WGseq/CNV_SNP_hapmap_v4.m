@@ -346,27 +346,32 @@ for chr = 1:num_chrs
 				end;
 			end;
 			% make a histogram of SNP allelic fractions in segment, then smooth for display.
-			histAll = [histAll_a histAll_b];
-			histAll(histAll == -1) = [];
+			histAll                    = [histAll_a histAll_b];
+			histAll(histAll == -1)     = [];
 			histAll(length(histAll)+1) = 0;
 			histAll(length(histAll)+1) = 1;
 			% Invert histogram values;
-			histAll = 1-histAll;
-			smoothed = smooth_gaussian(hist(histAll,200),3,20);
+			histAll                    = 1-histAll;
+			% generate the histogram.
+			data_hist                  = hist(histAll,200);
+			% log-scale the histogram.
+			data_hist                  = log(data_hist+1);
+			data_hist                  = log(data_hist+1);
+			smoothed                   = smooth_gaussian(data_hist,12,36);
 			% make a smoothed version of just the endpoints used to ensure histogram bounds.
-			histAll2(1) = 0;
-			histAll2(2) = 1;
-			smoothed2 = smooth_gaussian(hist(histAll2,200),3,20);
+			histAll2(1)                = 0;
+			histAll2(2)                = 1;
+			smoothed2                  = smooth_gaussian(hist(histAll2,200),3,20);
 			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-			smoothed = (smoothed-smoothed2);
+			smoothed                   = (smoothed-smoothed2);
 			if (max(smoothed) > 0)
-				smoothed = smoothed/max(smoothed);
+				smoothed           = smoothed/max(smoothed);
 			end;
 
 			%% Calculate Gaussian fitting details for segment.
-			segment_copyNum           = round(chrCopyNum{chr}(segment));  % copy number estimate of this segment.
-			segment_chrBreaks         = chr_breaks{chr}(segment);         % break points of this segment.
-			segment_smoothedHistogram = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
+			segment_copyNum            = round(chrCopyNum{chr}(segment));  % copy number estimate of this segment.
+			segment_chrBreaks          = chr_breaks{chr}(segment);         % break points of this segment.
+			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
 			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(segment_smoothedHistogram, segment_copyNum);
 
 			%% Any cutoffs outside the range of [1..200] are invalid and should be deleted.
