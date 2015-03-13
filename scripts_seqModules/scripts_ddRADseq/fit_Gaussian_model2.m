@@ -1,6 +1,6 @@
 function [G1_a, G1_b, G1_c] = fit_Gaussian_model2(data, location, func_type, show_fitting, ploidy1x)
-% attempt to fit a single-gaussian model to data.
-%[G1_a, G1_b, G1_c, G2_a, G2_b, G2_c, S_a, S_c] = GaussianModel_G1SG2(tet_control,parameter,'fcs1','');
+	% attempt to fit a single-gaussian model to data.
+
     time  = 1:length(data);
     G1_a = nan;
     G1_b = nan;
