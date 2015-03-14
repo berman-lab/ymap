@@ -84,7 +84,7 @@ else
 end;
 hom_color    = [1.0     0.0     0.0    ]; % completely homozygous.
 het_color    = [0.66667 0.66667 0.66667]; % heterozygous.
-oddhet_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+oddHet_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
 
 %%%%%%%% phased data colors.
 

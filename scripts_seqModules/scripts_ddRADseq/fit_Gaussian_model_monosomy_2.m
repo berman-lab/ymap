@@ -1,10 +1,9 @@
-function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_monosomy_2(workingDir, saveName, data,locations,init_width,func_type)
+function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c] = fit_Gaussian_model_monosomy_2(workingDir, saveName, data,locations,init_width,func_type)
 	% attempt to fit a 2-gaussian model to data.
 
 	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
-	skew_factor = 1;
 
 	if isnan(data)
 		% fitting variables
@@ -26,7 +25,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_mono
 	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci,skew_factor,skew_factor];
+	initial = [p1_ai,p1_bi,p1_ci,p2_ai,p2_bi,p2_ci];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time= 1:length(data);
 
@@ -47,52 +46,26 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_mono
 		% return last best estimate anyhow.
 	end;
 	p1_a         = abs(Estimates(1));
-	p1_b         = locations(1);
-	p1_c         = abs(Estimates(2));
-	p2_a         = abs(Estimates(3));
-	p2_b         = locations(2);
-	p2_c         = abs(Estimates(4));
-	skew_factor1 = abs(Estimates(5));
-	skew_factor2 = abs(Estimates(6));
-	if (skew_factor < 0); skew_factor = 0; end; if (skew_factor > 2); skew_factor = 2; end;
-
-	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
-	p1_c = p1_c*p1_c/c1_;
-	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
-	p2_c = p2_c*p2_c/c2_;
+	p1_b         = abs(Estimates(2));
+	p1_c         = abs(Estimates(3));
+	p2_a         = abs(Estimates(4));
+	p2_b         = abs(Estimates(5));
+	p2_c         = abs(Estimates(6));
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_a         = abs(params(1));   % height.
-	p1_b         = locations(1);     % location.
-	p1_c         = abs(params(2));   % width.
-	p2_a         = abs(params(3));   % height.
-	p2_b         = locations(2);     % location.
-	p2_c         = abs(params(4));   % width.
-	skew_factor1 = abs(params(5));
-	skew_factor2 = abs(params(6));
+	p1_b         = abs(params(2));   % location.
+	p1_c         = abs(params(3));   % width.
+	p2_a         = abs(params(4));   % height.
+	p2_b         = abs(params(5));   % location.
+	p2_c         = abs(params(6));   % width.
 	if (p1_c == 0); p1_c = 0.001; end
 	if (p2_c == 0); p2_c = 0.001; end
-	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
-	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
 	if (p1_c < 2);   p1_c = 2;   end;
 	if (p2_c < 2);   p2_c = 2;   end;
-	time1_1 = 1:floor(p1_b);
-	time1_2 = ceil(p1_b):200;
-	if (time1_1(end) == time1_2(1));time1_1(end) = [];  end;
-	time2_1 = 1:floor(p2_b);
-	time2_2 = ceil(p2_b):200;
-	if (time2_1(end) == time2_2(1));time2_2(1) = [];end;  
-	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
-	p1_c = p1_c*p1_c/c1_;
-	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
-	p2_c = p2_c*p2_c/c2_;
-	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
-	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c/(skew_factor2/(100.5-abs(100.5-p2_b))) ).^2);
-	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c).^2);
-	p1_fit = [p1_fit_L p1_fit_R];
-	p2_fit = [p2_fit_L p2_fit_R];
+	p1_fit = p1_a*exp(-0.5*((time-p1_b)./p1_c).^2);
+	p2_fit = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
 	fitted = p1_fit+p2_fit;
 
 if (show ~= 0)

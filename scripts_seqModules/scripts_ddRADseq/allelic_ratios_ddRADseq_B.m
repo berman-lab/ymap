@@ -178,13 +178,15 @@ else
 	new_bases_per_bin = bases_per_bin/2;
 end;
 for chr = 1:length(chr_sizes)
-	%   1 : experimental : phased ratio data.
-	%   2 : experimental : unphased ratio data.
-	%   3 : reference    : phased ratio data.
-	%   4 : reference    : unphased ratio data.
+	%   1 : phased SNP ratio data.
+	%   2 : unphased SNP ratio data.
+	%   3 : phased SNP position data.
+	%   4 : unphased SNP position data.
 	chr_length = ceil(chr_size(chr)/new_bases_per_bin);
 	for j = 1:4
-		chr_SNPdata{chr,j} = ones(chr_length,1);
+		for i = 1:chr_length
+			chr_SNPdata{chr,j}{i} = [];
+		end;
 	end;
 	% Colors used to illustrate SNP/LOH data.
 	%    chr_SNPdata_colorsC           : colors scheme defined by hapmap or red for unspecified LOH.
@@ -264,6 +266,10 @@ if (useHapmap)
 %
 % Only run when compared vs. a hapmap.
 %
+%%%% chr_SNPdata{chr,1}(i) = phased SNP ratio data.
+%%%% chr_SNPdata{chr,2}(i) = unphased SNP ratio data.
+%%%% chr_SNPdata{chr,3}(i) = phased SNP position data.
+%%%% chr_SNPdata{chr,4}(i) = unphased SNP position data.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
@@ -271,20 +277,28 @@ if (useHapmap)
 				% Determining colors for each SNP coordinate.
 				%
 				for i = 1:length(C_chr_count{chr})
-					pos                             = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					coordinate                      = C_chr_SNP_data_positions{chr}(i);
+					pos                             = ceil(coordinate/new_bases_per_bin);
 					localCopyEstimate               = round(CNVplot2{chr}(pos)*ploidy*ploidyAdjust);
-					chr_SNPdata{chr,2}(pos)         = C_chr_SNP_data_ratios{ chr}(i);
 					baseCall                        = C_chr_baseCall{        chr}{i};
 					homologA                        = C_chr_SNP_homologA{    chr}{i};
 					homologB                        = C_chr_SNP_homologB{    chr}{i};
 					flipper                         = C_chr_SNP_flipHomologs{chr}(i);
-					if (flipper == 1)
+					if (flipper == 10)                         % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
+						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
+						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} C_chr_SNP_data_ratios{chr}(i) 1-C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate coordinate];
+					elseif (flipper == 1)
 						temp                    = homologA;
 						homologA                = homologB;
 						homologB                = temp;
-					elseif (flipper == 10)                     % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
-						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} 1-C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate];
+					else % (flipper == 0)
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate];
 					end;
+
 					allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
 					if (localCopyEstimate <= 0);                        colorList = colorNoData;
 					elseif (localCopyEstimate == 1)
@@ -469,6 +483,8 @@ else
 %
 % Run when compared vs. a parent dataset or vs. itself.
 %
+%%%% chr_SNPdata{chr,2}(i) = child data.
+%%%% chr_SNPdata{chr,4}(i) = parent data.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
@@ -509,23 +525,25 @@ save([projectDir 'SNP_' SNP_verString '.reduced.mat'],'chr_SNPdata','new_bases_p
 histogram_fig = figure();
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-		data_C = [];
-		data_P = [];
+		%   1 : phased SNP ratio data.
+		%   2 : unphased SNP ratio data.
+		%   3 : phased SNP position data.
+		%   4 : unphased SNP position data.
+		data_phased   = [];
+		data_unphased = [];
+		for i = 1:length(chr_SNPdata{chr,1})
+			data_phased = [data_phased chr_SNPdata{chr,1}{i}];
+		end;
 		for i = 1:length(chr_SNPdata{chr,2})
-			data_C = [data_C chr_SNPdata{chr,2}(i)];
+			data_unphased = [data_unphased chr_SNPdata{chr,2}{i}];
 		end;
-		for i = 1:length(chr_SNPdata{chr,4})
-			data_P = [data_P chr_SNPdata{chr,4}(i)];
-		end;
-		histogram_C = hist(data_C,100);	
-		histogram_P = hist(data_P,100);
-		final_histogram_C = [fliplr(histogram_C) histogram_C];
-		final_histogram_P = [fliplr(histogram_P) histogram_P];
+		histogram_phased         = hist([data_phased   0 1],200);
+		histogram_unphased       = hist([data_unphased 0 1],200);
 
 		subplot(2,num_chrs,chr);
 		hold on;
-		plot(1:200, log(final_histogram_C+1),'Color',[1.0 0.0 0.0]);
-		plot(1:200, log(final_histogram_P+1),'Color',[1/3 1/3 1/3]);
+		plot(1:200, log(histogram_phased+1),  'Color',[1.0 0.0 0.0]);
+		plot(1:200, log(histogram_unphased+1),'Color',[1/3 1/3 1/3]);
 		ylim([0 6]);
 		title([chr_label{chr}]);
 		set(gca,'XTick',[0 50 100 150 200]);
@@ -536,8 +554,8 @@ for chr = 1:num_chrs
 
 		subplot(2,num_chrs,chr+num_chrs);
 		hold on;
-		plot(1:200, final_histogram_C,'Color',[1.0 0.0 0.0]);
-		plot(1:200, final_histogram_P,'Color',[1/3 1/3 1/3]);
+		plot(1:200, histogram_phased,  'Color',[1.0 0.0 0.0]);
+		plot(1:200, histogram_unphased,'Color',[1/3 1/3 1/3]);
 		ylim([0 200]);
 		title([chr_label{chr}]);
 		set(gca,'XTick',[0 50 100 150 200]);

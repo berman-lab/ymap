@@ -32,13 +32,15 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
 
+	saveFileName = [workingDir saveName '.png']
+
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
 	                                    initial, ...     % initial values.
 	                                    options, ...     % options for fitting algorithm.
 	                                    time, ...        % problem-specific parameter 1.
 	                                    data, ...        % problem-specific parameter 2.
 	                                    func_type, ...   % problem-specific parameter 3.
-	                                    locations ...   % problem-specific parameter 4.
+	                                    locations ...    % problem-specific parameter 4.
 	                         );
 	if (exitflag > 0)
 		% > 0 : converged to a solution.
@@ -66,25 +68,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	p1_c = p1_c*p1_c/c1_;
 	c3_ = p3_c/2 + p3_c*skew_factor3/(100.5-abs(100.5-p3_b))/2;
 	p3_c = p3_c*p3_c/c3_;
-
-	if (show)
-		%----------------------------------------------------------------------
-		% show fitting in process.
-		fig = figure();
-		% show data being fit.
-		plot(data,'x-','color',[0.75 0.75 1]);
-		hold on;
-		title('disomy fitting');
-		% show fit lines.
-		plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-		plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-		plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-		plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
-		hold off;
-		saveas(fig, [workingDir saveName '.png'], 'png');
-		delete(fig);
-		%----------------------------------------------------------------------
-	end;
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
@@ -127,7 +110,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_fit = [p1_fit_L p1_fit_R];
 	p3_fit = [p3_fit_L p3_fit_R];
 	fitted = p1_fit+p2_fit+p3_fit;
-    
+
 	width = 0.5;
 	switch(func_type)
 		case 'cubic'

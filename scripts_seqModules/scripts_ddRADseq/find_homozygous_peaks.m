@@ -1,16 +1,15 @@
-function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c] = fit_Gaussian_model_trisomy_2(workingDir, saveName, data,locations,init_width,func_type)
-	% attempt to fit a 4-gaussian model to data.
+function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = find_homozygous_peaks(workingDir, saveName, data,locations,init_width,func_type)
+	% attempt to fit a 2-gaussian model to data.
 
 	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
-	p3_a = nan;   p3_b = nan;   p3_c = nan;
-	p4_a = nan;   p4_b = nan;   p4_c = nan;
+	skew_factor = 1;
 
 	if isnan(data)
 		% fitting variables
 		return
-	end;
+	end
 
 	% find max height in data.
 	datamax = max(data);
@@ -26,10 +25,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c] = fit_
 	% a = height; b = location; c = width.
 	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
-	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
-	p4_ai = datamax;   p4_bi = locations(4);   p4_ci = init_width;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci,p4_ai,p4_ci];
+	initial = [p1_ai,p1_ci,p2_ai,p2_ci,skew_factor,skew_factor];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time= 1:length(data);
 
@@ -55,40 +52,48 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c] = fit_
 	p2_a         = abs(Estimates(3));
 	p2_b         = locations(2);
 	p2_c         = abs(Estimates(4));
-	p3_a         = abs(Estimates(5));
-	p3_b         = locations(3);
-	p3_c         = abs(Estimates(6));
-	p4_a         = abs(Estimates(7));
-	p4_b         = locations(4);
-	p4_c         = abs(Estimates(8));
+	skew_factor1 = abs(Estimates(5));
+	skew_factor2 = abs(Estimates(6));
+	if (skew_factor < 0); skew_factor = 0; end; if (skew_factor > 2); skew_factor = 2; end;
+
+	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
+	p1_c = p1_c*p1_c/c1_;
+	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
+	p2_c = p2_c*p2_c/c2_;
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
-	p1_a         = abs(params(1)); % height.
-	p1_b         = locations(1);   % location.
-	p1_c         = abs(params(2)); % width.
-	p2_a         = abs(params(3)); % height.
-	p2_b         = locations(2);   % location.
-	p2_c         = abs(params(4)); % width.
-	p3_a         = abs(params(5)); % height.
-	p3_b         = locations(3);   % location.
-	p3_c         = abs(params(6)); % width.
-	p4_a         = abs(params(7)); % height.
-	p4_b         = locations(4);   % location.
-	p4_c         = abs(params(8)); % width.
-	if (p1_c == 0); p1_c = 0.001; end;
-	if (p2_c == 0); p2_c = 0.001; end;
-	if (p3_c == 0); p3_c = 0.001; end;
-	if (p4_c == 0); p4_c = 0.001; end;
+	p1_a         = abs(params(1));   % height.
+	p1_b         = locations(1);     % location.
+	p1_c         = abs(params(2));   % width.
+	p2_a         = abs(params(3));   % height.
+	p2_b         = locations(2);     % location.
+	p2_c         = abs(params(4));   % width.
+	skew_factor1 = abs(params(5));
+	skew_factor2 = abs(params(6));
+	if (p1_c == 0); p1_c = 0.001; end
+	if (p2_c == 0); p2_c = 0.001; end
+	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
+	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
 	if (p1_c < 2);   p1_c = 2;   end;
 	if (p2_c < 2);   p2_c = 2;   end;
-	if (p3_c < 2);   p3_c = 2;   end;
-	if (p4_c < 2);   p4_c = 2;   end;
-	p1_fit = p1_a*exp(-0.5*((time-p1_b)./p1_c).^2);
-	p2_fit = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
-	p3_fit = p3_a*exp(-0.5*((time-p3_b)./p3_c).^2);
-	p4_fit = p4_a*exp(-0.5*((time-p4_b)./p4_c).^2);
-	fitted = p1_fit+p2_fit+p3_fit+p4_fit;
+	time1_1 = 1:floor(p1_b);
+	time1_2 = ceil(p1_b):200;
+	if (time1_1(end) == time1_2(1));time1_1(end) = [];  end;
+	time2_1 = 1:floor(p2_b);
+	time2_2 = ceil(p2_b):200;
+	if (time2_1(end) == time2_2(1));time2_2(1) = [];end;  
+	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
+	p1_c = p1_c*p1_c/c1_;
+	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
+	p2_c = p2_c*p2_c/c2_;
+	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
+	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c/(skew_factor2/(100.5-abs(100.5-p2_b))) ).^2);
+	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c).^2);
+	p1_fit = [p1_fit_L p1_fit_R];
+	p2_fit = [p2_fit_L p2_fit_R];
+	fitted = p1_fit+p2_fit;
 
 if (show ~= 0)
 %----------------------------------------------------------------------
@@ -97,12 +102,10 @@ figure(show);
 % show data being fit.
 plot(data,'x-','color',[0.75 0.75 1]);
 hold on;
-title('trisomy');
+title('monosomy');
 % show fit lines.
 plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(p4_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
 hold off;
 %----------------------------------------------------------------------

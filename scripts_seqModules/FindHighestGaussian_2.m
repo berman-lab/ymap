@@ -10,23 +10,7 @@ function [which] = FindHighestGaussian_2(G)
 		num_zeros = 0;
 		if (curve_count > 0)
 			for c = 1:curve_count
-				if (c <= curve_count/2)
-					% right-skewed curves.
-					if (i <= G{c}.b)
-						fit(c) = G{c}.a*exp(-0.5*((i-G{c}.b)./G{c}.c).^2);
-					else
-						fit(c) = G{c}.a*exp(-0.5*((i-G{c}.b)./G{c}.c/(G{c}.d/(100-abs(100-G{c}.b)))).^2);
-					end;
-				elseif (c >= curve_count-curve_count/2+1)
-					% left-skewed curves.
-					if (i < G{c}.b)
-						fit(c) = G{c}.a*exp(-0.5*((i-G{c}.b)./G{c}.c/(G{c}.d/(100-abs(100-G{c}.b)))).^2);
-					else
-						fit(c) = G{c}.a*exp(-0.5*((i-G{c}.b)./G{c}.c).^2);
-					end;
-				else
-					fit(c) = G{c}.a*exp(-0.5*((i-G{c}.b)./G{c}.c).^2);
-				end;
+				fit(c) = G{c}.a*exp(-0.5*((i-G{c}.b)./G{c}.c).^2);
 				if (fit(c) == 0)
 					num_zeros = num_zeros+1;
 				end;

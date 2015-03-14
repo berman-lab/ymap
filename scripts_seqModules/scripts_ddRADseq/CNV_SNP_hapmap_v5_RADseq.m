@@ -193,10 +193,10 @@ if (exist(LOH_file,'file') == 2)
 	load(LOH_file);
 	% new_bases_per_bin
 	% chr_SNPdata{chr,i} :: i = [1..4]
-	%   1 : experimental/child : phased ratio data.
-	%   2 : experimental/child : unphased ratio data.
-	%   3 : reference/parent   : phased ratio data.
-	%   4 : reference/parent   : unphased ratio data.
+	%   1 : phased SNP ratio data.
+	%   2 : unphased SNP ratio data.
+	%   3 : phased SNP coordinate data.
+	%   4 : unphased SNP coordinate data.
 	% chr_SNPdata_colorsC{chr,i} :: i = [1..3]
 	%   1 : R
 	%   2 : G
@@ -293,7 +293,7 @@ end;
 
 
 %% =========================================================================================
-% Determine cutoffs between peaks for each datasets:chromosome:segment.
+% Determine allelic ratio cutoffs between peaks for each datasets:chromosome:segment.
 %-------------------------------------------------------------------------------------------
 for chr = num_chrs
 	if (chr_in_use(chr) == 1)
@@ -312,10 +312,8 @@ for chr = 1:num_chrs
 			histAll_a = [];
 			histAll_b = [];
 			histAll2  = [];
-			dataCount = 0;
 			% Look through all SNP data in every chr_bin, to determine if any are within the segment boundries.
 			% Speed up by only checking possible chr_bins has not been implmented.
-			SnpLocusCount = 0;
 
 			fprintf( '^^^\n');
 			fprintf(['^^^ chrID             = ' num2str(chr)                                   '\n']);
@@ -327,35 +325,29 @@ for chr = 1:num_chrs
 			% phased data is stored into arrays 'histAll_a' and 'histAll_b', since proper phasing is known.
 			% unphased data is stored inverted into the second array, since proper phasing is not known.
 			for chr_bin = 1:length(CNVplot2{chr})
-				ratioData_phased    = chr_SNPdata{chr,1}(chr_bin);
-				ratioData_unphased  = chr_SNPdata{chr,2}(chr_bin);
-				coordinate_phased   = chr_SNPdata{chr,3}(chr_bin);
-				coordinate_unphased = chr_SNPdata{chr,4}(chr_bin);
-				if (length(coordinate_phased) > 0)
-					for i = 1:length(coordinate_phased)
-						SnpLocusCount = SnpLocusCount+1;
-						if ((coordinate_phased(i) > chr_breaks{chr}(segment)*chr_length) && (coordinate_phased(i) <= chr_breaks{chr}(segment+1)*chr_length))
-							% Coordinate of SNP is within segment. Phased data is already in proper place.
-							histAll_a(SnpLocusCount) = ratioData_phased(i);
-							histAll_b(SnpLocusCount) = ratioData_phased(i);
-							dataCount = dataCount+1;
-						else
-							histAll_a(SnpLocusCount) = -1;
-							histAll_b(SnpLocusCount) = -1;
+				%   1 : phased SNP ratio data.
+				%   2 : unphased SNP ratio data.
+				%   3 : phased SNP position data.
+				%   4 : unphased SNP position data.
+				ratioData_phased        = chr_SNPdata{chr,1}{chr_bin};
+				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin};
+				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin};
+				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin};
+				if (length(ratioData_phased) > 0)
+					for i = 1:length(ratioData_phased)
+						if ((coordinateData_phased(i) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(i) <= chr_breaks{chr}(segment+1)*chr_length))
+							% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
+							histAll_a = [histAll_a ratioData_phased(i)];
+							histAll_b = [histAll_b ratioData_phased(i)];
 						end;
 					end;
 				end;
-				if (length(coordinate_unphased) > 0)
-					for i = 1:length(coordinate_unphased)
-						SnpLocusCount = SnpLocusCount+1;
-						if ((coordinate_unphased(i) > chr_breaks{chr}(segment)*chr_length) && (coordinate_unphased(i) <= chr_breaks{chr}(segment+1)*chr_length))
-							% Coordinate of SNP is within segment. Unphased data will be randomly assiend one of two places.
-							histAll_a(SnpLocusCount) = ratioData_unphased(i);
-							histAll_b(SnpLocusCount) = 1-ratioData_unphased(i);
-							dataCount = dataCount+1;
-						else
-							histAll_a(SnpLocusCount) = -1;
-							histAll_b(SnpLocusCount) = -1;
+				if (length(ratioData_unphased) > 0)
+					for i = 1:length(ratioData_unphased)
+						if ((coordinateData_unphased(i) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_unphased(i) <= chr_breaks{chr}(segment+1)*chr_length))
+							% Ratio data is unphased, so it is added evenly in both orientations.
+							histAll_a = [histAll_a ratioData_unphased(i)];
+							histAll_b = [histAll_b 1-ratioData_unphased(i)];
 						end;
 					end;
 				end;

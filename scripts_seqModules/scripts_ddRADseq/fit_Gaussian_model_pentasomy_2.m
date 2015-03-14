@@ -1,4 +1,4 @@
-function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p5_b,p5_c, p6_a,p6_b,p6_c, skew_factor] = fit_Gaussian_model_pentasomy_2(workingDir, saveName, data,locations,init_width,func_type)
+function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p5_b,p5_c, p6_a,p6_b,p6_c] = fit_Gaussian_model_pentasomy_2(workingDir, saveName, data,locations,init_width,func_type)
 	% attempt to fit a 6-gaussian model to data.
 
 	show = false;
@@ -8,7 +8,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p4_a = nan;   p4_b = nan;   p4_c = nan;
 	p5_a = nan;   p5_b = nan;   p5_c = nan;
 	p6_a = nan;   p6_b = nan;   p6_c = nan;
-	skew_factor = 1;
 
 	if isnan(data)
 		% fitting variables
@@ -34,7 +33,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p5_ai = datamax;   p5_bi = locations(5);   p5_ci = init_width;
 	p6_ai = datamax;   p6_bi = locations(6);   p6_ci = init_width;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci,p4_ai,p4_ci,p5_ai,p5_ci,p6_ai,p6_ci,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor];
+	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci,p4_ai,p4_ci,p5_ai,p5_ci,p6_ai,p6_ci];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time= 1:length(data);
 
@@ -72,30 +71,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p6_a         = abs(Estimates(11));
 	p6_b         = locations(6);
 	p6_c         = abs(Estimates(12));
-	skew_factor1 = abs(Estimates(13));
-	skew_factor2 = abs(Estimates(14));
-	skew_factor3 = abs(Estimates(15));
-	skew_factor4 = abs(Estimates(16));
-	skew_factor5 = abs(Estimates(17));
-	skew_factor6 = abs(Estimates(18));
-	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
-	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
-	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
-	if (skew_factor4 < 0); skew_factor4 = 0; end; if (skew_factor4 > 2); skew_factor4 = 2; end;
-	if (skew_factor5 < 0); skew_factor5 = 0; end; if (skew_factor5 > 2); skew_factor5 = 2; end;
-	if (skew_factor6 < 0); skew_factor6 = 0; end; if (skew_factor6 > 2); skew_factor6 = 2; end;
-	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
-	p1_c = p1_c*p1_c/c1_;
-	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
-	p2_c = p2_c*p2_c/c2_;
-	c3_  = p3_c/2 + p3_c*skew_factor3/(100.5-abs(100.5-p3_b))/2;
-	p3_c = p3_c*p3_c/c3_;
-	c4_  = p4_c/2 + p4_c*skew_factor4/(100.5-abs(100.5-p4_b))/2;
-	p4_c = p4_c*p4_c/c4_;
-	c5_  = p5_c/2 + p5_c*skew_factor5/(100.5-abs(100.5-p5_b))/2;
-	p5_c = p5_c*p5_c/c5_;
-	c6_  = p6_c/2 + p6_c*skew_factor6/(100.5-abs(100.5-p6_b))/2;
-	p6_c = p6_c*p6_c/c6_;
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
@@ -117,78 +92,24 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p6_a         = abs(params(11)); % height.
 	p6_b         = locations(6);    % location.
 	p6_c         = abs(params(12)); % width.
-	skew_factor1 = abs(params(13));
-	skew_factor2 = abs(params(14));
-	skew_factor3 = abs(params(15));
-	skew_factor4 = abs(params(16));
-	skew_factor5 = abs(params(17));
-	skew_factor6 = abs(params(18));
 	if (p1_c == 0); p1_c = 0.001; end;
 	if (p2_c == 0); p2_c = 0.001; end;
 	if (p3_c == 0); p3_c = 0.001; end;
 	if (p4_c == 0); p4_c = 0.001; end;
 	if (p5_c == 0); p5_c = 0.001; end;
 	if (p6_c == 0); p6_c = 0.001; end;
-	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
-	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
-	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
-	if (skew_factor4 < 0); skew_factor4 = 0; end; if (skew_factor4 > 2); skew_factor4 = 2; end;
-	if (skew_factor5 < 0); skew_factor5 = 0; end; if (skew_factor5 > 2); skew_factor5 = 2; end;
-	if (skew_factor6 < 0); skew_factor6 = 0; end; if (skew_factor6 > 2); skew_factor6 = 2; end;
 	if (p1_c < 2);   p1_c = 2;   end;
 	if (p2_c < 2);   p2_c = 2;   end;
 	if (p3_c < 2);   p3_c = 2;   end;
 	if (p4_c < 2);   p4_c = 2;   end;
 	if (p5_c < 2);   p5_c = 2;   end;
 	if (p6_c < 2);   p6_c = 2;   end;
-	time1_1 = 1:floor(p1_b);
-	time1_2 = ceil(p1_b):200;
-	if (time1_1(end) == time1_2(1));time1_1(end) = [];  end;
-	time2_1 = 1:floor(p2_b);
-	time2_2 = ceil(p2_b):200;
-	if (time2_1(end) == time2_2(1));time2_1(end) = [];  end;
-	time3_1 = 1:floor(p3_b);
-	time3_2 = ceil(p3_b):200;
-	if (time3_1(end) == time3_2(1));time3_2(1) = [];end;
-	time4_1 = 1:floor(p4_b);
-	time4_2 = ceil(p4_b):200;
-	if (time4_1(end) == time4_2(1));time4_2(1) = [];end;
-	time5_1 = 1:floor(p5_b);
-	time5_2 = ceil(p5_b):200;
-	if (time5_1(end) == time5_2(1));time5_2(1) = [];end;
-	time6_1 = 1:floor(p6_b);
-	time6_2 = ceil(p6_b):200;
-	if (time6_1(end) == time6_2(1));time6_2(1) = [];end;
-	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
-	p1_c = p1_c*p1_c/c1_;
-	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
-	p2_c = p2_c*p2_c/c2_;
-	c3_  = p3_c/2 + p3_c*skew_factor3/(100.5-abs(100.5-p3_b))/2;
-	p3_c = p3_c*p3_c/c3_;
-	c4_  = p4_c/2 + p4_c*skew_factor4/(100.5-abs(100.5-p4_b))/2;
-	p4_c = p4_c*p4_c/c4_;
-	c5_  = p5_c/2 + p5_c*skew_factor5/(100.5-abs(100.5-p5_b))/2;
-	p5_c = p5_c*p5_c/c5_;
-	c6_  = p6_c/2 + p6_c*skew_factor6/(100.5-abs(100.5-p6_b))/2;
-	p6_c = p6_c*p6_c/c6_;
-	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
-	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
-	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c/(skew_factor2/(100.5-abs(100.5-p2_b))) ).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c/(skew_factor3/(100.5-abs(100.5-p3_b))) ).^2);
-	p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c/(skew_factor4/(100.5-abs(100.5-p4_b))) ).^2);
-	p4_fit_R = p4_a*exp(-0.5*((time4_2-p4_b)./p4_c).^2);
-	p5_fit_L = p5_a*exp(-0.5*((time5_1-p5_b)./p5_c/(skew_factor5/(100.5-abs(100.5-p5_b))) ).^2);
-	p5_fit_R = p5_a*exp(-0.5*((time5_2-p5_b)./p5_c).^2);
-	p6_fit_L = p6_a*exp(-0.5*((time6_1-p6_b)./p6_c/(skew_factor6/(100.5-abs(100.5-p6_b))) ).^2);
-	p6_fit_R = p6_a*exp(-0.5*((time6_2-p6_b)./p6_c).^2);
-	p1_fit = [p1_fit_L p1_fit_R];
-	p2_fit = [p2_fit_L p2_fit_R];
-	p3_fit = [p3_fit_L p3_fit_R];
-	p4_fit = [p4_fit_L p4_fit_R];
-	p5_fit = [p5_fit_L p5_fit_R];
-	p6_fit = [p6_fit_L p6_fit_R];
+	p1_fit = p1_a*exp(-0.5*((time-p1_b)./p1_c).^2);
+	p2_fit = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
+	p3_fit = p3_a*exp(-0.5*((time-p3_b)./p3_c).^2);
+	p4_fit = p4_a*exp(-0.5*((time-p4_b)./p4_c).^2);
+	p5_fit = p5_a*exp(-0.5*((time-p5_b)./p5_c).^2);
+	p6_fit = p6_a*exp(-0.5*((time-p6_b)./p6_c).^2);
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit+p5_fit+p6_fit;
 
 if (show ~= 0)

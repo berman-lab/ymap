@@ -12,6 +12,10 @@ if (useHapmap)
 %
 % Only run when compared vs. a hapmap.
 %
+%%%% chr_SNPdata{chr,1}(i) = phased SNP ratio data.
+%%%% chr_SNPdata{chr,2}(i) = unphased SNP ratio data.
+%%%% chr_SNPdata{chr,3}(i) = phased SNP position data.
+%%%% chr_SNPdata{chr,4}(i) = unphased SNP position data.
 	% Dataset was compared to a hapmap, so draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
 
@@ -88,6 +92,10 @@ if (useHapmap)
 	%%================================================================================================
 	% Process SNP/hapmap data to determine colors for presentation.
 	%-------------------------------------------------------------------------------------------------
+	%%%% chr_SNPdata{chr,1}(i) = phased SNP ratio data.
+	%%%% chr_SNPdata{chr,2}(i) = unphased SNP ratio data.
+	%%%% chr_SNPdata{chr,3}(i) = phased SNP position data.
+	%%%% chr_SNPdata{chr,4}(i) = unphased SNP position data.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
@@ -95,20 +103,28 @@ if (useHapmap)
 				% Determining colors for each SNP coordinate.
 				%
 				for i = 1:length(C_chr_count{chr})
-					pos                             = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
+					coordinate                      = C_chr_SNP_data_positions{chr}(i);
+					pos                             = ceil(coordinate/new_bases_per_bin);
 					localCopyEstimate               = round(CNVplot2{chr}(pos)*ploidy*ploidyAdjust);
-					chr_SNPdata{chr,2}(pos)         = C_chr_SNP_data_ratios{ chr}(i);
 					baseCall                        = C_chr_baseCall{        chr}{i};
 					homologA                        = C_chr_SNP_homologA{    chr}{i};
 					homologB                        = C_chr_SNP_homologB{    chr}{i};
 					flipper                         = C_chr_SNP_flipHomologs{chr}(i);
-					if (flipper == 1)                          % Variable 'flipper' value of '1' means the homologs are phased wrong.
+					if (flipper == 10)                         % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
+						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
+						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} C_chr_SNP_data_ratios{chr}(i) 1-C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate                    coordinate                     ];
+					elseif (flipper == 1)
 						temp                    = homologA;
 						homologA                = homologB;
 						homologB                = temp;
-					elseif (flipper == 10)                     % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
-						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} 1-C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate                     ];
+					else % (flipper == 0)
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate                   ];
 					end;
+
 					allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
 					if (localCopyEstimate <= 0);                colorList = colorNoData;
 					elseif (localCopyEstimate == 1);            colorList = color_1of1;
