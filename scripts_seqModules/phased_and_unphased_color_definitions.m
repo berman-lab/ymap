@@ -70,30 +70,21 @@ if (useHapmap == true)
 		case 'red'
 			homolog_b_color = [1.0 0.0 0.0];
 	end;
-	het_color     = [0.66667 0.66667 0.66667]; % heterozygous.
-	hom_unphased_color    = [1.0     0.0     0.0    ]; % completely homozygous.
-	het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
-	oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
 else
 	% Haplotype map is not in use.
 	if (strcmp(project,hapmap) == 1)
 		% The 'project' is the same as the 'hapmap'/'parent'.
-		homolog_a_color       = [0.66667 0.66667 0.66667];
-		homolog_b_color       = [0.66667 0.66667 0.66667];
-		het_color     = [0.66667 0.66667 0.66667]; % heterozygous.
-		hom_unphased_color    = [0.66667 0.66667 0.66667]; % homozygous, unphased.
-		het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
-		oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+		homolog_a_color = [0.66667 0.66667 0.66667];
+		homolog_b_color = [0.66667 0.66667 0.66667];
 	else
 		% The 'project' is different than the 'hapmap'/'parent'.
-		homolog_a_color       = [1.0 0.0 0.0];
-		homolog_b_color       = [1.0 0.0 0.0];
-		het_color     = [0.66667 0.66667 0.66667]; % heterozygous.
-		hom_unphased_color    = [1.0     0.0     0.0    ]; % homozygous, unphased.
-		het_unphased_color    = [0.66667 0.66667 0.66667]; % heterozygous.
-		oddhet_unphased_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
+		homolog_a_color = [1.0 0.0 0.0];
+		homolog_b_color = [1.0 0.0 0.0];
 	end;
 end;
+hom_color    = [1.0     0.0     0.0    ]; % completely homozygous.
+het_color    = [0.66667 0.66667 0.66667]; % heterozygous.
+oddhet_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
 
 %%%%%%%% phased data colors.
 
@@ -164,40 +155,40 @@ colorBBBBBBBBB  = homolog_b_color;
 %%%%%%%% unphased colors.
 
 % haploid colors.
-unphased_color_1of1 = hom_unphased_color;
+unphased_color_1of1 = hom_color;
 % diploid colors.
-unphased_color_2of2 = hom_unphased_color;
-unphased_color_1of2 = het_unphased_color;
+unphased_color_2of2 = hom_color;
+unphased_color_1of2 = het_color;
 % triploid colors.
-unphased_color_3of3 = hom_unphased_color;
-unphased_color_2of3 = hom_unphased_color*2/3 + het_unphased_color*1/3;
+unphased_color_3of3 = hom_color;
+unphased_color_2of3 = hom_color*2/3 + het_color*1/3;
 % tetraploid colors.
-unphased_color_4of4 = hom_unphased_color;
-unphased_color_3of4 = hom_unphased_color*3/4 + het_unphased_color*1/4;
-unphased_color_2of4 = het_unphased_color;
+unphased_color_4of4 = hom_color;
+unphased_color_3of4 = hom_color*3/4 + het_color*1/4;
+unphased_color_2of4 = het_color;
 % pentaploid colors.
-unphased_color_5of5 = hom_unphased_color;
-unphased_color_4of5 = hom_unphased_color*4/5 + het_unphased_color*1/5;
-unphased_color_3of5 = hom_unphased_color*3/5 + het_unphased_color*2/5;
+unphased_color_5of5 = hom_color;
+unphased_color_4of5 = hom_color*4/5 + het_color*1/5;
+unphased_color_3of5 = hom_color*3/5 + het_color*2/5;
 % hexaploid colors.
-unphased_color_6of6 = hom_unphased_color;
-unphased_color_5of6 = hom_unphased_color*5/6 + het_unphased_color*1/6;
-unphased_color_4of6 = hom_unphased_color*4/6 + het_unphased_color*2/6;
-unphased_color_3of6 = het_unphased_color;
+unphased_color_6of6 = hom_color;
+unphased_color_5of6 = hom_color*5/6 + het_color*1/6;
+unphased_color_4of6 = hom_color*4/6 + het_color*2/6;
+unphased_color_3of6 = het_color;
 % heptaploid colors.
-unphased_color_7of7 = hom_unphased_color;
-unphased_color_6of7 = hom_unphased_color*6/7 + het_unphased_color*1/7;
-unphased_color_5of7 = hom_unphased_color*5/7 + het_unphased_color*2/7;
-unphased_color_4of7 = hom_unphased_color*4/7 + het_unphased_color*3/7;
+unphased_color_7of7 = hom_color;
+unphased_color_6of7 = hom_color*6/7 + het_color*1/7;
+unphased_color_5of7 = hom_color*5/7 + het_color*2/7;
+unphased_color_4of7 = hom_color*4/7 + het_color*3/7;
 % octaploid colors.
-unphased_color_8of8 = hom_unphased_color;
-unphased_color_7of8 = hom_unphased_color*7/8 + het_unphased_color*1/8;
-unphased_color_6of8 = hom_unphased_color*6/8 + het_unphased_color*2/8;
-unphased_color_5of8 = hom_unphased_color*5/8 + het_unphased_color*3/8;
-unphased_color_4of8 = het_unphased_color;
+unphased_color_8of8 = hom_color;
+unphased_color_7of8 = hom_color*7/8 + het_color*1/8;
+unphased_color_6of8 = hom_color*6/8 + het_color*2/8;
+unphased_color_5of8 = hom_color*5/8 + het_color*3/8;
+unphased_color_4of8 = het_color;
 % nonaploid colors.
-unphased_color_9of9 = hom_unphased_color;
-unphased_color_8of9 = hom_unphased_color*8/9 + het_unphased_color*1/9;
-unphased_color_7of9 = hom_unphased_color*7/9 + het_unphased_color*2/9;
-unphased_color_6of9 = hom_unphased_color*6/9 + het_unphased_color*3/9;
-unphased_color_5of9 = hom_unphased_color*5/9 + het_unphased_color*4/9;
+unphased_color_9of9 = hom_color;
+unphased_color_8of9 = hom_color*8/9 + het_color*1/9;
+unphased_color_7of9 = hom_color*7/9 + het_color*2/9;
+unphased_color_6of9 = hom_color*6/9 + het_color*3/9;
+unphased_color_5of9 = hom_color*5/9 + het_color*4/9;

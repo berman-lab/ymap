@@ -45,13 +45,6 @@ if (useHapmap)
 	%% ===============================================================================================
 	% Define colors for figure generation.
 	%-------------------------------------------------------------------------------------------------
-	% define colors for colorBars plot
-	colorNoData     = [1.0   1.0   1.0  ]; %used when no data is available for the bin.
-	colorInit       = [0.5   0.5   0.5  ]; %external; used in blending at ends of chr.
-	% The 'project' is different than the 'hapmap'('parent').
-	hom_color       = [1.0     0.0     0.0    ]; % homozygous, unphased.
-	het_color       = [0.66667 0.66667 0.66667]; % heterozygous.
-	oddHet_color    = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
 	% haploid colors.
 	color_1of1      = hom_color;
 	% diploid colors.
@@ -191,6 +184,7 @@ if (useHapmap)
 
 
 	save([projectDir 'SNP_' SNP_verString '.reduced_RedGreen.mat'],'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsP');
+
 
 	%%================================================================================================
 	% Make figures

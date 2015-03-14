@@ -16,50 +16,16 @@ projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 
-if (strcmp(project,hapmap) == 1)
-	% Either a hapmap was in use or the project and parent are the same, so the
-	% figure drawn by "CNV_SNP_hapmap_v4.m" is all that needs to be done.
+if (~useHapmap) && (~useParent)
 	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being skipped...\n']);
 	fprintf(['##\tbecause the dataset is not being compared to another dataset.\n']);
 else
 	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being processed.\n##\n']);
 
-	%% =========================================================================================
-	% Setup for main figure generation.
-	%-------------------------------------------------------------------------------------------
-	fig = figure(1);
-	set(gcf, 'Position', [0 70 1024 600]);
-
 
 	%% =========================================================================================
-	% Setup for linear-view figure generation.
+	% Define alternate color scheme for figure generation.
 	%-------------------------------------------------------------------------------------------
-	if (Linear_display == true)
-		Linear_fig              = figure(2);
-		Linear_genome_size      = sum(chr_size);
-		Linear_Chr_max_width    = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-		Linear_left_start       = 0.02;               % left margin (also right margin).  (formerly 0.01)
-		Linear_left_chr_gap     = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-		Linear_height           = 0.6;
-		Linear_base             = 0.1;
-		Linear_TickSize         = -0.01;  %negative for outside, percentage of longest chr figure.
-		maxY                    = ploidyBase*2;
-		Linear_left             = Linear_left_start;
-		axisLabelPosition_horiz = 0.01125;
-	end;
-	axisLabelPosition_vert = 0.01125;
-
-
-	%% =========================================================================================
-	% Define colors for figure generation.
-	%-------------------------------------------------------------------------------------------
-	% define colors for colorBars plot
-	colorNoData     = [1.0   1.0   1.0  ]; %used when no data is available for the bin.
-	colorInit       = [0.5   0.5   0.5  ]; %external; used in blending at ends of chr.
-	% The 'project' is different than the 'hapmap'('parent').
-	hom_color       = [1.0     0.0     0.0    ]; % homozygous, unphased.
-	het_color       = [0.66667 0.66667 0.66667]; % heterozygous.
-	oddhet_color    = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100 hom.
 	% haploid colors.
 	color_1of1      = hom_color;
 	% diploid colors.
@@ -98,6 +64,32 @@ else
 	color_7of9      = oddhet_color;
 	color_6of9      = oddhet_color;
 	color_5of9      = oddhet_color;
+
+
+	%% =========================================================================================
+	% Setup for main figure generation.
+	%-------------------------------------------------------------------------------------------
+	fig = figure(1);
+	set(gcf, 'Position', [0 70 1024 600]);
+
+
+	%% =========================================================================================
+	% Setup for linear-view figure generation.
+	%-------------------------------------------------------------------------------------------
+	if (Linear_display == true)
+		Linear_fig              = figure(2);
+		Linear_genome_size      = sum(chr_size);
+		Linear_Chr_max_width    = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
+		Linear_left_start       = 0.02;               % left margin (also right margin).  (formerly 0.01)
+		Linear_left_chr_gap     = 0.07/(num_chrs-1);  % gaps between chr subfigures.
+		Linear_height           = 0.6;
+		Linear_base             = 0.1;
+		Linear_TickSize         = -0.01;  %negative for outside, percentage of longest chr figure.
+		maxY                    = ploidyBase*2;
+		Linear_left             = Linear_left_start;
+		axisLabelPosition_horiz = 0.01125;
+	end;
+	axisLabelPosition_vert = 0.01125;
 
 
 	%% =========================================================================================
@@ -374,7 +366,7 @@ else
 							% 6of8 contains [aaaaaabb, aabbbbbb].
 							% 5of8 contains [aaaaabbb, aaabbbbb].
 							% 4of8 contains [aaaabbbb].
-						elseif (localCopyEstimate >= 9)
+						else %(localCopyEstimate >= 9)
 							binCounts_all = zeros(1,5);
 							if (length(ratioData_all) > 0)
 								for i = 1:length(ratioData_all)

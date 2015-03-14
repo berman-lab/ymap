@@ -781,10 +781,8 @@ for chr = 1:num_chrs
 				region_ = 0;
 				for region = mostLikelyGaussians
 					region_ = region_+1;
-
 					% Define color of the histogram region.
 					if (FillColors == true)
-
 						fprintf(['region_ #                = ' num2str(region_) '\n']);
 						if (show_uncalibrated == true)
 							color = colorAB;
@@ -868,7 +866,7 @@ for chr = 1:num_chrs
 									set(gca,'XTick',0:28.571:200);
 									set(gca,'XTickLabel',{'a', '', '5:2', '', '', '2:5', '' 'b'});
 								end;
-							else % if (copynum == 8) %octasomy
+							elseif (copynum == 8)  %octasomy
 								if (region == 1);     color = colorAAAAAAAA;
 								elseif (region == 2); color = colorAAAAAAAB;
 								elseif (region == 3); color = colorAAAAAABB;
@@ -882,6 +880,22 @@ for chr = 1:num_chrs
 								if (segment == 1)
 									set(gca,'XTick',0:22.222:200);
 									set(gca,'XTickLabel',{'a', '', '6:2', '', '4:4', '', '2:6', '' 'b'});
+								end;
+							else % (copynum >= 9) %nonasomy
+								if (region == 1);     color = colorAAAAAAAAA;
+								elseif (region == 2); color = colorAAAAAAAAB;
+								elseif (region == 3); color = colorAAAAAAABB;
+								elseif (region == 4); color = colorAAAAAABBB;
+								elseif (region == 5); color = colorAAAAABBBB;
+								elseif (region == 6); color = colorAAAABBBBB;
+								elseif (region == 7); color = colorAAABBBBBB;
+								elseif (region == 8); color = colorAABBBBBBB;
+								elseif (region == 9); color = colorABBBBBBBB;
+								else                  color = colorBBBBBBBBB;
+								end;
+								if (segment == 1)
+									set(gca,'XTick',0:20:200);
+									set(gca,'XTickLabel',{'a', '', '', '6:3', '', '', '3:6', '', '', 'b'});
 								end;
 							end;
 						end;
@@ -932,6 +946,7 @@ for chr = 1:num_chrs
 			end;
 		end;
 		% standard : end of allelic fraction histogram at the left end of main chr cartoons.
+
 
 %%%%%%%%%%%%%%% END standard draw section.
 
