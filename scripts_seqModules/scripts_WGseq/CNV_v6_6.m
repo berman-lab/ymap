@@ -668,11 +668,8 @@ if (Linear_display == true)
 	Linear_TickSize      = -0.01;            % negative for outside, percentage of longest chr figure.
 	Linear_maxY          = 10;
 	Linear_left          = Linear_left_start;
-	axisLabelPosition_horiz = -50000/bases_per_bin;
 	axisLabelPosition_horiz = 0.01125;
 end;
-
-axisLabelPosition_vert = -50000/bases_per_bin;
 axisLabelPosition_vert = 0.01125;
 
 %% Initialize copy numbers string.

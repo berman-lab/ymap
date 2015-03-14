@@ -2,11 +2,19 @@ function [] = CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap
                                          SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
+
+fprintf('\n');
+fprintf('##################################\n');
+fprintf('## CNV_SNP_hapmap_v4_RedGreen.m ##\n');
+fprintf('##################################\n');
+
+
 %% =========================================================================================
 % Load workspace variables saved in "CNV_SNP_hapmap_v4.m"
 %-------------------------------------------------------------------------------------------
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+
 
 if (strcmp(project,hapmap) == 1)
 	% Either a hapmap was in use or the project and parent are the same, so the
@@ -17,7 +25,7 @@ else
 	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being processed.\n##\n']);
 
 	%% =========================================================================================
-	% Setup for figure generation.
+	% Setup for main figure generation.
 	%-------------------------------------------------------------------------------------------
 	fig = figure(1);
 	set(gcf, 'Position', [0 70 1024 600]);
@@ -27,20 +35,18 @@ else
 	% Setup for linear-view figure generation.
 	%-------------------------------------------------------------------------------------------
 	if (Linear_display == true)
-		Linear_fig           = figure(2);
-		Linear_genome_size   = sum(chr_size);
-		Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-		Linear_left_start    = 0.02;               % left margin (also right margin).  (formerly 0.01)
-		Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-		Linear_height        = 0.6;
-		Linear_base          = 0.1;
-		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
-		maxY                 = ploidyBase*2;
-		Linear_left          = Linear_left_start;
-		axisLabelPosition_horiz = -50000/bases_per_bin;
+		Linear_fig              = figure(2);
+		Linear_genome_size      = sum(chr_size);
+		Linear_Chr_max_width    = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
+		Linear_left_start       = 0.02;               % left margin (also right margin).  (formerly 0.01)
+		Linear_left_chr_gap     = 0.07/(num_chrs-1);  % gaps between chr subfigures.
+		Linear_height           = 0.6;
+		Linear_base             = 0.1;
+		Linear_TickSize         = -0.01;  %negative for outside, percentage of longest chr figure.
+		maxY                    = ploidyBase*2;
+		Linear_left             = Linear_left_start;
 		axisLabelPosition_horiz = 0.01125;
 	end;
-	axisLabelPosition_vert = -50000/5000/2;
 	axisLabelPosition_vert = 0.01125;
 
 
@@ -753,7 +759,7 @@ else
 
 						% Define color of the histogram region.
 						if (FillColors == true)			
-							fprintf(['region_ #                = ' num2str(region_) '\n']);
+							fprintf(['AnglePlot: region_ #                = ' num2str(region_) '\n']);
 							if (show_uncalibrated == true)
 								color = het_color;
 							else

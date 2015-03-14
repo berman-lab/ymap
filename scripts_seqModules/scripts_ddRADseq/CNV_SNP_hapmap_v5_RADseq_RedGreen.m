@@ -2,24 +2,6 @@ function [] = CNV_SNP_hapmap_v5_RADseq(main_dir,user,genomeUser,project,parent,h
                                        SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
-%% ========================================================================
-%    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
-%    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
-%    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
-%                                 'Log2Ratio' does not properly scale CGH data by ploidy.
-%    Chr_max_width              : max width of chrs as fraction of figure width.
-Centromere_format           = 0;
-Chr_max_width               = 0.8;
-colorBars                   = true;
-blendColorBars              = false;
-show_annotations            = true;
-Yscale_nearest_even_ploidy  = true;
-HistPlot                    = true;
-ChrNum                      = true;
-Linear_display              = true;
-Linear_displayBREAKS        = false;
-Low_quality_ploidy_estimate = true;
-Output_CGD_annotations      = false;   % Generate CGD annotation files for analyzed datasets.
 
 fprintf('\n');
 fprintf('#########################################\n');
@@ -28,264 +10,19 @@ fprintf('#########################################\n');
 
 
 %% =========================================================================================
-% Load FASTA file name from 'reference.txt' file for project.
+% Load workspace variables saved in "CNV_SNP_hapmap_v4.m"
 %-------------------------------------------------------------------------------------------
-userReference    = [main_dir 'users/' user '/genomes/' genome '/reference.txt'];
-defaultReference = [main_dir 'users/default/genomes/' genome '/reference.txt'];
-if (exist(userReference,'file') == 0)   
-	FASTA_string = strtrim(fileread(defaultReference));
-else                    
-	FASTA_string = strtrim(fileread(userReference));
-end;
-[FastaPath,FastaName,FastaExt] = fileparts(FASTA_string);
+projectDir  = [main_dir 'users/' user '/projects/' project '/'];
+load([projectDir 'CNV_SNP_hapmap_v5_RADseq.workspace_variables.mat']);
 
 
-%% =========================================================================================
-% Control variables.
-%-------------------------------------------------------------------------------------------
-projectDir = [main_dir 'users/' user '/projects/' project '/'];
-genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
-fprintf(['hapmap  = "' hapmap  '"\n']);
-fprintf(['genome  = "' genome  '"\n']);
-fprintf(['project = "' project '"\n']);
-fprintf(['parent  = "' parent  '"\n']);
-
-if (strcmp(hapmap,'') == 1)
-	useHapmap = false;
+if (strcmp(project,hapmap) == 1)
+	% Either a hapmap was in use or the project and parent are the same, so the
+	% figure drawn by "CNV_SNP_hapmap_v5_RADseq.m" is all that needs to be done.
+	fprintf(['\n##\n## CNV_SNP_hapmap_v5_RADseq_RedGreen.m is being skipped...\n']);
+	fprintf(['##\tbecause the dataset is not being compared to another dataset.\n']);
 else
-	useHapmap = true;
-	if (exist([main_dir 'users/default/hapmaps/' hapmap '/'], 'dir') == 7)
-		hapmapDir  = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
-		hapmapUser = 'default';
-	else
-		hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
-		hapmapUser = user;
-	end;
-end;
-if (strcmp(project,parent) == 1)
-	useParent = false;
-else
-	useParent = true;
-	if (exist([main_dir 'users/default/projects/' parent '/'], 'dir') == 7)
-		parentDir  = [main_dir 'users/default/projects/' parent '/'];   % system parent.
-		parentUser = 'default';
-	else
-		parentDir  = [main_dir 'users/' user '/projects/' parent '/'];  % user parent.
-		parentUser = user;
-	end;
-end;
-
-
-if (useHapmap)
-%
-% Only run when compared vs. a hapmap.
-%
-	[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
-	[Aneuploidy]                                                          = Load_dataset_information(projectDir);
-
-	num_chrs = length(chr_sizes);
-
-	for i = 1:length(chr_sizes)
-		chr_size(i)  = 0;
-		cen_start(i) = 0;
-		cen_end(i)   = 0;
-	end;
-	for i = 1:length(chr_sizes)
-		chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
-		cen_start(centromeres(i).chr) = centromeres(i).start;
-		cen_end(centromeres(i).chr)   = centromeres(i).end;
-	end;
-	if (length(annotations) > 0)
-		fprintf(['\nAnnotations for ' genome '.\n']);
-		for i = 1:length(annotations)
-			annotation_chr(i)       = annotations(i).chr;
-			annotation_type{i}      = annotations(i).type;
-			annotation_start(i)     = annotations(i).start;
-			annotation_end(i)       = annotations(i).end;
-			annotation_fillcolor{i} = annotations(i).fillcolor;
-			annotation_edgecolor{i} = annotations(i).edgecolor;
-			annotation_size(i)      = annotations(i).size;
-			fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
-		end;
-	end;
-	for i = 1:length(figure_details)
-		if (figure_details(i).chr == 0)
-			if (strcmp(figure_details(i).label,'Key') == 1)
-				key_posX   = figure_details(i).posX;
-				key_posY   = figure_details(i).posY;
-				key_width  = figure_details(i).width;
-				key_height = figure_details(i).height;
-			end;
-		else
-			chr_id    (figure_details(i).chr) = figure_details(i).chr;
-			chr_label {figure_details(i).chr} = figure_details(i).label;
-			chr_name  {figure_details(i).chr} = figure_details(i).name;
-			chr_posX  (figure_details(i).chr) = figure_details(i).posX;
-			chr_posY  (figure_details(i).chr) = figure_details(i).posY;
-			chr_width (figure_details(i).chr) = figure_details(i).width;
-			chr_height(figure_details(i).chr) = figure_details(i).height;
-			chr_in_use(figure_details(i).chr) = str2num(figure_details(i).useChr);
-		end;
-	end;
-	num_chrs = length(chr_size);
-
-	%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
-	for usedChr = 1:num_chrs
-		if (chr_in_use(usedChr) == 1)
-			% determine where the endpoints of ploidy segments are.
-			chr_breaks{usedChr}(1) = 0.0;
-			break_count = 1;
-			if (length(Aneuploidy) > 0)
-				for i = 1:length(Aneuploidy)
-					if (Aneuploidy(i).chr == usedChr)
-						break_count = break_count+1;
-						chr_broken = true;
-						chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
-					end;
-				end;
-			end;
-			chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
-		end;
-	end;
-
-
-	%% =========================================================================================
-	%% =========================================================================================
-	%% =========================================================================================
-	%% = No further control variables below. ===================================================
-	%% =========================================================================================
-	%% =========================================================================================
-	%% =========================================================================================
-
-
-	% Process input ploidy.
-	ploidy = str2num(ploidyEstimateString);
-
-	% Sanitize user input of euploid state.
-	ploidyBase = round(str2num(ploidyBaseString));
-	if (ploidyBase > 4);   ploidyBase = 4;   end;
-	if (ploidyBase < 1);   ploidyBase = 1;   end;
-	fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
-
-	% basic plot parameters not defined per genome.
-	TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-	bases_per_bin    = max(chr_size)/700;
-	bases_per_SNPbin = bases_per_bin*10;
-	maxY             = ploidyBase*2;
-	cen_tel_Xindent  = 5;
-	cen_tel_Yindent  = maxY/5;
-
-	fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
-
-
-	%% =========================================================================================
-	% Load CGH data after correction for GC and chr-end biases.
-	%-------------------------------------------------------------------------------------------
-	load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-	[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use)
-	largestChr = find(chr_width == max(chr_width));
-
-
-	%%================================================================================================
-	% Load SNP/LOH data.
-	%-------------------------------------------------------------------------------------------------
-	LOH_file = [projectDir 'SNP_' SNP_verString '.reduced_RedGreen.mat'];
-	if (exist(LOH_file,'file') == 2)
-		load(LOH_file);                                   % 'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC', 'chr_SNPdata_colorsP'
-	else
-		load([projectDir 'SNP_' SNP_verString '.mat']);   % 'chr_SNPdata'
-		new_bases_per_bin = bases_per_bin;
-	end;
-
-
-	%% =========================================================================================
-	% Test adjacent segments for no change in copy number estimate.
-	%...........................................................................................
-	% Adjacent pairs of segments with the same copy number will be fused into a single segment.
-	% Segments with a <= zero copy number will be fused to an adjacent segment.
-	%-------------------------------------------------------------------------------------------
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
-
-				%% Clear any segments with a copy number of zero.
-				% add break representing left end of chromosome.
-				breakCount_new         = 0;
-				chr_breaks_new{chr}    = [];
-				chrCopyNum_new{chr}    = [];
-				chr_breaks_new{chr}(1) = 0.0;
-				for segment = 1:(length(chrCopyNum{chr}))
-					if (round(chrCopyNum{chr}(segment)) <= 0)
-						% segment has a zero copy number, so don't add right end break to list.
-					else
-						% segment has a non-zero copy number, so add right end break.
-						breakCount_new                        = breakCount_new + 1;
-						chr_breaks_new{chr}(breakCount_new+1) = chr_breaks{chr}(segment+1);
-						chrCopyNum_new{chr}(breakCount_new  ) = chrCopyNum{chr}(segment  );
-					end;
-				end;
-				% If the last segment has a zero copy number, trim off the last added edge.
-				if (breakCount_new > 0)
-					if (round(chrCopyNum{chr}(length(chrCopyNum{chr}))) <= 0)
-						chr_breaks_new{chr}(breakCount_new+1) = [];
-						chrCopyNum_new{chr}(breakCount_new  ) = [];
-						breakCount_new = breakCount_new-1;
-					end;
-				end;
-				% add break representing right end of chromosome.
-				breakCount_new = breakCount_new+1;
-				chr_breaks_new{chr}(breakCount_new+1) = 1.0;
-				% copy new lists to old.
-				chr_breaks{chr} = chr_breaks_new{chr};
-				chrCopyNum{chr} = [];
-				chrCopyNum{chr} = chrCopyNum_new{chr};
-
-				%% Merge any adjacent segments with the same copy number.
-				% add break representing left end of chromosome.
-				breakCount_new         = 1;
-				chr_breaks_new{chr}    = [];
-				chrCopyNum_new{chr}    = [];
-				chr_breaks_new{chr}(1) = 0.0;
-				fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
-				if (length(chrCopyNum{chr}) > 0)
-					fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
-					chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
-					for segment = 1:(length(chrCopyNum{chr})-1)
-						if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
-							% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
-						else
-							% two adjacent segments have different copyNum; add boundry to new list.
-							breakCount_new                      = breakCount_new + 1;
-							chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
-							chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
-						end;
-					end;
-				end;
-				% add break representing right end of chromosome.
-				breakCount_new = breakCount_new+1;
-				chr_breaks_new{chr}(breakCount_new) = 1.0;
-				fprintf(['@@@ chr = ' num2str(chr) '\n']);
-				fprintf(['@@@    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
-				fprintf(['@@@    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
-				fprintf(['@@@    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
-				fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
-				% copy new lists to old.
-				chr_breaks{chr} = chr_breaks_new{chr};
-				chrCopyNum{chr} = [];
-				chrCopyNum{chr} = chrCopyNum_new{chr};
-			end;
-		end;
-	end;
-
-
-	%% ====================================================================
-	% Initialize CGD annotation output file.
-	%----------------------------------------------------------------------
-	if (Output_CGD_annotations == true)
-		CGDid = fopen([projectDir 'CGD_annotations.' project  '.txt'], 'w');
-		fprintf(CGDid,['track name=' project ' description="WGseq annotation of SNPs" useScore=0 itemRGB=On\n']);
-	end;
-
+	fprintf(['\n##\n## CNV_SNP_hapmap_v5_RADseq_RedGreen.m is being processed.\n##\n']);
 
 	%% =========================================================================================
 	% Setup for main figure generation.
@@ -298,24 +35,18 @@ if (useHapmap)
 	% Setup for linear-view figure generation.
 	%-------------------------------------------------------------------------------------------
 	if (Linear_display == true)
-		Linear_fig = figure(2);
-		Linear_genome_size   = sum(chr_size);
-
-		Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-		Linear_left_start    = 0.02;               % left margin (also right margin).
-		Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-
-		Linear_height        = 0.6;
-		Linear_base          = 0.1;
-		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
-		maxY                 = ploidyBase*2;
-		Linear_left          = Linear_left_start;
-
-		axisLabelPosition_horiz = -50000/bases_per_bin;
+		Linear_fig              = figure(2);
+		Linear_genome_size      = sum(chr_size);
+		Linear_Chr_max_width    = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
+		Linear_left_start       = 0.02;               % left margin (also right margin).
+		Linear_left_chr_gap     = 0.07/(num_chrs-1);  % gaps between chr subfigures.
+		Linear_height           = 0.6;
+		Linear_base             = 0.1;
+		Linear_TickSize         = -0.01;  %negative for outside, percentage of longest chr figure.
+		maxY                    = ploidyBase*2;
+		Linear_left             = Linear_left_start;
 		axisLabelPosition_horiz = 0.01125;
 	end;
-
-	axisLabelPosition_vert = -50000/bases_per_bin;
 	axisLabelPosition_vert = 0.01125;
 
 

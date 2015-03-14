@@ -37,10 +37,8 @@ if (useHapmap)
 		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 		maxY                 = 1; % ploidyBase*2;
 		Linear_left          = Linear_left_start;
-		axisLabelPosition_horiz = -50000/bases_per_bin;
 		axisLabelPosition_horiz = 0.01125;
 	end;
-	axisLabelPosition_vert = -50000/bases_per_bin;
 	axisLabelPosition_vert = 0.01125;
 
 

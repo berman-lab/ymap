@@ -524,22 +524,16 @@ largestChr = find(chr_width == max(chr_width));
 if (Linear_display == true)
 	Linear_fig = figure(2);
 	Linear_genome_size   = sum(chr_size);
-
 	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
 	Linear_left_start    = 0.02;               % left margin (also right margin).
 	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-
 	Linear_height        = 0.6;
 	Linear_base          = 0.1;
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
 	Linear_left          = Linear_left_start;
-
-	axisLabelPosition_horiz = -50000/bases_per_bin;
 	axisLabelPosition_horiz = 0.01125;
 end;
-
-axisLabelPosition_vert = -50000/bases_per_bin;
 axisLabelPosition_vert = 0.01125;
 
 

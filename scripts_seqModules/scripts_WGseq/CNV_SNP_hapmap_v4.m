@@ -456,7 +456,7 @@ end;
 
 
 %% =========================================================================================
-% Save workspace variables.
+% Save workspace variables for use in "CNV_SNP_hapmap_v4_RedGreen.m"
 %-------------------------------------------------------------------------------------------
 save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
@@ -482,10 +482,8 @@ if (Linear_display == true)
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
 	Linear_left          = Linear_left_start;
-	axisLabelPosition_horiz = -50000/bases_per_bin;
 	axisLabelPosition_horiz = 0.01125;
 end;
-axisLabelPosition_vert = -50000/5000/2;
 axisLabelPosition_vert = 0.01125;
 
 
@@ -1446,7 +1444,7 @@ for chr = 1:num_chrs
 					% Define color of the histogram region.
 					if (FillColors == true)
 			
-						fprintf(['region_ #                = ' num2str(region_) '\n']);
+						fprintf(['AnglePlot: region_ #                = ' num2str(region_) '\n']);
 						if (show_uncalibrated == true)
 							color = colorAB;
 						else
