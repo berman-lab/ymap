@@ -2,6 +2,8 @@ function [] = CNV_SNP_hapmap_v5_RADseq(main_dir,user,genomeUser,project,parent,h
                                        SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
@@ -386,7 +388,11 @@ for chr = 1:num_chrs
 			segment_copyNum            = round(chrCopyNum{chr}(segment));  % copy number estimate of this segment.
 			segment_chrBreaks          = chr_breaks{chr}(segment);         % break points of this segment.
 			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
-			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(segment_smoothedHistogram, segment_copyNum);
+
+			% Define cutoffs between Gaussian fits.
+			saveName = ['allelic_ratios.chr_' num2str(chr) '.segment_' num2str(segment) ];
+			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram);
+
 
 			%% Any cutoffs outside the range of [1..200] are invalid and should be deleted.
 

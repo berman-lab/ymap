@@ -1,5 +1,6 @@
 function [G1_a, G1_b, G1_c] = fit_Gaussian_model2(data, location, func_type, show_fitting, ploidy1x)
-	% attempt to fit a single-gaussian model to data.
+	% Attempt to fit a single-gaussian model to data.
+	% Used to help determine copy number estimates for regions.
 
 	time  = 1:length(data);
 	G1_a = nan;
