@@ -1,50 +1,50 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gaussian_model_disomy_initial_2(data,locations,init_width,skew_factor,func_type,show, workingDir)
 % attempt to fit a single-gaussian model to data.
 %[G1_a, G1_b, G1_c, G2_a, G2_b, G2_c, S_a, S_c] = GaussianModel_G1SG2(tet_control,parameter,'fcs1','');
-    p1_a = nan;   p1_b = nan;   p1_c = nan;
-    p2_a = nan;   p2_b = nan;   p2_c = nan;
-    p3_a = nan;   p3_b = nan;   p3_c = nan;
-    if isnan(data)
-        % fitting variables
-        return
-    end
+	p1_a = nan;   p1_b = nan;   p1_c = nan;
+	p2_a = nan;   p2_b = nan;   p2_c = nan;
+	p3_a = nan;   p3_b = nan;   p3_c = nan;
+	if isnan(data)
+		% fitting variables
+		return
+	end
 
-    % find max height in data.
-    datamax = max(data);
-    %datamax(data ~= max(datamax)) = [];
+	% find max height in data.
+	datamax = max(data);
+	%datamax(data ~= max(datamax)) = [];
     
-    % if maxdata is final bin, then find next highest p
-    if (find(data == datamax) == length(data))
-        data(data == datamax) = 0;
-        datamax = data;
-        datamax(data ~= max(datamax)) = [];
-    end;
+	% if maxdata is final bin, then find next highest p
+	if (find(data == datamax) == length(data))
+		data(data == datamax) = 0;
+		datamax = data;
+		datamax(data ~= max(datamax)) = [];
+	end;
     
-    % a = height; b = location; c = width.
-    p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
-    p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
-    p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
+	% a = height; b = location; c = width.
+	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
+	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
+	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
    
 %%	initial = [p1_ai,p1_bi,p1_ci,  p2_ai,  skew_factor];
 	initial = [p1_ai,p1_ci,  p3_ai,  skew_factor];
-    options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
-    time    = 1:length(data);
+	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
+	time    = 1:length(data);
 
-    [Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
-                                        initial, ...     % initial values.
-                                        options, ...     % options for fitting algorithm.
-                                        time, ...        % problem-specific parameter 1.
-                                        data, ...        % problem-specific parameter 2.
-                                        func_type, ...   % problem-specific parameter 3.
-                                        locations, ...   % problem-specific parameter 4.
-                                        show ...        % problem-specific parameter 5.
-                                );
-    if (exitflag > 0)
-        % > 0 : converged to a solution.
-    else
-        % = 0 : exceeded maximum iterations allowed.
-        % < 0 : did not converge to a solution.
-        % return last best estimate anyhow.
+	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
+	                                    initial, ...     % initial values.
+	                                    options, ...     % options for fitting algorithm.
+	                                    time, ...        % problem-specific parameter 1.
+	                                    data, ...        % problem-specific parameter 2.
+	                                    func_type, ...   % problem-specific parameter 3.
+	                                    locations, ...   % problem-specific parameter 4.
+	                                    show ...        % problem-specific parameter 5.
+	                            );
+	if (exitflag > 0)
+		% > 0 : converged to a solution.
+	else
+		% = 0 : exceeded maximum iterations allowed.
+		% < 0 : did not converge to a solution.
+		% return last best estimate anyhow.
 	end;
 %%	p1_a = abs(Estimates(1));
 %%	p1_b = locations(1);
@@ -88,10 +88,10 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 		skew_factor = (100-abs(100-p1_b));
 	end;
 
-    c1_  = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
-    p1_c = p1_c*p1_c/c1_;
-    c3_  = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
-    p3_c = p3_c*p3_c/c3_;
+	c1_  = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
+	p1_c = p1_c*p1_c/c1_;
+	c3_  = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
+	p3_c = p3_c*p3_c/c3_;
 
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
 	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor/(100-abs(100-p1_b))) ).^2);
@@ -115,7 +115,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
 	hold off;
 	% saveas(fig, [workingDir 'initGaussianFit_final.eps'], 'epsc');
-	  saveas(fig, [workingDir 'initGaussianFit_final.png'], 'png');
+	saveas(fig, [workingDir 'initGaussianFit_final.png'], 'png');
 	delete(fig);
 	%----------------------------------------------------------------------
 
@@ -164,8 +164,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	if (p3_b > 200); p3_b = 200; end;
 	if (p3_b < 1);   p3_b = 1;   end;
 
-    time1_1 = 1:floor(p1_b);
-    time1_2 = ceil(p1_b):200;
+	time1_1 = 1:floor(p1_b);
+	time1_2 = ceil(p1_b):200;
 	if (length(time1_1) > 0)
 		if (length(time1_2) > 0)
 		    if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
@@ -175,8 +175,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	else
 		time1_1 = [];
 	end;
-    time3_1 = 1:floor(p3_b);
-    time3_2 = ceil(p3_b):200;
+	time3_1 = 1:floor(p3_b);
+	time3_2 = ceil(p3_b):200;
 	if (length(time3_1) > 0)
 		if (length(time3_2) > 0)
 		    if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
@@ -191,39 +191,39 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 		skew_factor = (100-abs(100-p1_b));
 	end;
 
-    c1_  = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
-    p1_c = p1_c*p1_c/c1_;
-    c3_  = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
-    p3_c = p3_c*p3_c/c3_;
+	c1_  = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
+	p1_c = p1_c*p1_c/c1_;
+	c3_  = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
+	p3_c = p3_c*p3_c/c3_;
     
-    p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-    p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor/(100-abs(100-p1_b))) ).^2);
-    p2_fit   = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
-    p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor/(100-abs(100-p3_b))) ).^2);
-    p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
+	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor/(100-abs(100-p1_b))) ).^2);
+	p2_fit   = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
+	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor/(100-abs(100-p3_b))) ).^2);
+	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
     
-    p1_fit = [p1_fit_L p1_fit_R];
-    p3_fit = [p3_fit_L p3_fit_R];
-    fitted = p1_fit+p2_fit+p3_fit;
+	p1_fit = [p1_fit_L p1_fit_R];
+	p3_fit = [p3_fit_L p3_fit_R];
+	fitted = p1_fit+p2_fit+p3_fit;
 
-    width = 0.5;
-    switch(func_type)
-        case 'cubic'
-            Error_Vector = (fitted).^2 - (data).^2;
-            sse          = sum(abs(Error_Vector));
-        case 'linear'
-            Error_Vector = (fitted) - (data);
-            sse          = sum(Error_Vector.^2);
-        case 'log'
-            Error_Vector = log(fitted) - log(data);
-            sse          = sum(abs(Error_Vector));
-        case 'fcs'
-            Error_Vector = (fitted) - (data);
-            %Error_Vector(1:round(G1_b*(1-width))) = 0;
-            %Error_Vector(round(G1_b*(1+width)):end) = 0;
-            sse          = sum(Error_Vector.^2);
-        otherwise
-            error('Error: choice for fitting not implemented yet!');
-            sse          = 1;            
-    end;
+	width = 0.5;
+	switch(func_type)
+		case 'cubic'
+			Error_Vector = (fitted).^2 - (data).^2;
+			sse          = sum(abs(Error_Vector));
+		case 'linear'
+			Error_Vector = (fitted) - (data);
+			sse          = sum(Error_Vector.^2);
+		case 'log'
+			Error_Vector = log(fitted) - log(data);
+			sse          = sum(abs(Error_Vector));
+		case 'fcs'
+			Error_Vector = (fitted) - (data);
+			%Error_Vector(1:round(G1_b*(1-width))) = 0;
+			%Error_Vector(round(G1_b*(1+width)):end) = 0;
+			sse          = sum(Error_Vector.^2);
+		otherwise
+			error('Error: choice for fitting not implemented yet!');
+			sse          = 1;            
+	end;
 end
