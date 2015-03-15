@@ -1,6 +1,4 @@
-function [x_peak,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chromosome,segment,copyNum, smoothed_Histogram);
-
-MakeFigure = true;
+function [x_peak,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chromosome,segment,copyNum, smoothed_Histogram, MakeFigure);
 
 monosomy_peaks  = [0, 1]*199+1;
 disomy_peaks    = [0, 1/2, 1]*199+1;
@@ -210,7 +208,7 @@ elseif (copyNum == 7)
 	[G{1}.a,G{1}.b,G{1}.c, G{2}.a,G{2}.b,G{2}.c, G{3}.a,G{3}.b,G{3}.c, G{4}.a,G{4}.b,G{4}.c, G{5}.a,G{5}.b,G{5}.c, G{6}.a,G{6}.b,G{6}.c, G{7}.a,G{7}.b,G{7}.c, G{8}.a,G{8}.b,G{8}.c] = ...
 		fit_Gaussian_model_heptasomy_2(workingDir,saveName, smoothed_Histogram,heptasomy_peaks,sigma,ErrorType);	
 	[list]              = FindHighestGaussian_2(G);
-	fprintf(['||2 list            = ' num2str(list) '\n']);
+	%	fprintf(['||2 list            = ' num2str(list) '\n']);
 	actual_cutoffs      = [];
 	mostLikelyGaussians = [];
 	for i = 1:199
@@ -283,7 +281,7 @@ elseif (copyNum == 8)
 else % if (copyNum == 9+)
 	G                   = [];
 	[G{1}.a,G{1}.b,G{1}.c, G{2}.a,G{2}.b,G{2}.c, G{3}.a,G{3}.b,G{3}.c, G{4}.a,G{4}.b,G{4}.c, G{5}.a,G{5}.b,G{5}.c, G{6}.a,G{6}.b,G{6}.c, G{7}.a,G{7}.b,G{7}.c, G{8}.a,G{8}.b,G{8}.c, G{9}.a,G{9}.b,G{9}.c, G{10}.a,G{10}.b,G{10}.c] = ...
-		fit_Gaussian_model_nonasomy_2(workingDir,saveName, smoothed_Histogram,octasomy_peaks,sigma,ErrorType);
+		fit_Gaussian_model_nonasomy_2(workingDir,saveName, smoothed_Histogram,nonasomy_peaks,sigma,ErrorType);
 	[list]              = FindHighestGaussian_2(G);
 	actual_cutoffs      = [];
 	mostLikelyGaussians = [];
@@ -299,7 +297,7 @@ else % if (copyNum == 9+)
 	for i = 1:9; x_peak(i) = G{i}.b; end;
 
 	% Construct curve
-	Fit_curve_1  = G{ 1}.a*exp(-0.5*((range-G{ 1}.b)./G{ 1}.c).^2);
+	fit_curve_1  = G{ 1}.a*exp(-0.5*((range-G{ 1}.b)./G{ 1}.c).^2);
 	fit_curve_2  = G{ 2}.a*exp(-0.5*((range-G{ 2}.b)./G{ 2}.c).^2);
 	fit_curve_3  = G{ 3}.a*exp(-0.5*((range-G{ 3}.b)./G{ 3}.c).^2);
 	fit_curve_4  = G{ 4}.a*exp(-0.5*((range-G{ 4}.b)./G{ 4}.c).^2);
@@ -322,22 +320,21 @@ else % if (copyNum == 9+)
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4+fit_curve_5+fit_curve_6+fit_curve_7+fit_curve_8+fit_curve_9+fit_curve_10;
 end;
 
-fprintf('List = ');
-if (length(list) > 0)
-	for i = 1:length(list)
-		fprintf(num2str(list(i)));
-	end;
-end;
-fprintf('\n');
-fprintf('G    = ');
-if (length(G) > 0)
-	for i = 1:length(G);
-		fprintf([num2str(G{i}.a) ':' num2str(G{i}.b) ':' num2str(G{i}.c) ' ']);
-	end;
-end;
-fprintf('\n');
-
-% fprintf(['^^^     Glist = ' num2str(list) '\n']);
+%	fprintf('List = ');
+%	if (length(list) > 0)
+%		for i = 1:length(list)
+%			fprintf(num2str(list(i)));
+%		end;
+%	end;
+%	fprintf('\n');
+%	fprintf('G    = ');
+%	if (length(G) > 0)
+%		for i = 1:length(G);
+%			fprintf([num2str(G{i}.a) ':' num2str(G{i}.b) ':' num2str(G{i}.c) ' ']);
+%		end;
+%	end;
+%	fprintf('\n');
+%	fprintf(['^^^     Glist = ' num2str(list) '\n']);
 
 if (MakeFigure == true)
 	plot(smoothed_Histogram,'color',[0.50 0.50 1.00],'linestyle','-','linewidth',1);

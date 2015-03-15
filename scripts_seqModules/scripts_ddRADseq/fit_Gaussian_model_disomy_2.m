@@ -30,7 +30,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c] = fit_Gaussian_model_d
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
 
-	saveFileName = [workingDir saveName '.png']
+	saveFileName = [workingDir saveName '.png'];
 
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
 	                                    initial, ...     % initial values.

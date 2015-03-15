@@ -89,17 +89,17 @@ oddHet_color = [0.0     1.0     0.0    ]; % non-heterozygous data that isn't 100
 %%%%%%%% phased data colors.
 
 % haploid colors.
-colorA  = homolog_a_color;
-colorB  = homolog_b_color;
+colorA          = homolog_a_color;
+colorB          = homolog_b_color;
 % diploid colors.
-colorAA = homolog_a_color;
-colorAB = het_color;
-colorBB = homolog_b_color;
+colorAA         = homolog_a_color;
+colorAB         = het_color;
+colorBB         = homolog_b_color;
 % triploid colors.
-colorAAA= homolog_a_color;
-colorAAB= homolog_a_color*2/3 + homolog_b_color*1/3;
-colorABB= homolog_a_color*1/3 + homolog_b_color*2/3;
-colorBBB= homolog_b_color;
+colorAAA        = homolog_a_color;
+colorAAB        = homolog_a_color*2/3 + homolog_b_color*1/3;
+colorABB        = homolog_a_color*1/3 + homolog_b_color*2/3;
+colorBBB        = homolog_b_color;
 % tetraploid colors.
 colorAAAA       = homolog_a_color;
 colorAAAB       = homolog_a_color*3/4 + homolog_b_color*1/4;

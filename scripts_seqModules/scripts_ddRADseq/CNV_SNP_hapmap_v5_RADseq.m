@@ -383,10 +383,7 @@ for chr = 1:num_chrs
 
 			% Define cutoffs between Gaussian fits.
 			saveName = ['allelic_ratios.chr_' num2str(chr) '.segment_' num2str(segment) ];
-			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram);
-
-
-			%% Any cutoffs outside the range of [1..200] are invalid and should be deleted.
+			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, false);
 
 			fprintf(['^^^     copyNum             = ' num2str(segment_copyNum)     '\n']);
 			fprintf(['^^^     peaks               = ' num2str(peaks)               '\n']);

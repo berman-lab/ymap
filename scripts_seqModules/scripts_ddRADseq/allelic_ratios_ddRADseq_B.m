@@ -1,6 +1,7 @@
 function [] = allelic_ratios_ddRADseq_B(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
+workingDir      = [main_dir 'users/' user '/projects/' project '/'];
 
 %%================================================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
@@ -81,46 +82,46 @@ genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
 [Aneuploidy]                                                          = Load_dataset_information(projectDir);
 num_chrs = length(chr_sizes);
 
-for i = 1:length(chr_sizes)
-	chr_size(i)  = 0;
-	cen_start(i) = 0;
-	cen_end(i)   = 0;
+for chrID = 1:length(chr_sizes)
+	chr_size(chrID)  = 0;
+	cen_start(chrID) = 0;
+	cen_end(chrID)   = 0;
 end;
-for i = 1:length(chr_sizes)
-	chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
-	cen_start(centromeres(i).chr) = centromeres(i).start;
-	cen_end(centromeres(i).chr)   = centromeres(i).end;
+for chrID = 1:length(chr_sizes)
+	chr_size(chr_sizes(chrID).chr)    = chr_sizes(chrID).size;
+	cen_start(centromeres(chrID).chr) = centromeres(chrID).start;
+	cen_end(centromeres(chrID).chr)   = centromeres(chrID).end;
 end;
 if (length(annotations) > 0)
 	fprintf(['\nAnnotations for ' genome '.\n']);
-	for i = 1:length(annotations)
-		annotation_chr(i)       = annotations(i).chr;
-		annotation_type{i}      = annotations(i).type;
-		annotation_start(i)     = annotations(i).start;
-		annotation_end(i)       = annotations(i).end;
-		annotation_fillcolor{i} = annotations(i).fillcolor;
-		annotation_edgecolor{i} = annotations(i).edgecolor;
-		annotation_size(i)      = annotations(i).size;
-		fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+	for annoteID = 1:length(annotations)
+		annotation_chr(annoteID)       = annotations(annoteID).chr;
+		annotation_type{annoteID}      = annotations(annoteID).type;
+		annotation_start(annoteID)     = annotations(annoteID).start;
+		annotation_end(annoteID)       = annotations(annoteID).end;
+		annotation_fillcolor{annoteID} = annotations(annoteID).fillcolor;
+		annotation_edgecolor{annoteID} = annotations(annoteID).edgecolor;
+		annotation_size(annoteID)      = annotations(annoteID).size;
+		fprintf(['\t[' num2str(annotations(annoteID).chr) ':' annotations(annoteID).type ':' num2str(annotations(annoteID).start) ':' num2str(annotations(annoteID).end) ':' annotations(annoteID).fillcolor ':' annotations(annoteID).edgecolor ':' num2str(annotations(annoteID).size) ']\n']);
 	end;
 end;
-for i = 1:length(figure_details)
-	if (figure_details(i).chr == 0)
-		if (strcmp(figure_details(i).label,'Key') == 1)
-			key_posX   = figure_details(i).posX;
-			key_posY   = figure_details(i).posY;
-			key_width  = figure_details(i).width;
-			key_height = figure_details(i).height;
+for detailID = 1:length(figure_details)
+	if (figure_details(detailID).chr == 0)
+		if (strcmp(figure_details(detailID).label,'Key') == 1)
+			key_posX   = figure_details(detailID).posX;
+			key_posY   = figure_details(detailID).posY;
+			key_width  = figure_details(detailID).width;
+			key_height = figure_details(detailID).height;
 		end;
 	else
-		chr_id    (figure_details(i).chr) = figure_details(i).chr;
-		chr_label {figure_details(i).chr} = figure_details(i).label;
-		chr_name  {figure_details(i).chr} = figure_details(i).name;
-		chr_posX  (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY  (figure_details(i).chr) = figure_details(i).posY;
-		chr_width (figure_details(i).chr) = figure_details(i).width;
-		chr_height(figure_details(i).chr) = figure_details(i).height;
-		chr_in_use(figure_details(i).chr) = str2num(figure_details(i).useChr);
+		chr_id    (figure_details(detailID).chr) = figure_details(detailID).chr;
+		chr_label {figure_details(detailID).chr} = figure_details(detailID).label;
+		chr_name  {figure_details(detailID).chr} = figure_details(detailID).name;
+		chr_posX  (figure_details(detailID).chr) = figure_details(detailID).posX;
+		chr_posY  (figure_details(detailID).chr) = figure_details(detailID).posY;
+		chr_width (figure_details(detailID).chr) = figure_details(detailID).width;
+		chr_height(figure_details(detailID).chr) = figure_details(detailID).height;
+		chr_in_use(figure_details(detailID).chr) = str2num(figure_details(detailID).useChr);
 	end;
 end;
 num_chrs = length(chr_size);
@@ -132,11 +133,11 @@ for usedChr = 1:num_chrs
 		chr_breaks{usedChr}(1) = 0.0;
 		break_count = 1;
 		if (length(Aneuploidy) > 0)
-			for i = 1:length(Aneuploidy)
-				if (Aneuploidy(i).chr == usedChr)
+			for chrBreak = 1:length(Aneuploidy)
+				if (Aneuploidy(chrBreak).chr == usedChr)
 					break_count = break_count+1;
-					chr_broken = true;
-					chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+					chr_broken  = true;
+					chr_breaks{usedChr}(break_count) = Aneuploidy(chrBreak).break;
 				end;
 			end;
 		end;
@@ -263,109 +264,109 @@ save([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 % Process SNP/hapmap data to determine colors for presentation.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
-%
-% Only run when compared vs. a hapmap.
-%
-%%%% chr_SNPdata{chr,1}(i) = phased SNP ratio data.
-%%%% chr_SNPdata{chr,2}(i) = unphased SNP ratio data.
-%%%% chr_SNPdata{chr,3}(i) = phased SNP position data.
-%%%% chr_SNPdata{chr,4}(i) = unphased SNP position data.
+	%
+	% Only run when compared vs. a hapmap.
+	%
+	%%%% chr_SNPdata{chr,1}(SNP) = phased SNP ratio data.
+	%%%% chr_SNPdata{chr,2}(SNP) = unphased SNP ratio data.
+	%%%% chr_SNPdata{chr,3}(SNP) = phased SNP position data.
+	%%%% chr_SNPdata{chr,4}(SNP) = unphased SNP position data.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
 				%
-				% Determining colors for each SNP coordinate.
+				% Old method for determining colors for SNP coordinates.  Building SNP data sctructure 'chr_SNPdata'.
 				%
-				for i = 1:length(C_chr_count{chr})
-					coordinate                      = C_chr_SNP_data_positions{chr}(i);
+				for SNP = 1:length(C_chr_SNP_data_positions{chr})  % 'length(C_chr_SNP_data_positions)' is the number of SNPs per chromosome.
+					coordinate                      = C_chr_SNP_data_positions{chr}(SNP);
 					pos                             = ceil(coordinate/new_bases_per_bin);
 					localCopyEstimate               = round(CNVplot2{chr}(pos)*ploidy*ploidyAdjust);
-					baseCall                        = C_chr_baseCall{        chr}{i};
-					homologA                        = C_chr_SNP_homologA{    chr}{i};
-					homologB                        = C_chr_SNP_homologB{    chr}{i};
-					flipper                         = C_chr_SNP_flipHomologs{chr}(i);
+					baseCall                        = C_chr_baseCall{        chr}{SNP};
+					homologA                        = C_chr_SNP_homologA{    chr}{SNP};
+					homologB                        = C_chr_SNP_homologB{    chr}{SNP};
+					flipper                         = C_chr_SNP_flipHomologs{chr}(SNP);
 					if (flipper == 10)                         % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
 						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
-						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} C_chr_SNP_data_ratios{chr}(i) 1-C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} C_chr_SNP_data_ratios{chr}(SNP) 1-C_chr_SNP_data_ratios{chr}(SNP)];
 						chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate coordinate];
 					elseif (flipper == 1)
 						temp                    = homologA;
 						homologA                = homologB;
 						homologB                = temp;
-						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} 1-C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} 1-C_chr_SNP_data_ratios{chr}(SNP)];
 						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate];
 					else % (flipper == 0)
-						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} C_chr_SNP_data_ratios{chr}(i)];
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} C_chr_SNP_data_ratios{chr}(SNP)];
 						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate];
 					end;
-
-					allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
-					if (localCopyEstimate <= 0);                        colorList = colorNoData;
+                    
+					allelicFraction                 = C_chr_SNP_data_ratios{chr}(SNP);
+					if (localCopyEstimate <= 0);                colorList = colorNoData;
 					elseif (localCopyEstimate == 1)
-						if (baseCall == homologA);                  colorList = colorA;
-						elseif (baseCall == homologB);              colorList = colorB;
-						else;                                       colorList = unphased_color_1of1;
+						if (baseCall == homologA);              colorList = colorA;
+						elseif (baseCall == homologB);          colorList = colorB;
+						else                                    colorList = unphased_color_1of1;
 						end;
 					elseif (localCopyEstimate == 2)
 						if (baseCall == homologA)
 							if (allelicFraction > 3/4);         colorList = colorAA;
-							else;                               colorList = colorAB;
+							else                                colorList = colorAB;
 							end;
 						elseif (baseCall == homologB)
 							if (allelicFraction > 3/4);         colorList = colorBB;
-							else;                               colorList = colorAB;
+							else                                colorList = colorAB;
 							end;
 						else
 							if (allelicFraction > 3/4);         colorList = unphased_color_2of2;
-							else;                               colorList = unphased_color_1of2;
+							else                                colorList = unphased_color_1of2;
 							end;
 						end;
 					elseif (localCopyEstimate == 3)
 						if (baseCall == homologA)
 							if (allelicFraction > 5/6);         colorList = colorAAA;
-							else;                               colorList = colorAAB;
+							else                                colorList = colorAAB;
 							end;
 						elseif (baseCall == homologB)
 							if (allelicFraction > 5/6);         colorList = colorBBB;
-							else;                               colorList = colorABB;
+							else                                colorList = colorABB;
 							end;
 						else
 							if (allelicFraction > 5/6);         colorList = unphased_color_3of3;
-							else;                               colorList = unphased_color_2of3;
+							else                                colorList = unphased_color_2of3;
 							end;
 						end;
 					elseif (localCopyEstimate == 4)
 						if (baseCall == homologA)
 							if (allelicFraction > 7/8);         colorList = colorAAAA;
 							elseif (allelicFraction > 5/8);     colorList = colorAAAB;
-							else;                               colorList = colorAABB;
+							else                                colorList = colorAABB;
 							end;
 						elseif (baseCall == homologB)
 							if (allelicFraction > 7/8);         colorList = colorBBBB;
 							elseif (allelicFraction > 5/8);     colorList = colorABBB;
-							else;                               colorList = colorAABB;
+							else                                colorList = colorAABB;
 							end;
 						else
 							if (allelicFraction > 7/8);         colorList = unphased_color_4of4;
 							elseif (allelicFraction > 5/8);     colorList = unphased_color_3of4;
-							else;                               colorList = unphased_color_2of4;
+							else                                colorList = unphased_color_2of4;
 							end;
 						end;
 					elseif (localCopyEstimate == 5)
 						if (baseCall == homologA)
 							if (allelicFraction > 9/10);        colorList = colorAAAAA;
 							elseif (allelicFraction > 7/10);    colorList = colorAAAAB;
-							else;                               colorList = colorAAABB;
+							else                                colorList = colorAAABB;
 							end;
 						elseif (baseCall == homologB)
 							if (allelicFraction > 9/10);        colorList = colorBBBBB;
 							elseif (allelicFraction > 7/10);    colorList = colorABBBB;
-							else;                               colorList = colorAABBB;
+							else                                colorList = colorAABBB;
 							end;
 						else
 							if (allelicFraction > 9/10);        colorList = unphased_color_5of5;
 							elseif (allelicFraction > 7/10);    colorList = unphased_color_4of5;
-							else;                               colorList = unphased_color_3of5;
+							else                                colorList = unphased_color_3of5;
 							end;
 						end;
 					elseif (localCopyEstimate == 6)
@@ -373,19 +374,19 @@ if (useHapmap)
 							if (allelicFraction > 11/12);       colorList = colorAAAAAA;
 							elseif (allelicFraction > 9/12);    colorList = colorAAAAAB;
 							elseif (allelicFraction > 7/12);    colorList = colorAAAABB;
-							else;                               colorList = colorAAABBB;
+							else                                colorList = colorAAABBB;
 							end;
 						elseif (baseCall == homologB)
 							if (allelicFraction > 11/12);       colorList = colorBBBBBB;
 							elseif (allelicFraction > 9/12);    colorList = colorABBBBB;
 							elseif (allelicFraction > 7/12);    colorList = colorAABBBB;
-							else;                               colorList = colorAAABBB;
+							else                                colorList = colorAAABBB;
 							end;
 						else
 							if (allelicFraction > 11/12);       colorList = unphased_color_6of6;
 							elseif (allelicFraction > 9/12);    colorList = unphased_color_5of6;
 							elseif (allelicFraction > 7/12);    colorList = unphased_color_4of6;
-							else;                               colorList = unphased_color_3of6;
+							else                                colorList = unphased_color_3of6;
 							end;
 						end;
 					elseif (localCopyEstimate == 7)
@@ -393,19 +394,19 @@ if (useHapmap)
 							if (allelicFraction > 13/14);       colorList = colorAAAAAAA;
 							elseif (allelicFraction > 11/14);   colorList = colorAAAAAAB;
 							elseif (allelicFraction > 9/14);    colorList = colorAAAAABB;
-							else;                               colorList = colorAAAABBB;
+							else                                colorList = colorAAAABBB;
 							end;
 						elseif (baseCall == homologB)
 							if (allelicFraction > 13/14);       colorList = colorBBBBBBB;
 							elseif (allelicFraction > 11/14);   colorList = colorABBBBBB;
 							elseif (allelicFraction > 9/14);    colorList = colorAABBBBB;
-							else;                               colorList = colorAAABBBB;
+							else                                colorList = colorAAABBBB;
 							end;
 						else
 							if (allelicFraction > 13/14);       colorList = unphased_color_7of7;
 							elseif (allelicFraction > 11/14);   colorList = unphased_color_6of7;
 							elseif (allelicFraction > 9/14);    colorList = unphased_color_5of7;
-							else;                               colorList = unphased_color_4of7;
+							else                                colorList = unphased_color_4of7;
 							end;
 						end;
 					elseif (localCopyEstimate == 8)
@@ -414,21 +415,21 @@ if (useHapmap)
 							elseif (allelicFraction > 13/16);   colorList = colorAAAAAAAB;
 							elseif (allelicFraction > 11/16);   colorList = colorAAAAAABB;
 							elseif (allelicFraction > 9/16);    colorList = colorAAAAABBB;
-							else;                               colorList = colorAAAABBBB;
+							else                                colorList = colorAAAABBBB;
 							end;
 						elseif (baseCall == homologB)
 							if (allelicFraction > 15/16);       colorList = colorBBBBBBBB;
 							elseif (allelicFraction > 13/16);   colorList = colorABBBBBBB;
 							elseif (allelicFraction > 11/16);   colorList = colorAABBBBBB;
 							elseif (allelicFraction > 9/16);    colorList = colorAAABBBBB;
-							else;                               colorList = colorAAAABBBB;
+							else                                colorList = colorAAAABBBB;
 							end;
 						else
 							if (allelicFraction > 15/16);       colorList = unphased_color_8of8;
 							elseif (allelicFraction > 13/16);   colorList = unphased_color_7of8;
 							elseif (allelicFraction > 11/16);   colorList = unphased_color_6of8;
 							elseif (allelicFraction > 9/16);    colorList = unphased_color_5of8;
-							else;                               colorList = unphased_color_4of8;
+							else                                colorList = unphased_color_4of8;
 							end;
 						end;
 					elseif (localCopyEstimate >= 9)
@@ -437,77 +438,403 @@ if (useHapmap)
 							elseif (allelicFraction > 15/18);   colorList = colorAAAAAAAAB;
 							elseif (allelicFraction > 13/18);   colorList = colorAAAAAAABB;
 							elseif (allelicFraction > 11/18);   colorList = colorAAAAAABBB;
-							else;                               colorList = colorAAAAABBBB;
+							else                                colorList = colorAAAAABBBB;
 							end;
 						elseif (baseCall == homologB)
 							if (allelicFraction > 17/18);       colorList = colorBBBBBBBBB;
 							elseif (allelicFraction > 15/18);   colorList = colorABBBBBBBB;
 							elseif (allelicFraction > 13/18);   colorList = colorAABBBBBBB;
 							elseif (allelicFraction > 11/18);   colorList = colorAAABBBBBB;
-							else;                               colorList = colorAAAABBBBB;
+							else                                colorList = colorAAAABBBBB;
 							end;
 						else
 							if (allelicFraction > 17/18);       colorList = unphased_color_9of9;
 							elseif (allelicFraction > 15/18);   colorList = unphased_color_8of9;
 							elseif (allelicFraction > 13/18);   colorList = unphased_color_7of9;
 							elseif (allelicFraction > 11/18);   colorList = unphased_color_6of9;
-							else;                               colorList = unphased_color_5of9;
+							else                                colorList = unphased_color_5of9;
 							end;
 						end;
 					end;
-
 					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos) + colorList(1);
 					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos) + colorList(3);
 					chr_SNPdata_countC{ chr  }(pos) = chr_SNPdata_countC{ chr  }(pos) + 1;
 				end;
+			end;
+		end;
+	end;
 
-				%
-				% Average color per bin.
-				%
-				for pos = 1:length(chr_SNPdata_countC{chr})
-					if (chr_SNPdata_countC{chr}(pos) > 0)
-						chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr}(pos);
-						chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr}(pos);
-						chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr}(pos);
-					else
-						chr_SNPdata_colorsC{chr,1}(pos) = 1.0;
-						chr_SNPdata_colorsC{chr,2}(pos) = 1.0;
-						chr_SNPdata_colorsC{chr,3}(pos) = 1.0;
-					end;
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			%
+			% Average color per bin.
+			%
+			for pos = 1:length(chr_SNPdata_countC{chr})
+				if (chr_SNPdata_countC{chr}(pos) > 0)
+					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr}(pos);
+					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr}(pos);
+					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr}(pos);
+				else
+					chr_SNPdata_colorsC{chr,1}(pos) = 1.0;
+					chr_SNPdata_colorsC{chr,2}(pos) = 1.0;
+					chr_SNPdata_colorsC{chr,3}(pos) = 1.0;
 				end;
 			end;
 		end;
 	end;
+    
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			chr_length = chr_size(chr);
+			%
+			% Determining SNP ratio cutoffs for each chromosome segment.
+			%
+			for segment = 1:(length(chrCopyNum{chr}))
+				histAll_a = [];
+				histAll_b = [];
+				histAll2  = [];
+				%% Construct and smooth a histogram of alleleic fraction data in the segment of interest.
+				% phased data is stored into arrays 'histAll_a' and 'histAll_b', since proper phasing is known.
+				% unphased data is stored inverted into the second array, since proper phasing is not known.
+				for chr_bin = 1:length(CNVplot2{chr})
+					%   1 : phased SNP ratio data.
+					%   2 : unphased SNP ratio data.
+					%   3 : phased SNP position data.
+					%   4 : unphased SNP position data.
+					ratioData_phased        = chr_SNPdata{chr,1}{chr_bin};
+					ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin};
+					coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin};
+					coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin};
+					if (length(ratioData_phased) > 0)
+						for SNP_in_bin = 1:length(ratioData_phased)
+							if ((coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))
+								% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
+								histAll_a = [histAll_a ratioData_phased(SNP_in_bin)];
+								histAll_b = [histAll_b ratioData_phased(SNP_in_bin)];
+							end;
+						end;
+					end;
+					if (length(ratioData_unphased) > 0)
+						for SNP_in_bin = 1:length(ratioData_unphased)
+							if ((coordinateData_unphased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_unphased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))
+								% Ratio data is unphased, so it is added evenly in both orientations.
+								histAll_a = [histAll_a ratioData_unphased(SNP_in_bin)  ];
+								histAll_b = [histAll_b 1-ratioData_unphased(SNP_in_bin)];
+							end;
+						end;
+					end;
+				end;
+				% make a histogram of SNP allelic fractions in segment, then smooth for display.
+				histAll                    = [histAll_a histAll_b];
+				histAll(histAll == -1)     = [];
+				histAll(length(histAll)+1) = 0;
+				histAll(length(histAll)+1) = 1;
+				% Invert histogram values;
+				histAll                    = 1-histAll;
+				% generate the histogram.
+				data_hist                  = hist(histAll,200);
+				% log-scale the histogram.
+				data_hist                  = log(data_hist+1);
+				data_hist                  = log(data_hist+1);
+				% smooth the histogram.
+				smoothed                   = smooth_gaussian(data_hist,10,30);
+				% make a smoothed version of just the endpoints used to ensure histogram bounds.
+				histAll2(1)                = 0;
+				histAll2(2)                = 1;
+				smoothed2                  = smooth_gaussian(hist(histAll2,200),3,20);
+				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+				smoothed                   = (smoothed-smoothed2);
+				if (max(smoothed) > 0)
+					smoothed           = smoothed/max(smoothed);
+				end;
+				smoothed__{chr}{segment}   = smoothed;
+                
+				% Define cutoffs between Gaussian fits.
+				segment_copyNum = round(chrCopyNum{chr}(segment));
+				saveName = '';
+				[peaks,actual_cutoffs__{chr}{segment},mostLikelyGaussians__{chr}{segment}] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,smoothed__{chr}{segment}, false);
+			end;
+		end;
+	end;
+    
+	if (true)
+		%%
+		%% Reset tracking vectors.
+		%%
+		chr_SNPdata_colorsC = [];
+		chr_SNPdata_colorsP = [];
+		chr_SNPdata_countC  = [];
+		chr_SNPdata_countP  = [];
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+				for j = 1:3
+					% Track the RGB value sum per standard bin, then divide by the count to reach the average color per standard genome bin.
+					chr_SNPdata_colorsC{chr,j} = zeros(chr_length,1);
+					chr_SNPdata_colorsP{chr,j} = zeros(chr_length,1);
+				end;
+				chr_SNPdata_countC{chr}        = zeros(chr_length,1);
+				chr_SNPdata_countP{chr}        = zeros(chr_length,1);
+			end;
+		end;
+		%%
+		%% Define new colors for SNPs.
+		%%
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				if (length(C_chr_count{chr}) > 1)
+					%
+					% Determining colors for each SNP coordinate from calculated cutoffs.
+					%
+					saveName = ['allelic_ratios.chr_' num2str(chr) '.segment_' num2str(segment) ];
+					for SNP = 1:length(C_chr_SNP_data_positions{chr})  % 'length(C_chr_SNP_data_positions)' is the number of SNPs per chromosome.
+						coordinate        = C_chr_SNP_data_positions{chr}(SNP);
+						pos               = ceil(coordinate/new_bases_per_bin);
+
+						% identify the segment containing the SNP.
+						segmentID         = 0;
+						for segment = 1:(length(chrCopyNum{chr}))
+							segment_start = chr_breaks{chr}(segment  )*chr_size(chr);
+							segment_end   = chr_breaks{chr}(segment+1)*chr_size(chr);
+							if (coordinate > segment_start) && (coordinate <= segment_end)
+								segmentID = segment;
+							end;
+						end;
+                        
+						% Define cutoffs between Gaussian fits.
+						segment_copyNum     = round(chrCopyNum{chr}(segmentID));
+						actual_cutoffs      = actual_cutoffs__{chr}{segmentID};
+						mostLikelyGaussians = mostLikelyGaussians__{chr}{segmentID};
+                        
+						% Convert the allelic ratio to the range [1..200].
+						if (flipper == 10)
+							SNPratio_int    = C_chr_SNP_data_ratios{chr}(SNP)*199+1;
+						elseif (flipper == 1)
+							SNPratio_int    = (1-C_chr_SNP_data_ratios{chr}(SNP))*199+1;
+						else
+							SNPratio_int    = C_chr_SNP_data_ratios{chr}(SNP)*199+1;
+						end;
+						%SNPratio_int    = C_chr_SNP_data_ratios{chr}(SNP)*199+1;
+                        
+						% Identify the allelic ratio region containing the SNP.
+						cutoffs         = [1 actual_cutoffs 200];
+						ratioRegionID   = 0;
+						for ratioRegion = 1:(length(cutoffs)-1)
+							cutoff_start = cutoffs(ratioRegion  );
+							cutoff_end   = cutoffs(ratioRegion+1);
+							if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
+								ratioRegionID = ratioRegion;
+							end;
+						end;
+                        
+                        % Determine color assignment for SNP.
+                        if (flipper == 10)
+                            if (segment_copyNum <= 0);        colorList = colorNoData;
+                            elseif (segment_copyNum == 1);    colorList = unphased_color_1of1;
+                            elseif (segment_copyNum == 2)
+                                if (ratioRegionID == 2);      colorList = unphased_color_1of2;
+                                else                          colorList = unphased_color_2of2;
+                                end;
+                            elseif (segment_copyNum == 3)
+                                if (ratioRegionID == 1);      colorList = unphased_color_3of3;
+                                elseif (ratioRegionID == 2);  colorList = unphased_color_2of3;
+                                elseif (ratioRegionID == 3);  colorList = unphased_color_2of3;
+                                else                          colorList = unphased_color_3of3;
+                                end;
+                            elseif (segment_copyNum == 4)
+                                if (ratioRegionID == 1);      colorList = unphased_color_4of4;
+                                elseif (ratioRegionID == 2);  colorList = unphased_color_3of4;
+                                elseif (ratioRegionID == 3);  colorList = unphased_color_2of4;
+                                elseif (ratioRegionID == 4);  colorList = unphased_color_3of4;
+                                else                          colorList = unphased_color_4of4;
+                                end;
+                            elseif (segment_copyNum == 5)
+                                if (ratioRegionID == 1);      colorList = unphased_color_5of5;
+                                elseif (ratioRegionID == 2);  colorList = unphased_color_4of5;
+                                elseif (ratioRegionID == 3);  colorList = unphased_color_3of5;
+                                elseif (ratioRegionID == 4);  colorList = unphased_color_3of5;
+                                elseif (ratioRegionID == 5);  colorList = unphased_color_4of5;
+                                else                          colorList = unphased_color_5of5;
+                                end;
+                            elseif (segment_copyNum == 6)
+                                if (ratioRegionID == 1);      colorList = unphased_color_6of6;
+                                elseif (ratioRegionID == 2);  colorList = unphased_color_5of6;
+                                elseif (ratioRegionID == 3);  colorList = unphased_color_4of6;
+                                elseif (ratioRegionID == 4);  colorList = unphased_color_3of6;
+                                elseif (ratioRegionID == 5);  colorList = unphased_color_4of6;
+                                elseif (ratioRegionID == 6);  colorList = unphased_color_5of6;
+                                else                          colorList = unphased_color_6of6;
+                                end;
+                            elseif (segment_copyNum == 7)
+                                if (ratioRegionID == 1);      colorList = unphased_color_7of7;
+                                elseif (ratioRegionID == 2);  colorList = unphased_color_6of7;
+                                elseif (ratioRegionID == 3);  colorList = unphased_color_5of7;
+                                elseif (ratioRegionID == 4);  colorList = unphased_color_4of7;
+                                elseif (ratioRegionID == 5);  colorList = unphased_color_4of7;
+                                elseif (ratioRegionID == 6);  colorList = unphased_color_5of7;
+                                elseif (ratioRegionID == 7);  colorList = unphased_color_6of7;
+                                else                          colorList = unphased_color_7of7;
+                                end;
+                            elseif (segment_copyNum == 8)
+                                if (ratioRegionID == 1);      colorList = unphased_color_8of8;
+                                elseif (ratioRegionID == 2);  colorList = unphased_color_7of8;
+                                elseif (ratioRegionID == 3);  colorList = unphased_color_6of8;
+                                elseif (ratioRegionID == 4);  colorList = unphased_color_5of8;
+                                elseif (ratioRegionID == 5);  colorList = unphased_color_4of8;
+                                elseif (ratioRegionID == 6);  colorList = unphased_color_4of8;
+                                elseif (ratioRegionID == 7);  colorList = unphased_color_5of8;
+                                elseif (ratioRegionID == 8);  colorList = unphased_color_6of8;
+                                else                          colorList = unphased_color_7of8;
+                                end;
+                            else % (segment_copyNum >= 9)
+                                if (ratioRegionID == 1);      colorList = unphased_color_9of9;
+                                elseif (ratioRegionID == 2);  colorList = unphased_color_8of9;
+                                elseif (ratioRegionID == 3);  colorList = unphased_color_7of9;
+                                elseif (ratioRegionID == 4);  colorList = unphased_color_6of9;
+                                elseif (ratioRegionID == 5);  colorList = unphased_color_5of9;
+                                elseif (ratioRegionID == 6);  colorList = unphased_color_5of9;
+                                elseif (ratioRegionID == 7);  colorList = unphased_color_6of9;
+                                elseif (ratioRegionID == 8);  colorList = unphased_color_7of9;
+                                elseif (ratioRegionID == 9);  colorList = unphased_color_8of9;
+                                else                          colorList = unphased_color_9of9;
+                                end;
+                            end;
+                        else
+                            if (segment_copyNum <= 0);        colorList = colorNoData;
+                            elseif (segment_copyNum == 1)
+                                if (ratioRegionID == 1);      colorList = colorA;
+                                else                          colorList = colorB;
+                                end;
+                            elseif (segment_copyNum == 2)
+                                if (ratioRegionID == 1);      colorList = [0 0 1]; %unphased_color_1of1; %colorAA;
+                                elseif (ratioRegionID == 2);  colorList = colorAB;
+                                else                          colorList = [1 1 0]; %unphased_color_1of1; %colorBB;
+                                end;
+                            elseif (segment_copyNum == 3)
+                                if (ratioRegionID == 1);      colorList = colorAAA;
+                                elseif (ratioRegionID == 2);  colorList = colorAAB;
+                                elseif (ratioRegionID == 3);  colorList = colorABB;
+                                else                          colorList = colorBBB;
+                                end;
+                            elseif (segment_copyNum == 4)
+                                if (ratioRegionID == 1);      colorList = colorAAAA;
+                                elseif (ratioRegionID == 2);  colorList = colorAAAB;
+                                elseif (ratioRegionID == 3);  colorList = colorAABB;
+                                elseif (ratioRegionID == 4);  colorList = colorABBB;
+                                else                          colorList = colorBBBB;
+                                end;
+                            elseif (segment_copyNum == 5)
+                                if (ratioRegionID == 1);      colorList = colorAAAAA;
+                                elseif (ratioRegionID == 2);  colorList = colorAAAAB;
+                                elseif (ratioRegionID == 3);  colorList = colorAAABB;
+                                elseif (ratioRegionID == 4);  colorList = colorAABBB;
+                                elseif (ratioRegionID == 5);  colorList = colorABBBB;
+                                else                          colorList = colorBBBBB;
+                                end;
+                            elseif (segment_copyNum == 6)
+                                if (ratioRegionID == 1);      colorList = colorAAAAAA;
+                                elseif (ratioRegionID == 2);  colorList = colorAAAAAB;
+                                elseif (ratioRegionID == 3);  colorList = colorAAAABB;
+                                elseif (ratioRegionID == 4);  colorList = colorAAABBB;
+                                elseif (ratioRegionID == 5);  colorList = colorAABBBB;
+                                elseif (ratioRegionID == 6);  colorList = colorABBBBB;
+                                else                          colorList = colorBBBBBB;
+                                end;
+                            elseif (segment_copyNum == 7)
+                                if (ratioRegionID == 1);      colorList = colorAAAAAAA;
+                                elseif (ratioRegionID == 2);  colorList = colorAAAAAAB;
+                                elseif (ratioRegionID == 3);  colorList = colorAAAAABB;
+                                elseif (ratioRegionID == 4);  colorList = colorAAAABBB;
+                                elseif (ratioRegionID == 5);  colorList = colorAAABBBB;
+                                elseif (ratioRegionID == 6);  colorList = colorAABBBBB;
+                                elseif (ratioRegionID == 7);  colorList = colorABBBBBB;
+                                else                          colorList = colorBBBBBBB;
+                                end;
+                            elseif (segment_copyNum == 8)
+                                if (ratioRegionID == 1);      colorList = colorAAAAAAAA;
+                                elseif (ratioRegionID == 2);  colorList = colorAAAAAAAB;
+                                elseif (ratioRegionID == 3);  colorList = colorAAAAAABB;
+                                elseif (ratioRegionID == 4);  colorList = colorAAAAABBB;
+                                elseif (ratioRegionID == 5);  colorList = colorAAAABBBB;
+                                elseif (ratioRegionID == 6);  colorList = colorAAABBBBB;
+                                elseif (ratioRegionID == 7);  colorList = colorAABBBBBB;
+                                elseif (ratioRegionID == 8);  colorList = colorABBBBBBB;
+                                else                          colorList = colorBBBBBBBB;
+                                end;
+                            else % (segment_copyNum >= 9)
+                                if (ratioRegionID == 1);      colorList = colorAAAAAAAAA;
+                                elseif (ratioRegionID == 2);  colorList = colorAAAAAAAAB;
+                                elseif (ratioRegionID == 3);  colorList = colorAAAAAAABB;
+                                elseif (ratioRegionID == 4);  colorList = colorAAAAAABBB;
+                                elseif (ratioRegionID == 5);  colorList = colorAAAAABBBB;
+                                elseif (ratioRegionID == 6);  colorList = colorAAAABBBBB;
+                                elseif (ratioRegionID == 7);  colorList = colorAAABBBBBB;
+                                elseif (ratioRegionID == 8);  colorList = colorAABBBBBBB;
+                                elseif (ratioRegionID == 9);  colorList = colorABBBBBBBB;
+                                else                          colorList = colorBBBBBBBBB;
+                                end;
+                            end;
+                            
+                            chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos) + colorList(1);
+                            chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos) + colorList(2);
+                            chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos) + colorList(3);
+                            chr_SNPdata_countC{ chr  }(pos) = chr_SNPdata_countC{ chr  }(pos) + sum(colorList);
+                        end;
+                    end;
+                end;
+            end;
+        end;
+        %%
+        %% Average colors per standard genome gin.
+        %%
+        for chr = 1:num_chrs
+            if (chr_in_use(chr) == 1)
+                if (length(C_chr_count{chr}) > 1)
+                    for pos = 1:length(chr_SNPdata_countC{chr})
+                        if (chr_SNPdata_countC{chr}(pos) > 0)
+                            chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr}(pos);
+                            chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr}(pos);
+                            chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr}(pos);
+                        else
+                            chr_SNPdata_colorsC{chr,1}(pos) = 1.0;
+                            chr_SNPdata_colorsC{chr,2}(pos) = 1.0;
+                            chr_SNPdata_colorsC{chr,3}(pos) = 1.0;
+                        end;
+                    end;
+                end;
+            end;
+        end;
+    end;
 else
 %
 % Run when compared vs. a parent dataset or vs. itself.
 %
-%%%% chr_SNPdata{chr,2}(i) = child data.
-%%%% chr_SNPdata{chr,4}(i) = parent data.
+%%%% chr_SNPdata{chr,2}(SNP) = child data.
+%%%% chr_SNPdata{chr,4}(SNP) = parent data.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
-				for i = 1:length(C_chr_count{chr})
-					pos = ceil(C_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					if (C_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,2}(pos))
-						chr_SNPdata{chr,2}(pos)      = C_chr_SNP_data_ratios{chr}(i);
+				for SNP = 1:length(C_chr_count{chr})
+					pos = ceil(C_chr_SNP_data_positions{chr}(SNP)/new_bases_per_bin);
+					if (C_chr_SNP_data_ratios{chr}(SNP) < chr_SNPdata{chr,2}(pos))
+						chr_SNPdata{chr,2}(pos)      = C_chr_SNP_data_ratios{chr}(SNP);
 						colorList                    = [1.0 1.0 1.0];
-						chr_SNPdata_colorsC{chr,1}(i) = colorList(1);
-						chr_SNPdata_colorsC{chr,2}(i) = colorList(2);
-						chr_SNPdata_colorsC{chr,3}(i) = colorList(3);
+						chr_SNPdata_colorsC{chr,1}(SNP) = colorList(1);
+						chr_SNPdata_colorsC{chr,2}(SNP) = colorList(2);
+						chr_SNPdata_colorsC{chr,3}(SNP) = colorList(3);
 					end;
 				end;
 			end;
 			if (length(P_chr_count{chr}) > 1)
 				for i = 1:length(P_chr_count{chr})
-					pos = ceil(P_chr_SNP_data_positions{chr}(i)/new_bases_per_bin);
-					if (P_chr_SNP_data_ratios{chr}(i) < chr_SNPdata{chr,4}(pos))
-						chr_SNPdata{chr,4}(pos)      = P_chr_SNP_data_ratios{chr}(i);
+					pos = ceil(P_chr_SNP_data_positions{chr}(SNP)/new_bases_per_bin);
+					if (P_chr_SNP_data_ratios{chr}(SNP) < chr_SNPdata{chr,4}(pos))
+						chr_SNPdata{chr,4}(pos)      = P_chr_SNP_data_ratios{chr}(SNP);
 						colorList                    = [1.0 1.0 1.0];
-						chr_SNPdata_colorsP{chr,1}(i) = colorList(1);
-						chr_SNPdata_colorsP{chr,2}(i) = colorList(2);
-						chr_SNPdata_colorsP{chr,3}(i) = colorList(3);
+						chr_SNPdata_colorsP{chr,1}(SNP) = colorList(1);
+						chr_SNPdata_colorsP{chr,2}(SNP) = colorList(2);
+						chr_SNPdata_colorsP{chr,3}(SNP) = colorList(3);
 					end;
 				end;
 			end;
@@ -520,7 +847,7 @@ save([projectDir 'SNP_' SNP_verString '.reduced.mat'],'chr_SNPdata','new_bases_p
 
 
 %%================================================================================================
-% Make histogram of 'homozygous' data.
+% Make histogram of data.
 %-------------------------------------------------------------------------------------------------
 histogram_fig = figure();
 for chr = 1:num_chrs
@@ -542,8 +869,8 @@ for chr = 1:num_chrs
 
 		subplot(2,num_chrs,chr);
 		hold on;
-		plot(1:200, log(histogram_phased+1),  'Color',[1.0 0.0 0.0]);
-		plot(1:200, log(histogram_unphased+1),'Color',[1/3 1/3 1/3]);
+		plot(1:200, log(histogram_unphased+1),  'Color',[1.0 0.0 0.0]);
+		plot(1:200, log(histogram_phased+1),'Color',[1/3 1/3 1/3]);
 		ylim([0 6]);
 		title([chr_label{chr}]);
 		set(gca,'XTick',[0 50 100 150 200]);
@@ -554,8 +881,8 @@ for chr = 1:num_chrs
 
 		subplot(2,num_chrs,chr+num_chrs);
 		hold on;
-		plot(1:200, histogram_phased,  'Color',[1.0 0.0 0.0]);
-		plot(1:200, histogram_unphased,'Color',[1/3 1/3 1/3]);
+		plot(1:200, histogram_unphased,  'Color',[1.0 0.0 0.0]);
+		plot(1:200, histogram_phased,'Color',[1/3 1/3 1/3]);
 		ylim([0 200]);
 		title([chr_label{chr}]);
 		set(gca,'XTick',[0 50 100 150 200]);
@@ -566,7 +893,7 @@ for chr = 1:num_chrs
 	end;
 end;
 set(histogram_fig,'PaperPosition',[0 0 8 1.5]*4);
-saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.eps'], 'epsc');
+%saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.eps'], 'epsc');
 saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.png'], 'png');
 delete(histogram_fig);
 
@@ -640,36 +967,36 @@ for chr = 1:num_chrs
 
 		% standard : draw colorbars.
 		if (useHapmap)   % an experimental dataset vs. a hapmap.
-			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				colorR   = chr_SNPdata_colorsC{chr,1}(i);
-				colorG   = chr_SNPdata_colorsC{chr,2}(i);
-				colorB   = chr_SNPdata_colorsC{chr,3}(i);
-				if (colorR < 1) || (colorG < 1) || (colorB < 1)
-					plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
+			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+				colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+				colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
+				if (colorR <= 1) || (colorG <= 1) || (colorB <= 1)
+					plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
 				end;
 			end;
 		% Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
 		%	elseif (useParent)   % an experimental dataset vs. a reference dataset.
-		%		for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-		%			colorR   = chr_SNPdata_colorsP{chr,1}(i);
-		%			colorG   = chr_SNPdata_colorsP{chr,2}(i);
-		%			colorB   = chr_SNPdata_colorsP{chr,3}(i);
-		%			if (colorR < 1) || (colorG < 1) || (colorB < 1)
-		%				plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
+		%		for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+		%			colorR   = chr_SNPdata_colorsP{chr,1}(chr_bin);
+		%			colorG   = chr_SNPdata_colorsP{chr,2}(chr_bin);
+		%			colorB   = chr_SNPdata_colorsP{chr,3}(chr_bin);
+		%			if (colorR <= 1) || (colorG <= 1) || (colorB <= 1)
+		%				plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
 		%			end;
 		%		end;
 		elseif (useParent)   % an experimental dataset vs. a reference dataset.
-			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				datumY_C = chr_SNPdata{chr,2}(i)*maxY;
-				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-				plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
-				plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				datumY_C = chr_SNPdata{chr,2}(chr_bin)*maxY;
+				datumY_P = chr_SNPdata{chr,4}(chr_bin)*maxY;
+				plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+				plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 			end;
 		else   % only a reference dataset.
-			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-				plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
-				plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				datumY_P = chr_SNPdata{chr,4}(chr_bin)*maxY;
+				plot([chr_bin/2 chr_bin/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+				plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 			end;
 		end;
 		% standard : end draw colorbars.
@@ -735,19 +1062,19 @@ for chr = 1:num_chrs
 		if (show_annotations) && (length(annotations) > 0)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 			annotation_location = (annotation_start+annotation_end)./2;
-			for i = 1:length(annotation_location)
-				if (annotation_chr(i) == chr)
-					annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-					annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-					annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-					if (strcmp(annotation_type{i},'dot') == 1)
-						plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-						     'MarkerFaceColor',annotation_fillcolor{i}, ...
-						     'MarkerSize',     annotation_size(i));
-					elseif (strcmp(annotation_type{i},'block') == 1)
+			for annoteID = 1:length(annotation_location)
+				if (annotation_chr(annoteID) == chr)
+					annotationloc = annotation_location(annoteID)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationStart = annotation_start(annoteID)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationEnd   = annotation_end(annoteID)/bases_per_bin-0.5*(5000/bases_per_bin);
+					if (strcmp(annotation_type{annoteID},'dot') == 1)
+						plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{annoteID}, ...
+						     'MarkerFaceColor',annotation_fillcolor{annoteID}, ...
+						     'MarkerSize',     annotation_size(annoteID));
+					elseif (strcmp(annotation_type{annoteID},'block') == 1)
 						fill([annotationStart annotationStart annotationEnd annotationEnd], ...
 						     [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-						     annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+						     annotation_fillcolor{annoteID},'EdgeColor',annotation_edgecolor{annoteID});
 					end;
 				end;
 			end;
@@ -766,37 +1093,37 @@ for chr = 1:num_chrs
 
 			% linear : draw colorbars
 			if (useHapmap)   % an experimental dataset vs. a hapmap.
-				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-					colorR   = chr_SNPdata_colorsC{chr,1}(i);
-					colorG   = chr_SNPdata_colorsC{chr,2}(i);
-					colorB   = chr_SNPdata_colorsC{chr,3}(i);
+				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+					colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+					colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
 					if (colorR < 1) || (colorG < 1) || (colorB < 1)
-						plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
+						plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
 			% Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
 			%	elseif (useParent)   % an experimental dataset vs. a reference dataset.
 			%		for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-			%			colorR   = chr_SNPdata_colorsC{chr,1}(i);
-			%			colorG   = chr_SNPdata_colorsC{chr,2}(i);
-			%			colorB   = chr_SNPdata_colorsC{chr,3}(i);
+			%			colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+			%			colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+			%			colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
 			%			if (colorR < 1) || (colorG < 1) || (colorB < 1)
 			%				plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 			%			end;
 			%		end;
 			elseif (useParent)   % an experimental dataset vs. a reference dataset.
-				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
-					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-					plot([i/2 i/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
-					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					datumY_C = chr_SNPdata{chr,2}(chr_bin)*maxY;
+					datumY_P = chr_SNPdata{chr,4}(chr_bin)*maxY;
+					plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+					plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 				end;
 			else   % only a reference dataset.
-				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-					datumY_C = chr_SNPdata{chr,2}(i)*maxY;
-					datumY_P = chr_SNPdata{chr,4}(i)*maxY;
-					plot([i/2 i/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
-					plot([i/2 i/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
+				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					datumY_C = chr_SNPdata{chr,2}(chr_bin)*maxY;
+					datumY_P = chr_SNPdata{chr,4}(chr_bin)*maxY;
+					plot([chr_bin/2 chr_bin/2], [maxY datumY_P     ],'Color',[1/3 1/3 1/3]);
+					plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',[1/3 1/3 1/3]);
 				end;
 			end;
 			% linear : end draw colorbars.
@@ -844,19 +1171,19 @@ for chr = 1:num_chrs
 			if (show_annotations) && (length(annotations) > 0)
 				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				annotation_location = (annotation_start+annotation_end)./2;
-				for i = 1:length(annotation_location)
-					if (annotation_chr(i) == chr)
-						annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-						annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-						annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-						if (strcmp(annotation_type{i},'dot') == 1)
-							plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-							                                      'MarkerFaceColor',annotation_fillcolor{i}, ...
-							                                      'MarkerSize',     annotation_size(i));
-						elseif (strcmp(annotation_type{i},'block') == 1)
+				for annoteID = 1:length(annotation_location)
+					if (annotation_chr(annoteID) == chr)
+						annotationloc = annotation_location(annoteID)/bases_per_bin-0.5*(5000/bases_per_bin);
+						annotationStart = annotation_start(annoteID)/bases_per_bin-0.5*(5000/bases_per_bin);
+						annotationEnd   = annotation_end(annoteID)/bases_per_bin-0.5*(5000/bases_per_bin);
+						if (strcmp(annotation_type{annoteID},'dot') == 1)
+							plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{annoteID}, ...
+							                                      'MarkerFaceColor',annotation_fillcolor{annoteID}, ...
+							                                      'MarkerSize',     annotation_size(annoteID));
+						elseif (strcmp(annotation_type{annoteID},'block') == 1)
 							fill([annotationStart annotationStart annotationEnd annotationEnd], ...
 							     [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-							     annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+							     annotation_fillcolor{annoteID},'EdgeColor',annotation_edgecolor{annoteID});
 						end;
 					end;
 				end;
@@ -890,12 +1217,12 @@ end;
 
 %% Save figures.
 set(fig,'PaperPosition',[0 0 8 6]*2);
-saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.eps'], 'epsc');
+%saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.eps'], 'epsc');
 saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.png'], 'png');
 delete(fig);
 
 set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
-saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.eps'], 'epsc');
+%saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.eps'], 'epsc');
 saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.png'], 'png');
 delete(Linear_fig);
 
