@@ -617,7 +617,6 @@ if (useHapmap)
 						else % (flipper == 0)
 							chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
 							chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate];
-							% allelic_ratio           = 1-allelic_ratio;
 						end;
 
 						% identify the segment containing the SNP.
@@ -634,20 +633,6 @@ if (useHapmap)
 						segment_copyNum                 = round(chrCopyNum{chr}(segmentID));
 						actual_cutoffs                  = actual_cutoffs__{chr}{segmentID};
 						mostLikelyGaussians             = mostLikelyGaussians__{chr}{segmentID};
-
-					%	% Ignore single homozygous SNPs if flanked by non-homozygous SNPs.
-					%	if (SNP > 1) && (SNP < length(C_chr_SNP_data_positions{chr}))
-					%		previous_allelic_ratio = C_chr_SNP_data_ratios{ chr}(SNP-1);
-					%		previous_flipper       = C_chr_SNP_flipHomologs{chr}(SNP-1);
-					%		if (previous_flipper == 1); previous_allelic_ratio = 1-previous_allelic_ratio; end;
-					%		next_allelic_ratio     = C_chr_SNP_data_ratios{ chr}(SNP+1);
-					%		next_flipper           = C_chr_SNP_flipHomologs{chr}(SNP+1);
-					%		if (next_flipper == 1); next_allelic_ratio = 1-next_allelic_ratio; end;
-					%		if ((allelic_ratio == 1) && (previous_allelic_ratio < 1) && (next_allelic_ratio < 1)) || ((allelic_ratio == 0) && (previous_allelic_ratio > 0) && (next_allelic_ratio > 0))
-					%			allelic_ratio = (previous_allelic_ratio + next_allelic_ratio)/2;
-					%		end;
-					%		allelic_ratio = max([previous_allelic_ratio,allelic_ratio,next_allelic_ratio]);
-					%	end;
 
 						% Convert the allelic ratio to the range[1..200].
 						if (flipper == 1)
@@ -684,7 +669,7 @@ if (useHapmap)
 								end;
 							end;
 						elseif (segment_copyNum == 2)
-%% Darren						%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
+							%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
 							%   cutoffs_1 from Gaussian fittings = [0.18342 0.19347 0.18844 0.16332 0.16332 0.15327 0.12814] => 0.1676;
 							%   cutoffs_2 from Gaussian fittings = [0.82663 0.82161 0.80151 0.84171 0.83668 0.84673 0.84673] => 0.8317;
 							% fprintf(['allelic_ratio = ' num2str(allelic_ratio) '\tchr = ' num2str(chr) '\tbp = ' num2str(coordinate) '\n']);
