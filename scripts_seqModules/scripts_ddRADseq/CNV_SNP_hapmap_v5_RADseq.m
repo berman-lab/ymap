@@ -338,7 +338,7 @@ for chr = 1:num_chrs
 						if ((coordinateData_phased(i) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(i) <= chr_breaks{chr}(segment+1)*chr_length))
 							% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
 							histAll_a = [histAll_a ratioData_phased(i)];
-							histAll_b = [histAll_b ratioData_phased(i)];
+				%			histAll_b = [histAll_b ratioData_phased(i)];
 						end;
 					end;
 				end;
@@ -355,8 +355,8 @@ for chr = 1:num_chrs
 			% make a histogram of SNP allelic fractions in segment, then smooth for display.
 			histAll                    = [histAll_a histAll_b];
 			histAll(histAll == -1)     = [];
-			histAll(length(histAll)+1) = 0;
-			histAll(length(histAll)+1) = 1;
+		%	histAll(length(histAll)+1) = 0;
+		%	histAll(length(histAll)+1) = 1;
 			% Invert histogram values;
 			histAll                    = 1-histAll;
 			% generate the histogram.
@@ -367,11 +367,11 @@ for chr = 1:num_chrs
 			% smooth the histogram.
 			smoothed                   = smooth_gaussian(data_hist,10,30);
 			% make a smoothed version of just the endpoints used to ensure histogram bounds.
-			histAll2(1)                = 0;
-			histAll2(2)                = 1;
-			smoothed2                  = smooth_gaussian(hist(histAll2,200),3,20);
+		%	histAll2(1)                = 0;
+		%	histAll2(2)                = 1;
+		%	smoothed2                  = smooth_gaussian(hist(histAll2,200),3,20);
 			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-			smoothed                   = (smoothed-smoothed2);
+		%	smoothed                   = (smoothed-smoothed2);
 			if (max(smoothed) > 0)
 				smoothed           = smoothed/max(smoothed);
 			end;
@@ -383,7 +383,7 @@ for chr = 1:num_chrs
 
 			% Define cutoffs between Gaussian fits.
 			saveName = ['allelic_ratios.chr_' num2str(chr) '.segment_' num2str(segment) ];
-			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, false);
+			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, true);
 
 			fprintf(['^^^     copyNum             = ' num2str(segment_copyNum)     '\n']);
 			fprintf(['^^^     peaks               = ' num2str(peaks)               '\n']);

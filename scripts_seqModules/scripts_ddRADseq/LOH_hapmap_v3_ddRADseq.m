@@ -445,41 +445,43 @@ end;
 
 
 %% Generate figure showing subplots of LOWESS fittings.
-GCfig = figure(3);
-subplot(2,3,1);
-    plot(GCratioData_all,SNPdata_all,'k.','markersize',1);
-    hold on;	plot(fitX1,fitY1,'r','LineWidth',2);   hold off;
-    xlabel('GC ratio');   ylabel('SNP data');
-    xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
-subplot(2,3,2);
-	plot(GCdata_all,SNPdata_all_1,'r.','markersize',1);
-	hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('SNP data');
-	xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
-subplot(2,3,3);
-	plot(GCdata_all,SNPdata_all_2,'g.','markersize',1);
-	hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('SNP data');
-	xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
+if (false)
+	GCfig = figure(3);
+	subplot(2,3,1);
+	    plot(GCratioData_all,SNPdata_all,'k.','markersize',1);
+	    hold on;	plot(fitX1,fitY1,'r','LineWidth',2);   hold off;
+	    xlabel('GC ratio');   ylabel('SNP data');
+	    xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
+	subplot(2,3,2);
+		plot(GCdata_all,SNPdata_all_1,'r.','markersize',1);
+		hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('SNP data');
+		xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
+	subplot(2,3,3);
+		plot(GCdata_all,SNPdata_all_2,'g.','markersize',1);
+		hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('SNP data');
+		xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
 
-subplot(2,3,4);
-	plot(GCratioData_all,cSNPdata_all,'k.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('corrected SNP data');
-	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
-subplot(2,3,5);
-	plot(GCdata_all,cSNPdata_all_1,'r.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('corrected SNP data');
-	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
-subplot(2,3,6);
-	plot(GCdata_all,cSNPdata_all_1,'g.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('corrected SNP data');
-	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
+	subplot(2,3,4);
+		plot(GCratioData_all,cSNPdata_all,'k.','markersize',1);
+		hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('corrected SNP data');
+		xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
+	subplot(2,3,5);
+		plot(GCdata_all,cSNPdata_all_1,'r.','markersize',1);
+		hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('corrected SNP data');
+		xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
+	subplot(2,3,6);
+		plot(GCdata_all,cSNPdata_all_1,'g.','markersize',1);
+		hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('corrected SNP data');
+		xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
 
-saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.eps'], 'epsc');
-saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
+	saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.eps'], 'epsc');
+	saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
+end;
 
 
 %% -----------------------------------------------------------------------------------------
