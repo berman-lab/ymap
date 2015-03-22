@@ -10,12 +10,12 @@ if (useHapmap == true)
 		colors_fid = fopen([main_dir 'users/' hapmapUser '/hapmaps/' hapmap '/colors.txt'], 'r');
 		% The swapped colors are to correct for a polarity mistake in the python preprocessing steps.
 		%    correcting the error there would require reprocessing all current datasets.
-		colorB_string = fgetl(colors_fid);
 		colorA_string = fgetl(colors_fid);
+		colorB_string = fgetl(colors_fid);
 		fclose(colors_fid);
 	else
-		colorB_string = 'red';
 		colorA_string = 'red';
+		colorB_string = 'red';
 	end;
 	fprintf(['\nHapmap colors:\n\tcolorA = ' colorA_string '\n\tcolorB = ' colorB_string '\n\n']);
 	switch colorA_string

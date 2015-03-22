@@ -56,6 +56,15 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c] = fit_Gaussian_model_d
 	p3_a         = abs(Estimates(5));
 	p3_b         = locations(3);
 	p3_c         = abs(Estimates(6));
+
+	% minimum width of peaks.
+	if (p1_c < 2);   p1_c = 2;     end;
+	if (p2_c < 2);   p2_c = 2;     end;
+	if (p3_c < 2);   p3_c = 2;     end;
+
+	% homozygous peaks should be thinner than heterozygous peaks.
+	if (p3_c > p2_c); p3_c = p2_c; end;
+	if (p1_c > p2_c); p1_c = p2_c; end;
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
@@ -68,12 +77,15 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p3_a         = abs(params(5));   % height.
 	p3_b         = locations(3);     % location.
 	p3_c         = abs(params(6));   % width.
-	if (p1_c == 0); p1_c = 0.001; end;
-	if (p2_c == 0); p2_c = 0.001; end;
-	if (p3_c == 0); p3_c = 0.001; end;
-	if (p1_c < 2);   p1_c = 2;   end;
-	if (p2_c < 2);   p2_c = 2;   end;
-	if (p3_c < 2);   p3_c = 2;   end;
+
+	% minimum width of peaks.
+	if (p1_c < 2);   p1_c = 2;     end;
+	if (p2_c < 2);   p2_c = 2;     end;
+	if (p3_c < 2);   p3_c = 2;     end;
+
+	% homozygous peaks should be thinner than heterozygous peaks.
+	if (p3_c > p2_c); p3_c = p2_c; end;
+	if (p1_c > p2_c); p1_c = p2_c; end;
 
 	p1_fit = p1_a*exp(-0.5*((time-p1_b)./p1_c).^2);
 	p2_fit = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);

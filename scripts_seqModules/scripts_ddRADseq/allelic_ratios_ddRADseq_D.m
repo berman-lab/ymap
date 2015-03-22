@@ -12,165 +12,218 @@ if (useHapmap)
 %
 % Only run when compared vs. a hapmap.
 %
-%%%% chr_SNPdata{chr,1}(i) = phased SNP ratio data.
-%%%% chr_SNPdata{chr,2}(i) = unphased SNP ratio data.
-%%%% chr_SNPdata{chr,3}(i) = phased SNP position data.
-%%%% chr_SNPdata{chr,4}(i) = unphased SNP position data.
+%%%% chr_SNPdata{chr,1}{pos} = phased SNP ratio data.
+%%%% chr_SNPdata{chr,2}{pos} = unphased SNP ratio data.
+%%%% chr_SNPdata{chr,3}{pos} = phased SNP position data.
+%%%% chr_SNPdata{chr,4}{pos} = unphased SNP position data.
+%%%% chr_SNPdata{chr,5}{pos} = flipper value for phased SNP.
+%%%% chr_SNPdata{chr,6}{pos} = flipper value for unphased SNP.
 	% Dataset was compared to a hapmap, so draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
-
-	%% ===============================================================================================
-	% Setup for main figure generation.
-	%-------------------------------------------------------------------------------------------------
-	fig = figure(1);
-	set(gcf, 'Position', [0 70 1024 600]);
-	largestChr = find(chr_width == max(chr_width));
-
-
-	%% ===============================================================================================
-	% Setup for linear-view figure generation.
-	%-------------------------------------------------------------------------------------------------
-	if (Linear_display == true)
-		Linear_fig = figure(2);
-		Linear_genome_size   = sum(chr_size);
-		Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-		Linear_left_start    = 0.02;               % left margin (also right margin).
-		Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-		Linear_height        = 0.6;
-		Linear_base          = 0.1;
-		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
-		maxY                 = 1; % ploidyBase*2;
-		Linear_left          = Linear_left_start;
-		axisLabelPosition_horiz = 0.01125;
-	end;
-	axisLabelPosition_vert = 0.01125;
 
 
 	%% ===============================================================================================
 	% Define colors for figure generation.
 	%-------------------------------------------------------------------------------------------------
 	% haploid colors.
-	color_1of1      = hom_color;
+	color_unphased_1of1      = hom_color;
 	% diploid colors.
-	color_2of2      = hom_color;
-	color_1of2      = het_color;
+	color_unphased_2of2      = hom_color;
+	color_unphased_1of2      = het_color;
 	% triploid colors.
-	color_3of3      = hom_color;
-	color_2of3      = oddHet_color;
+	color_unphased_3of3      = hom_color;
+	color_unphased_2of3      = oddHet_color;
 	% tetraploid colors.
-	color_4of4      = hom_color;
-	color_3of4      = oddHet_color;
-	color_2of4      = het_color;
+	color_unphased_4of4      = hom_color;
+	color_unphased_3of4      = oddHet_color;
+	color_unphased_2of4      = het_color;
 	% pentaploid colors.
-	color_5of5      = hom_color;
-	color_4of5      = oddHet_color;
-	color_3of5      = oddHet_color;
+	color_unphased_5of5      = hom_color;
+	color_unphased_4of5      = oddHet_color;
+	color_unphased_3of5      = oddHet_color;
 	% hexaploid colors.
-	color_6of6      = hom_color;
-	color_5of6      = oddHet_color;
-	color_4of6      = oddHet_color;
-	color_3of6      = het_color;
+	color_unphased_6of6      = hom_color;
+	color_unphased_5of6      = oddHet_color;
+	color_unphased_4of6      = oddHet_color;
+	color_unphased_3of6      = het_color;
 	% heptaploid colors.
-	color_7of7      = hom_color;
-	color_6of7      = oddHet_color;
-	color_5of7      = oddHet_color;
-	color_4of7      = oddHet_color;
+	color_unphased_7of7      = hom_color;
+	color_unphased_6of7      = oddHet_color;
+	color_unphased_5of7      = oddHet_color;
+	color_unphased_4of7      = oddHet_color;
 	% octaploid colors.
-	color_8of8      = hom_color;
-	color_7of8      = oddHet_color;
-	color_6of8      = oddHet_color;
-	color_5of8      = oddHet_color;
-	color_4of8      = het_color;
+	color_unphased_8of8      = hom_color;
+	color_unphased_7of8      = oddHet_color;
+	color_unphased_6of8      = oddHet_color;
+	color_unphased_5of8      = oddHet_color;
+	color_unphased_4of8      = het_color;
 	% nonaploid colors.
-	color_9of9      = hom_color;
-	color_8of9      = oddHet_color;
-	color_7of9      = oddHet_color;
-	color_6of9      = oddHet_color;
-	color_5of9      = oddHet_color;
+	color_unphased_9of9      = hom_color;
+	color_unphased_8of9      = oddHet_color;
+	color_unphased_7of9      = oddHet_color;
+	color_unphased_6of9      = oddHet_color;
+	color_unphased_5of9      = oddHet_color;
+
+
+	%% =========================================================================================
+        % Calculate allelic fraction cutoffs for each chromosome and chromosome segment.
+        %-------------------------------------------------------------------------------------------
+        calculate_allelic_ratio_cutoffs;
 
 
 	%%================================================================================================
 	% Process SNP/hapmap data to determine colors for presentation.
 	%-------------------------------------------------------------------------------------------------
-	%%%% chr_SNPdata{chr,1}(i) = phased SNP ratio data.
-	%%%% chr_SNPdata{chr,2}(i) = unphased SNP ratio data.
-	%%%% chr_SNPdata{chr,3}(i) = phased SNP position data.
-	%%%% chr_SNPdata{chr,4}(i) = unphased SNP position data.
+	%%%% chr_SNPdata{chr,1}{pos} = phased SNP ratio data.
+	%%%% chr_SNPdata{chr,2}{pos} = unphased SNP ratio data.
+	%%%% chr_SNPdata{chr,3}{pos} = phased SNP position data.
+	%%%% chr_SNPdata{chr,4}{pos} = unphased SNP position data.
+	%%%% chr_SNPdata{chr,5}{pos} = flipper value for phased SNP.
+	%%%% chr_SNPdata{chr,6}{pos} = flipper value for unphased SNP.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
 				%
 				% Determining colors for each SNP coordinate.
 				%
-				for i = 1:length(C_chr_count{chr})
-					coordinate                      = C_chr_SNP_data_positions{chr}(i);
+				for SNP = 1:length(C_chr_count{chr})
+					coordinate                      = C_chr_SNP_data_positions{chr}(SNP);
 					pos                             = ceil(coordinate/new_bases_per_bin);
 					localCopyEstimate               = round(CNVplot2{chr}(pos)*ploidy*ploidyAdjust);
-					baseCall                        = C_chr_baseCall{        chr}{i};
-					homologA                        = C_chr_SNP_homologA{    chr}{i};
-					homologB                        = C_chr_SNP_homologB{    chr}{i};
-					flipper                         = C_chr_SNP_flipHomologs{chr}(i);
+					baseCall                        = C_chr_baseCall{        chr}{SNP};
+					homologA                        = C_chr_SNP_homologA{    chr}{SNP};
+					homologB                        = C_chr_SNP_homologB{    chr}{SNP};
+					flipper                         = C_chr_SNP_flipHomologs{chr}(SNP);
+					allelic_ratio                   = C_chr_SNP_data_ratios{ chr}(SNP);
+					% Allelic ratio here is the ratio of the majority read call to all reads.
+					% The consequence of this is that it will always be on the range [0.5 .. 1.0].
 					if (flipper == 10)                         % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
 						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
-						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} C_chr_SNP_data_ratios{chr}(i) 1-C_chr_SNP_data_ratios{chr}(i)];
-						chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate                    coordinate                     ];
+						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} allelic_ratio 1-allelic_ratio];
+						chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate    coordinate     ];
+						chr_SNPdata{chr,6}{pos} = [chr_SNPdata{chr,6}{pos} flipper       flipper        ];
 					elseif (flipper == 1)
 						temp                    = homologA;
 						homologA                = homologB;
 						homologB                = temp;
-						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} 1-C_chr_SNP_data_ratios{chr}(i)];
-						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate                     ];
+						if (baseCall == homologA)
+							allelic_ratio = 1-allelic_ratio;
+						end;
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
+						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
 					else % (flipper == 0)
-						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} C_chr_SNP_data_ratios{chr}(i)];
-						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate                   ];
+						if (baseCall == homologA)
+							allelic_ratio = 1-allelic_ratio;
+						end;
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
+						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
 					end;
 
-					allelicFraction                 = C_chr_SNP_data_ratios{chr}(i);
-					if (localCopyEstimate <= 0);                colorList = colorNoData;
-					elseif (localCopyEstimate == 1);            colorList = color_1of1;
-					elseif (localCopyEstimate == 2)
-						if (allelicFraction > 3/4);         colorList = color_2of2;
-						else;                               colorList = color_1of2;
+					% identify the segment containing the SNP.
+					segmentID                       = 0;
+					for segment = 1:(length(chrCopyNum{chr}))
+						segment_start           = chr_breaks{chr}(segment  )*chr_size(chr);
+						segment_end             = chr_breaks{chr}(segment+1)*chr_size(chr);
+						if (coordinate > segment_start) && (coordinate <= segment_end)
+							segmentID       = segment;
 						end;
-					elseif (localCopyEstimate == 3)
-						if (allelicFraction > 5/6);         colorList = color_3of3;
-						else;                               colorList = color_2of3;
+					end;
+
+					% Load cutoffs between Gaussian fits performed earlier.
+					segment_copyNum                 = round(chrCopyNum{              chr}(segmentID));
+					actual_cutoffs                  = chrSegment_actual_cutoffs{     chr}{segmentID};
+					mostLikelyGaussians             = chrSegment_mostLikelyGaussians{chr}{segmentID};
+					SNPratio_int                    = (allelic_ratio)*199+1;
+
+					% Identify the allelic ratio region containing the SNP.
+					cutoffs                         = [1 actual_cutoffs 200];
+					ratioRegionID                   = 0;
+					for GaussianRegionID = 1:length(mostLikelyGaussians)
+						cutoff_start            = cutoffs(GaussianRegionID  );
+						cutoff_end              = cutoffs(GaussianRegionID+1);
+						if (GaussianRegionID == 1)
+							if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
+								foundGaussianRegion   = mostLikelyGaussians(GaussianRegionID);
+							end;
+						else
+							if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
+								foundGaussianRegion   = mostLikelyGaussians(GaussianRegionID);
+							end;
 						end;
-					elseif (localCopyEstimate == 4)
-						if (allelicFraction > 7/8);         colorList = color_4of4;
-						elseif (allelicFraction > 5/8);     colorList = color_3of4;
-						else;                               colorList = color_2of4;
+					end;
+
+					allelicFraction                = C_chr_SNP_data_ratios{chr}(SNP);
+					if (segment_copyNum <= 0);                colorList = colorNoData;
+					elseif (segment_copyNum == 1);            colorList = color_unphased_1of1;
+					elseif (segment_copyNum == 2)
+						if (foundGaussianRegion == 3);      colorList = unphased_color_2of2;
+						elseif (foundGaussianRegion == 2);  colorList = unphased_color_1of2;
+						else                                colorList = unphased_color_2of2;
 						end;
-					elseif (localCopyEstimate == 5)
-						if (allelicFraction > 9/10);        colorList = color_5of5;
-						elseif (allelicFraction > 7/10);    colorList = color_4of5;
-						else;                               colorList = color_3of5;
+					elseif (segment_copyNum == 3)
+						if (ratioRegionID == 4);            colorList = unphased_color_3of3;
+						elseif (ratioRegionID == 3);        colorList = unphased_color_2of3;
+						elseif (ratioRegionID == 2);        colorList = unphased_color_2of3;
+						else                                colorList = unphased_color_3of3;
 						end;
-					elseif (localCopyEstimate == 6)
-						if (allelicFraction > 11/12);       colorList = color_6of6;
-						elseif (allelicFraction > 9/12);    colorList = color_5of6;
-						elseif (allelicFraction > 7/12);    colorList = color_4of6;
-						else;                               colorList = color_3of6;
+					elseif (segment_copyNum == 4)
+						if (ratioRegionID == 5);            colorList = unphased_color_4of4;
+						elseif (ratioRegionID == 4);        colorList = unphased_color_3of4;
+						elseif (ratioRegionID == 3);        colorList = unphased_color_2of4;
+						elseif (ratioRegionID == 2);        colorList = unphased_color_3of4;
+						else                                colorList = unphased_color_4of4;
 						end;
-					elseif (localCopyEstimate == 7)
-						if (allelicFraction > 13/14);       colorList = color_7of7;
-						elseif (allelicFraction > 11/14);   colorList = color_6of7;
-						elseif (allelicFraction > 9/14);    colorList = color_5of7;
-						else;                               colorList = color_4of7;
+					elseif (segment_copyNum == 5)
+						if (ratioRegionID == 6);            colorList = unphased_color_5of5;
+						elseif (ratioRegionID == 5);        colorList = unphased_color_4of5;
+						elseif (ratioRegionID == 4);        colorList = unphased_color_3of5;
+						elseif (ratioRegionID == 3);        colorList = unphased_color_3of5;
+						elseif (ratioRegionID == 2);        colorList = unphased_color_4of5;
+						else                                colorList = unphased_color_5of5;
 						end;
-					elseif (localCopyEstimate == 8)
-						if (allelicFraction > 15/16);       colorList = color_8of8;
-						elseif (allelicFraction > 13/16);   colorList = color_7of8;
-						elseif (allelicFraction > 11/16);   colorList = color_6of8;
-						elseif (allelicFraction > 9/16);    colorList = color_5of8;
-						else;                               colorList = color_4of8;
+					elseif (segment_copyNum == 6)
+						if (ratioRegionID == 7);            colorList = unphased_color_6of6;
+						elseif (ratioRegionID == 6);        colorList = unphased_color_5of6;
+						elseif (ratioRegionID == 5);        colorList = unphased_color_4of6;
+						elseif (ratioRegionID == 4);        colorList = unphased_color_3of6;
+						elseif (ratioRegionID == 3);        colorList = unphased_color_4of6;
+						elseif (ratioRegionID == 2);        colorList = unphased_color_5of6;
+						else                                colorList = unphased_color_6of6;
 						end;
-					elseif (localCopyEstimate >= 9)
-						if (allelicFraction > 17/18);       colorList = color_9of9;
-						elseif (allelicFraction > 15/18);   colorList = color_8of9;
-						elseif (allelicFraction > 13/18);   colorList = color_7of9;
-						elseif (allelicFraction > 11/18);   colorList = color_6of9;
-						else;                               colorList = color_5of9;
+					elseif (segment_copyNum == 7)
+						if (ratioRegionID == 8);            colorList = unphased_color_7of7;
+						elseif (ratioRegionID == 7);        colorList = unphased_color_6of7;
+						elseif (ratioRegionID == 6);        colorList = unphased_color_5of7;
+						elseif (ratioRegionID == 5);        colorList = unphased_color_4of7;
+						elseif (ratioRegionID == 3);        colorList = unphased_color_4of7;
+						elseif (ratioRegionID == 3);        colorList = unphased_color_5of7;
+						elseif (ratioRegionID == 2);        colorList = unphased_color_6of7;
+						else                                colorList = unphased_color_7of7;
+						end;
+					elseif (segment_copyNum == 8)
+						if (ratioRegionID == 9);            colorList = unphased_color_8of8;
+						elseif (ratioRegionID == 8);        colorList = unphased_color_7of8;
+						elseif (ratioRegionID == 7);        colorList = unphased_color_6of8;
+						elseif (ratioRegionID == 6);        colorList = unphased_color_5of8;
+						elseif (ratioRegionID == 5);        colorList = unphased_color_4of8;
+						elseif (ratioRegionID == 4);        colorList = unphased_color_5of8;
+						elseif (ratioRegionID == 3);        colorList = unphased_color_6of8;
+						elseif (ratioRegionID == 2);        colorList = unphased_color_7of8;
+						else                                colorList = unphased_color_8of8;
+						end;
+					elseif (segment_copyNum >= 9)
+						if (ratioRegionID == 10);           colorList = unphased_color_9of9;
+						elseif (ratioRegionID == 9);        colorList = unphased_color_8of9;
+						elseif (ratioRegionID == 8);        colorList = unphased_color_7of9;
+						elseif (ratioRegionID == 7);        colorList = unphased_color_6of9;
+						elseif (ratioRegionID == 6);        colorList = unphased_color_5of9;
+						elseif (ratioRegionID == 5);        colorList = unphased_color_5of9;
+						elseif (ratioRegionID == 4);        colorList = unphased_color_6of9;
+						elseif (ratioRegionID == 3);        colorList = unphased_color_7of9;
+						elseif (ratioRegionID == 2);        colorList = unphased_color_8of9;
+						else                                colorList = unphased_color_9of9;
 						end;
 					end;
 
@@ -202,13 +255,40 @@ if (useHapmap)
 	save([projectDir 'SNP_' SNP_verString '.reduced_RedGreen.mat'],'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsP');
 
 
+	%% ===============================================================================================
+	% Setup for main figure generation.
+	%-------------------------------------------------------------------------------------------------
+	Main_fig = figure();
+	set(gcf, 'Position', [0 70 1024 600]);
+	largestChr = find(chr_width == max(chr_width));
+
+
+	%% ===============================================================================================
+	% Setup for linear-view figure generation.
+	%-------------------------------------------------------------------------------------------------
+	if (Linear_display == true)
+		Linear_fig = figure();
+		Linear_genome_size   = sum(chr_size);
+		Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
+		Linear_left_start    = 0.02;               % left margin (also right margin).
+		Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
+		Linear_height        = 0.6;
+		Linear_base          = 0.1;
+		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
+		maxY                 = 1; % ploidyBase*2;
+		Linear_left          = Linear_left_start;
+		axisLabelPosition_horiz = 0.01125;
+	end;
+	axisLabelPosition_vert = 0.01125;
+
+
 	%%================================================================================================
 	% Make figures
 	%-------------------------------------------------------------------------------------------------
 	first_chr = true;
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			figure(fig);
+			figure(Main_fig);
 
 			% make standard chr cartoons.
 			left   = chr_posX(chr);
@@ -436,17 +516,17 @@ if (useHapmap)
 				hold off;
 
 				% shift back to main figure generation.
-				figure(fig);
+				figure(Main_fig);
 				first_chr = false;
 			end;
 		end;
 	end;
 
 	%% Save figures.
-	set(fig,'PaperPosition',[0 0 8 6]*2);
-	saveas(fig,        [projectDir 'fig.allelic_ratio-map.RedGreen.c1.eps'], 'epsc');
-	saveas(fig,        [projectDir 'fig.allelic_ratio-map.RedGreen.c1.png'], 'png');
-	delete(fig);
+	set(Main_fig,'PaperPosition',[0 0 8 6]*2);
+	saveas(Main_fig,   [projectDir 'fig.allelic_ratio-map.RedGreen.c1.eps'], 'epsc');
+	saveas(Main_fig,   [projectDir 'fig.allelic_ratio-map.RedGreen.c1.png'], 'png');
+	delete(Main_fig);
 
 	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
 	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.RedGreen.c2.eps'], 'epsc');

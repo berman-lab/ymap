@@ -166,16 +166,6 @@ if (ploidyBase > 4);   ploidyBase = 4;   end;
 if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
-% basic plot parameters not defined per genome.
-TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-bases_per_bin    = max(chr_size)/700;
-bases_per_SNPbin = bases_per_bin*10;
-maxY             = ploidyBase*2;
-cen_tel_Xindent  = 5;
-cen_tel_Yindent  = maxY/5;
-
-fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
-
 
 %% =========================================================================================
 % Load CGH data after correction for GC and chr-end biases.
@@ -183,6 +173,16 @@ fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapma
 load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use)
 largestChr = find(chr_width == max(chr_width));
+
+
+% basic plot parameters not defined per genome.
+TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
+bases_per_bin    = max(chr_size)/700;
+bases_per_SNPbin = bases_per_bin*10;
+maxY             = ploidyBase*2;
+cen_tel_Xindent  = 5;
+cen_tel_Yindent  = maxY/5;
+fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
 
 
 %%================================================================================================
@@ -292,111 +292,34 @@ for chr = 1:num_chrs
 end;
 
 
+if (useHapmap)
+%
+% Only run when compared vs. a hapmap.
+%
+        load([projectDir 'SNP_' SNP_verString '.all3.mat']);
+        % child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs'
+        %
+        % C_chr_SNP_data_positions = coordinate of SNP.
+        % C_chr_SNP_data_ratios    = allelic ratio of SNP.
+        % C_chr_count              = number of reads at SNP coordinate.
+        % C_chr_baseCall           = majority basecall of SNP.
+        % C_chr_SNP_homologA       = hapmap homolog a basecall.
+        % C_chr_SNP_homologB       = hapmap homolog b basecall.
+        % C_chr_SNP_flipHomologs   = does hapmap entry need flipped?   0 = 'correct phase, no', 1 = 'incorrect phase, yes', 10 = 'no phasing info'.
+else
+%
+% Run when compared vs. a parent dataset or vs. itself.
+%
+        load([projectDir 'SNP_' SNP_verString '.all1.mat']);
+        % child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
+        % parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'
+end;
+
+
 %% =========================================================================================
-% Determine allelic ratio cutoffs between peaks for each datasets:chromosome:segment.
+% Calculate allelic fraction cutoffs.
 %-------------------------------------------------------------------------------------------
-for chr = num_chrs
-	if (chr_in_use(chr) == 1)
-		for segment = 1:length(chrCopyNum{chr})
-			chrSegment_peaks{chr,segment}               = [];
-			chrSegment_mostLikelyGaussians{chr,segment} = [];
-			chrSegment_actual_cutoffs{chr,segment}      = [];
-			chrSegment_smoothed{chr,segment}            = [];
-		end;
-	end;
-end;
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		chr_length = chr_size(chr);
-		for segment = 1:length(chrCopyNum{chr})
-			histAll_a = [];
-			histAll_b = [];
-			histAll2  = [];
-			% Look through all SNP data in every chr_bin, to determine if any are within the segment boundries.
-			% Speed up by only checking possible chr_bins has not been implmented.
-
-			fprintf( '^^^\n');
-			fprintf(['^^^ chrID             = ' num2str(chr)                                   '\n']);
-			fprintf(['^^^ segmentID         = ' num2str(segment)                               '\n']);
-			fprintf(['^^^     segment start = ' num2str(chr_breaks{chr}(segment  )*chr_length) '\n']);
-			fprintf(['^^^     segment end   = ' num2str(chr_breaks{chr}(segment+1)*chr_length) '\n']);
-
-			%% Construct and smooth a histogram of alleleic fraction data in the segment of interest.
-			% phased data is stored into arrays 'histAll_a' and 'histAll_b', since proper phasing is known.
-			% unphased data is stored inverted into the second array, since proper phasing is not known.
-			for chr_bin = 1:length(CNVplot2{chr})
-				%   1 : phased SNP ratio data.
-				%   2 : unphased SNP ratio data.
-				%   3 : phased SNP position data.
-				%   4 : unphased SNP position data.
-				ratioData_phased        = chr_SNPdata{chr,1}{chr_bin};
-				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin};
-				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin};
-				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin};
-				if (length(ratioData_phased) > 0)
-					for i = 1:length(ratioData_phased)
-						if ((coordinateData_phased(i) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(i) <= chr_breaks{chr}(segment+1)*chr_length))
-							% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
-							histAll_a = [histAll_a ratioData_phased(i)];
-				%			histAll_b = [histAll_b ratioData_phased(i)];
-						end;
-					end;
-				end;
-				if (length(ratioData_unphased) > 0)
-					for i = 1:length(ratioData_unphased)
-						if ((coordinateData_unphased(i) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_unphased(i) <= chr_breaks{chr}(segment+1)*chr_length))
-							% Ratio data is unphased, so it is added evenly in both orientations.
-							histAll_a = [histAll_a ratioData_unphased(i)];
-							histAll_b = [histAll_b 1-ratioData_unphased(i)];
-						end;
-					end;
-				end;
-			end;
-			% make a histogram of SNP allelic fractions in segment, then smooth for display.
-			histAll                    = [histAll_a histAll_b];
-			histAll(histAll == -1)     = [];
-		%	histAll(length(histAll)+1) = 0;
-		%	histAll(length(histAll)+1) = 1;
-			% Invert histogram values;
-			histAll                    = 1-histAll;
-			% generate the histogram.
-			data_hist                  = hist(histAll,200);
-			% log-scale the histogram.
-			data_hist                  = log(data_hist+1);
-			data_hist                  = log(data_hist+1);
-			% smooth the histogram.
-			smoothed                   = smooth_gaussian(data_hist,10,30);
-			% make a smoothed version of just the endpoints used to ensure histogram bounds.
-		%	histAll2(1)                = 0;
-		%	histAll2(2)                = 1;
-		%	smoothed2                  = smooth_gaussian(hist(histAll2,200),3,20);
-			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-		%	smoothed                   = (smoothed-smoothed2);
-			if (max(smoothed) > 0)
-				smoothed           = smoothed/max(smoothed);
-			end;
-
-			%% Calculate Gaussian fitting details for segment.
-			segment_copyNum            = round(chrCopyNum{chr}(segment));  % copy number estimate of this segment.
-			segment_chrBreaks          = chr_breaks{chr}(segment);         % break points of this segment.
-			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
-
-			% Define cutoffs between Gaussian fits.
-			saveName = ['allelic_ratios.chr_' num2str(chr) '.segment_' num2str(segment) ];
-			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, true);
-
-			fprintf(['^^^     copyNum             = ' num2str(segment_copyNum)     '\n']);
-			fprintf(['^^^     peaks               = ' num2str(peaks)               '\n']);
-			fprintf(['^^^     mostLikelyGaussians = ' num2str(mostLikelyGaussians) '\n']);
-			fprintf(['^^^     actual_cutoffs      = ' num2str(actual_cutoffs)      '\n']);
-
-			chrSegment_peaks{chr,segment}               = peaks;
-			chrSegment_mostLikelyGaussians{chr,segment} = mostLikelyGaussians;
-			chrSegment_actual_cutoffs{chr,segment}      = actual_cutoffs;
-			chrSegment_smoothed{chr,segment}            = smoothed;
-		end;
-	end;
-end;
+calculate_allelic_ratio_cutoffs;
 
 
 %% ====================================================================
@@ -742,205 +665,12 @@ for chr = 1:num_chrs
 		end;
 		% standard : end of chr copy number at right of the main chr cartons.
 
-		% standard : places allelic fraction histogram to the left of the main chr cartoons.
-		if (AnglePlot == true)
-			width      = 0.075;
-			height     = chr_height(chr);
-			bottom     = chr_posY(chr);
-			chr_length = chr_size(chr);
-			for segment = 1:length(chrCopyNum{chr})
-				fprintf(['^^^     segment#            = ' num2str(segment) ':' num2str(length(chrCopyNum{chr})) '\n']);
 
-				if (segment == 1) % generate sublot for each segment.
-					subplot('Position',[0.03 bottom width (height/length(chrCopyNum{chr}))]);
-				else
-					subplot('Position',[0.03 (bottom+height/length(chrCopyNum{chr})*(segment-1)) width (height/length(chrCopyNum{chr}))]);
-				end;
-
-				peaks               = chrSegment_peaks{chr,segment};
-				mostLikelyGaussians = chrSegment_mostLikelyGaussians{chr,segment};
-				actual_cutoffs      = chrSegment_actual_cutoffs{chr,segment};
-				smoothed            = chrSegment_smoothed{chr,segment};
-
-				hold on;
-				segment_copyNum           = round(chrCopyNum{chr}(segment));  % copy number estimate of this segment.
-				segment_chrBreaks         = chr_breaks{chr}(segment);         % break points of this segment.
-				segment_smoothedHistogram = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
-
-				fprintf(['^^^     copyNum             = ' num2str(segment_copyNum)     '\n']);
-				fprintf(['^^^     peaks               = ' num2str(peaks)               '\n']);
-				fprintf(['^^^     mostLikelyGaussians = ' num2str(mostLikelyGaussians) '\n']);
-				fprintf(['^^^     actual_cutoffs      = ' num2str(actual_cutoffs)      '\n']);
-
-				copynum = round(chrCopyNum{chr}(segment));
-				region_ = 0;
-				for region = mostLikelyGaussians
-					region_ = region_+1;
-					% Define color of the histogram region.
-					if (FillColors == true)
-						fprintf(['region_ #                = ' num2str(region_) '\n']);
-						if (show_uncalibrated == true)
-							color = colorAB;
-						else
-							fprintf(['    copyNum              = ' num2str(copynum) '\n']);
-							    if (copynum == 0) %deletion or error
-							elseif (copynum == 1) %monosomy
-								if (region == 1); color = colorA;
-								else              color = colorB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',[0 200]);
-									set(gca,'XTickLabel',{'a','b'});
-								end;
-							elseif (copynum == 2) %disomy
-								if (region == 1);     color = colorAA;
-								elseif (region == 2); color = colorAB;
-								else                  color = colorBB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',0:100:200);
-									set(gca,'XTickLabel',{'a','ab','b'});
-								end;
-							elseif (copynum == 3) %trisomy
-								if (region == 1);     color = colorAAA;
-								elseif (region == 2); color = colorAAB;
-								elseif (region == 3); color = colorABB;
-								else                  color = colorBBB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',[0 66.667 133.333 200]);
-									set(gca,'XTickLabel',{'a','aab','abb','b'});
-								end;
-							elseif (copynum == 4) %tetrasomy
-								if (region == 1);     color = colorAAAA;
-								elseif (region == 2); color = colorAAAB;
-								elseif (region == 3); color = colorAABB;
-								elseif (region == 4); color = colorABBB;
-								else                  color = colorBBBB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',0:50:200);
-									set(gca,'XTickLabel',{'a', '3:1', '2:2', '1:3' 'b'});
-								end;
-							elseif (copynum == 5) %pentasomy
-								if (region == 1);     color = colorAAAAA;
-								elseif (region == 2); color = colorAAAAB;
-								elseif (region == 3); color = colorAAABB;
-								elseif (region == 4); color = colorAABBB;
-								elseif (region == 5); color = colorABBBB;
-								else                  color = colorBBBBB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',0:40:200);
-									set(gca,'XTickLabel',{'a', '4:!', '3:2', '2:3', '1:4' 'b'});
-								end;
-							elseif (copynum == 6) %hexasomy
-								if (region == 1);     color = colorAAAAAA;
-								elseif (region == 2); color = colorAAAAAB;
-								elseif (region == 3); color = colorAAAABB;
-								elseif (region == 4); color = colorAAABBB;
-								elseif (region == 5); color = colorAABBBB;
-								elseif (region == 6); color = colorABBBBB;
-								else                  color = colorBBBBBB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',0:33.333:200);
-									set(gca,'XTickLabel',{'a', '5:1', '4:2', '3:3', '2:4', '1:5' 'b'});
-								end;
-							elseif (copynum == 7) %heptasomy
-								if (region == 1);     color = colorAAAAAAA;
-								elseif (region == 2); color = colorAAAAAAB;
-								elseif (region == 3); color = colorAAAAABB;
-								elseif (region == 4); color = colorAAAABBB;
-								elseif (region == 5); color = colorAAABBBB;
-								elseif (region == 6); color = colorAABBBBB;
-								elseif (region == 7); color = colorABBBBBB;
-								else                  color = colorBBBBBBB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',0:28.571:200);
-									set(gca,'XTickLabel',{'a', '', '5:2', '', '', '2:5', '' 'b'});
-								end;
-							elseif (copynum == 8)  %octasomy
-								if (region == 1);     color = colorAAAAAAAA;
-								elseif (region == 2); color = colorAAAAAAAB;
-								elseif (region == 3); color = colorAAAAAABB;
-								elseif (region == 4); color = colorAAAAABBB;
-								elseif (region == 5); color = colorAAAABBBB;
-								elseif (region == 6); color = colorAAABBBBB;
-								elseif (region == 7); color = colorAABBBBBB;
-								elseif (region == 8); color = colorABBBBBBB;
-								else                  color = colorBBBBBBBB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',0:22.222:200);
-									set(gca,'XTickLabel',{'a', '', '6:2', '', '4:4', '', '2:6', '' 'b'});
-								end;
-							else % (copynum >= 9) %nonasomy
-								if (region == 1);     color = colorAAAAAAAAA;
-								elseif (region == 2); color = colorAAAAAAAAB;
-								elseif (region == 3); color = colorAAAAAAABB;
-								elseif (region == 4); color = colorAAAAAABBB;
-								elseif (region == 5); color = colorAAAAABBBB;
-								elseif (region == 6); color = colorAAAABBBBB;
-								elseif (region == 7); color = colorAAABBBBBB;
-								elseif (region == 8); color = colorAABBBBBBB;
-								elseif (region == 9); color = colorABBBBBBBB;
-								else                  color = colorBBBBBBBBB;
-								end;
-								if (segment == 1)
-									set(gca,'XTick',0:20:200);
-									set(gca,'XTickLabel',{'a', '', '', '6:3', '', '', '3:6', '', '', 'b'});
-								end;
-							end;
-						end;
-					else
-						color = colorAB;
-					end;
-
-					fprintf(['    mostLikelyGaussian   = ' num2str(region) '\n']);
-					if (length(mostLikelyGaussians) <= 1)
-						% draw entire smoothed histogram.
-						area(1:200,smoothed(1:200),'FaceColor',color,'EdgeColor',color);
-					else
-						% draw segment of smoothed histogram corresponding to region.
-						if (region_ == 1) % first region in list.
-							coord1 = round(200-actual_cutoffs(region_))+1;
-							area(coord1:200, smoothed(coord1:200), 'FaceColor',color,'EdgeColor',color);
-							fprintf(['    angleplotCoordinates = 200:' num2str(coord1) '\n']);
-						elseif (region_ == length(mostLikelyGaussians)) % last region in list.
-							coord2 = round(200-actual_cutoffs(region_-1))+1;
-							area(1:coord2, smoothed(1:coord2), 'FaceColor',color,'EdgeColor',color);
-							fprintf([' angleplotCoordinate = ' num2str(coord2) ':1\n']);
-						else
-							coord3 = round(200-actual_cutoffs(region_  ))+1;
-							coord4 = round(200-actual_cutoffs(region_-1))+1;
-							area(coord3:coord4, smoothed(coord3:coord4), 'FaceColor',color,'EdgeColor',color);
-							fprintf(['    angleplotCoordinates = ' num2str(coord4) ':' num2str(coord3) '\n']);
-						end;
-					end;
-					fprintf(['    color = ' num2str(color) '   (colorA = [' num2str(colorA) ']; colorB = [' num2str(colorB) '])\n']);
-				end;
-
-				colorPeak   = [0.5 0.5 0.5]; % color of lines drawn at peak locations.
-				colorCutoff = [1.0 0.0 0.0]; % color of lines drawn at cutoffs between Gaussian fits.
-				for peak = 1:length(peaks)
-					plot([200-peaks(peak); 200-peaks(peak)],[0; 1],'color',colorPeak);
-				end;
-				for cutoff = 1:length(actual_cutoffs)
-					plot([200-actual_cutoffs(cutoff); 200-actual_cutoffs(cutoff)],[0; 1],'color',colorCutoff);
-				end;
-				set(gca,'FontSize',10);
-				hold off;
-				set(gca,'YTick',[]);
-				if (segment ~= 1)
-					set(gca,'XTick',[]);
-				end;
-				xlim([0,200]);
-				ylim([0,1]);
-			end;
-		end;
-		% standard : end of allelic fraction histogram at the left end of main chr cartoons.
+		%% =========================================================================================
+		% Draw angleplots to left of main chromosome cartoons.
+		%-------------------------------------------------------------------------------------------
+		apply_phasing = true;
+		angle_plot_subfigures;
 
 
 %%%%%%%%%%%%%%% END standard draw section.

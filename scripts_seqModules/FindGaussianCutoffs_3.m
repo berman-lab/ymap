@@ -364,7 +364,7 @@ if (MakeFigure == true)
 	hold off;
 	xlim([1,200]);
 	% save then delete figures.
-	saveas(fig, [workingDir 'hist_chr-' num2str(chromosome) '_seg-' num2str(segment) '.png'], 'png');
+	saveas(fig, [workingDir saveName '.png'], 'png');
 	delete(fig);
 end;
 
