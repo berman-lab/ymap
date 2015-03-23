@@ -215,8 +215,8 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 				end;
 
 				% format = '(number1,number2,...,numberN)'
-                phased_coordinates_string(1)       = [];
-                phased_coordinates_string(end)     = [];
+				phased_coordinates_string(1)           = [];
+				phased_coordinates_string(end)         = [];
 				if (length(phased_coordinates_string) == 0)
 					phased_coordinates             = [];
 				else
@@ -428,11 +428,6 @@ for chr = 1:num_chrs
 		GCdata_all          = [GCdata_all     rawData_chr_X{chr}        ];
 
 		for chr_bin = 1:length(SNPplot{chr,1})
-% darren : attempt at data normalization is failing, introduces major bug due to data compaction.
-% So, data isn't actually returned to main pipeline. This feature should be resolved later for SNP
-% density presentation, after generating figures to illustrate correlation.
-%			chr_SNPdata{chr,1}{chr_bin}  = rawData_chr_Y{chr,1}{chr_bin};
-%			chr_SNPdata{chr,2}{chr_bin}  = rawData_chr_Y{chr,2}{chr_bin};
 			cchr_SNPdata{chr,1}{chr_bin} = normalizedData_chr_Y{chr,1}{chr_bin};
 			cchr_SNPdata{chr,2}{chr_bin} = normalizedData_chr_Y{chr,2}{chr_bin};
 			SNPdata_all_1                = [SNPdata_all_1  length(chr_SNPdata{chr,1}{chr_bin})  ];

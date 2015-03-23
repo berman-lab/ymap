@@ -242,23 +242,27 @@ for line in data:
 	# Process the line from the parent 'SNPdata_parent.txt' line, describing one heterozgyous locus.
 	#--------------------------------------------------------------------------------------------------------------- 
 	# example lines from file:
-	#       chromosome                   coord   allele1   allele2   hapmapEntry1
-	#       Ca21chr1_C_albicans_SC5314   3706    T         C         1
+	# if (runMode == 'LOH'):
+	#	chromosome                   coord   allele1   allele2
+	#	Ca21chr1_C_albicans_SC5314   3706    T         C
+	# if (runMode == 'hapmap'):
+	#       chromosome                   coord   allele1   allele2   phasingData  phasingData
+	#       Ca21chr1_C_albicans_SC5314   3706    T         C         1            11
 	if line[0] != "#":
 		count += 1
 		parentLine    = string.strip(line)
 		parentLine    = parentLine.split('\t')
-		P_chr_name    = parentLine[0]        # chr name of bp.		: Ca21chrR_C_albicans_SC5314
-		P_position    = int(parentLine[1])   # chr position of bp.	: 2286371
-		P_allele1     = parentLine[2]        # allele 1.			: T
-		P_allele2     = parentLine[3]        # allele 2.			: A
+		P_chr_name    = parentLine[0]        # chr name of bp.                  : Ca21chrR_C_albicans_SC5314
+		P_position    = int(parentLine[1])   # chr position of bp.              : 2286371
+		P_allele1     = parentLine[2]        # allele 1.                        : T
+		P_allele2     = parentLine[3]        # allele 2.                        : A
 		phasingData_1 = parentLine[4:]       # list of phasing data points.   remove any non-useful data points (10,11,12).   resulting in, 0s and 1s...  sum phase info = round(sum(list)/len(list))
 		phasingData_2 = [x for x in phasingData_1 if int(x) != 10]   # remove no phase condition '10' = het coordinate not found in dataset.
 		phasingData_3 = [x for x in phasingData_2 if int(x) != 11]   # remove no phase condition '11' = het coordinate not associated with LOH fragment definition.
 		phasingData   = [x for x in phasingData_3 if int(x) != 12]   # remove no phase condition '12' = het coordinate allele not in hapmap.
 		# Determine summary phase call for locus, used to apply counts to proper output columns.
 		if len(phasingData) == 0:
-			# no phasing data available.
+			# no phasing data available, or runMode == 'LOH'
 			phaseCall = 10 # homolog undefined.
 		else:
 			# at least one phasing data point.
@@ -384,34 +388,36 @@ for line in data:
 				C_countG       = childLine_parts[6]   # G reads
 				C_countC       = childLine_parts[7]   # C reads
 				C_counts       = [int(float(C_countA)), int(float(C_countT)), int(float(C_countG)), int(float(C_countC))]
-				# Child locus should be homozygous, or at least unbalanced, so figure out which allele is most common.
-				alleleData     = [(int(float(C_countA)), 'A'), (int(float(C_countT)), 'T'), (int(float(C_countG)), 'G'), (int(float(C_countC)), 'C')]
-				sortedAlleles  = sorted(alleleData, key=lambda alleleDatum: alleleDatum[0]) # sort alleles by copy number.
-
-				C_count1       = [item for item in alleleData if item[1] == P_allele1][0][0]
-				C_count2       = [item for item in alleleData if item[1] == P_allele2][0][0]
-				C_ratio = 1
+				# Generate read count data structure.
+				alleleData     = [(int(float(C_countA)), 'A'), (int(float(C_countT)), 'T'), (int(float(C_countG)), 'G'), (int(float(C_countC)), 'C')];
+				# Sort alleles by read count, largest last.				
+				sortedAlleles  = sorted(alleleData, key=lambda alleleDatum: alleleDatum[0]);
+				C_maxCount     = sortedAlleles[3][0];
+				C_maxAllele    = sortedAlleles[3][1];
 				if sum(C_counts) == 0:
-					C_ratio    = 0.0
-					C_valid    = 0
+					C_ratio                 = 0.0;
+					C_valid                 = 0;
 				else:
-					if phaseCall == 0:
-						C_ratio       = float(C_count1)/float(sum(C_counts))
-						allele_string = P_allele1 + '/' + P_allele2
-					elif phaseCall == 1:
-						C_ratio       = 1-float(C_count1)/float(sum(C_counts))
-						allele_string = P_allele2 + '/' + P_allele1
+					C_ratio                 = float(C_maxCount)/float(sum(C_counts));
+					if phaseCall == 1:
+						temp            = P_allele1;
+						P_allele1       = P_allele2;
+						P_allele2       = temp;
+						if C_maxAllele == P_allele1:
+							C_ratio = 1-C_ratio;
+					elif phaseCall == 0:
+						if C_maxAllele == P_allele1:
+							C_ratio = 1-C_ratio;
 					else:
-						C_ratio       = float(C_count1)/float(sum(C_counts))
-						allele_string = P_allele1 + '/' + P_allele2
-					C_valid    = 1
-				#print '# locus found : '+P_allele1+'/'+P_allele2+' : '+str(C_counts)+' : '+str(C_count1)+'/'+str(C_count2)+'/'+str(sum(C_counts))+' : '+str(C_ratio)
+						C_maxAllele = 'Z';
+					C_valid                 = 1;
+				allele_string                   = C_maxAllele + ':' + P_allele1 + '/' + P_allele2;
 
-			C_chr = 0
+			C_chr = 0;
 			for x in range(0,chrCount):
 				if (chrNums[x] != 0):
 					if chrName[x] == P_chr_name:
-						C_chr = x+1
+						C_chr = x+1;
 
 			#===============================================================================================================
 			# Add allelic ratio data to standard-bin fragment data

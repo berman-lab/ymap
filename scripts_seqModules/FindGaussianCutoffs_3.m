@@ -29,6 +29,7 @@ if (copyNum == 0)
 	x_peak              = [];
 	actual_cutoffs      = [];
 	mostLikelyGaussians = [];
+	fit_curve_tot       = range*0;
 elseif (copyNum == 1)
 	G                   = [];
 	[G{1}.a,G{1}.b,G{1}.c, G{2}.a,G{2}.b,G{2}.c] = ...
@@ -337,22 +338,6 @@ else % if (copyNum == 9+)
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4+fit_curve_5+fit_curve_6+fit_curve_7+fit_curve_8+fit_curve_9+fit_curve_10;
 end;
-
-%	fprintf('List = ');
-%	if (length(list) > 0)
-%		for i = 1:length(list)
-%			fprintf(num2str(list(i)));
-%		end;
-%	end;
-%	fprintf('\n');
-%	fprintf('G    = ');
-%	if (length(G) > 0)
-%		for i = 1:length(G);
-%			fprintf([num2str(G{i}.a) ':' num2str(G{i}.b) ':' num2str(G{i}.c) ' ']);
-%		end;
-%	end;
-%	fprintf('\n');
-%	fprintf(['^^^     Glist = ' num2str(list) '\n']);
 
 if (MakeFigure == true)
 	plot(smoothed_Histogram,'color',[0.50 0.50 1.00],'linestyle','-','linewidth',1);

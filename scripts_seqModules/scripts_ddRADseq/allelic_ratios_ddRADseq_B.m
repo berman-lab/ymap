@@ -1,9 +1,8 @@
 function [] = allelic_ratios_ddRADseq_B(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
-
 workingDir      = [main_dir 'users/' user '/projects/' project '/'];
 
-%%================================================================================================
+%% ================================================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
@@ -281,7 +280,7 @@ save([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 
 
 %%================================================================================================
-% Process SNP/hapmap data to determine colors for presentation.
+% Process SNP/hapmap data to determine colors to be presented for each SNP locus.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
 	%% =========================================================================================
@@ -370,11 +369,11 @@ if (useHapmap)
 						cutoff_end              = cutoffs(GaussianRegionID+1);
 						if (GaussianRegionID == 1)
 							if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
-								foundGaussianRegion   = mostLikelyGaussians(GaussianRegionID);
+								ratioRegionID = mostLikelyGaussians(GaussianRegionID);
 							end;
 						else
 							if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
-								foundGaussianRegion   = mostLikelyGaussians(GaussianRegionID);
+								ratioRegionID = mostLikelyGaussians(GaussianRegionID);
 							end;
 						end;
 					end;
@@ -525,7 +524,8 @@ if (useHapmap)
 							end;
 						end;
 					elseif (segment_copyNum >= 9)
-						% allelic fraction cutoffs: [0.05556 0.16667 0.27778 0.38889 0.50000 0.61111 0.72222 0.83333 0.94444] => [AAAAAAAAA AAAAAAAAB AAAAAAABB AAAAAABBB AAAAABBBB AAAABBBBB AAABBBBBB AABBBBBBB ABBBBBBBB BBBBBBBBB]
+						% allelic fraction cutoffs: [0.05556 0.16667 0.27778 0.38889 0.50000 0.61111 0.72222 0.83333 0.94444] => [AAAAAAAAA AAAAAAAAB AAAAAAABB AAAAAABBB AAAAABBBB AAAABBBBB AAABBBBBB AABBBBBBB
+						%                                                                                                         ABBBBBBBB BBBBBBBBB]
 						if ((baseCall == homologA) || (baseCall == homologB))
 							if (ratioRegionID == 10);           colorList = colorBBBBBBBBB;
 							elseif (ratioRegionID == 9);        colorList = colorABBBBBBBB;
@@ -556,6 +556,9 @@ if (useHapmap)
 					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos) + colorList(3);
 					chr_SNPdata_countC{ chr  }(pos) = chr_SNPdata_countC{ chr  }(pos) + 1;
+
+					% Troubleshooting output.
+					% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
 				end;
 			end;
 		end;
