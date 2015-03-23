@@ -59,6 +59,7 @@ else
 		hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
 		hapmapUser = user;
 	end;
+	parent = '';
 end;
 if (useHapmap == false)
 	parentFile = [main_dir 'users/' user '/projects/' project '/parent.txt'];
