@@ -66,6 +66,264 @@ else
 	color_5of9      = oddHet_color;
 
 
+	%%================================================================================================
+	% Process SNP/hapmap data to determine colors to be presented for each SNP locus.
+	%-------------------------------------------------------------------------------------------------
+
+        %% =========================================================================================
+        % Calculate allelic fraction cutoffs for each segment and populate data structure containing
+        % SNP phasing information.
+        %       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
+        %       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
+        %       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
+        %       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
+        %       chr_SNPdata{chr,5}{chr_bin} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
+        %       chr_SNPdata{chr,6}{chr_bin} = unphased SNP allele strings.
+        %-------------------------------------------------------------------------------------------
+        % Prepare data for "calculate_allelic_ratio_cutoffs.m".
+        temp_holding = chr_SNPdata;
+        calculate_allelic_ratio_cutoffs;
+        chr_SNPdata = temp_holding;
+
+	%% =========================================================================================
+	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
+	%-------------------------------------------------------------------------------------------
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin);
+				%
+				% Determining colors for each SNP coordinate from calculated cutoffs.
+				%
+				localCopyEstimate                       = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
+				allelic_ratios                          = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
+				coordinates                             = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
+				allele_strings                          = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+
+				if (length(allelic_ratios) > 0)
+					for SNP = 1:length(allelic_ratios)
+						% Load phased SNP data from earlier defined structure.
+						allelic_ratio                   = allelic_ratios(SNP);
+						coordinate                      = coordinates(SNP);
+						if (length(allelic_ratios) > 1)
+							allele_string                   = allele_strings{SNP};
+						else
+							allele_string                   = allele_strings;
+						end;
+						baseCall                        = allele_string(1);
+						homologA                        = allele_string(3);
+						homologB                        = allele_string(5);
+
+						% identify the segment containing the SNP.
+						segmentID                       = 0;
+						for segment = 1:(length(chrCopyNum{chr}))
+							segment_start           = chr_breaks{chr}(segment  )*chr_size(chr);
+							segment_end             = chr_breaks{chr}(segment+1)*chr_size(chr);
+							if (coordinate > segment_start) && (coordinate <= segment_end)
+								segmentID       = segment;
+							end;
+						end;
+
+						% Load cutoffs between Gaussian fits performed earlier.
+						segment_copyNum                 = round(chrCopyNum{              chr}(segmentID));
+						actual_cutoffs                  = chrSegment_actual_cutoffs{     chr}{segmentID};
+						mostLikelyGaussians             = chrSegment_mostLikelyGaussians{chr}{segmentID};
+
+						% Calculate allelic ratio on range of [1..200].
+						SNPratio_int                    = (allelic_ratio)*199+1;
+
+						% Identify the allelic ratio region containing the SNP.
+						cutoffs                         = [1 actual_cutoffs 200];
+						ratioRegionID                   = 0;
+						for GaussianRegionID = 1:length(mostLikelyGaussians)
+							cutoff_start            = cutoffs(GaussianRegionID  );
+							cutoff_end              = cutoffs(GaussianRegionID+1);
+							if (GaussianRegionID == 1)
+								if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
+									ratioRegionID = mostLikelyGaussians(GaussianRegionID);
+								end;
+							else
+								if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
+									ratioRegionID = mostLikelyGaussians(GaussianRegionID);
+								end;
+							end;
+						end;
+
+						if (segment_copyNum <= 0);                          colorList = colorNoData;
+						elseif (segment_copyNum == 1)
+							% allelic fraction cutoffs: [0.50000] => [A B]
+							colorList = unphased_color_1of1;
+						elseif (segment_copyNum == 2)
+							%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
+							if (ratioRegionID == 3);            colorList = unphased_color_2of2;
+							elseif (ratioRegionID == 2);        colorList = unphased_color_1of2;
+							else                                colorList = unphased_color_2of2;
+							end;
+						elseif (segment_copyNum == 3)
+							% allelic fraction cutoffs: [0.16667 0.50000 0.83333] => [AAA AAB ABB BBB]
+							if (ratioRegionID == 4);            colorList = unphased_color_3of3;
+							elseif (ratioRegionID == 3);        colorList = unphased_color_2of3;
+							elseif (ratioRegionID == 2);        colorList = unphased_color_2of3;
+							else                                colorList = unphased_color_3of3;
+							end;
+						elseif (segment_copyNum == 4)
+							% allelic fraction cutoffs: [0.12500 0.37500 0.62500 0.87500] => [AAAA AAAB AABB ABBB BBBB]
+							if (ratioRegionID == 5);            colorList = unphased_color_4of4;
+							elseif (ratioRegionID == 4);        colorList = unphased_color_3of4;
+							elseif (ratioRegionID == 3);        colorList = unphased_color_2of4;
+							elseif (ratioRegionID == 2);        colorList = unphased_color_3of4;
+							else                                colorList = unphased_color_4of4;
+							end;
+						elseif (segment_copyNum == 5)
+							% allelic fraction cutoffs: [0.10000 0.30000 0.50000 0.70000 0.90000] => [AAAAA AAAAB AAABB AABBB ABBBB BBBBB]
+							if (ratioRegionID == 6);            colorList = unphased_color_5of5;
+							elseif (ratioRegionID == 5);        colorList = unphased_color_4of5;
+							elseif (ratioRegionID == 4);        colorList = unphased_color_3of5;
+							elseif (ratioRegionID == 3);        colorList = unphased_color_3of5;
+							elseif (ratioRegionID == 2);        colorList = unphased_color_4of5;
+							else                                colorList = unphased_color_5of5;
+							end;
+						elseif (segment_copyNum == 6)
+							% allelic fraction cutoffs: [0.08333 0.25000 0.41667 0.58333 0.75000 0.91667] => [AAAAAA AAAAAB AAAABB AAABBB AABBBB ABBBBB BBBBBB]
+							if (ratioRegionID == 7);            colorList = unphased_color_6of6;
+							elseif (ratioRegionID == 6);        colorList = unphased_color_5of6;
+							elseif (ratioRegionID == 5);        colorList = unphased_color_4of6;
+							elseif (ratioRegionID == 4);        colorList = unphased_color_3of6;
+							elseif (ratioRegionID == 3);        colorList = unphased_color_4of6;
+							elseif (ratioRegionID == 2);        colorList = unphased_color_5of6;
+							else                                colorList = unphased_color_6of6;
+							end;
+						elseif (segment_copyNum == 7)
+							% allelic fraction cutoffs: [0.07143 0.21429 0.35714 0.50000 0.64286 0.78571 0.92857] => [AAAAAAA AAAAAAB AAAAABB AAAABBB AAABBBB AABBBBB ABBBBBB BBBBBBB]
+							if (ratioRegionID == 8);            colorList = unphased_color_7of7;
+							elseif (ratioRegionID == 7);        colorList = unphased_color_6of7;
+							elseif (ratioRegionID == 6);        colorList = unphased_color_5of7;
+							elseif (ratioRegionID == 5);        colorList = unphased_color_4of7;
+							elseif (ratioRegionID == 3);        colorList = unphased_color_4of7;
+							elseif (ratioRegionID == 3);        colorList = unphased_color_5of7;
+							elseif (ratioRegionID == 2);        colorList = unphased_color_6of7;
+							else                                colorList = unphased_color_7of7;
+							end;
+						elseif (segment_copyNum == 8)
+							% allelic fraction cutoffs: [0.06250 0.18750 0.31250 0.43750 0.56250 0.68750 0.81250 0.93750] => [AAAAAAAA AAAAAAAB AAAAAABB AAAAABBB AAAABBBB AAABBBBB AABBBBBB ABBBBBBB BBBBBBBB]
+							if (ratioRegionID == 9);            colorList = unphased_color_8of8;
+							elseif (ratioRegionID == 8);        colorList = unphased_color_7of8;
+							elseif (ratioRegionID == 7);        colorList = unphased_color_6of8;
+							elseif (ratioRegionID == 6);        colorList = unphased_color_5of8;
+							elseif (ratioRegionID == 5);        colorList = unphased_color_4of8;
+							elseif (ratioRegionID == 4);        colorList = unphased_color_5of8;
+							elseif (ratioRegionID == 3);        colorList = unphased_color_6of8;
+							elseif (ratioRegionID == 2);        colorList = unphased_color_7of8;
+							else                                colorList = unphased_color_8of8;
+							end;
+						elseif (segment_copyNum >= 9)
+							% allelic fraction cutoffs: [0.05556 0.16667 0.27778 0.38889 0.50000 0.61111 0.72222 0.83333 0.94444] => [AAAAAAAAA AAAAAAAAB AAAAAAABB AAAAAABBB AAAAABBBB AAAABBBBB AAABBBBBB AABBB$
+							%                                                                                                         ABBBBBBBB BBBBBBBBB]
+							if (ratioRegionID == 10);           colorList = unphased_color_9of9;
+							elseif (ratioRegionID == 9);        colorList = unphased_color_8of9;
+							elseif (ratioRegionID == 8);        colorList = unphased_color_7of9;
+							elseif (ratioRegionID == 7);        colorList = unphased_color_6of9;
+							elseif (ratioRegionID == 6);        colorList = unphased_color_5of9;
+							elseif (ratioRegionID == 5);        colorList = unphased_color_5of9;
+							elseif (ratioRegionID == 4);        colorList = unphased_color_6of9;
+							elseif (ratioRegionID == 3);        colorList = unphased_color_7of9;
+							elseif (ratioRegionID == 2);        colorList = unphased_color_8of9;
+							else                                colorList = unphased_color_9of9;
+							end;
+						end;
+						chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin) + colorList(1);
+						chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
+						chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
+						chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
+
+						% Troubleshooting output.
+						% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
+					end;
+				end;
+
+				%
+				% Average colors of SNPs found in bin.
+				%
+				if (length(allelic_ratios) > 0)
+					if (chr_SNPdata_countC{chr}(chr_bin) > 0)
+						chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
+						chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
+						chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
+					else
+						chr_SNPdata_colorsC{chr,1}(chr_bin) = 1.0;
+						chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
+						chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
+					end;
+				else
+					chr_SNPdata_colorsC{chr,1}(chr_bin) = 1.0;
+					chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
+					chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
+				end;
+			end;
+		end;
+	end;
+
+	% calculate SNP bin values.
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			for chr_bin = 1:length(chr_SNPdata{chr,1})
+				SNPplot{chr,1}{chr_bin} = chr_SNPdata{chr,1}{chr_bin};
+				SNPplot{chr,2}{chr_bin} = chr_SNPdata{chr,2}{chr_bin};
+			end;
+		end;
+	end;
+
+	SNPdata_all = [];
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			for chr_bin = 1:length(SNPplot{chr,1})
+				TOTplot{chr}{chr_bin} = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});   % TOT = phased+nonphased;
+				SNPdata_all           = [SNPdata_all TOTplot{chr}{chr_bin}];
+			end;
+		end;
+	end;
+	medianRawY = median(SNPdata_all);
+
+
+	%% =========================================================================================
+	% Setup for main figure generation.
+	%-------------------------------------------------------------------------------------------
+	% threshold for full color saturation in SNP/LOH figure.
+	% synced to bases_per_bin as below, or defaulted to 50.
+	full_data_threshold = floor(bases_per_bin/100);
+	fig = figure(1);
+	set(gcf, 'Position', [0 70 1024 600]);
+	data_mode = 1;
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			if (data_mode == 1)
+				for chr_bin = 1:length(chr_SNPdata{chr,1})
+					% Regenerate chr plot data if the save file does not exist.
+
+					% the number of heterozygous data points in this bin.
+					SNPs_count{chr}(chr_bin)                                     = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});
+
+					% divide by the threshold for full color saturation in SNP/LOH figure.
+					SNPs_to_fullData_ratio{chr}(chr_bin)                         = SNPs_count{chr}(chr_bin)/full_data_threshold;
+
+					% any bins with more data than the threshold for full color saturation are limited to full saturation.
+					SNPs_to_fullData_ratio{chr}(SNPs_to_fullData_ratio{chr} > 1) = 1;
+
+					phased_plot{chr}(chr_bin)                    = length(chr_SNPdata{chr,1}{chr_bin});             % phased data.
+					phased_plot2{chr}(chr_bin)                   = phased_plot{chr}(chr_bin)/full_data_threshold;   %
+					phased_plot2{chr}(phased_plot2{chr} > 1)     = 1;                                               %
+
+					unphased_plot{chr}(chr_bin)                  = length(chr_SNPdata{chr,2}{chr_bin});             % unphased data.
+					unphased_plot2{chr}(chr_bin)                 = unphased_plot{chr}(chr_bin)/full_data_threshold; %
+					unphased_plot2{chr}(unphased_plot2{chr} > 1) = 1;                                               %
+				end;
+			end;
+		end;
+	end;
+	fprintf('\n');
+	largestChr = find(chr_width == max(chr_width));
+	largestChr = largestChr(1);
+
+
 	%% =========================================================================================
 	% Setup for main figure generation.
 	%-------------------------------------------------------------------------------------------
@@ -114,314 +372,15 @@ else
 			infill = zeros(1,length(unphased_plot2{chr}));
 			colors = [];
 
-			% standard : determines the color of each bin.
-			for chr_bin = 1:length(SNPs_to_fullData_ratio{chr})+1;
-				if (chr_bin-1 < length(SNPs_to_fullData_ratio{chr}))
-					c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
-					if (c_tot_post == 0)
-						c_post = colorNoData;
-						fprintf('.');
-						if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
-					else
-						% Define colorMix using localized copy number estimate to define SNP cutoff thresholds,
-						%     then the ratio of SNP data in each SNP ratio bin.
-						% For testing, consider all loci haploid, so only two ratio bins.
-						ratioData_all       = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
-						coordinate_all      = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
-						colors_all          = cell(1,length(coordinate_all));
-
-						% Determine localized copy number estimate, per bin.
-						localCopyEstimate   = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
-
-						fprintf(num2str(localCopyEstimate));
-						if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
-
-						if (localCopyEstimate <= 0)
-							% Copy number indicates a deletion, no SNPs should exist.
-							% Spurious SNP data will be drawn in white, the color used to represent a lack of SNP data.
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									colors_all{i} = colorNoData;
-								end;
-							end;
-						elseif (localCopyEstimate == 1)
-							binCounts_all = 0;
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									binCounts_all = binCounts_all+1;
-									colors_all{i} = color_1of1;
-								end;
-							end;
-							colorMix = color_1of1 * binCounts_all / sum(binCounts_all);
-							% 1of1 contains [aa, bb].
-						elseif (localCopyEstimate == 2)
-							binCounts_all = zeros(1,2);
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									if (ratioData_all(i) < 1/4);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_2of2;
-									elseif (ratioData_all(i) > 3/4);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_2of2;
-									else
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_1of2;
-									end;
-								end;
-							end;
-							colorMix = color_2of2 * binCounts_all(1)/ sum(binCounts_all) + ...
-							           color_1of2 * binCounts_all(2)/ sum(binCounts_all);
-							% 2of2 contains [aa, bb].
-							% 1of2 contains [ab].
-						elseif (localCopyEstimate == 3)
-							binCounts_all = zeros(1,2);
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									if (ratioData_all(i) < 1/6);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_3of3;
-									elseif (ratioData_all(i) > 5/6);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_3of3;
-									else
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_2of3;
-									end;
-								end;
-							end;
-							colorMix = color_3of3 * binCounts_all(1)/ sum(binCounts_all) + ...
-							           color_2of3 * binCounts_all(2)/ sum(binCounts_all);
-							% 3of3 contains [aaa, bbb].
-							% 2of3 contains [abb, abb]
-						elseif (localCopyEstimate == 4)
-							binCounts_all = zeros(1,3);
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									if (ratioData_all(i) < 1/8);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_4of4;
-									elseif (ratioData_all(i) < 3/8);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_3of4;
-									elseif (ratioData_all(i) > 7/8);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_4of4;
-									elseif (ratioData_all(i) > 5/8);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_3of4;
-									else
-										binCounts_all(3) = binCounts_all(3)+1;
-										colors_all{i}    = color_2of4;
-									end;
-								end;
-							end;
-							colorMix = color_4of4 * binCounts_all(1)/ sum(binCounts_all) + ...
-							           color_3of4 * binCounts_all(2)/ sum(binCounts_all) + ...
-							           color_2of4 * binCounts_all(3)/ sum(binCounts_all);
-							% 4of4 contains [aaaa, bbbb].
-							% 3of4 contains [aaab, abbb].
-							% 2of4 contains [aabb].
-						elseif (localCopyEstimate == 5)
-							binCounts_all = zeros(1,3);
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									if (ratioData_all(i) < 1/10);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_5of5;
-									elseif (ratioData_all(i) < 3/10);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_4of5;
-									elseif (ratioData_all(i) > 9/10);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_5of5;
-									elseif (ratioData_all(i) > 7/10);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_4of5;
-									else
-										binCounts_all(3) = binCounts_all(3)+1;
-										colors_all{i}    = color_3of5;
-									end;
-								end;
-							end;
-							colorMix = color_5of5 * binCounts_all(1)/ sum(binCounts_all) + ...
-							           color_4of5 * binCounts_all(2)/ sum(binCounts_all) + ...
-							           color_3of5 * binCounts_all(3)/ sum(binCounts_all);
-							% 5of5 contains [aaaaa, bbbbb].
-							% 4of5 contains [aaaab, abbbb].
-							% 3of5 contains [aaabb, aabbb].
-						elseif (localCopyEstimate == 6)
-							binCounts_all = zeros(1,4);
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									if (ratioData_all(i) < 1/12);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_6of6;
-									elseif (ratioData_all(i) < 3/12);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_5of6;
-									elseif (ratioData_all(i) < 5/12);
-										binCounts_all(3) = binCounts_all(3)+1;
-										colors_all{i}    = color_4of6;
-									elseif (ratioData_all(i) > 11/12);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_6of6;
-									elseif (ratioData_all(i) > 9/12);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_5of6;
-									elseif (ratioData_all(i) > 7/12);
-										binCounts_all(3) = binCounts_all(3)+1;
-										colors_all{i}    = color_4of6;
-									else
-										binCounts_all(4) = binCounts_all(4)+1;
-										colors_all{i}    = color_3of6;
-									end;
-								end;
-							end;
-							colorMix = color_6of6 * binCounts_all(1)/ sum(binCounts_all) + ...
-							           color_5of6 * binCounts_all(2)/ sum(binCounts_all) + ...
-							           color_4of6 * binCounts_all(3)/ sum(binCounts_all) + ...
-							           color_3of6 * binCounts_all(4)/ sum(binCounts_all);
-							% 6of6 contains [aaaaaa, bbbbbb].
-							% 5of6 contains [aaaaab, abbbbb].
-							% 4of6 contains [aaaabb, aabbbb].
-							% 3of6 contains [aaabbb].
-						elseif (localCopyEstimate == 7)
-							binCounts_all = zeros(1,4);
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									if (ratioData_all(i) < 1/14);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_7of7;
-									elseif (ratioData_all(i) < 3/14);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_6of7;
-									elseif (ratioData_all(i) < 5/14);
-										binCounts_all(3) = binCounts_all(3)+1;
-										colors_all{i}    = color_5of7;
-									elseif (ratioData_all(i) > 13/14);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_7of7;
-									elseif (ratioData_all(i) > 11/14);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_6of7;
-									elseif (ratioData_all(i) > 9/14);
-										binCounts_all(3) = binCounts_all(3)+1;
-										colors_all{i}    = color_5of7;
-									else
-										binCounts_all(4) = binCounts_all(4)+1;
-										colors_all{i}    = color_4of7;
-									end;
-								end;
-							end;
-							colorMix = color_7of7 * binCounts_all(1)/ sum(binCounts_all) + ...
-							           color_6of7 * binCounts_all(2)/ sum(binCounts_all) + ...
-							           color_5of7 * binCounts_all(3)/ sum(binCounts_all) + ...
-							           color_4of7 * binCounts_all(4)/ sum(binCounts_all);
-							% 7of7 contains [aaaaaaa, bbbbbbb].
-							% 6of7 contains [aaaaaab, abbbbbb].
-							% 5of7 contains [aaaaabb, aabbbbb].
-							% 4of7 contains [aaaabbb, aaabbbb].
-						elseif (localCopyEstimate == 8)
-							binCounts_all = zeros(1,5);
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									if (ratioData_all(i) < 1/16);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_8of8;
-									elseif (ratioData_all(i) < 3/16);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_7of8;
-									elseif (ratioData_all(i) < 5/16);
-										binCounts_all(3) = binCounts_all(3)+1;
-										colors_all{i}    = color_6of8;
-									elseif (ratioData_all(i) < 6/16);
-										binCounts_all(4) = binCounts_all(4)+1;
-										colors_all{i}    = color_5of8;
-									elseif (ratioData_all(i) > 15/16);
-										binCounts_all(1) = binCounts_all(1)+1;
-										colors_all{i}    = color_8of8;
-									elseif (ratioData_all(i) > 13/16);
-										binCounts_all(2) = binCounts_all(2)+1;
-										colors_all{i}    = color_7of8;
-									elseif (ratioData_all(i) > 11/16);
-										binCounts_all(3) = binCounts_all(3)+1;
-										colors_all{i}    = color_6of8;
-									elseif (ratioData_all(i) > 9/16);
-										binCounts_all(4) = binCounts_all(4)+1;
-										colors_all{i}    = color_5of8;
-									else
-										binCounts_all(5) = binCounts_all(5)+1;
-										colors_all{i}    = color_4of8;
-									end;
-								end;
-							end;
-							colorMix = color_8of8 * binCounts_all(1)/ sum(binCounts_all) + ...
-							           color_7of8 * binCounts_all(2)/ sum(binCounts_all) + ...
-							           color_6of8 * binCounts_all(3)/ sum(binCounts_all) + ...
-							           color_5of8 * binCounts_all(4)/ sum(binCounts_all) + ...
-							           color_4of8 * binCounts_all(5)/ sum(binCounts_all);
-							% 8of8 contains [aaaaaaaa, bbbbbbbb].
-							% 7of8 contains [aaaaaaab, abbbbbbb].
-							% 6of8 contains [aaaaaabb, aabbbbbb].
-							% 5of8 contains [aaaaabbb, aaabbbbb].
-							% 4of8 contains [aaaabbbb].
-						else %(localCopyEstimate >= 9)
-							binCounts_all = zeros(1,5);
-							if (length(ratioData_all) > 0)
-								for i = 1:length(ratioData_all)
-									if (ratioData_all(i) < 1/18);
-										binCounts_all(1)  = binCounts_all(1) +1;
-										colors_all{i}     = color_9of9;
-									elseif (ratioData_all(i) < 3/18);
-										binCounts_all(2)  = binCounts_all(2) +1;
-										colors_all{i}     = color_8of9;
-									elseif (ratioData_all(i) < 5/18);
-										binCounts_all(3)  = binCounts_all(3) +1;
-										colors_all{i}     = color_7of9;
-									elseif (ratioData_all(i) < 7/18);
-										binCounts_all(4)  = binCounts_all(4) +1;
-										colors_all{i}     = color_6of9;
-									elseif (ratioData_all(i) > 17/18);
-										binCounts_all(1)  = binCounts_all(1) +1;
-										colors_all{i}     = color_9of9;
-									elseif (ratioData_all(i) > 15/18);
-										binCounts_all(2)  = binCounts_all(2) +1;
-										colors_all{i}     = color_8of9;
-									elseif (ratioData_all(i) > 13/18);
-										binCounts_all(3)  = binCounts_all(3) +1;
-										colors_all{i}     = color_7of9;
-									elseif (ratioData_all(i) > 11/18);
-										binCounts_all(4)  = binCounts_all(4) +1;
-										colors_all{i}     = color_6of9;
-									else
-										binCounts_all(5) = binCounts_all(5)+1;
-										colors_all{i}     = color_5of9;
-									end;
-								end;
-							end;
-							colorMix = color_9of9 * binCounts_all(1)/ sum(binCounts_all) + ...
-							           color_8of9 * binCounts_all(2)/ sum(binCounts_all) + ...
-							           color_7of9 * binCounts_all(3)/ sum(binCounts_all) + ...
-							           color_6of9 * binCounts_all(4)/ sum(binCounts_all) + ...
-							           color_5of9 * binCounts_all(5)/ sum(binCounts_all);
-							% 9of9 contains [aaaaaaaaa, bbbbbbbbb].
-							% 8of9 contains [aaaaaaaab, abbbbbbbb].
-							% 7of9 contains [aaaaaaabb, aabbbbbbb].
-							% 6of9 contains [aaaaaabbb, aaabbbbbb].
-							% 5of9 contains [aaaaabbbb, aaaabbbbb].
-						end;
-						c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
-					end;
-				else
-					c_post = colorInit;
-				end;
-				colors(chr_bin,1) = c_post(1);
-				colors(chr_bin,2) = c_post(2);
-				colors(chr_bin,3) = c_post(3);
+			%% standard : determine color of each bin.
+			for chr_bin = 1:length(SNPs_to_fullData_ratio{chr}) 
+				colors(chr_bin,1) = chr_SNPdata_colorsC{chr,1}(chr_bin);
+				colors(chr_bin,2) = chr_SNPdata_colorsC{chr,2}(chr_bin);
+				colors(chr_bin,3) = chr_SNPdata_colorsC{chr,3}(chr_bin);
 			end;
-		
-			% standard : draw colorbars.
+			% standard : end determine color of each bin.
+
+			%% standard : draw colorbars.
 			for chr_bin = 1:length(phased_plot2{chr})+1;
 				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 				y_ = [0 maxY maxY 0];
@@ -441,6 +400,7 @@ else
 				c_     = c_post;
 				set(f,'linestyle','none');
 			end;
+			% standard : end draw colorbars.
 
 			%% standard : cgh plot section.
 			c_ = [0 0 0];

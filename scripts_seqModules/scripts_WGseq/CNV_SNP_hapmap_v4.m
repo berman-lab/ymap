@@ -318,6 +318,12 @@ for chr = 1:num_chrs
 end;
 
 
+%% =========================================================================================
+% Save workspace variables for use in "CNV_SNP_hapmap_v4_RedGreen.m"
+%-------------------------------------------------------------------------------------------
+save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+
+
 %%================================================================================================
 % Process SNP/hapmap data to determine colors to be presented for each SNP locus.
 %-------------------------------------------------------------------------------------------------
@@ -400,7 +406,6 @@ if (useHapmap)
                                                         end;
                                                 end;
 
-
                                                 if (segment_copyNum <= 0);                          colorList = colorNoData;
                                                 elseif (segment_copyNum == 1)
                                                         % allelic fraction cutoffs: [0.50000] => [A B]
@@ -413,13 +418,13 @@ if (useHapmap)
                                                 elseif (segment_copyNum == 2)
                                                         %   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
                                                         if ((baseCall == homologA) || (baseCall == homologB))
-								if (foundGaussianRegion == 3);      colorList = colorBB;
-                                                                elseif (foundGaussianRegion == 2);  colorList = colorAB;
+								if (ratioRegionID == 3);            colorList = colorBB;
+                                                                elseif (ratioRegionID == 2);        colorList = colorAB;
                                                                 else                                colorList = colorAA;
                                                                 end;
                                                         else
-                                                                if (foundGaussianRegion == 3);      colorList = unphased_color_2of2;
-                                                                elseif (foundGaussianRegion == 2);  colorList = unphased_color_1of2;
+                                                                if (ratioRegionID == 3);            colorList = unphased_color_2of2;
+                                                                elseif (ratioRegionID == 2);        colorList = unphased_color_1of2;
                                                                 else                                colorList = unphased_color_2of2;
                                                                 end;
                                                         end;
@@ -678,12 +683,6 @@ end;
 
 
 %% =========================================================================================
-% Save workspace variables for use in "CNV_SNP_hapmap_v4_RedGreen.m"
-%-------------------------------------------------------------------------------------------
-save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
-
-
-%% =========================================================================================
 % Setup for figure generation.
 %-------------------------------------------------------------------------------------------
 fig = figure(1);
@@ -715,646 +714,51 @@ axisLabelPosition_vert = 0.01125;
 first_chr = true;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-	    figure(fig);
-	    % make standard chr cartoons.
-	    left          = chr_posX(chr);
-	    bottom        = chr_posY(chr);
-	    width         = chr_width(chr);
-	    height        = chr_height(chr);
-	    subPlotHandle = subplot('Position',[left bottom width height]);
-	    fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
-	    hold on;
+		figure(fig);
+		% make standard chr cartoons.
+		left          = chr_posX(chr);
+		bottom        = chr_posY(chr);
+		width         = chr_width(chr);
+		height        = chr_height(chr);
+		subPlotHandle = subplot('Position',[left bottom width height]);
+		fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
+		hold on;
 
-	    c_prev = colorInit;
-	    c_post = colorInit;
-	    c_     = c_prev;
-	    infill = zeros(1,length(unphased_plot2{chr}));
-	    colors = [];
+		c_prev = colorInit;
+		c_post = colorInit;
+		c_     = c_prev;
+		infill = zeros(1,length(unphased_plot2{chr}));
+		colors = [];
 
-		% standard : determines the color of each bin.
-		for chr_bin = 1:length(SNPs_to_fullData_ratio{chr})+1;
-			if (chr_bin-1 < length(SNPs_to_fullData_ratio{chr}))
-				c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
-				if (c_tot_post == 0)
-					c_post = colorNoData;
-					fprintf('.');
-					if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
-				else
-					% Define colorMix using localized copy number estimate to define SNP cutoff thresholds,
-					%     then the ratio of SNP data in each SNP ratio bin.
-					% For testing, consider all loci haploid, so only two ratio bins.
-					ratioData_phased    = chr_SNPdata{chr,1}{chr_bin};
-					ratioData_unphased  = chr_SNPdata{chr,2}{chr_bin};
-					coordinate_phased   = chr_SNPdata{chr,3}{chr_bin};
-					coordinate_unphased = chr_SNPdata{chr,4}{chr_bin};
-					colors_phased       = cell(1,length(coordinate_phased));
-					colors_unphased     = cell(1,length(coordinate_unphased));
-
-					% Determine localized copy number estimate, per bin.
-					localCopyEstimate   = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
-
-					fprintf(num2str(localCopyEstimate));
-					if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
-
-					if (localCopyEstimate <= 0)
-						% Copy number estimate suggests segmental deletion.
-						% There should therefore be no SNP data, but spurious data may exist.
-						% This data should be drawn in white, the color used to indicate a lack of data.
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								colors_phased{i} = colorNoData;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								colors_unphased{i} = colorNoData;
-							end;
-						end;
-					elseif (localCopyEstimate == 1)
-						binCounts_phased   = zeros(1,2);
-						binCounts_unphased = 0;
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/2);
-									binCounts_phased(1) = binCounts_phased(1)+1;
-									colors_phased{i}    = colorA;
-								elseif (ratioData_phased(i) > 1/2);
-									binCounts_phased(2) = binCounts_phased(2)+1;
-									colors_phased{i}    = colorB;
-								else
-									binCounts_phased(1) = binCounts_phased(1)+0.5;
-									binCounts_phased(2) = binCounts_phased(2)+0.5;
-									colors_phased{i}    = (colorA+colorB)/2;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								binCounts_unphased = binCounts_unphased+1;
-								colors_unphased{i} = unphased_color_1of1;
-							end;
-						end;
-						colorMix = colorA              * binCounts_phased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorB              * binCounts_phased(2)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_1of1 * binCounts_unphased /(sum(binCounts_phased)+sum(binCounts_unphased));
-					elseif (localCopyEstimate == 2)
-						binCounts_phased   = zeros(1,3);
-						binCounts_unphased = zeros(1,2);
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/4);
-									binCounts_phased(1) = binCounts_phased(1)+1;
-									colors_phased{i}    = colorAA;
-								elseif (ratioData_phased(i) > 3/4);
-									binCounts_phased(3) = binCounts_phased(3)+1;
-									colors_phased{i}    = colorBB;
-								else
-									binCounts_phased(2) = binCounts_phased(2)+1;
-									colors_phased{i}    = colorAB;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								if (ratioData_unphased(i) < 1/4);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_2of2;
-								elseif (ratioData_unphased(i) > 3/4);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_2of2;
-								else
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_1of2;
-								end;
-							end;
-						end;
-						colorMix = colorAA             * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAB             * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorBB             * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_2of2 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_1of2 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased));
-					elseif (localCopyEstimate == 3)
-						binCounts_phased   = zeros(1,4);
-						binCounts_unphased = zeros(1,2);
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/6);
-									binCounts_phased(1) = binCounts_phased(1)+1;
-									colors_phased{i}    = colorAAA;
-								elseif (ratioData_phased(i) < 1/2);
-									binCounts_phased(2) = binCounts_phased(2)+1;
-									colors_phased{i}    = colorAAB;
-								elseif (ratioData_phased(i) > 5/6);
-									binCounts_phased(4) = binCounts_phased(4)+1;
-									colors_phased{i}    = colorBBB;
-								elseif (ratioData_phased(i) > 1/2);
-									binCounts_phased(3) = binCounts_phased(3)+1;
-									colors_phased{i}    = colorABB;
-								else
-									binCounts_phased(2) = binCounts_phased(2)+0.5;
-									binCounts_phased(3) = binCounts_phased(3)+0.5;
-									colors_phased{i}    = (colorAAB+colorABB)/2;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								if (ratioData_unphased(i) < 1/6);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_3of3;
-								elseif (ratioData_unphased(i) > 5/6);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_3of3;
-								else
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_2of3;
-								end;
-							end;
-						end;
-						colorMix = colorAAA            * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAB            * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorABB            * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorBBB            * binCounts_phased(4)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_3of3 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_2of3 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased));
-					elseif (localCopyEstimate == 4)
-						binCounts_phased   = zeros(1,5);
-						binCounts_unphased = zeros(1,3);
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/8);
-									binCounts_phased(1) = binCounts_phased(1)+1;
-									colors_phased{i}    = colorAAAA;
-								elseif (ratioData_phased(i) < 3/8);
-									binCounts_phased(2) = binCounts_phased(2)+1;
-									colors_phased{i}    = colorAAAB;
-								elseif (ratioData_phased(i) > 7/8);
-									binCounts_phased(5) = binCounts_phased(5)+1;
-									colors_phased{i}    = colorBBBB;
-								elseif (ratioData_phased(i) > 5/8);
-									binCounts_phased(4) = binCounts_phased(4)+1;
-									colors_phased{i}    = colorABBB;
-								else
-									binCounts_phased(3) = binCounts_phased(3)+1;
-									colors_phased{i}    = colorAABB;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								if (ratioData_unphased(i) < 1/8);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_4of4;
-								elseif (ratioData_unphased(i) < 3/8);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_3of4;
-								elseif (ratioData_unphased(i) > 7/8);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_4of4;
-								elseif (ratioData_unphased(i) > 5/8);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_3of4;
-								else
-									binCounts_unphased(3) = binCounts_unphased(3)+1;
-									colors_unphased{i}    = unphased_color_2of4;
-								end;
-							end;
-						end;
-						colorMix = colorAAAA           * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAB           * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAABB           * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorABBB           * binCounts_phased(4)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorBBBB           * binCounts_phased(5)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_4of4 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_3of4 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_2of4 * binCounts_unphased(3)/(sum(binCounts_phased)+sum(binCounts_unphased));
-					elseif (localCopyEstimate == 5)
-						binCounts_phased   = zeros(1,6);
-						binCounts_unphased = zeros(1,3);
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/10);
-									binCounts_phased(1) = binCounts_phased(1)+1;
-									colors_phased{i}    = colorAAAAA;
-								elseif (ratioData_phased(i) < 3/10);
-									binCounts_phased(2) = binCounts_phased(2)+1;
-									colors_phased{i}    = colorAAAAB;
-								elseif (ratioData_phased(i) < 1/2);
-									binCounts_phased(3) = binCounts_phased(3)+1;
-									colors_phased{i}    = colorAAABB;
-								elseif (ratioData_phased(i) > 9/10);
-									binCounts_phased(6) = binCounts_phased(6)+1;
-									colors_phased{i}    = colorBBBBB;
-								elseif (ratioData_phased(i) > 7/10);
-									binCounts_phased(5) = binCounts_phased(5)+1;
-									colors_phased{i}    = colorABBBB;
-								elseif (ratioData_phased(i) > 1/2);
-									binCounts_phased(4) = binCounts_phased(4)+1;
-									colors_phased{i}    = colorAABBB;
-								else
-									binCounts_phased(3) = binCounts_phased(3)+0.5;
-									binCounts_phased(4) = binCounts_phased(4)+0.5;
-									colors_phased{i}    = (colorAAABB+colorAABBB)/2;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								if (ratioData_unphased(i) < 1/10);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_5of5;
-								elseif (ratioData_unphased(i) < 3/10);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_4of5;
-								elseif (ratioData_unphased(i) > 9/10);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_5of5;
-								elseif (ratioData_unphased(i) > 7/10);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_4of5;
-								else
-									binCounts_unphased(3) = binCounts_unphased(3)+1;
-									colors_unphased{i}    = unphased_color_3of5;
-								end;
-							end;
-						end;
-						colorMix = colorAAAAA          * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAB          * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAABB          * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAABBB          * binCounts_phased(4)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorABBBB          * binCounts_phased(5)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorBBBBB          * binCounts_phased(6)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_5of5 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_4of5 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_3of5 * binCounts_unphased(3)/(sum(binCounts_phased)+sum(binCounts_unphased));
-					elseif (localCopyEstimate == 6)
-						binCounts_phased   = zeros(1,7);
-						binCounts_unphased = zeros(1,4);
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/12);
-									binCounts_phased(1) = binCounts_phased(1)+1;
-									colors_phased{i}    = colorAAAAAA;
-								elseif (ratioData_phased(i) < 3/12);
-									binCounts_phased(2) = binCounts_phased(2)+1;
-									colors_phased{i}    = colorAAAAAB;
-								elseif (ratioData_phased(i) < 5/12);
-									binCounts_phased(3) = binCounts_phased(3)+1;
-									colors_phased{i}    = colorAAAABB;
-								elseif (ratioData_phased(i) > 11/12);
-									binCounts_phased(7) = binCounts_phased(7)+1;
-									colors_phased{i}    = colorBBBBBB;
-								elseif (ratioData_phased(i) > 9/12);
-									binCounts_phased(6) = binCounts_phased(6)+1;
-									colors_phased{i}    = colorABBBBB;
-								elseif (ratioData_phased(i) > 7/12);
-									binCounts_phased(5) = binCounts_phased(5)+1;
-									colors_phased{i}    = colorAABBBB;
-								else
-									binCounts_phased(4) = binCounts_phased(4)+1;
-									colors_phased{i}    = colorAAABBB;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								if (ratioData_unphased(i) < 1/12);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_6of6;
-								elseif (ratioData_unphased(i) < 3/12);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_5of6;
-								elseif (ratioData_unphased(i) < 5/12);
-									binCounts_unphased(3) = binCounts_unphased(3)+1;
-									colors_unphased{i}    = unphased_color_4of6;
-								elseif (ratioData_unphased(i) > 11/12);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_6of6;
-								elseif (ratioData_unphased(i) > 9/12);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_5of6;
-								elseif (ratioData_unphased(i) > 7/12);
-									binCounts_unphased(3) = binCounts_unphased(3)+1;
-									colors_unphased{i}    = unphased_color_4of6;
-								else
-									binCounts_unphased(4) = binCounts_unphased(4)+1;
-									colors_unphased{i}    = unphased_color_3of6;
-								end;
-							end;
-						end;
-						colorMix = colorAAAAAA         * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAAB         * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAABB         * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAABBB         * binCounts_phased(4)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAABBBB         * binCounts_phased(5)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorABBBBB         * binCounts_phased(6)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorBBBBBB         * binCounts_phased(7)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_6of6 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_5of6 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_4of6 * binCounts_unphased(3)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_3of6 * binCounts_unphased(4)/(sum(binCounts_phased)+sum(binCounts_unphased));
-					elseif (localCopyEstimate == 7)
-						binCounts_phased   = zeros(1,8);
-						binCounts_unphased = zeros(1,4);
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/14);
-									binCounts_phased(1) = binCounts_phased(1)+1;
-									colors_phased{i}    = colorAAAAAAA;
-								elseif (ratioData_phased(i) < 3/14);
-									binCounts_phased(2) = binCounts_phased(2)+1;
-									colors_phased{i}    = colorAAAAAAB;
-								elseif (ratioData_phased(i) < 5/14);
-									binCounts_phased(3) = binCounts_phased(3)+1;
-									colors_phased{i}    = colorAAAAABB;
-								elseif (ratioData_phased(i) < 1/2);
-									binCounts_phased(4) = binCounts_phased(4)+1;
-									colors_phased{i}    = colorAAAABBB;
-								elseif (ratioData_phased(i) > 13/14);
-									binCounts_phased(8) = binCounts_phased(8)+1;
-									colors_phased{i}    = colorBBBBBBB;
-								elseif (ratioData_phased(i) > 11/14);
-									binCounts_phased(7) = binCounts_phased(7)+1;
-									colors_phased{i}    = colorABBBBBB;
-								elseif (ratioData_phased(i) > 9/14);
-									binCounts_phased(6) = binCounts_phased(6)+1;
-									colors_phased{i}    = colorAABBBBB;
-								elseif (ratioData_phased(i) > 1/2);
-									binCounts_phased(5) = binCounts_phased(5)+1;
-									colors_phased{i}    = colorAAABBBB;
-								else
-									binCounts_phased(4) = binCounts_phased(4)+0.5;
-									binCounts_phased(5) = binCounts_phased(5)+0.5;
-									colors_phased{i}    = (colorAAAABBB+colorAAABBBB)/2;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								if (ratioData_unphased(i) < 1/14);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_7of7;
-								elseif (ratioData_unphased(i) < 3/14);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_6of7;
-								elseif (ratioData_unphased(i) < 5/14);
-									binCounts_unphased(3) = binCounts_unphased(3)+1;
-									colors_unphased{i}    = unphased_color_5of7;
-								elseif (ratioData_unphased(i) > 13/14);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_7of7;
-								elseif (ratioData_unphased(i) > 11/14);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_6of7;
-								elseif (ratioData_unphased(i) > 9/14);
-									binCounts_unphased(3) = binCounts_unphased(3)+1;
-									colors_unphased{i}    = unphased_color_5of7;
-								else
-									binCounts_unphased(4) = binCounts_unphased(4)+1;
-									colors_unphased{i}    = unphased_color_4of7;
-								end;
-							end;
-						end;
-						colorMix = colorAAAAAAA        * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAAAB        * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAABB        * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAABBB        * binCounts_phased(4)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAABBBB        * binCounts_phased(5)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAABBBBB        * binCounts_phased(6)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorABBBBBB        * binCounts_phased(7)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorBBBBBBB        * binCounts_phased(8)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_7of7 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_6of7 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_5of7 * binCounts_unphased(3)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_4of7 * binCounts_unphased(4)/(sum(binCounts_phased)+sum(binCounts_unphased));
-					elseif (localCopyEstimate == 8)
-						binCounts_phased   = zeros(1,9);
-						binCounts_unphased = zeros(1,5);
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/16);
-									binCounts_phased(1) = binCounts_phased(1)+1;
-									colors_phased{i}    = colorAAAAAAAA;
-								elseif (ratioData_phased(i) < 3/16);
-									binCounts_phased(2) = binCounts_phased(2)+1;
-									colors_phased{i}    = colorAAAAAAAB;
-								elseif (ratioData_phased(i) < 5/16);
-									binCounts_phased(3) = binCounts_phased(3)+1;
-									colors_phased{i}    = colorAAAAAABB;
-								elseif (ratioData_phased(i) < 7/16);
-									binCounts_phased(4) = binCounts_phased(4)+1;
-									colors_phased{i}    = colorAAAAABBB;
-								elseif (ratioData_phased(i) > 15/16);
-									binCounts_phased(9) = binCounts_phased(9)+1;
-									colors_phased{i}    = colorBBBBBBBB;
-								elseif (ratioData_phased(i) > 13/16);
-									binCounts_phased(8) = binCounts_phased(8)+1;
-									colors_phased{i}    = colorABBBBBBB;
-								elseif (ratioData_phased(i) > 11/16);
-									binCounts_phased(7) = binCounts_phased(7)+1;
-									colors_phased{i}    = colorAABBBBBB;
-								elseif (ratioData_phased(i) > 9/16);
-									binCounts_phased(6) = binCounts_phased(6)+1;
-									colors_phased{i}    = colorAAABBBBB;
-								else
-									binCounts_phased(5) = binCounts_phased(5)+1;
-									colors_phased{i}    = colorAAAABBBB;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								if (ratioData_unphased(i) < 1/16);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_8of8;
-								elseif (ratioData_unphased(i) < 3/16);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_7of8;
-								elseif (ratioData_unphased(i) < 5/16);
-									binCounts_unphased(3) = binCounts_unphased(3)+1;
-									colors_unphased{i}    = unphased_color_6of8;
-								elseif (ratioData_unphased(i) < 6/16);
-									binCounts_unphased(4) = binCounts_unphased(4)+1;
-									colors_unphased{i}    = unphased_color_5of8;
-								elseif (ratioData_unphased(i) > 15/16);
-									binCounts_unphased(1) = binCounts_unphased(1)+1;
-									colors_unphased{i}    = unphased_color_8of8;
-								elseif (ratioData_unphased(i) > 13/16);
-									binCounts_unphased(2) = binCounts_unphased(2)+1;
-									colors_unphased{i}    = unphased_color_7of8;
-								elseif (ratioData_unphased(i) > 11/16);
-									binCounts_unphased(3) = binCounts_unphased(3)+1;
-									colors_unphased{i}    = unphased_color_6of8;
-								elseif (ratioData_unphased(i) > 9/16);
-									binCounts_unphased(4) = binCounts_unphased(4)+1;
-									colors_unphased{i}    = unphased_color_5of8;
-								else
-									binCounts_unphased(5) = binCounts_unphased(5)+1;
-									colors_unphased{i}    = unphased_color_4of8;
-								end;
-							end;
-						end;
-						colorMix = colorAAAAAAAA       * binCounts_phased(1)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAAAAB       * binCounts_phased(2)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAAABB       * binCounts_phased(3)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAABBB       * binCounts_phased(4)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAABBBB       * binCounts_phased(5)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAABBBBB       * binCounts_phased(6)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAABBBBBB       * binCounts_phased(7)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorABBBBBBB       * binCounts_phased(8)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorBBBBBBBB       * binCounts_phased(9)  /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_8of8 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_7of8 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_6of8 * binCounts_unphased(3)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_5of8 * binCounts_unphased(4)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_4of8 * binCounts_unphased(5)/(sum(binCounts_phased)+sum(binCounts_unphased));
-					elseif (localCopyEstimate >= 9)
-						binCounts_phased   = zeros(1,10);
-						binCounts_unphased = zeros(1,5);
-						if (length(ratioData_phased) > 0)
-							for i = 1:length(ratioData_phased)
-								if (ratioData_phased(i) < 1/18);
-									binCounts_phased(1)  = binCounts_phased(1) +1;
-									colors_phased{i}     = colorAAAAAAAAA;
-								elseif (ratioData_phased(i) < 3/18);
-									binCounts_phased(2)  = binCounts_phased(2) +1;
-									colors_phased{i}     = colorAAAAAAAAB;
-								elseif (ratioData_phased(i) < 5/18);
-									binCounts_phased(3)  = binCounts_phased(3) +1;
-									colors_phased{i}     = colorAAAAAAABB;
-								elseif (ratioData_phased(i) < 7/18);
-									binCounts_phased(4)  = binCounts_phased(4) +1;
-									colors_phased{i}     = colorAAAAAABBB;
-								elseif (ratioData_phased(i) < 1/2);
-									binCounts_phased(5)  = binCounts_phased(5) +1;
-									colors_phased{i}     = colorAAAAABBBB;
-								elseif (ratioData_phased(i) > 17/18);
-									binCounts_phased(10) = binCounts_phased(10)+1;
-									colors_phased{i}     = colorBBBBBBBBB;
-								elseif (ratioData_phased(i) > 15/18);
-									binCounts_phased(9)  = binCounts_phased(9) +1;
-									colors_phased{i}     = colorABBBBBBBB;
-								elseif (ratioData_phased(i) > 13/18);
-									binCounts_phased(8)  = binCounts_phased(8) +1;
-									colors_phased{i}     = colorAABBBBBBB;
-								elseif (ratioData_phased(i) > 11/18);
-									binCounts_phased(7)  = binCounts_phased(7) +1;
-									colors_phased{i}     = colorAAABBBBBB;
-								elseif (ratioData_phased(i) > 1/2);
-									binCounts_phased(6)  = binCounts_phased(6) +1;
-									colors_phased{i}     = colorAAAABBBBB;
-								else
-									binCounts_phased(5) = binCounts_phased(5)+0.5;
-									binCounts_phased(6) = binCounts_phased(6)+0.5;
-									colors_phased{i}    = (colorAAAAABBBB+colorAAAABBBBB)/2;
-								end;
-							end;
-						end;
-						if (length(ratioData_unphased) > 0)
-							for i = 1:length(ratioData_unphased)
-								if (ratioData_unphased(i) < 1/18);
-									binCounts_unphased(1)  = binCounts_unphased(1) +1;
-									colors_unphased{i}     = unphased_color_9of9;
-								elseif (ratioData_unphased(i) < 3/18);
-									binCounts_unphased(2)  = binCounts_unphased(2) +1;
-									colors_unphased{i}     = unphased_color_8of9;
-								elseif (ratioData_unphased(i) < 5/18);
-									binCounts_unphased(3)  = binCounts_unphased(3) +1;
-									colors_unphased{i}     = unphased_color_7of9;
-								elseif (ratioData_unphased(i) < 7/18);
-									binCounts_unphased(4)  = binCounts_unphased(4) +1;
-									colors_unphased{i}     = unphased_color_6of9;
-								elseif (ratioData_unphased(i) > 17/18);
-									binCounts_unphased(1)  = binCounts_unphased(1) +1;
-									colors_unphased{i}     = unphased_color_9of9;
-								elseif (ratioData_unphased(i) > 15/18);
-									binCounts_unphased(2)  = binCounts_unphased(2) +1;
-									colors_unphased{i}     = unphased_color_8of9;
-								elseif (ratioData_unphased(i) > 13/18);
-									binCounts_unphased(3)  = binCounts_unphased(3) +1;
-									colors_unphased{i}     = unphased_color_7of9;
-								elseif (ratioData_unphased(i) > 11/18);
-									binCounts_unphased(4)  = binCounts_unphased(4) +1;
-									colors_unphased{i}     = unphased_color_6of9;
-								else
-									binCounts_unphased(5) = binCounts_unphased(5)+1;
-									colors_unphased{i}     = unphased_color_5of9;
-								end;
-							end;
-						end;
-						colorMix = colorAAAAAAAAA      * binCounts_phased(1 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAAAAAB      * binCounts_phased(2 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAAAABB      * binCounts_phased(3 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAAABBB      * binCounts_phased(4 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAAABBBB      * binCounts_phased(5 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAAABBBBB      * binCounts_phased(6 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAAABBBBBB      * binCounts_phased(7 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorAABBBBBBB      * binCounts_phased(8 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorABBBBBBBB      * binCounts_phased(9 ) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           colorBBBBBBBBB      * binCounts_phased(10) /(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_9of9 * binCounts_unphased(1)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_8of9 * binCounts_unphased(2)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_7of9 * binCounts_unphased(3)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_6of9 * binCounts_unphased(4)/(sum(binCounts_phased)+sum(binCounts_unphased)) + ...
-						           unphased_color_5of9 * binCounts_unphased(5)/(sum(binCounts_phased)+sum(binCounts_unphased));
-					end;
-
-					% output CGD GBrowse annotation lines for this chromosome bin.
-					allele1 = '*';
-					allele2 = '*';
-					if (length(colors_phased) > 0)
-						for i = 1:length(colors_phased)
-							coordinate = coordinate_phased(i);
-							colorPoint = colors_phased{i};
-							outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
-						end;
-					end;
-					if (length(colors_unphased) > 0)
-						for i = 1:length(colors_unphased)
-							coordinate = coordinate_unphased(i);
-	                        colorPoint = colors_unphased{i}; 
-	                        outputCGDannotationLine_seq(CGDid, chr_name{chr}, coordinate, allele1, allele2, Output_CGD_annotations, colorPoint, localCopyEstimate);
-	                    end;
-					end;
-
-					% If the strain is only being compared to itself, only grey color should be produced.
-					% if (strcmp(user,hapmapUser))
-					if (strcmp(project,hapmap))
-						colorMix = colorAB;
-					end;
-
-
-					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + ...
-					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
-	            end;
-	        else
-	            c_post = colorInit;
-	        end;
-	        colors(chr_bin,1) = c_post(1);
-	        colors(chr_bin,2) = c_post(2);
-	        colors(chr_bin,3) = c_post(3);
-	    end;
+		%% standard : determine color of each bin.
+		for chr_bin = 1:length(SNPs_to_fullData_ratio{chr})
+			colors(chr_bin,1) = chr_SNPdata_colorsC{chr,1}(chr_bin);
+			colors(chr_bin,2) = chr_SNPdata_colorsC{chr,2}(chr_bin);
+			colors(chr_bin,3) = chr_SNPdata_colorsC{chr,3}(chr_bin);
+		end;
+		% standard : end determine color of each bin.
 		
-	    % standard : draw colorbars.
-	    for chr_bin = 1:length(phased_plot2{chr})+1;
-	        x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-	        y_ = [0 maxY maxY 0];
-	        c_post(1) = colors(chr_bin,1);
-	        c_post(2) = colors(chr_bin,2);
-	        c_post(3) = colors(chr_bin,3);
-	        % makes a colorBar for each bin, using local smoothing
-	        if (c_(1) > 1); c_(1) = 1; end;
-	        if (c_(2) > 1); c_(2) = 1; end;
-	        if (c_(3) > 1); c_(3) = 1; end;
-	        if (blendColorBars == false)
-	            f = fill(x_,y_,c_);
-	        else
-	            f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-	        end;
-	        c_prev = c_;
-	        c_     = c_post;
-	        set(f,'linestyle','none');
-	    end;
+		%% standard : draw colorbars.
+		for chr_bin = 1:length(phased_plot2{chr})+1;
+			x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
+			y_ = [0 maxY maxY 0];
+			c_post(1) = colors(chr_bin,1);
+			c_post(2) = colors(chr_bin,2);
+			c_post(3) = colors(chr_bin,3);
+			% makes a colorBar for each bin, using local smoothing
+			if (c_(1) > 1); c_(1) = 1; end;
+			if (c_(2) > 1); c_(2) = 1; end;
+			if (c_(3) > 1); c_(3) = 1; end;
+			if (blendColorBars == false)
+				f = fill(x_,y_,c_);
+			else
+				f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
+			end;
+			c_prev = c_;
+			c_     = c_post;
+			set(f,'linestyle','none');
+		end;
+		% standard : end draw colorbars.
 
 		%% standard : cgh plot section.
 		c_ = [0 0 0];

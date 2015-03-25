@@ -282,19 +282,19 @@ save([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 %%================================================================================================
 % Process SNP/hapmap data to determine colors to be presented for each SNP locus.
 %-------------------------------------------------------------------------------------------------
-%% =========================================================================================
-% Calculate allelic fraction cutoffs for each segment and populate data structure containing
-% SNP phasing information.
-%	chr_SNPdata{chr,1}{pos} = phased SNP ratio data.
-%	chr_SNPdata{chr,2}{pos} = unphased SNP ratio data.
-%	chr_SNPdata{chr,3}{pos} = phased SNP position data.
-%	chr_SNPdata{chr,4}{pos} = unphased SNP position data.
-%	chr_SNPdata{chr,5}{pos} = flipper value for phased SNP.
-%	chr_SNPdata{chr,6}{pos} = flipper value for unphased SNP.
-%-------------------------------------------------------------------------------------------
-calculate_allelic_ratio_cutoffs;
-
 if (useHapmap)
+	%% =========================================================================================
+	% Calculate allelic fraction cutoffs for each segment and populate data structure containing
+	% SNP phasing information.
+	%	chr_SNPdata{chr,1}{pos} = phased SNP ratio data.
+	%	chr_SNPdata{chr,2}{pos} = unphased SNP ratio data.
+	%	chr_SNPdata{chr,3}{pos} = phased SNP position data.
+	%	chr_SNPdata{chr,4}{pos} = unphased SNP position data.
+	%	chr_SNPdata{chr,5}{pos} = flipper value for phased SNP.
+	%	chr_SNPdata{chr,6}{pos} = flipper value for unphased SNP.
+	%-------------------------------------------------------------------------------------------
+	calculate_allelic_ratio_cutoffs;
+
     	%% =========================================================================================
 	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 	%-------------------------------------------------------------------------------------------
@@ -588,15 +588,23 @@ else
 %
 % Run when compared vs. a parent dataset or vs. itself.
 %
-%%%% chr_SNPdata{chr,2}(SNP) = child data.
-%%%% chr_SNPdata{chr,4}(SNP) = parent data.
+	% Initialize values for display.
+	%%%% chr_SNPdata{chr,2}(SNP) = child data.
+	%%%% chr_SNPdata{chr,4}(SNP) = parent data.
+	for chr = 1:num_chrs
+		for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin);	
+			chr_SNPdata{chr,2}{chr_bin} = 1;
+			chr_SNPdata{chr,4}{chr_bin} = 1;
+		end;
+	end;
+
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_count{chr}) > 1)
 				for SNP = 1:length(C_chr_count{chr})
 					pos = ceil(C_chr_SNP_data_positions{chr}(SNP)/new_bases_per_bin);
-					if (C_chr_SNP_data_ratios{chr}(SNP) < chr_SNPdata{chr,2}(pos))
-						chr_SNPdata{chr,2}(pos)      = C_chr_SNP_data_ratios{chr}(SNP);
+					if (C_chr_SNP_data_ratios{chr}(SNP) < chr_SNPdata{chr,2}{pos})
+						chr_SNPdata{chr,2}{pos}      = C_chr_SNP_data_ratios{chr}(SNP);
 						colorList                    = [1.0 1.0 1.0];
 						chr_SNPdata_colorsC{chr,1}(SNP) = colorList(1);
 						chr_SNPdata_colorsC{chr,2}(SNP) = colorList(2);
@@ -607,8 +615,8 @@ else
 			if (length(P_chr_count{chr}) > 1)
 				for i = 1:length(P_chr_count{chr})
 					pos = ceil(P_chr_SNP_data_positions{chr}(SNP)/new_bases_per_bin);
-					if (P_chr_SNP_data_ratios{chr}(SNP) < chr_SNPdata{chr,4}(pos))
-						chr_SNPdata{chr,4}(pos)      = P_chr_SNP_data_ratios{chr}(SNP);
+					if (P_chr_SNP_data_ratios{chr}(SNP) < chr_SNPdata{chr,4}{pos})
+						chr_SNPdata{chr,4}{pos}      = P_chr_SNP_data_ratios{chr}(SNP);
 						colorList                    = [1.0 1.0 1.0];
 						chr_SNPdata_colorsP{chr,1}(SNP) = colorList(1);
 						chr_SNPdata_colorsP{chr,2}(SNP) = colorList(2);

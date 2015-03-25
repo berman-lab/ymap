@@ -1418,7 +1418,10 @@ if (exist([main_dir 'users/' user '/projects/' project '/Common_CNV.mat'],'file'
 	% Convert 'chr_CNVdata_RADseq' to 'CNVplot2' for saving to 'Common_CNV' file and figure generation.
 	%-------------------------------------------------------------------------------------------
 	for chr = 1:num_chrs
+		% CNVplot2{chr} contains copy number estimates per standard genome bin, with corrections applied when selected.
 		CNVplot2{chr}     = zeros(1,length(chr_CNVdata_RADseq{chr,1}));
+
+		% CNV_tracking{chr} contains binary values, 1 indicates the genome bin has usable data.
 		CNV_tracking{chr} = zeros(1,length(chr_CNVdata_RADseq{chr,1}));
 	end;
 	for chr = 1:num_chrs
@@ -1608,7 +1611,7 @@ if (exist([main_dir 'users/' user '/projects/' project '/Common_CNV.mat'],'file'
 	fprintf('\nSaving "Common_CNV" data file.');
 	genome_CNV = genome;
 	save([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']    , 'CNVplot2','genome_CNV');
-	save([main_dir 'users/' user '/projects/' project '/ddRADseq_only1.mat'], 'CNV_tracking','chr_EndDistanceData_clean','CNVplot2');
+	save([main_dir 'users/' user '/projects/' project '/ddRADseq_only1.mat'], 'CNV_tracking');
 else
 	fprintf('\nFound Common_CNV MAT file, loading.');
 	load([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']);
