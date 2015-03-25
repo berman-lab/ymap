@@ -282,19 +282,19 @@ save([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 %%================================================================================================
 % Process SNP/hapmap data to determine colors to be presented for each SNP locus.
 %-------------------------------------------------------------------------------------------------
-if (useHapmap)
-	%% =========================================================================================
-	% Calculate allelic fraction cutoffs for each segment and populate data structure containing
-	% SNP phasing information.
-	%	chr_SNPdata{chr,1}{pos} = phased SNP ratio data.
-	%	chr_SNPdata{chr,2}{pos} = unphased SNP ratio data.
-	%	chr_SNPdata{chr,3}{pos} = phased SNP position data.
-	%	chr_SNPdata{chr,4}{pos} = unphased SNP position data.
-	%	chr_SNPdata{chr,5}{pos} = flipper value for phased SNP.
-	%	chr_SNPdata{chr,6}{pos} = flipper value for unphased SNP.
-	%-------------------------------------------------------------------------------------------
-	calculate_allelic_ratio_cutoffs;
+%% =========================================================================================
+% Calculate allelic fraction cutoffs for each segment and populate data structure containing
+% SNP phasing information.
+%	chr_SNPdata{chr,1}{pos} = phased SNP ratio data.
+%	chr_SNPdata{chr,2}{pos} = unphased SNP ratio data.
+%	chr_SNPdata{chr,3}{pos} = phased SNP position data.
+%	chr_SNPdata{chr,4}{pos} = unphased SNP position data.
+%	chr_SNPdata{chr,5}{pos} = flipper value for phased SNP.
+%	chr_SNPdata{chr,6}{pos} = flipper value for unphased SNP.
+%-------------------------------------------------------------------------------------------
+calculate_allelic_ratio_cutoffs;
 
+if (useHapmap)
     	%% =========================================================================================
 	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 	%-------------------------------------------------------------------------------------------

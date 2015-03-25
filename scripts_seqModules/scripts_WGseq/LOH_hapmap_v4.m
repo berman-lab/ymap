@@ -354,22 +354,22 @@ end;
 %%================================================================================================
 % Process SNP/hapmap data to determine colors to be presented for each SNP locus.
 %-------------------------------------------------------------------------------------------------
-if (useHapmap)
-	%% =========================================================================================
-	% Calculate allelic fraction cutoffs for each segment and populate data structure containing
-	% SNP phasing information.
-	%       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
-	%       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
-	%       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
-	%       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
-	%       chr_SNPdata{chr,5}{chr_bin} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
-	%       chr_SNPdata{chr,6}{chr_bin} = unphased SNP allele strings.
-	%-------------------------------------------------------------------------------------------
-	% Prepare data for "calculate_allelic_ratio_cutoffs.m".
-	temp_holding = chr_SNPdata;
-	calculate_allelic_ratio_cutoffs;
-	chr_SNPdata = temp_holding;
+%% =========================================================================================
+% Calculate allelic fraction cutoffs for each segment and populate data structure containing
+% SNP phasing information.
+%       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
+%       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
+%       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
+%       chr_SNPdata{chr,5}{chr_bin} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
+%       chr_SNPdata{chr,6}{chr_bin} = unphased SNP allele strings.
+%-------------------------------------------------------------------------------------------
+% Prepare data for "calculate_allelic_ratio_cutoffs.m".
+temp_holding = chr_SNPdata;
+calculate_allelic_ratio_cutoffs;
+chr_SNPdata = temp_holding;
 
+if (useHapmap)
 	%% =========================================================================================
 	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 	%-------------------------------------------------------------------------------------------
