@@ -70,20 +70,20 @@ else
 	% Process SNP/hapmap data to determine colors to be presented for each SNP locus.
 	%-------------------------------------------------------------------------------------------------
 
-        %% =========================================================================================
-        % Calculate allelic fraction cutoffs for each segment and populate data structure containing
-        % SNP phasing information.
-        %       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
-        %       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
-        %       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
-        %       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
-        %       chr_SNPdata{chr,5}{chr_bin} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
-        %       chr_SNPdata{chr,6}{chr_bin} = unphased SNP allele strings.
-        %-------------------------------------------------------------------------------------------
-        % Prepare data for "calculate_allelic_ratio_cutoffs.m".
-        temp_holding = chr_SNPdata;
-        calculate_allelic_ratio_cutoffs;
-        chr_SNPdata = temp_holding;
+	%% =========================================================================================
+	% Calculate allelic fraction cutoffs for each segment and populate data structure containing
+	% SNP phasing information.
+	%       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
+	%       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
+	%       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
+	%       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
+	%       chr_SNPdata{chr,5}{chr_bin} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
+	%       chr_SNPdata{chr,6}{chr_bin} = unphased SNP allele strings.
+	%-------------------------------------------------------------------------------------------
+	% Prepare data for "calculate_allelic_ratio_cutoffs.m".
+	temp_holding = chr_SNPdata;
+	calculate_allelic_ratio_cutoffs;
+	chr_SNPdata = temp_holding;
 
 	%% =========================================================================================
 	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
@@ -262,27 +262,6 @@ else
 		end;
 	end;
 
-	% calculate SNP bin values.
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for chr_bin = 1:length(chr_SNPdata{chr,1})
-				SNPplot{chr,1}{chr_bin} = chr_SNPdata{chr,1}{chr_bin};
-				SNPplot{chr,2}{chr_bin} = chr_SNPdata{chr,2}{chr_bin};
-			end;
-		end;
-	end;
-
-	SNPdata_all = [];
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for chr_bin = 1:length(SNPplot{chr,1})
-				TOTplot{chr}{chr_bin} = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});   % TOT = phased+nonphased;
-				SNPdata_all           = [SNPdata_all TOTplot{chr}{chr_bin}];
-			end;
-		end;
-	end;
-	medianRawY = median(SNPdata_all);
-
 
 	%% =========================================================================================
 	% Setup for main figure generation.
@@ -296,7 +275,7 @@ else
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (data_mode == 1)
-				for chr_bin = 1:length(chr_SNPdata{chr,1})
+				for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 					% Regenerate chr plot data if the save file does not exist.
 
 					% the number of heterozygous data points in this bin.
@@ -372,16 +351,31 @@ else
 			infill = zeros(1,length(unphased_plot2{chr}));
 			colors = [];
 
+
 			%% standard : determine color of each bin.
-			for chr_bin = 1:length(SNPs_to_fullData_ratio{chr}) 
-				colors(chr_bin,1) = chr_SNPdata_colorsC{chr,1}(chr_bin);
-				colors(chr_bin,2) = chr_SNPdata_colorsC{chr,2}(chr_bin);
-				colors(chr_bin,3) = chr_SNPdata_colorsC{chr,3}(chr_bin);
+			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+				c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
+				if (c_tot_post == 0)
+					c_post = colorNoData;
+					fprintf('.');
+					if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
+				else
+					% Average of SNP position colors defined earlier.
+					colorMix = [chr_SNPdata_colorsC{chr,1}(chr_bin) chr_SNPdata_colorsC{chr,2}(chr_bin) chr_SNPdata_colorsC{chr,3}(chr_bin)];
+
+					% Determine color to draw bin, accounting for limited data and data saturation.
+					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + ...
+					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
+				end;
+				colors(chr_bin,1) = c_post(1);
+				colors(chr_bin,2) = c_post(2);
+				colors(chr_bin,3) = c_post(3);
 			end;
 			% standard : end determine color of each bin.
 
+
 			%% standard : draw colorbars.
-			for chr_bin = 1:length(phased_plot2{chr})+1;
+			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 				y_ = [0 maxY maxY 0];
 				c_post(1) = colors(chr_bin,1);
@@ -407,7 +401,7 @@ else
 			fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
 			fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
-			for chr_bin = 1:length(CNVplot2{chr});
+			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 				if (CNVplot2{chr}(chr_bin) == 0)
 					CNVhistValue = 1;
@@ -429,10 +423,9 @@ else
 				set(f,'linestyle','none');
 			end;
 
-			% standard : draw lines across plots for easier interpretation of CNV regions.
+			%% standard : draw lines across plots for easier interpretation of CNV regions.
 			x2 = chr_size(chr)/bases_per_bin;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-
 			switch ploidyBase
 				case 1
 				case 2
@@ -477,11 +470,11 @@ else
 			end;
 			% standard : end cgh plot section.
 
-			% standard : axes labels etc.
+			%% standard : axes labels etc.
 			hold off;
 			xlim([0,chr_size(chr)/bases_per_bin]);
     
-			% standard : modify y axis limits to show annotation locations if any are provided.
+			%% standard : modify y axis limits to show annotation locations if any are provided.
 			if (length(annotations) > 0)
 				ylim([-maxY/10*1.5,maxY]);
 			else
@@ -493,7 +486,6 @@ else
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 			text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
-
 			switch ploidyBase
 				case 1
 					text(axisLabelPosition_vert, maxY/2,     '1','HorizontalAlignment','right','Fontsize',10);
@@ -518,7 +510,7 @@ else
 			end;
 			hold on;
 
-			% standard : end axes labels etc.
+			%% standard : end axes labels etc.
 			if (displayBREAKS == true) && (show_annotations == true)
 				chr_length = ceil(chr_size(chr)/bases_per_bin);
 				for segment = 2:length(chr_breaks{chr})-1
@@ -527,7 +519,7 @@ else
 				end;
 			end;   
 
-			% standard : show centromere outlines and horizontal marks.
+			%% standard : show centromere outlines and horizontal marks.
 			x1 = cen_start(chr)/bases_per_bin;
 			x2 = cen_end(chr)/bases_per_bin;
 			leftEnd  = 0.5*5000/bases_per_bin;
@@ -550,7 +542,7 @@ else
 			end;
 			% standard : end show centromere.
     
-			% standard : show annotation locations
+			%% standard : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
 				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				hold on;
@@ -575,7 +567,7 @@ else
 			end;
 			% standard : end show annotation locations.
 
-			% standard : make CGH histograms to the right of the main chr cartoons.
+			%% standard : make CGH histograms to the right of the main chr cartoons.
 			if (HistPlot == true)
 				width     = 0.020;
 				height    = chr_height(chr);
@@ -649,7 +641,7 @@ else
 			end;
 			% standard : end of CGH histograms at right.
 
-			% standard : places chr copy number to the right of the main chr cartoons.
+			%% standard : places chr copy number to the right of the main chr cartoons.
 			if (ChrNum == true)
 				% subplot to show chr copy number value.
 				width  = 0.020;
@@ -685,7 +677,7 @@ else
 			angle_plot_subfigures;
 
 
-	%%%%%%%%%%%%%%%%% END of standard figure draw section.
+%%%%%%%%%%%%%%%%%%%%% END of standard figure draw section.
 
 
 			%% Linear figure draw section
@@ -697,8 +689,8 @@ else
 				hold on;
 				title(chr_label{chr},'Interpreter','none','FontSize',20);
 
-				% linear : draw colorbars.
-				for chr_bin = 1:length(unphased_plot2{chr})+1;
+				%% linear : draw colorbars.
+				for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 					x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 					y_ = [0 maxY maxY 0];
 					c_post(1) = colors(chr_bin,1);
@@ -719,10 +711,10 @@ else
 				end;
 				% linear : end draw colorbars.
 
-				% linear : cgh plot section.
+				%% linear : cgh plot section.
 				c_ = [0 0 0];
 				fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
-				for chr_bin = 1:length(CNVplot2{chr});
+				for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 					x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 					if (CNVplot2{chr}(chr_bin) == 0)
 						CNVhistValue = 1;
@@ -744,7 +736,7 @@ else
 				end;
 				% linear : end CGH plot section.
 
-				% linear : draw lines across plots for easier interpretation of CNV regions.
+				%% linear : draw lines across plots for easier interpretation of CNV regions.
 				x2 = chr_size(chr)/bases_per_bin;
 				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 				switch ploidyBase
@@ -791,17 +783,17 @@ else
 				end;
 				% linear : end cgh plot section.
 
-				% linear : show segmental anueploidy breakpoints.
+				%% linear : show segmental anueploidy breakpoints.
 				if (Linear_displayBREAKS == true) && (show_annotations == true)
 					chr_length = ceil(chr_size(chr)/bases_per_bin);
-                        	        for segment = 2:length(chr_breaks{chr})-1
-                                	        bP = chr_breaks{chr}(segment)*chr_length;
-                                        	plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
-	                                end;
-        	                end;
+					for segment = 2:length(chr_breaks{chr})-1
+						bP = chr_breaks{chr}(segment)*chr_length;
+						plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+					end;
+				end;
 				% linear : end segmental aneuploidy breakpoint section.
 
-				% linear : show centromere.
+				%% linear : show centromere.
 				x1 = cen_start(chr)/bases_per_bin;
 				x2 = cen_end(chr)/bases_per_bin;
 				leftEnd  = 0.5*5000/bases_per_bin;
@@ -824,7 +816,7 @@ else
 				end;
 				% linear : end show centromere.
 
-				% linear : show annotation locations
+				%% linear : show annotation locations
 				if (show_annotations) && (length(annotations) > 0)
 					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					hold on;
@@ -849,7 +841,7 @@ else
 				end;
 				% linear : end show annotation locations.
 
-				% linear : Final formatting stuff.
+				%% linear : Final formatting stuff.
 				xlim([0,chr_size(chr)/bases_per_bin]);
 				% modify y axis limits to show annotation locations if any are provided.
 				if (length(annotations) > 0)
