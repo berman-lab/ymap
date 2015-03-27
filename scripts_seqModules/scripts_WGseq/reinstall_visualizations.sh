@@ -107,13 +107,13 @@ echo "function [] = processing_Rerun()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.rerun_visualization.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 
-#echo     "\tanalyze_CNVs_1(         '$main_dir','$user','$genomeUser','$project',          '$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo     "\tanalyze_CNVs_1(         '$main_dir','$user','$genomeUser','$project',          '$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 if [ -z "$hapmap" ]
 then
-#	echo "\tanalyze_SNPs_hapmap(    '$main_dir','$user','$genomeUser','$project','$parent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo "\tanalyze_SNPs_hapmap(    '$main_dir','$user','$genomeUser','$project','$parent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$parent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 else
-#	echo "\tanalyze_SNPs_hapmap(    '$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo "\tanalyze_SNPs_hapmap(    '$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 fi
 

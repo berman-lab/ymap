@@ -576,6 +576,7 @@ for chr = 1:num_chrs
 	        colors(i,2) = c_post(2);
 	        colors(i,3) = c_post(3);
 	    end;
+
 	    % standard : draw colorbars.
 	    for i = 1:length(HETplot2{chr})+1;
 	        x_ = [i i i-1 i-1];

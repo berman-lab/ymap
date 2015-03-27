@@ -8,45 +8,68 @@
 %   5 : phased SNP flipper values.
 %   6 : unphased SNP flipper values.
 %-------------------------------------------------------------------------------------------
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		if (length(C_chr_SNP_data_positions{chr}) > 1)
-			%
-			% Building SNP data sctructure 'chr_SNPdata'.
-			%
-			for SNP = 1:length(C_chr_SNP_data_positions{chr})  % 'length(C_chr_SNP_data_positions)' is the number of SNPs per chromosome.
-				coordinate                      = C_chr_SNP_data_positions{chr}(SNP);
-				pos                             = ceil(coordinate/new_bases_per_bin);
-				localCopyEstimate               = round(CNVplot2{chr}(pos)*ploidy*ploidyAdjust);
-				baseCall                        = C_chr_baseCall{          chr}{SNP};
-				homologA                        = C_chr_SNP_homologA{      chr}{SNP};
-				homologB                        = C_chr_SNP_homologB{      chr}{SNP};
-				flipper                         = C_chr_SNP_flipHomologs{  chr}(SNP);
-				allelic_ratio                   = C_chr_SNP_data_ratios{   chr}(SNP);
-				% Allelic ratio here is the ratio of the majority read call to all reads.
-				% The consequence of this is that it will always be on the range [0.5 .. 1.0].
-				if (flipper == 10)                         % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
-					baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
+if (useHapmap)
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			if (length(C_chr_SNP_data_positions{chr}) > 1)
+				%
+				% Building SNP data sctructure 'chr_SNPdata'.
+				%
+				for SNP = 1:length(C_chr_SNP_data_positions{chr})  % 'length(C_chr_SNP_data_positions)' is the number of SNPs per chromosome.
+					coordinate                      = C_chr_SNP_data_positions{chr}(SNP);
+					pos                             = ceil(coordinate/new_bases_per_bin);
+					localCopyEstimate               = round(CNVplot2{chr}(pos)*ploidy*ploidyAdjust);
+					baseCall                        = C_chr_baseCall{          chr}{SNP};
+					homologA                        = C_chr_SNP_homologA{      chr}{SNP};
+					homologB                        = C_chr_SNP_homologB{      chr}{SNP};
+					flipper                         = C_chr_SNP_flipHomologs{  chr}(SNP);
+					allelic_ratio                   = C_chr_SNP_data_ratios{   chr}(SNP);
+					% Allelic ratio here is the ratio of the majority read call to all reads.
+					% The consequence of this is that it will always be on the range [0.5 .. 1.0].
+					if (flipper == 10)                         % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
+						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
+						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} allelic_ratio 1-allelic_ratio];
+						chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate    coordinate     ];
+						chr_SNPdata{chr,6}{pos} = [chr_SNPdata{chr,6}{pos} flipper       flipper        ];
+					elseif (flipper == 1)
+						temp                    = homologA;
+						homologA                = homologB;
+						homologB                = temp;
+						if (baseCall == homologA)
+							allelic_ratio = 1-allelic_ratio;
+						end;
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
+						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
+					else % (flipper == 0)
+						if (baseCall == homologA)
+							allelic_ratio = 1-allelic_ratio;
+						end;
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
+						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
+					end;
+				end;
+			end;
+		end;
+	end;
+else
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			if (length(C_chr_SNP_data_positions{chr}) > 1)
+				%
+				% Building SNP data sctructure 'chr_SNPdata'.
+				%
+				for SNP = 1:length(C_chr_SNP_data_positions{chr})  % 'length(C_chr_SNP_data_positions)' is the number of SNPs per chromosome.
+					coordinate                      = C_chr_SNP_data_positions{chr}(SNP);
+					pos                             = ceil(coordinate/new_bases_per_bin);
+					allelic_ratio                   = C_chr_SNP_data_ratios{   chr}(SNP);
+
+					% Allelic ratio here is the ratio of the majority read call to all reads.
+					% The consequence of this is that it will always be on the range [0.5 .. 1.0].
 					chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} allelic_ratio 1-allelic_ratio];
 					chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate    coordinate     ];
-					chr_SNPdata{chr,6}{pos} = [chr_SNPdata{chr,6}{pos} flipper       flipper];
-				elseif (flipper == 1)
-					temp                    = homologA;
-					homologA                = homologB;
-					homologB                = temp;
-					if (baseCall == homologA)
-						allelic_ratio = 1-allelic_ratio;
-					end;
-					chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
-					chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
-					chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
-				else % (flipper == 0)
-					if (baseCall == homologA)
-						allelic_ratio = 1-allelic_ratio;
-					end;
-					chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
-					chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
-					chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
+					chr_SNPdata{chr,6}{pos} = [chr_SNPdata{chr,6}{pos} 0             0              ];
 				end;
 			end;
 		end;
