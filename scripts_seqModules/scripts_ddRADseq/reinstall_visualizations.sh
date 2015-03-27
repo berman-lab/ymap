@@ -108,9 +108,9 @@ echo "\tdiary('"$projectDirectory"matlab.rerun_visualization.log');" >> $outputN
 echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
 
 
-#echo "\tanalyze_CNVs_RADseq_3(  '$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo "\tanalyze_CNVs_RADseq_3(  '$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 
-#echo "\tanalyze_SNPs_RADseq(    '$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo "\tanalyze_SNPs_RADseq(    '$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 
 echo "\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 
