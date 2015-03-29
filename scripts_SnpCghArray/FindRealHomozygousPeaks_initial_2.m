@@ -43,32 +43,32 @@ disomy_fit(1) = 10;    disomy_fit(2) = 1;      disomy_fit(3) = 10;
 disomy_fit(4) = 10;    disomy_fit(5) = 100.5;  disomy_fit(6) = 10;
 disomy_fit(7) = 10;    disomy_fit(8) = 200;    disomy_fit(9) = 10;
 if (no_usable_ploidies == 0) % disomics/tetrasomics were found, so we can determine homozygous peak location.
-    % make a histogram of SNP allele ratio angles, then smooth it for display.
-    histAll(histAll==0) = [];
-    histAll(length(histAll)+1) = 0;
-    histAll(length(histAll)+1) = 1;
-    % Calculation of homozygous peak location.
-    % Gather SNP data from this data set.
-    histAll(histAll==0) = [];
-    histAll(histAll>1) = [];
-    histAll(length(histAll)+1) = 0;
-    histAll(length(histAll)+1) = 1;
-    % make a histogram of SNP allele ratio angles in theoretical
-    % homozygous regions (outer quartiles only).
-    hist_a = hist(histAll,200);
-    hist_a(101:200) = [];
-    hist_b = fliplr(hist(histAll,200));
-    hist_b(101:200) = [];
-    hist_ab = hist_a+hist_b;
-%    hist_ab(51:100) = [];
+	% make a histogram of SNP allele ratio angles, then smooth it for display.
+	histAll(histAll==0) = [];
+	histAll(length(histAll)+1) = 0;
+	histAll(length(histAll)+1) = 1;
+	% Calculation of homozygous peak location.
+	% Gather SNP data from this data set.
+	histAll(histAll==0) = [];
+	histAll(histAll>1) = [];
+	histAll(length(histAll)+1) = 0;
+	histAll(length(histAll)+1) = 1;
+	% make a histogram of SNP allele ratio angles in theoretical
+	% homozygous regions (outer quartiles only).
+	hist_a = hist(histAll,200);
+	hist_a(101:200) = [];
+	hist_b = fliplr(hist(histAll,200));
+	hist_b(101:200) = [];
+	hist_ab = hist_a+hist_b;
+%	hist_ab(51:100) = [];
 
-    smoothed_1a = smooth_gaussian(hist_ab,5,20);
-    % find homozygous peak.
-    histMax = find(smoothed_1a == max(smoothed_1a));
-    % determines final homozygous peak location.
-    initialHomozygous_peak = histMax/200;
+	smoothed_1a = smooth_gaussian(hist_ab,5,20);
+	% find homozygous peak.
+	histMax = find(smoothed_1a == max(smoothed_1a));
+	% determines final homozygous peak location.
+	initialHomozygous_peak = histMax/200;
     
-    % generate a smoothed dataset of all outer quartile data, for use in gaussian fitting.
+	% generate a smoothed dataset of all outer quartile data, for use in gaussian fitting.
 	smoother = [smoothed_1a fliplr(smoothed_1a)];
 %%%	smoother(51:150) = 0;
 

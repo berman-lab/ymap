@@ -145,12 +145,8 @@ if (Linear_display == true)
 	maxY                 = ploidyBase*2;       % maximum y-axis of chromosome cartoons.
 	maxY_highTop         = ploidyBase*2*3;     % maximum y-axis of region above chromosome cartoons.
 	Linear_left          = Linear_left_start;  % used to track left end of current chromosome.
-
-	axisLabelPosition_horiz = -50000/bases_per_bin;
 	axisLabelPosition_horiz = 0.01125;
 end;
-
-axisLabelPosition_vert = -50000/bases_per_bin;
 axisLabelPosition_vert = 0.01125;
 
 maxY_highTop           = ploidyBase*2*3;

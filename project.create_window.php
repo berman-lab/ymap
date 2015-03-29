@@ -207,6 +207,12 @@
 					</div>
 				</td><td>
 				Corrections applied.
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
+				<input type="checkbox" name="FTP_drop" value="True">Datafiles will be loaded from FTP drop.
+				</td><td>
+				Select this option if you have pre-arranged an FTP drop location with server administrators for bulk file upload.<br>
+				Otherwise, the pipeline will not be able to load your data for analysis.
 				</td></tr></table><br>
 				<input type="submit" value="Create New Dataset">
 			</form>

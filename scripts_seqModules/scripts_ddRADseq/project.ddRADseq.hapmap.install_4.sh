@@ -13,7 +13,7 @@ hapmap=$3;
 main_dir=$(pwd)"/../../";
 
 # load local installed program location variables.
-. $main_dir/sh/local_installed_programs.sh;
+. $main_dir/local_installed_programs.sh;
 
 
 ##==============================================================================
@@ -66,16 +66,16 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 # Determine location of hapmap being used.
 if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
 then
-    hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
-    hapmapUser=$user;
-    hapmapUsed=1
+	hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+	hapmapUser=$user;
+	hapmapUsed=1
 elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
 then
-    hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
-    hapmapUser="default";
-    hapmapUsed=1;
+	hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
+	hapmapUser="default";
+	hapmapUsed=1;
 else
-    hapmapUsed=0;
+	hapmapUsed=0;
 fi
 echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 
@@ -107,9 +107,9 @@ fi
 ##------------------------------------------------------------------------------
 if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]
 then
-	echo "\tSNP data already preprocessed with python script : 'py/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
+	echo "\tParent or hapmap data already preprocessed with python script: 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
+	echo "\tSNP data already preprocessed with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 else
-	echo "\tPreprocessing SNP data with python script : 'py/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 	if [ -f $parentDirectory"putative_SNPs_v4.txt" ]
 	then
 		echo "\tParent SNP data already decompressed." >> $logName;
@@ -122,13 +122,15 @@ else
 		cp $parentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	fi
 
-	# preprocess parent for comparison.
-	$python_exec python $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
-
+	# preprocess hapmap/parent SNP data.
+	echo "\tProcessing SNP data from parent or hapmap with python script : 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
-	$python_exec python $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
+	# preprocess dataset SNP data.
+	echo "\tProcessing SNP data with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
+	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	chmod 0777 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	echo "\tpre-processing complete." >> $logName;
 fi

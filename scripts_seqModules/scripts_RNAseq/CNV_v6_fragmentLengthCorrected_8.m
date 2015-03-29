@@ -1040,48 +1040,6 @@ finalFrag_median                          = median(finalFrag_data);
 fprintf(['\n***\n*** median CNV value of fragments = ' num2str(finalFrag_median) '\n***\n\n']);
 
 
-%%================================================================================================
-% Load 'preprocessed_SNPs.RNAseq.txt' file for CNV_filtering, then output to 'preprocessed_SNPs.RNAseq.CNV_filtered.txt'
-%.................................................................................................
-% SNP data from CNV filtered fragments is discarded.
-%-------------------------------------------------------------------------------------------------
-datafile = [projectDir 'preprocessed_SNPs.RNAseq.txt'];
-
-location = pwd;
-
-fprintf( '***\n');
-fprintf(['*** current dir = "' location '"\n']); 
-fprintf(['*** datafile    = "' datafile '"\n']);
-fprintf( '***\n');
-
-[data,fopen_message] = fopen(datafile, 'r');
-
-fragment_count = 0;
-fragment_entry = [];
-while not (feof(data))
-	dataLine = fgetl(data);
-	if (length(dataLine) > 0)
-		if (dataLine(1) ~= '#')
-			% process the loaded line into data channels.
-			fragment_count                 = fragment_count+1;
-			fragment_entry{fragment_count} = dataLine;
-		end;
-	end;
-end;
-fclose(data);
-% darrenabbey : removed filtering, as it removed too much data.
-%for i = length(fragment_entry):-1:1
-%	if (finalFrag_tracking(i) == 0)
-%		fragment_entry{i} = [];
-%	end;
-%end;
-datafile = [projectDir 'preprocessed_SNPs.RNAseq.CNV_filtered.txt'];
-data     = fopen(datafile, 'w');
-for i = 1:length(fragment_entry)
-	fprintf(data,[fragment_entry{i} '\n']);
-end;
-
-
 %-------------------------------------------------------------------------------------------------
 % Saving bias correction figure 2.
 %-------------------------------------------------------------------------------------------------

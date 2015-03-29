@@ -1,6 +1,6 @@
-function [] = allelic_ratios_ddRADseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
-                                      SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+function [] = allelic_ratios_ddRADseq_C(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
+
 
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
@@ -19,7 +19,7 @@ Linear_displayBREAKS        = false;
 
 fprintf('\n');
 fprintf('#################################\n');
-fprintf('## allelic_ratios_ddRADseq_2.m ##\n');
+fprintf('## allelic_ratios_ddRADseq_C.m ##\n');
 fprintf('#################################\n');
 
 
@@ -37,30 +37,35 @@ end;
 
 
 %%=========================================================================
-% Control variables for Candida albicans SC5314.
+% Control variables.
 %--------------------------------------------------------------------------
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
-if (strcmp(hapmap,genome) == 0)
+if (strcmp(hapmap,'') == 1)
+	useHapmap = false;
+else
 	useHapmap = true;
 	if (exist([main_dir 'users/default/hapmaps/' hapmap '/'], 'dir') == 7)
-		hapmapDir = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
+		hapmapDir  = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
+		hapmapUser = 'default';
 	else
-		hapmapDir = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
+		hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
+		hapmapUser = user;
 	end;
-else
-	useHapmap = false;
 end;
-if (strcmp(project,parent) == 0)
+if (strcmp(project,parent) == 1)
+	useParent  = false;
+	parentDir  = projectDir;
+	parentUSer = user;
+else
 	useParent = true;
 	if (exist([main_dir 'users/default/projects/' parent '/'], 'dir') == 7)
-		parentDir = [main_dir 'users/default/projects/' parent '/'];   % system parent.
+		parentDir  = [main_dir 'users/default/projects/' parent '/'];   % system parent.
+		parentUser = 'default';
 	else
-		parentDir = [main_dir 'users/' user '/projects/' parent '/'];  % user parent.
+		parentDir  = [main_dir 'users/' user '/projects/' parent '/'];  % user parent.
+		parentUser = user;
 	end;
-else
-	useParent = false
-	parentDir = projectDir;
 end;
 
 
@@ -113,7 +118,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -181,16 +186,60 @@ end;
 %%================================================================================================
 % Load SNP/LOH data.
 %-------------------------------------------------------------------------------------------------
-if (exist([projectDir 'SNP_' SNP_verString '.all1.mat'],'file') == 0)
-	fprintf('\nAllelic fraction MAT file not found, generating.\n');
-	process_2dataset_allelicRatios(projectDir, parentDir, chr_size, chr_name, chr_in_use, SNP_verString);
+if (useHapmap)
+%
+% Only run when compared vs. a hapmap.
+%
+	load([projectDir 'SNP_' SNP_verString '.all3.mat']);
+	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs'
+	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count','P_chr_baseCall','P_chr_SNP_homologA','P_chr_SNP_homologB','P_chr_SNP_flipHomologs'
+	%
+	% C_chr_SNP_data_positions = coordinate of SNP.
+	% C_chr_SNP_data_ratios    = allelic ratio of SNP.
+	% C_chr_count              = number of reads at SNP coordinate.
+	% C_chr_baseCall           = majority basecall of SNP.
+	% C_chr_SNP_homologA       = hapmap homolog a basecall.
+	% C_chr_SNP_homologB       = hapmap homolog b basecall.
+	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?
 else
-	fprintf('\nAllelic fraction MAT file found, loading.\n');
+%
+% Run when compared vs. a parent dataset or vs. itself.
+%
+	load([projectDir 'SNP_' SNP_verString '.all1.mat']);
+	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
+	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'
+	%
+	% C_chr_SNP_data_positions = coordinate of SNP.
+	% C_chr_SNP_data_ratios    = allelic ratio of SNP.
+	% C_chr_count              = number of reads at SNP coordinate.
 end;
-load([projectDir 'SNP_' SNP_verString '.all1.mat']);
+
+%
+% Data to be used in secondary fire-plot:
+%	X:Y = C_chr_SNP_data_positions:C_chr_SNP_data_ratios
+%
+
+%% ----------------------------------------------------------------------------------------
+% Clean up ratio data by discarding perfectly homozygous data and low read depth data.
+%------------------------------------------------------------------------------------------
+for chr = 1:num_chrs
+	if (chr_in_use(chr) == 1)
+		C_chr_SNP_data_positions{chr}(C_chr_SNP_data_ratios{chr} == 0) = [];
+		C_chr_count{             chr}(C_chr_SNP_data_ratios{chr} == 0) = [];
+		C_chr_SNP_data_ratios{   chr}(C_chr_SNP_data_ratios{chr} == 0) = [];
+
+		C_chr_SNP_data_positions{chr}(C_chr_SNP_data_ratios{chr} == 1) = [];
+		C_chr_count{             chr}(C_chr_SNP_data_ratios{chr} == 1) = [];
+		C_chr_SNP_data_ratios{   chr}(C_chr_SNP_data_ratios{chr} == 1) = [];
+
+		C_chr_SNP_data_positions{chr}(C_chr_count{chr} < 20) = [];
+		C_chr_SNP_data_ratios{   chr}(C_chr_count{chr} < 20) = [];
+		C_chr_count{             chr}(C_chr_count{chr} < 20) = [];
+	end;
+end;
 
 
-%% -----------------------------------------------------------------------------------------
+%% ----------------------------------------------------------------------------------------
 % Setup for main figure generation.
 %------------------------------------------------------------------------------------------
 % threshold for full color saturation in SNP/LOH figure.
@@ -201,29 +250,23 @@ fig = figure(1);
 set(gcf, 'Position', [0 70 1024 600]);
 largestChr = find(chr_width == max(chr_width));
 
+
 %% -----------------------------------------------------------------------------------------
 % Setup for linear-view figure generation.
 %-------------------------------------------------------------------------------------------
 if (Linear_display == true)
 	Linear_fig = figure(2);
 	Linear_genome_size   = sum(chr_size);
-
 	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
 	Linear_left_start    = 0.02;               % left margin (also right margin).  (formerly 0.01)
 	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-
 	Linear_height        = 0.6;
 	Linear_base          = 0.1;
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = 50; % ploidyBase*2;
 	Linear_left          = Linear_left_start;
-
-	axisLabelPosition_horiz = -50000/bases_per_bin;
 	axisLabelPosition_horiz = 0.01125;
 end;
-
-
-axisLabelPosition_vert = -50000/bases_per_bin;
 axisLabelPosition_vert = 0.01125;
 
 
@@ -233,19 +276,18 @@ axisLabelPosition_vert = 0.01125;
 first_chr = true;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-	    figure(fig);
-	    % make standard chr cartoons.
-	    left   = chr_posX(chr);
-	    bottom = chr_posY(chr);
-	    width  = chr_width(chr);
-	    height = chr_height(chr);
-	    subplot('Position',[left bottom width height]);
+		figure(fig);
+		% make standard chr cartoons.
+		left   = chr_posX(chr);
+		bottom = chr_posY(chr);
+		width  = chr_width(chr);
+		height = chr_height(chr);
+		subplot('Position',[left bottom width height]);
 		hold on;
 		fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 
-
 		% standard : axes labels etc.
-	    xlim([0,chr_size(chr)/bases_per_bin]);
+		xlim([0,chr_size(chr)/bases_per_bin]);
     
 		%% standard : modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
@@ -276,141 +318,108 @@ for chr = 1:num_chrs
 		% standard : show allelic ratio data.
 		chr_length                     = ceil(chr_size(chr)/bases_per_bin);
 		dataX                          = (C_chr_SNP_data_positions{chr}/bases_per_bin)';
-		dataY1                         = C_chr_SNP_data_ratios{chr};
-		dataY2                         = (dataY1*maxY)';
-		dataX(C_chr_count{chr}  <= 20) = [];
-		dataY2(C_chr_count{chr} <= 20) = [];
+		dataY1                         = (C_chr_SNP_data_ratios{chr}*maxY)';
+		dataY2                         = maxY - dataY1;
 		if (length(dataX) > 0)
-			[imageX,imageY,imageC]     = smoothhist2D_4([dataX dataX], [dataY2 (maxY-dataY2)], 4,[chr_length maxY],[chr_length maxY]);
-			imageC_correction          = imageC*0;
+			[imageX,imageY,imageC] = smoothhist2D_4([dataX dataX 0 chr_length], [dataY2 (maxY-dataY2) 0 0], 4,[chr_length maxY],[chr_length maxY]);
+			imageC_correction      = imageC*0;
 			for y = 1:maxY
 				imageC_correction(y,:) = 1-abs(y-maxY/2)/(maxY/2);
 			end;
-			imageC = imageC.*(1+imageC_correction.^2*16);
+			imageC = imageC.*(1+imageC_correction);
 			image(imageX, imageY, imageC);
 		end;
-
-%		for datum = 1:length(C_chr_SNP_data_positions{chr})
-%			C_locus_position = C_chr_SNP_data_positions{chr}(datum);
-%			C_locus_ratio    = C_chr_SNP_data_ratios{   chr}(datum);
-%			plot(C_locus_position/bases_per_bin,        C_locus_ratio*maxY,'Color',[1.0 0.0 0.0],'Marker','.','MarkerSize',2);
-%		end;
-%		for datum = 1:length(P_chr_SNP_data_positions{chr})
-%			P_locus_position = P_chr_SNP_data_positions{chr}(datum);
-%			P_locus_ratio    = P_chr_SNP_data_ratios{   chr}(datum);
-%			plot(P_locus_position/bases_per_bin, maxY - P_locus_ratio*maxY,'Color',[1/3 1/3 1/3],'Marker','.','MarkerSize',2);
-%		end;
 		% standard : end show allelic ratio data.
 
-			if (displayBREAKS == true) && (show_annotations == true)
-				chr_length = ceil(chr_size(chr)/bases_per_bin);
-                                for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length;
-                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
-                                end;
-                        end;
+		if (displayBREAKS == true) && (show_annotations == true)
+			chr_length = ceil(chr_size(chr)/bases_per_bin);
+			for segment = 2:length(chr_breaks{chr})-1
+				bP = chr_breaks{chr}(segment)*chr_length;
+				plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+			end;
+		end;
 
 		% standard : show centromere outlines and horizontal marks.
-	    x1 = cen_start(chr)/bases_per_bin;
-	    x2 = cen_end(chr)/bases_per_bin;
-	    leftEnd  = 0.5*5000/bases_per_bin;
-	    rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+		x1 = cen_start(chr)/bases_per_bin;
+		x2 = cen_end(chr)/bases_per_bin;
+		leftEnd  = 0.5*5000/bases_per_bin;
+		rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
 
-	    if (Centromere_format == 0)
-	        % standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-	        dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-	        dy = cen_tel_Yindent; %maxY/10;
-	        % draw white triangles at corners and centromere locations.
-	        % top left corner.
-	        c_ = [1.0 1.0 1.0];
-	        x_ = [leftEnd   leftEnd   leftEnd+dx];
-	        y_ = [maxY-dy   maxY      maxY      ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom left corner.
-	        x_ = [leftEnd   leftEnd   leftEnd+dx];
-	        y_ = [dy        0         0         ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % top right corner.
-	        x_ = [rightEnd   rightEnd   rightEnd-dx];
-	        y_ = [maxY-dy    maxY       maxY      ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom right corner.
-	        x_ = [rightEnd   rightEnd   rightEnd-dx];
-	        y_ = [dy         0          0         ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % top centromere.
-	        x_ = [x1-dx   x1        x2        x2+dx];
-	        y_ = [maxY    maxY-dy   maxY-dy   maxY];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom centromere.
-	        x_ = [x1-dx   x1   x2   x2+dx];
-	        y_ = [0       dy   dy   0    ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-	        plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-	             [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-	            'Color',[0 0 0]);
-	    end;
-	    % standard : end show centromere.
+		if (Centromere_format == 0)
+			% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
+			dx = cen_tel_Xindent; %5*5000/bases_per_bin;
+			dy = cen_tel_Yindent; %maxY/10;
+			% draw white triangles at corners and centromere locations.
+			% top left corner.
+			c_ = [1.0 1.0 1.0];
+			x_ = [leftEnd   leftEnd   leftEnd+dx];
+			y_ = [maxY-dy   maxY      maxY      ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom left corner.
+			x_ = [leftEnd   leftEnd   leftEnd+dx];
+			y_ = [dy        0         0         ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% top right corner.
+			x_ = [rightEnd   rightEnd   rightEnd-dx];
+			y_ = [maxY-dy    maxY       maxY      ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom right corner.
+			x_ = [rightEnd   rightEnd   rightEnd-dx];
+			y_ = [dy         0          0         ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% top centromere.
+			x_ = [x1-dx   x1        x2        x2+dx];
+			y_ = [maxY    maxY-dy   maxY-dy   maxY];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom centromere.
+			x_ = [x1-dx   x1   x2   x2+dx];
+			y_ = [0       dy   dy   0    ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
+			plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
+			     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
+			     'Color',[0 0 0]);
+		end;
+		% standard : end show centromere.
     
-	    % standard : show annotation locations
-	    if (show_annotations) && (length(annotations) > 0)
-	        plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-	        annotation_location = (annotation_start+annotation_end)./2;
-	        for i = 1:length(annotation_location)
-	            if (annotation_chr(i) == chr)
-	                annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                if (strcmp(annotation_type{i},'dot') == 1)
-	                    plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-	                                                          'MarkerFaceColor',annotation_fillcolor{i}, ...
-	                                                          'MarkerSize',     annotation_size(i));
-	                elseif (strcmp(annotation_type{i},'block') == 1)
-	                    fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-	                         [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-	                         annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
-	                end;
-	            end;
-	        end;
-	    end;
-	    % standard : end show annotation locations.
+		% standard : show annotation locations
+		if (show_annotations) && (length(annotations) > 0)
+			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
+			annotation_location = (annotation_start+annotation_end)./2;
+			for i = 1:length(annotation_location)
+				if (annotation_chr(i) == chr)
+					annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					if (strcmp(annotation_type{i},'dot') == 1)
+						plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
+						     'MarkerFaceColor',annotation_fillcolor{i}, ...
+						     'MarkerSize',     annotation_size(i));
+					elseif (strcmp(annotation_type{i},'block') == 1)
+						fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+						     [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+						     annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+					end;
+				end;
+			end;
+		end;
+		% standard : end show annotation locations.
 		hold off;
 
-	    %% Linear figure draw section
-	    if (Linear_display == true)
-	        figure(Linear_fig);
-	        Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
-	        subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
+		%% Linear figure draw section
+		if (Linear_display == true)
+			figure(Linear_fig);
+			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
+			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 			hold on;
-	        Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
-	        title(chr_label{chr},'Interpreter','none','FontSize',20);
-
-			% linear : show allelic ratio data as scatter-plot
-%			for datum = 1:length(C_chr_SNP_data_positions{chr})
-%				C_locus_position = C_chr_SNP_data_positions{chr}(datum);
-%				C_locus_ratio    = C_chr_SNP_data_ratios{   chr}(datum);
-%				plot(C_locus_position/bases_per_bin, C_locus_ratio*maxY         ,'Color',[1.0 0.0 0.0],'Marker','.','MarkerSize',2);
-%			end;
-%			for datum = 1:length(P_chr_SNP_data_positions{chr})			
-%				P_locus_position = P_chr_SNP_data_positions{chr}(datum);
-%				P_locus_ratio    = P_chr_SNP_data_ratios{   chr}(datum);
-%				plot(P_locus_position/bases_per_bin, (maxY - P_locus_ratio*maxY),'Color',[1/3 1/3 1/3],'Marker','.','MarkerSize',2);
-%			end;
-%%			for datum = 1:length(C_chr_SNP_data_positions{chr})
-%%				locus_position = C_chr_SNP_data_positions{chr}(datum);
-%%				C_ratio        = C_chr_SNP_data_ratios{   chr}(datum);
-%%				P_ratio        = P_chr_SNP_data_ratios{   chr}(datum);
-%%				% locus_value = maxY - abs(P_ratio - C_ratio)*maxY;  % no useful discrimination.
-%%				locus_value = P_ratio - C_ratio + 0.5;
-%%				plot(locus_position/bases_per_bin, locus_value,'Color',[1/3 1/3 1/3],'Marker','.','MarkerSize',2);
-%%			end;
+			Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
+			title(chr_label{chr},'Interpreter','none','FontSize',20);
 
 			% linear : show allelic ratio data as 2D-smoothed scatter-plot.
 			chr_length                     = ceil(chr_size(chr)/bases_per_bin);
@@ -420,12 +429,13 @@ for chr = 1:num_chrs
 			dataX(C_chr_count{chr}  <= 20) = [];
 			dataY2(C_chr_count{chr} <= 20) = [];
 			if (length(dataX) > 0)
-				[imageX,imageY,imageC]     = smoothhist2D_4([dataX dataX], [dataY2 (maxY-dataY2)], 4,[chr_length maxY],[chr_length maxY]);
-				imageC_correction          = imageC*0;
+				[imageX,imageY,imageC] = smoothhist2D_4([dataX dataX 0 chr_length], [dataY2 (maxY-dataY2) 0 0], 4,[chr_length maxY],[chr_length maxY]);
+				imageC_correction      = imageC*0;
 				for y = 1:maxY
 					imageC_correction(y,:) = 1-abs(y-maxY/2)/(maxY/2);
 				end;
-				imageC = imageC.*(1+imageC_correction.^2*16);
+				imageC = imageC.*(1+imageC_correction);
+				hold on;
 				image(imageX, imageY, imageC);
 			end;
 			% linear : end show allelic ratio data.
@@ -439,11 +449,11 @@ for chr = 1:num_chrs
                                 end;
                         end;
 
-	        % linear : show centromere.
-	        x1 = cen_start(chr)/bases_per_bin;
-	        x2 = cen_end(chr)/bases_per_bin;
-	        leftEnd  = 0.5*5000/bases_per_bin;
-	        rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+			% linear : show centromere.
+			x1 = cen_start(chr)/bases_per_bin;
+			x2 = cen_end(chr)/bases_per_bin;
+			leftEnd  = 0.5*5000/bases_per_bin;
+			rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
 
 			if (Centromere_format == 0)
 				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
@@ -493,36 +503,36 @@ for chr = 1:num_chrs
 			end;
 			% linear : end show annotation locations.
 
-	        % linear : Final formatting stuff.
-	        xlim([0,chr_size(chr)/bases_per_bin]);
-	        % modify y axis limits to show annotation locations if any are provided.
-	        if (length(annotations) > 0)
-	            ylim([-maxY/10*1.5,maxY]);
-	        else
-	            ylim([0,maxY]);
-	        end;
-		set(gca,'YTick',[]);
-		set(gca,'YTickLabel',[]);
-	        set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-	        set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-	        set(gca,'XTickLabel',[]);
-	        if (first_chr == true)
-			% This section sets the Y-axis labelling.
-			text(axisLabelPosition_horiz, maxY/4*0, '0'  ,'HorizontalAlignment','right','Fontsize',10);
-			text(axisLabelPosition_horiz, maxY/4*1, '1/4','HorizontalAlignment','right','Fontsize',10);
-			text(axisLabelPosition_horiz, maxY/4*2, '1/2','HorizontalAlignment','right','Fontsize',10);
-			text(axisLabelPosition_horiz, maxY/4*3, '3/4','HorizontalAlignment','right','Fontsize',10);
-			text(axisLabelPosition_horiz, maxY/4*4, '1'  ,'HorizontalAlignment','right','Fontsize',10);
-		end;
-		set(gca,'FontSize',12);
-		% linear : end final reformatting.
+			% linear : Final formatting stuff.
+			xlim([0,chr_size(chr)/bases_per_bin]);
+			% modify y axis limits to show annotation locations if any are provided.
+			if (length(annotations) > 0)
+				ylim([-maxY/10*1.5,maxY]);
+			else
+				ylim([0,maxY]);
+			end;
+			set(gca,'YTick',[]);
+			set(gca,'YTickLabel',[]);
+			set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
+			set(gca,'XTickLabel',[]);
+			if (first_chr == true)
+				% This section sets the Y-axis labelling.
+				text(axisLabelPosition_horiz, maxY/4*0, '0'  ,'HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_horiz, maxY/4*1, '1/4','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_horiz, maxY/4*2, '1/2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_horiz, maxY/4*3, '3/4','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_horiz, maxY/4*4, '1'  ,'HorizontalAlignment','right','Fontsize',10);
+			end;
+			set(gca,'FontSize',12);
+			% linear : end final reformatting.
 
-		hold off;
+			hold off;
 	        
-	        % shift back to main figure generation.
-	        figure(fig);
+			% shift back to main figure generation.
+			figure(fig);
 			first_chr = false;
-	    end;
+		end;
 	end;
 end;
 

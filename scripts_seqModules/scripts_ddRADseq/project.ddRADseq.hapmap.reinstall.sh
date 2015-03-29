@@ -7,7 +7,7 @@ set -e;
 umask 007;
 
 user='darren1';
-hapmap='C_albicans_SC5314_A21-s02-m09-r07';
-project='test_ddRADseq_hapmap';
+project='test_ddRADseq_11461_vs_SC5314_and_novelHapmap';
+hapmap='test_hapmap_2';
 
 sh project.ddRADseq.hapmap.install_4.sh $user $project $hapmap;

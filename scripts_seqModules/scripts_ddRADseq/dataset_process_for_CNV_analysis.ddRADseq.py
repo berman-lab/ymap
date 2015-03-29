@@ -35,9 +35,9 @@ inputFile          = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.tx
 t0 = time.clock()
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*================================================================*\n")
-	myfile.write("\t\t| Log of 'dataset_process_for_CNV_analysis.ddRADseq.py'          |\n")
-	myfile.write("\t\t*----------------------------------------------------------------*\n")
+	myfile.write("\t\t*========================================================================================================*\n")
+	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_CNV_analysis.ddRADseq.py'.             |\n")
+	myfile.write("\t\t*--------------------------------------------------------------------------------------------------------*\n")
 
 
 #============================================================================================================
@@ -346,6 +346,6 @@ print "### ", time.clock() - t2, "seconds to output basic stats of each restrict
 print "### ", time.clock() - t0, "seconds to complete processing of pileup file and fragment definitions."
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*----------------------------------------------------------------*\n")
-	myfile.write("\t\t| End of Log from 'dataset_process_for_CNV_analysis.ddRADseq.py' |\n")
-	myfile.write("\t\t*================================================================*\n")
+	myfile.write("\t\t*--------------------------------------------------------------------------------------------------------*\n");
+	myfile.write("\t\t| End of Log from 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_CNV_analysis.ddRADseq.py'.    |\n")
+	myfile.write("\t\t*========================================================================================================*\n")

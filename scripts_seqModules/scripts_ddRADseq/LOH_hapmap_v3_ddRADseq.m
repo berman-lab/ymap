@@ -96,7 +96,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -215,8 +215,8 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 				end;
 
 				% format = '(number1,number2,...,numberN)'
-                phased_coordinates_string(1)       = [];
-                phased_coordinates_string(end)     = [];
+				phased_coordinates_string(1)           = [];
+				phased_coordinates_string(end)         = [];
 				if (length(phased_coordinates_string) == 0)
 					phased_coordinates             = [];
 				else
@@ -428,11 +428,6 @@ for chr = 1:num_chrs
 		GCdata_all          = [GCdata_all     rawData_chr_X{chr}        ];
 
 		for chr_bin = 1:length(SNPplot{chr,1})
-% darren : attempt at data normalization is failing, introduces major bug due to data compaction.
-% So, data isn't actually returned to main pipeline. This feature should be resolved later for SNP
-% density presentation, after generating figures to illustrate correlation.
-%			chr_SNPdata{chr,1}{chr_bin}  = rawData_chr_Y{chr,1}{chr_bin};
-%			chr_SNPdata{chr,2}{chr_bin}  = rawData_chr_Y{chr,2}{chr_bin};
 			cchr_SNPdata{chr,1}{chr_bin} = normalizedData_chr_Y{chr,1}{chr_bin};
 			cchr_SNPdata{chr,2}{chr_bin} = normalizedData_chr_Y{chr,2}{chr_bin};
 			SNPdata_all_1                = [SNPdata_all_1  length(chr_SNPdata{chr,1}{chr_bin})  ];
@@ -445,41 +440,43 @@ end;
 
 
 %% Generate figure showing subplots of LOWESS fittings.
-GCfig = figure(3);
-subplot(2,3,1);
-    plot(GCratioData_all,SNPdata_all,'k.','markersize',1);
-    hold on;	plot(fitX1,fitY1,'r','LineWidth',2);   hold off;
-    xlabel('GC ratio');   ylabel('SNP data');
-    xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
-subplot(2,3,2);
-	plot(GCdata_all,SNPdata_all_1,'r.','markersize',1);
-	hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('SNP data');
-	xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
-subplot(2,3,3);
-	plot(GCdata_all,SNPdata_all_2,'g.','markersize',1);
-	hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('SNP data');
-	xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
+if (false)
+	GCfig = figure(3);
+	subplot(2,3,1);
+	    plot(GCratioData_all,SNPdata_all,'k.','markersize',1);
+	    hold on;	plot(fitX1,fitY1,'r','LineWidth',2);   hold off;
+	    xlabel('GC ratio');   ylabel('SNP data');
+	    xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
+	subplot(2,3,2);
+		plot(GCdata_all,SNPdata_all_1,'r.','markersize',1);
+		hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('SNP data');
+		xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
+	subplot(2,3,3);
+		plot(GCdata_all,SNPdata_all_2,'g.','markersize',1);
+		hold on;    plot(fitX1,fitY1,'k','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('SNP data');
+		xlim([0.0 1.0]);      ylim([0 max(medianRawY*5,5)]);   axis square;
 
-subplot(2,3,4);
-	plot(GCratioData_all,cSNPdata_all,'k.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('corrected SNP data');
-	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
-subplot(2,3,5);
-	plot(GCdata_all,cSNPdata_all_1,'r.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('corrected SNP data');
-	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
-subplot(2,3,6);
-	plot(GCdata_all,cSNPdata_all_1,'g.','markersize',1);
-	hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
-	xlabel('GC ratio');   ylabel('corrected SNP data');
-	xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
+	subplot(2,3,4);
+		plot(GCratioData_all,cSNPdata_all,'k.','markersize',1);
+		hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'r','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('corrected SNP data');
+		xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
+	subplot(2,3,5);
+		plot(GCdata_all,cSNPdata_all_1,'r.','markersize',1);
+		hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('corrected SNP data');
+		xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
+	subplot(2,3,6);
+		plot(GCdata_all,cSNPdata_all_1,'g.','markersize',1);
+		hold on;   plot([min(GCratioData_all) max(GCratioData_all)],[Y_target Y_target],'k','LineWidth',2);   hold off;
+		xlabel('GC ratio');   ylabel('corrected SNP data');
+		xlim([0.0 1.0]);      ylim([0 5]);                    axis square;
 
-saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.eps'], 'epsc');
-saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
+	saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.eps'], 'epsc');
+	saveas(GCfig, [projectDir '/fig.GCratio_vs_SNP.png'], 'png');
+end;
 
 
 %% -----------------------------------------------------------------------------------------
@@ -524,22 +521,16 @@ largestChr = find(chr_width == max(chr_width));
 if (Linear_display == true)
 	Linear_fig = figure(2);
 	Linear_genome_size   = sum(chr_size);
-
 	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
 	Linear_left_start    = 0.02;               % left margin (also right margin).
 	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-
 	Linear_height        = 0.6;
 	Linear_base          = 0.1;
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
 	Linear_left          = Linear_left_start;
-
-	axisLabelPosition_horiz = -50000/bases_per_bin;
 	axisLabelPosition_horiz = 0.01125;
 end;
-
-axisLabelPosition_vert = -50000/bases_per_bin;
 axisLabelPosition_vert = 0.01125;
 
 
@@ -585,6 +576,7 @@ for chr = 1:num_chrs
 	        colors(i,2) = c_post(2);
 	        colors(i,3) = c_post(3);
 	    end;
+
 	    % standard : draw colorbars.
 	    for i = 1:length(HETplot2{chr})+1;
 	        x_ = [i i i-1 i-1];
@@ -645,7 +637,7 @@ for chr = 1:num_chrs
 
 		set(gca,'FontSize',12);
 		if (chr == find(chr_posY == max(chr_posY)))
-			title([ project ' CNV map'],'Interpreter','none','FontSize',24);
+			title([ project ' SNP map'],'Interpreter','none','FontSize',24);
 		end;
 		hold on;
 		% standard : end axes labels etc.

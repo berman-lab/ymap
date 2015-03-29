@@ -314,7 +314,7 @@ for line in data:
 				result          = childLine;
 
 			if result == "":
-				locus_phase = 10;  # no phase information, due to no matching coodinate in child dataset.
+				locus_phase = 10;  # no phase information, due to no data at coodinate in child dataset.
 			else:
 				C_chr_name    = childLine_parts[0];   # chr_name_string
 				C_position    = childLine_parts[1];   # bp_coordinate
@@ -336,7 +336,7 @@ for line in data:
 				#     correct phase => 1
 				#     wrong phase   => 2 
 				if (fragment_found == 0): # this coordinate was not associated with a LOH fragment.
-					locus_phase = 11;          # no phase information, due to coordinate not matching a LOH fragment.
+					locus_phase = 11;          # no phase information, due to coordinate not matching a LOH fragment in child dataset.
 				else:
 					if (C_allele == P_allele1):
 						if (homologID == "a") or (homologID == "A"):

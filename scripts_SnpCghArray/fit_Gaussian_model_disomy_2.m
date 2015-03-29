@@ -1,36 +1,34 @@
-function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = ...
-    fit_Gaussian_model_disomy_2(data,locations,init_width,fraction,skew_factor,func_type,show)
+function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gaussian_model_disomy_2(data,locations,init_width,fraction,skew_factor,func_type,show)
 % attempt to fit a single-gaussian model to data.
 %[G1_a, G1_b, G1_c, G2_a, G2_b, G2_c, S_a, S_c] = GaussianModel_G1SG2(tet_control,parameter,'fcs1','');
-    p1_a = nan;   p1_b = nan;   p1_c = nan;
-    p2_a = nan;   p2_b = nan;   p2_c = nan;
-    p3_a = nan;   p3_b = nan;   p3_c = nan;
+	p1_a = nan;   p1_b = nan;   p1_c = nan;
+	p2_a = nan;   p2_b = nan;   p2_c = nan;
+	p3_a = nan;   p3_b = nan;   p3_c = nan;
     
-    if isnan(data)
-        % fitting variables
-        return
-    end
+	if isnan(data)
+		% fitting variables
+		return
+	end
 
-    % find max height in data.
-    datamax = max(data);
-    %datamax(data ~= max(datamax)) = [];
+	% find max height in data.
+	datamax = max(data);
+	%datamax(data ~= max(datamax)) = [];
     
-    % if maxdata is final bin, then find next highest p
-    if (find(data == datamax) == length(data))
-        data(data == datamax) = 0;
-        datamax = data;
-        datamax(data ~= max(datamax)) = [];
-    end;
+	% if maxdata is final bin, then find next highest p
+	if (find(data == datamax) == length(data))
+		data(data == datamax) = 0;
+		datamax = data;
+		datamax(data ~= max(datamax)) = [];
+	end;
     
-    % a = height; b = location; c = width.
-    p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
-    p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
-    p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
+	% a = height; b = location; c = width.
+	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
+	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
+	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
    
-%%	initial = [p1_ai,p1_ci,  p2_ai,p2_ci,  p3_ai,p3_ci,  skew_factor];
 	initial = [p1_ai,p1_ci,  p2_ai,  p3_ai,  skew_factor];
-    options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
-    time    = 1:length(data);
+	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
+	time    = 1:length(data);
 
 	if (data == zeros(1,length(data)))  % curve fittings don't work with no data, curves instead are flat.
 		p1_a = 1;
@@ -61,16 +59,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = ...
 			% < 0 : did not converge to a solution.
 			% return last best estimate anyhow.
 		end;
-%%		p1_a = abs(Estimates(1));
-%%		p1_b = locations(1);
-%%		p1_c = abs(Estimates(2));
-%%		p2_a = abs(Estimates(3));
-%%		p2_b = locations(2);
-%%		p2_c = abs(Estimates(4));;   %p1_c*(1-fraction);
-%%		p3_a = abs(Estimates(5));
-%%		p3_b = locations(3);
-%%		p3_c = abs(Estimates(6));
-%%		skew_factor = abs(Estimates(7));
 		p1_a = abs(Estimates(1));
 		p1_b = locations(1);
 		p1_c = abs(Estimates(2));
@@ -83,7 +71,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = ...
 		p3_c = p3_a/p1_a*p1_c;             % peak width scales with peak height.
 		skew_factor = abs(Estimates(5));
 	end;
-
 	c1_ = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
 	p1_c = p1_c*p1_c/c1_;
 	c3_ = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
@@ -91,16 +78,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = ...
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show,fraction)
-%%	p1_a = abs(params(1));   % height.
-%%	p1_b = locations(1);     % location.
-%%	p1_c = abs(params(2));   % width.
-%%	p2_a = abs(params(3));   % height.
-%%	p2_b = locations(2);     % location.
-%%	p2_c = abs(params(4));   % width.
-%%	p3_a = abs(params(5));   % height.
-%%	p3_b = locations(3);     % location.
-%%	p3_c = abs(params(6));   % width.
-%%	skew_factor = abs(params(7));
 	p1_a = abs(params(1));
 	p1_b = locations(1);
 	p1_c = abs(params(2));
@@ -112,51 +89,42 @@ function sse = fiterror(params,time,data,func_type,locations,show,fraction)
 	p3_b = locations(3);
 	p3_c = p3_a/p1_a*p1_c;             % peak width scales with peak height.
 	skew_factor = abs(params(5));
-
-%%	if (p1_c < 2);   p1_c = 2;   end;
-%%	if (p2_c < 2);   p2_c = 2;   end;
-%%	if (p3_c < 2);   p3_c = 2;   end;
-    
-    time1_1 = 1:floor(p1_b);
-    time1_2 = ceil(p1_b):200;
-    if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
-    time3_1 = 1:floor(p3_b);
-    time3_2 = ceil(p3_b):200;
-    if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
-    
-    c1_ = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
-    p1_c = p1_c*p1_c/c1_;
-    c3_ = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
-    p3_c = p3_c*p3_c/c3_;
-    
-    p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-    p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor/(100-abs(100-p1_b))) ).^2);
-    p2_fit   = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
-    p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor/(100-abs(100-p3_b))) ).^2);
-    p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-    
-    p1_fit = [p1_fit_L p1_fit_R];
-    p3_fit = [p3_fit_L p3_fit_R];
-    fitted = p1_fit+p2_fit+p3_fit;
-
-    width = 0.5;
-    switch(func_type)
-        case 'cubic'
-            Error_Vector = (fitted).^2 - (data).^2;
-            sse          = sum(abs(Error_Vector));
-        case 'linear'
-            Error_Vector = (fitted) - (data);
-            sse          = sum(Error_Vector.^2);
-        case 'log'
-            Error_Vector = log(fitted) - log(data);
-            sse          = sum(abs(Error_Vector));
-        case 'fcs'
-            Error_Vector = (fitted) - (data);
-            %Error_Vector(1:round(G1_b*(1-width))) = 0;
-            %Error_Vector(round(G1_b*(1+width)):end) = 0;
-            sse          = sum(Error_Vector.^2);
-        otherwise
-            error('Error: choice for fitting not implemented yet!');
-            sse          = 1;            
-    end;
+	time1_1 = 1:floor(p1_b);
+	time1_2 = ceil(p1_b):200;
+	if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
+	time3_1 = 1:floor(p3_b);
+	time3_2 = ceil(p3_b):200;
+	if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
+	c1_ = p1_c/2 + p1_c*skew_factor/(100-abs(100-p1_b))/2;
+	p1_c = p1_c*p1_c/c1_;
+	c3_ = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
+	p3_c = p3_c*p3_c/c3_;
+	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor/(100-abs(100-p1_b))) ).^2);
+	p2_fit   = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
+	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor/(100-abs(100-p3_b))) ).^2);
+	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
+	p1_fit = [p1_fit_L p1_fit_R];
+	p3_fit = [p3_fit_L p3_fit_R];
+	fitted = p1_fit+p2_fit+p3_fit;
+	width = 0.5;
+	switch(func_type)
+		case 'cubic'
+			Error_Vector = (fitted).^2 - (data).^2;
+			sse          = sum(abs(Error_Vector));
+		case 'linear'
+			Error_Vector = (fitted) - (data);
+			sse          = sum(Error_Vector.^2);
+		case 'log'
+			Error_Vector = log(fitted) - log(data);
+			sse          = sum(abs(Error_Vector));
+		case 'fcs'
+			Error_Vector = (fitted) - (data);
+			%Error_Vector(1:round(G1_b*(1-width))) = 0;
+			%Error_Vector(round(G1_b*(1+width)):end) = 0;
+			sse          = sum(Error_Vector.^2);
+		otherwise
+			error('Error: choice for fitting not implemented yet!');
+			sse          = 1;            
+	end;
 end

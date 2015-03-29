@@ -11,7 +11,7 @@ fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 // Deal with compressed archives.
 if (strcmp($ext,"zip") == 0) {
 	fwrite($condensedLogOutput, "Decompressing ZIP file : ".$name."\n");
-	fwrite($logOutput, "\t\t| This is a ZIP archive of : ");
+	fwrite($logOutput, "\t\t| This is a ZIP archive of : \n");
 	$currentDir = getcwd();                             // get script's path.
 	// figure out filename contained in zip archive.
 	$null               = shell_exec("unzip -l ".$projectPath.$name." > ".$projectPath."zipTemp.txt");   // generate txt file containing archive contents.
@@ -19,8 +19,8 @@ if (strcmp($ext,"zip") == 0) {
 	$zipTempArchiveLine = trim($zipTempLines[3]);
 	$columns            = preg_split('/\s+/', $zipTempArchiveLine);
 	$oldName            = $columns[3];
-	fwrite($logOutput, "\t\t|\t'$oldName'.\n");
 	$fileName_parts     = preg_split('/[.]/', $oldName);
+	fwrite($logOutput,"\t\t|\t'".$oldName."'.\n");
 	fwrite($logOutput,"\t\t| The number of fileName parts = ".count($fileName_parts)."\n");
 	// extract archive.
 	chdir($projectPath);                   // move to projectDirectory.
@@ -75,51 +75,43 @@ if (strcmp($ext,"zip") == 0) {
 	$name_new    = $rename;
 } else if (strcmp($ext,"gz") == 0) {
 	fwrite($condensedLogOutput, "Decompressing GZ file : ".$name_new."\n");
-	fwrite($logOutput, "\t\t| This is a GZ archive of : ");
+	fwrite($logOutput, "\t\t| This is a GZ archive of : \n");
 	// figure out filename contained in zip archive.
 	$null               = shell_exec("gzip -l ".$projectPath.$name." > ".$projectPath."gzTemp.txt");   // generate txt file containing archive contents.
 	$gzTempLines        = file($projectPath."gzTemp.txt");
 	$gzTempArchiveLine  = trim($gzTempLines[1]);
 	$columns            = preg_split('/\s+/', $gzTempArchiveLine);
-	$oldName            = $columns[3];
+	$oldName            = str_replace($projectPath,'',$columns[3]);  // clean off directory path from calling script to datafile.
 	$fileName_parts     = preg_split('/[.]/', $oldName);
-	fwrite($logOutput,"\t\t|\t'$oldName'.\n");
-	fwrite($logOutput,"\t\t| The number of fileName parts = ".count($fileName_parts)."\n");
+	fwrite($logOutput,"\t\t|\t'".$oldName."'.\n");
 	// extract archive.
 	$currentDir = getcwd();                // get script's path.
 	chdir($projectPath);                   // move to projectDirectory.
 	$null = shell_exec("gzip -d ".$name);  // decompress archive.
 	chdir($currentDir);                    // move back to script's path.
 	// Figure out file type.
-	if (count($fileName_parts) == 4) {
+	$currentDir      = getcwd();
+	fwrite($logOutput, "\t\t| Current directory  = '".$currentDir."'.\n");
+	$file_name       = $currentDir."/".$projectPath.$oldName;
+	fwrite($logOutput, "\t\t| Open file '".$file_name."'.\n");
+	if (count($fileName_parts) >= 2) {
 		// A file extension is found.
 		// For example:
-		//    [0] = '.';
-		//    [1] = '.';
-		//    [2] = '/users/darren1/projects/test_gz4/test';
-		//    [3] = 'fastq';
-		$fileName_parts2 = preg_split('/[\/]/', $fileName_parts[count($fileName_parts)-2] );
-		$oldName         = end($fileName_parts2).".".end($fileName_parts);
+		//    [0] = 'test';
+		//    [1] = 'fastq';
 		$ext_new         = end($fileName_parts);
+		fwrite($logOutput, "\t\t| Original file name = '".$oldName."'.\n");
+		fwrite($logOutput, "\t\t|    File extension  = '".$ext_new."'\n");
 	} else {
 		// A file extension is not found.
 		// For example:
-		//    [0] = '.';
-		//    [1] = '.';
-		//    [2] = '/users/darren1/projects/test_gz4/test';
-		$fileName_parts2 = preg_split('/[\/]/', end($fileName_parts) );
-		$oldName         = end($fileName_parts2);
+		//    [0] = 'test';
 		// determine if it is a FASTQ file by looking at first four lines of text.
-		$currentDir      = getcwd();
-		// fwrite($logOutput, "\t\t| Current directory = '$currentDir'.\n");
-		$file_name       = $currentDir."/".$projectPath.$oldName;
-		// fwrite($logOutput, "\t\t| Open file '".$file_name."'.\n");
-		$file_handle     = fopen($file_name,'r');
-		// fwrite($logOutput, "\t\t| file_handle = '".$file_handle."'\n");
-		$line_1          = fgets($file_handle);
-		$line_2          = fgets($file_handle);
-		$line_3          = fgets($file_handle);
-		$line_4          = fgets($file_handle);
+		$file_handle = fopen($file_name,'r');
+		$line_1      = fgets($file_handle);
+		$line_2      = fgets($file_handle);
+		$line_3      = fgets($file_handle);
+		$line_4      = fgets($file_handle);
 		fclose($file_handle);
 		if (($line_1[0] == '@') && ($line_3[0] == '+')) {
 			// is a FASTQ file.
@@ -132,22 +124,27 @@ if (strcmp($ext,"zip") == 0) {
 				|| (strcmp($line_1_words[0],"Ca21chr4_C_albicans_SC5314") == 0) || (strcmp($line_1_words[0],"Ca21chr5_C_albicans_SC5314") == 0)
 				|| (strcmp($line_1_words[0],"Ca21chr6_C_albicans_SC5314") == 0) || (strcmp($line_1_words[0],"Ca21chr7_C_albicans_SC5314") == 0)
 				|| (strcmp($line_1_words[0],"Ca21chrR_C_albicans_SC5314") == 0)) {
-				// is a TXT file, as defined in the paper.
+				// is a TXT file, as defined in the paper. This will only catch datasets for Candida albicans Assembly 21.
 				$ext_new = "txt";
 			} elseif (strcmp($line_1_words[0],"Created") == 0) {
 				// is a XLS or a Tab-delimited-txt (TXT) file, as output from BlueFuse.
 				$ext_new = "xls";
 			} else {
 				$ext_new = "none1";
+				// unable to determine file type.
 			}
 		}
+		fwrite($logOutput, "\t\t| Original file name         = '".$oldName."'.\n");
+		fwrite($logOutput, "\t\t|    Inferred file extension = '".$ext_new."'\n");
+		$oldName = $oldName.".".$ext_new;
+		fwrite($logOutput, "\t\t|    New file name           = '".$oldName."'\n");
 	}
-	fwrite($logOutput, "\t\t| Original name within archive = '".$oldName."'.\n");
-	$name_new    = $oldName;
 	// rename decompressed file.
 	$rename      = "datafile_".$key.".".$ext_new;
 	chdir($projectPath);
-	rename($name_new,$rename);
+	fwrite($logOutput, "\t\t| oldName = '".$oldName."'\n");
+	fwrite($logOutput, "\t\t| rename  = '".$rename."'\n");
+	rename($oldName,$rename);
 	chdir($currentDir);
 	$name_new    = $rename;
 } else {

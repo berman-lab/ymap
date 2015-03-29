@@ -160,11 +160,6 @@ then
 #	rm $projectDirectory"preprocessed_CNVs.ddRADseq.txt";
 	echo "\tpreprocessed_CNVs.ddRADseq.txt" >> $logName;
 fi
-if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.CNV_filtered.txt" ]
-then
-#	rm $projectDirectory"preprocessed_SNPs.ddRADseq.CNV_filtered.txt";
-	echo "\tpreprocessed_SNPs.ddRADseq.CNV_filtered.txt" >> $logName;
-fi
 if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]
 then
 #	rm $projectDirectory"preprocessed_SNPs.ddRADseq.txt";

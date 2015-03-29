@@ -28,7 +28,7 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-    require_once '../constants.php';
+	require_once '../constants.php';
 	$fileName        = filter_input(INPUT_POST, "fileName",        FILTER_SANITIZE_STRING);
 	$user            = filter_input(INPUT_POST, "user",            FILTER_SANITIZE_STRING);
 	$project         = filter_input(INPUT_POST, "project",         FILTER_SANITIZE_STRING);
@@ -37,7 +37,7 @@
 // Initialize 'process_log.txt' file.
 	$outputLogName = "../users/".$user."/projects/".$project."/process_log.txt";
 	$outputLog     = fopen($outputLogName, 'w');
-    fwrite($outputLog, "Process_log.txt initialized.\n");
+	fwrite($outputLog, "Process_log.txt initialized.\n");
 
 // Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = "../users/".$user."/projects/".$project."/working.txt";

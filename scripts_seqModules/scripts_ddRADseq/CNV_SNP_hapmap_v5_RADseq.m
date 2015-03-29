@@ -2,6 +2,8 @@ function [] = CNV_SNP_hapmap_v5_RADseq(main_dir,user,genomeUser,project,parent,h
                                        SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
@@ -14,12 +16,20 @@ colorBars                   = true;
 blendColorBars              = false;
 show_annotations            = true;
 Yscale_nearest_even_ploidy  = true;
-HistPlot                    = true;
-ChrNum                      = true;
-Linear_display              = true;
+AnglePlot                   = true;   % Show histogram of alleleic fraction at the left end of standard figure chromosomes.
+FillColors                  = true;   %     Fill histogram using colors.
+show_uncalibrated           = false;  %     Fill with single color instead of ratio call colors.
+HistPlot                    = true;   % Show histogram of CNV at the right end of standard figure chromosomes.
+ChrNum                      = true;   % Show numerical etimates of copy number to the right of standard figure chromosomes.
+Linear_display              = true;   % Figure version with chromosomes laid out horizontally.
 Linear_displayBREAKS        = false;
-Low_quality_ploidy_estimate = true;
-Output_CGD_annotations      = true;   % Generate CGD annotation files for analyzed datasets.
+Low_quality_ploidy_estimate = true;   % Estimate error in overall ploidy estimate, assuming most common value is actually euploid.
+Output_CGD_annotations      = false;  % Generate CGD annotation files for analyzed datasets.
+
+fprintf('\n');
+fprintf('################################\n');
+fprintf('## CNV_SNP_hapmap_v5_RADseq.m ##\n');
+fprintf('################################\n');
 
 
 %% =========================================================================================
@@ -36,15 +46,10 @@ end;
 
 
 %% =========================================================================================
-% Control variables for Candida albicans SC5314.
+% Control variables.
 %-------------------------------------------------------------------------------------------
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
-fprintf(['hapmap  = "' hapmap  '"\n']);
-fprintf(['genome  = "' genome  '"\n']);
-fprintf(['project = "' project '"\n']);
-fprintf(['parent  = "' parent  '"\n']);
-
 if (strcmp(hapmap,'') == 1)
 	useHapmap = false;
 else
@@ -69,7 +74,10 @@ else
 		parentUser = user;
 	end;
 end;
-
+fprintf(['hapmap  = "' hapmap  '"\n']);
+fprintf(['genome  = "' genome  '"\n']);
+fprintf(['project = "' project '"\n']);
+fprintf(['parent  = "' parent  '"\n']);
 
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [Aneuploidy]                                                          = Load_dataset_information(projectDir);
@@ -120,7 +128,7 @@ for i = 1:length(figure_details)
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -143,10 +151,6 @@ end;
 %% =========================================================================================
 %% =========================================================================================
 %% =========================================================================================
-%% = No further control variables below. ===================================================
-%% =========================================================================================
-%% =========================================================================================
-%% =========================================================================================
 
 
 % Process input ploidy.
@@ -158,16 +162,6 @@ if (ploidyBase > 4);   ploidyBase = 4;   end;
 if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
-% basic plot parameters not defined per genome.
-TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-bases_per_bin    = max(chr_size)/700;
-bases_per_SNPbin = bases_per_bin*10;
-maxY             = ploidyBase*2;
-cen_tel_Xindent  = 5;
-cen_tel_Yindent  = maxY/5;
-
-fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
-
 
 %% =========================================================================================
 % Load CGH data after correction for GC and chr-end biases.
@@ -177,16 +171,36 @@ load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
 largestChr = find(chr_width == max(chr_width));
 
 
+% basic plot parameters not defined per genome.
+TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
+bases_per_bin    = max(chr_size)/700;
+bases_per_SNPbin = bases_per_bin*10;
+maxY             = ploidyBase*2;
+cen_tel_Xindent  = 5;
+cen_tel_Yindent  = maxY/5;
+fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
+
+
 %%================================================================================================
 % Load SNP/LOH data.
 %-------------------------------------------------------------------------------------------------
 LOH_file = [projectDir 'SNP_' SNP_verString '.reduced.mat'];
 if (exist(LOH_file,'file') == 2)
-	load(LOH_file);                                   % 'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsP'
+	load(LOH_file);
+	% new_bases_per_bin
+	% chr_SNPdata{chr,i} :: i = [1..4]
+	%   1 : phased SNP ratio data.
+	%   2 : unphased SNP ratio data.
+	%   3 : phased SNP coordinate data.
+	%   4 : unphased SNP coordinate data.
+	% chr_SNPdata_colorsC{chr,i} :: i = [1..3] = [R, G, B]
+	% chr_SNPdata_colorsP{chr,i} :: i = [1..3] = [R, G, B]
 else
-	load([projectDir 'SNP_' SNP_verString '.mat']);   % 'chr_SNPdata'
+	load([projectDir 'SNP_' SNP_verString '.mat']);
+	% 'chr_SNPdata'
 	new_bases_per_bin = bases_per_bin;
 end;
+
 
 %% =========================================================================================
 % Test adjacent segments for no change in copy number estimate.
@@ -268,6 +282,42 @@ for chr = 1:num_chrs
 end;
 
 
+if (useHapmap)
+	%
+	% Only run when compared vs. a hapmap.
+	%
+	load([projectDir 'SNP_' SNP_verString '.all3.mat']);
+	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs'
+	%
+	% C_chr_SNP_data_positions = coordinate of SNP.
+	% C_chr_SNP_data_ratios    = allelic ratio of SNP.
+	% C_chr_count              = number of reads at SNP coordinate.
+	% C_chr_baseCall           = majority basecall of SNP.
+	% C_chr_SNP_homologA       = hapmap homolog a basecall.
+	% C_chr_SNP_homologB       = hapmap homolog b basecall.
+	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?   0 = 'correct phase, no', 1 = 'incorrect phase, yes', 10 = 'no phasing info'.
+else
+	%
+	% Run when compared vs. a parent dataset or vs. itself.
+	%
+	load([projectDir 'SNP_' SNP_verString '.all1.mat']);
+	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
+	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'
+end;
+
+
+%% =========================================================================================
+% Calculate allelic fraction cutoffs.
+%-------------------------------------------------------------------------------------------
+calculate_allelic_ratio_cutoffs;
+
+
+%% ====================================================================
+% Define colors for figure generation.
+%----------------------------------------------------------------------
+phased_and_unphased_color_definitions;
+
+
 %% ====================================================================
 % Initialize CGD annotation output file.
 %----------------------------------------------------------------------
@@ -278,111 +328,9 @@ end;
 
 
 %% =========================================================================================
-% Blend adjacent colorbars to minimize noise :
-%	doesn't work correctly.
-%	When comparing strain to parent, it averages allelic ratios from het coordinates with adjacent hom coordinates.
+% Save workspace variables for use in "CNV_SNP_hapmap_v4_RedGreen.m"
 %-------------------------------------------------------------------------------------------
-if (blendColorBars)
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			% X-coordinates for chromosome.
-			dataX    = 1:ceil(chr_size(chr)/new_bases_per_bin);
-
-			% Y-coordinates for experimental dataset.
-			dataY    = chr_SNPdata{chr,2};
-			newDataY = dataY;
-			if (length(dataX) > 2)
-				for i = 2:(length(dataX)-1)
-					datumX = dataX(i);
-					datumY = maxY - dataY(i)*maxY;
-					if (datumY > 0) % usable coordinate.
-						% for each valid point, look for the first valid point to the left.
-						foundLeft          = false;
-						for j = (i-1):-1:1
-							datumXleft     = dataX(2);
-							datumYleft     = maxY - dataY(j)*maxY;
-							if (datumYleft > 0) % usable point to the left.
-								foundLeft  = true;
-							end;
-						end;
-						% for each valid point, look for the first valid point to the right.
-						foundRight         = false;
-						for j = (i+1):length(dataX)
-							datumXright    = dataX(2);
-							datumYright    = maxY - dataY(j)*maxY;
-							if (datumYright > 0) % usable point to the right.
-								foundRight = true;
-							end;
-						end;
-						newDatumX = datumX;
-						%if (foundLeft) && (foundRight)
-						%	newDatumY = datumY*0.500 + datumYleft*0.250 + datumYright*0.250;
-						%elseif (foundLeft)
-						%	newDatumY = datumY*0.667 + datumYleft*0.333;
-						%elseif (foundRight)
-						%	newDatumY = datumY*0.667 + datumYright*0.333;
-						%else
-						%	newDatumY = datumY;
-						%end;
-						newDatumY   = datumY;
-						newDatumY   = (maxY - newDatumY)/maxY;
-						newDataY(i) = newDatumY;
-					end;
-				end;
-			end;
-			% Y-coordinates for experimental dataset.
-			chr_SNPdata{chr,2} = newDataY;
-
-			if (useParent)
-				% Y-coordinates for parental dataset.
-				dataY    = chr_SNPdata{chr,4};
-				newDataY = dataY;
-				if (length(dataX) > 2)
-					for i = 2:(length(dataX)-1)
-						datumX = dataX(i);
-						datumY = maxY - dataY(i)*maxY;
-						if (datumY > 0) % usable coordinate.
-							% for each valid point, look for the first valid point to the left.
-							foundLeft          = false;
-							for j = (i-1):-1:1
-								datumXleft     = dataX(2);
-								datumYleft     = maxY - dataY(j)*maxY;
-								if (datumYleft > 0) % usable point to the left.
-									foundLeft  = true;
-								end;
-							end;
-							% for each valid point, look for the first valid point to the right.
-							foundRight         = false;
-							for j = (i+1):length(dataX)
-								datumXright    = dataX(2);
-								datumYright    = maxY - dataY(j)*maxY;
-								if (datumYright > 0) % usable point to the right.
-									foundRight = true;
-								end;
-							end;
-							newDatumX = datumX;
-							%if (foundLeft) && (foundRight)
-							%	newDatumY = datumY*0.500 + datumYleft*0.250 + datumYright*0.250;
-							%elseif (foundLeft)
-							%	newDatumY = datumY*0.667 + datumYleft*0.333;
-							%elseif (foundRight)
-							%	newDatumY = datumY*0.667 + datumYright*0.333;
-							%else
-							%	newDatumY = datumY;
-							%end;
-							newDatumY   = datumY;
-							newDatumY   = (maxY - newDatumY)/maxY;
-							newDataY(i) = newDatumY;
-						end;
-					end;
-				end;
-				% Y-coordinates for parental dataset.
-				chr_SNPdata{chr,4} = newDataY;
-			end;
-
-		end;
-	end;
-end;
+save([projectDir 'CNV_SNP_hapmap_v5_RADseq.workspace_variables.mat']);
 
 
 %% =========================================================================================
@@ -398,22 +346,16 @@ set(gcf, 'Position', [0 70 1024 600]);
 if (Linear_display == true)
 	Linear_fig = figure(2);
 	Linear_genome_size   = sum(chr_size);
-
 	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
 	Linear_left_start    = 0.02;               % left margin (also right margin).
 	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-
 	Linear_height        = 0.6;
 	Linear_base          = 0.1;
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
 	Linear_left          = Linear_left_start;
-
-	axisLabelPosition_horiz = -50000/bases_per_bin;
 	axisLabelPosition_horiz = 0.01125;
 end;
-
-axisLabelPosition_vert = -50000/bases_per_bin;
 axisLabelPosition_vert = 0.01125;
 
 
@@ -434,49 +376,58 @@ for chr = 1:num_chrs
 		fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 		hold on;
 
+
 		% standard : draw colorbars.
-		if (useHapmap)
-			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-			dataY_1    = chr_SNPdata{chr,2};
-			dataY_2    = chr_SNPdata{chr,4};
-			fprintf('\n');
-			fprintf(['project = ' project '\n']);
-			fprintf(['hapmap  = ' hapmap '\n']);
-			fprintf('\n');
-			for i = 1:length(dataX)
-				datumX   = dataX(i);
-				datumY_1 = dataY_1(i)*maxY;
-				datumY_2 = maxY - dataY_1(i)*maxY;
-				if (datumY_2 > 0)
-					plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
+		if (useHapmap)   % an experimental dataset vs. a hapmap.
+            for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+                colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+                colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+                colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
+                if (colorR <= 1) || (colorG <= 1) || (colorB <= 1)
+                    plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
+                end;
+            end;
+        % Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
+		%elseif (useParent)   % an experimental dataset vs. a reference dataset.
+		%	for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+		%		colorR   = chr_SNPdata_colorsP{chr,1}(chr_bin);
+		%		colorG   = chr_SNPdata_colorsP{chr,2}(chr_bin);
+		%		colorB   = chr_SNPdata_colorsP{chr,3}(chr_bin);
+		%		if (colorR <= 1) || (colorG <= 1) || (colorB <= 1)
+		%			plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
+		%		end;
+		%	end;
+		elseif (useParent)   % an experimental dataset vs. a reference dataset.
+			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				bin_data_C = chr_SNPdata{chr,2}{chr_bin};
+				for SNP = 1:length(bin_data_C)
+					bin_data_C(SNP) = max(bin_data_C(SNP), 1-bin_data_C(SNP));
 				end;
+				allelic_ratio_C = min(bin_data_C);
+				datumY_C = allelic_ratio_C*maxY;
+				plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+                    
+				bin_data_P = chr_SNPdata{chr,4}{chr_bin};
+				for SNP = 1:length(bin_data_P)
+					bin_data_P(SNP) = max(bin_data_P(SNP), 1-bin_data_P(SNP));
+				end;
+				allelic_ratio_P = min(bin_data_P);
+				datumY_P = allelic_ratio_P*maxY;
+				plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',[2/3 2/3 2/3]);
 			end;
-		else
-			dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-			dataY_C    = chr_SNPdata{chr,2};
-			dataY_P    = chr_SNPdata{chr,4};
-			fprintf('\n');
-			fprintf(['project = ' project '\n']);
-			fprintf(['parent  = ' parent '\n']);
-			fprintf('\n');
-			for i = 1:length(dataX)
-				if (useParent)
-					datumX    = dataX(i)/2;
-					datumY_C  = dataY_C(i)*maxY;
-					datumY_P1 = dataY_P(i)*maxY;
-					datumY_P2 = maxY - dataY_P(i)*maxY;
-					plot([datumX datumX], [maxY datumY_C ],'Color',[1.0 0.0 0.0]);
-					plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
-				else
-					datumX    = dataX(i)/2;
-					datumY_C  = dataY_C(i)*maxY;
-					datumY_P1 = dataY_P(i)*maxY;
-					datumY_P2 = maxY - dataY_P(i)*maxY;
-					plot([datumX datumX], [maxY datumY_P1],'Color',[1/3 1/3 1/3]);
-					plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
+		else   % only an experimental dataset.
+			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				bin_data = chr_SNPdata{chr,2}{chr_bin};
+				for SNP = 1:length(bin_data)
+					bin_data(SNP) = max(bin_data(SNP), 1-bin_data(SNP));
 				end;
+				allelic_ratio = min(bin_data);
+				datumY_C = allelic_ratio*maxY;
+				plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',[2/3 2/3 2/3]);
+				plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_C],'Color',[2/3 2/3 2/3]);
 			end;
 		end;
+		% standard : end draw colorbars.
 
 
 		%% standard : cgh plot section.
@@ -530,7 +481,6 @@ for chr = 1:num_chrs
 
 
 		% standard : axes labels etc.
-		hold off;
 		xlim([0,chr_size(chr)/bases_per_bin]);
 		% standard : modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
@@ -567,7 +517,6 @@ for chr = 1:num_chrs
 		if (chr == find(chr_posY == max(chr_posY)))
 			title([ project ' CNV map'],'Interpreter','none','FontSize',24);
 		end;
-		hold on;
 		% standard : end axes labels etc.
 
 		if ((displayBREAKS == true) && (show_annotations == true))
@@ -605,7 +554,6 @@ for chr = 1:num_chrs
 		% standard : show annotation locations
 		if (show_annotations) && (length(annotations) > 0)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-			hold on;
 			annotation_location = (annotation_start+annotation_end)./2;
 			for i = 1:length(annotation_location)
 				if (annotation_chr(i) == chr)
@@ -623,7 +571,6 @@ for chr = 1:num_chrs
 					end;
 				end;
 			end;
-			hold off;
 		end;
 		% standard : end show annotation locations.
 
@@ -668,7 +615,6 @@ for chr = 1:num_chrs
 
 				% draw lines to mark whole copy number changes.
 				plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
-				hold on;
 				for i = 1:15
 					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
 				end;
@@ -688,7 +634,6 @@ for chr = 1:num_chrs
 				set(gca,'YDir','Reverse');
 
 				% ensure subplot axes are consistent with main chr plots.
-				hold off;
 				axis off;
 				set(gca,'YTick',[]);    set(gca,'XTick',[]);
 				ylim([0,1]);            xlim([0,maxY*20]);
@@ -728,7 +673,18 @@ for chr = 1:num_chrs
 				text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24);
 			end;
 		end;
-		%% END standard draw section.
+		% standard : end of chr copy number at right of the main chr cartons.
+
+
+		%% =========================================================================================
+		% Draw angleplots to left of main chromosome cartoons.
+		%-------------------------------------------------------------------------------------------
+		apply_phasing = true;
+		angle_plot_subfigures;
+
+		hold off;
+
+%%%%%%%%%%%%%%% END standard draw section.
 
 
 		%% Linear figure draw section
@@ -740,66 +696,59 @@ for chr = 1:num_chrs
 			hold on;
 			title(chr_label{chr},'Interpreter','none','FontSize',20);
 
-			% linear : draw colorbars.
-			if (useHapmap)
-				dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-				dataY_1    = chr_SNPdata{chr,2};
-				dataY_2    = chr_SNPdata{chr,4};
-				for i = 1:length(dataX)
-					datumX    = dataX(i);
-					datumY_1a = dataY_1(i)*maxY;
-					datumY_1b = maxY - dataY_1(i)*maxY;
-					datumY_2a = dataY_2(i)*maxY;
-					datumY_2b = maxY - dataY_2(i)*maxY;
 
-					% if (datumY_1b > 0)
-					% 	plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-					% end;
-
-					% plot([datumX datumX], [0 maxY],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-
-					% plot([datumX datumX], [maxY datumY_1a],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-					% plot([datumX datumX], [0    datumY_2b],'Color',[chr_SNPdata_colorsC{chr,1}(i) chr_SNPdata_colorsC{chr,2}(i) chr_SNPdata_colorsC{chr,3}(i)]);
-
-					% white_fraction = max(1,((dataY_1(i)-0.5)*2)*2);
-					% color_fraction = 1-white_fraction;
-					% colorR = chr_SNPdata_colorsC{chr,1}(i)*color_fraction + 1*white_fraction;
-					% colorG = chr_SNPdata_colorsC{chr,2}(i)*color_fraction + 1*white_fraction;
-					% colorB = chr_SNPdata_colorsC{chr,3}(i)*color_fraction + 1*white_fraction;
-					% plot([datumX datumX], [0 maxY],'Color',[colorR, colorG, colorB]);
-
-					if (datumY_2b > 0)
-						colorR = chr_SNPdata_colorsC{chr,1}(i);
-						colorG = chr_SNPdata_colorsC{chr,2}(i);
-						colorB = chr_SNPdata_colorsC{chr,3}(i);
-						plot([datumX datumX], [0 maxY],'Color',[colorR colorG colorB]);
+			% linear : draw colorbars
+			if (useHapmap)   % an experimental dataset vs. a hapmap.
+				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+					colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+					colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
+					if (colorR < 1) || (colorG < 1) || (colorB < 1)
+						plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
 				end;
-			else
-				dataX      = 1:ceil(chr_size(chr)/new_bases_per_bin);
-				dataY_C    = chr_SNPdata{chr,2};
-				dataY_P    = chr_SNPdata{chr,4};
-				fprintf(['length(dataX)   = ' num2str(length(dataX)) '\n']);
-				fprintf(['length(dataY_C) = ' num2str(length(dataY_C)) '\n']);
-				fprintf(['length(dataY_P) = ' num2str(length(dataY_P)) '\n']);
-				for i = 1:length(dataX)
-					if (useParent)
-						datumX    = dataX(i)/2;
-						datumY_C  = dataY_C(i)*maxY;
-						datumY_P1 = dataY_P(i)*maxY;
-						datumY_P2 = maxY - dataY_P(i)*maxY;
-						plot([datumX datumX], [maxY datumY_C ],'Color',[1.0 0.0 0.0]);
-						plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
-					else
-						datumX    = dataX(i)/2;
-						datumY_C  = dataY_C(i)*maxY;
-						datumY_P1 = dataY_P(i)*maxY;
-						datumY_P2 = maxY - dataY_P(i)*maxY;
-						plot([datumX datumX], [maxY datumY_P1],'Color',[1/3 1/3 1/3]);
-						plot([datumX datumX], [0    datumY_P2],'Color',[1/3 1/3 1/3]);
+			% Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
+			%elseif (useParent)   % an experimental dataset vs. a reference dataset.
+			%	for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
+			%		colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+			%		colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+			%		colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
+			%		if (colorR < 1) || (colorG < 1) || (colorB < 1)
+			%			plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
+			%		end;
+			%	end;
+			elseif (useParent)   % an experimental dataset vs. a reference dataset.
+				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					bin_data_C = chr_SNPdata{chr,2}{chr_bin};
+					for SNP = 1:length(bin_data_C)
+						bin_data_C(SNP) = max(bin_data_C(SNP), 1-bin_data_C(SNP));
 					end;
+					allelic_ratio_C = min(bin_data_C);
+					datumY_C = allelic_ratio_C*maxY;
+					plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',hom_color);
+
+					bin_data_P = chr_SNPdata{chr,4}{chr_bin};
+					for SNP = 1:length(bin_data_P)
+						bin_data_P(SNP) = max(bin_data_P(SNP), 1-bin_data_P(SNP));
+					end;
+					allelic_ratio_P = min(bin_data_P);
+					datumY_P = allelic_ratio_P*maxY;
+					plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',het_color);
+				end;
+			else   % only an experimental dataset.
+				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+					bin_data = chr_SNPdata{chr,2}{chr_bin};
+					for SNP = 1:length(bin_data)
+						bin_data(SNP) = max(bin_data(SNP), 1-bin_data(SNP));
+					end;
+					allelic_ratio = min(bin_data);
+					datumY_C = allelic_ratio*maxY;
+					plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',het_color);
+					plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_C],'Color',het_color);
 				end;
 			end;
+			% linear : end draw colorbars.
+
 
 			% linear : cgh plot section.
 			c_ = [0 0 0];
@@ -883,7 +832,6 @@ for chr = 1:num_chrs
 			% linear : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
 				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-				hold on;
 				annotation_location = (annotation_start+annotation_end)./2;
 				for i = 1:length(annotation_location)
 					if (annotation_chr(i) == chr)
@@ -901,7 +849,6 @@ for chr = 1:num_chrs
 						end;
 					end;
 				end;
-				hold off;
 			end;
 			% linear : end show annotation locations.
 
@@ -944,7 +891,7 @@ for chr = 1:num_chrs
 	        
 			% shift back to main figure generation.
 			figure(Main_fig);
-			hold on;
+			hold off;
 
 			first_chr = false;
 		end;

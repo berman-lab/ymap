@@ -27,8 +27,8 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 chmod 0755 $logName;
 echo "#.............................................................................." >> $logName;
-echo "Running 'scripts_seqModules/scripts_ddRADseq/project.paired_WGseq.install_3.sh'" >> $logName;
-echo "Variables passed via command-line from 'scripts_seqModules/scripts_ddRADseq/project.paired_WGseq.install_2.php' :" >> $logName;
+echo "Running 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_3.sh'" >> $logName;
+echo "Variables passed via command-line from 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_2.php' :" >> $logName;
 echo "\tuser     = '"$user"'" >> $logName;
 echo "\tproject  = '"$project"'" >> $logName;
 echo "\tmain_dir = '"$main_dir"'" >> $logName;
@@ -54,6 +54,21 @@ then
 else
 	echo "\t\thapmap = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
+	# Determine location of hapmap being used.
+	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+		hapmapUser=$user;
+		hapmapUsed=1
+	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
+		hapmapUser="default";
+		hapmapUsed=1;
+	else
+		hapmapUsed=0;
+	fi
+	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
 
 # Determine location of genome being used.
@@ -139,11 +154,11 @@ else
 
 
 	##==============================================================================
-	## Initial processing of paired-WGseq dataset.
+	## Initial processing of paired-ddRADseq dataset.
 	##------------------------------------------------------------------------------
-	echo "#=================================================#" >> $logName;
-	echo "# Initial processing of paired-end WGseq dataset. #" >> $logName;
-	echo "#=================================================#" >> $logName;
+	echo "#====================================================#" >> $logName;
+	echo "# Initial processing of paired-end ddRADseq dataset. #" >> $logName;
+	echo "#====================================================#" >> $logName;
 
 	# Align fastq against genome.
 	echo "[[=- Align with Bowtie -=]]" >> $logName;
@@ -321,18 +336,32 @@ else
 
 	wait;
 fi
-if [ -f $projectDirectory"trimmed_SNPs_v4.parent.txt" ]
+if [ -f $projectDirectory"trimmed_SNPs_v4.txt" ]
 then
-	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
-	echo "\t\tDone." >> $logName;
 	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
+	echo "\t\tDone." >> $logName;
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
 	echo "\t\tDone." >> $logName;
 else
 	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"          $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"            $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
+	echo "\t\tDone." >> $logName;
 
-	echo "\tPython : Simplify child putative_SNP list to contain only those simplified loci from the parent dataset." >> $logName;
-        $python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
+	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+	echo "\t\tDone." >> $logName;
+fi
+if [ $hapmapInUse = 1 ]
+then
+	if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
+	then
+		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+		echo "\t\tDone." >> $logName;
+	else
+		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+		$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
+		echo "\t\tDone." >> $logName;
+	fi
 fi
 
 echo "Pileup processing is complete." >> $condensedLog;
