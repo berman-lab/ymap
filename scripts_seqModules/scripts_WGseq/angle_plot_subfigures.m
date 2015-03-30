@@ -252,16 +252,16 @@ if (AnglePlot == true)
 			else
 				% draw segment of smoothed histogram corresponding to region.
 				if (region_ == 1) % first region in list.
-					coord1 = round(actual_cutoffs(region_))+1;
+					coord1 = max(min(round(actual_cutoffs(region_))+1, 200), 1);
 					area(1:coord1, segment_smoothedHistogram(1:coord1), 'FaceColor',color,'EdgeColor',color);
 					fprintf(['    angleplotCoordinates = 1:' num2str(coord1) '\n']);
 				elseif (region_ == length(mostLikelyGaussians)) % last region in list.
-					coord2 = round(actual_cutoffs(region_-1))+1;
+					coord2 = max(min(round(actual_cutoffs(region_-1))+1, 200), 1);
 					area(coord2:200, segment_smoothedHistogram(coord2:200), 'FaceColor',color,'EdgeColor',color);
 					fprintf([' angleplotCoordinate = ' num2str(coord2) ':200\n']);
 				else
-					coord3 = round(actual_cutoffs(region_-1))+1;
-					coord4 = round(actual_cutoffs(region_  ))+1;
+					coord3 = max(min(round(actual_cutoffs(region_-1))+1, 200), 1);
+					coord4 = max(min(round(actual_cutoffs(region_  ))+1, 200), 1);
 					area(coord3:coord4, segment_smoothedHistogram(coord3:coord4), 'FaceColor',color,'EdgeColor',color);
 					fprintf(['    angleplotCoordinates = ' num2str(coord3) ':' num2str(coord4) '\n']);
 				end;
