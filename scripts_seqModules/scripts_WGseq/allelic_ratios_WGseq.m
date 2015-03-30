@@ -1,6 +1,16 @@
 function [] = allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
+fprintf(['main_dir             = "' main_dir             '"\n']);
+fprintf(['user                 = "' user                 '"\n']);
+fprintf(['genomeUser           = "' genomeUser           '"\n']);
+fprintf(['project              = "' project              '"\n']);
+fprintf(['parent               = "' parent               '"\n']);
+fprintf(['hapmap               = "' hapmap               '"\n']);
+fprintf(['genome               = "' genome               '"\n']);
+fprintf(['ploidyEstimateString = "' ploidyEstimateString '"\n']);
+fprintf(['ploidyBaseString     = "' ploidyBaseString     '"\n']);
+
 fprintf('\n\n\t*===============================================================*\n');
 fprintf(    '\t| Fireplot generation in script "allelic_ratios_WGseq.m".       |\n');
 fprintf(    '\t*---------------------------------------------------------------*\n');
@@ -21,25 +31,33 @@ Yscale_nearest_even_ploidy  = true;
 Linear_display              = true;
 Linear_displayBREAKS        = false;
 
-
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
 
 
 fprintf('\t|\tDetermine if hapmap is in use.\n');
-if (strcmp(hapmap,genome) == 0)
+%
+% For right now, ('parent' == 'hapmap') always because of earlier mixed use of variables.
+% Determine if 'hapmap' is in use by checking user and system hapmap directories.
+%
+% Possible error case where 'parent' and 'hapmap' have same name string.
+% Will be resolved with later disambiguation of parent/hapmap variable earlier in module.
+%
+if (exist([main_dir 'users/default/hapmaps/' hapmap '/'], 'dir') == 7)
+	hapmapDir = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
 	useHapmap = true;
-	if (exist([main_dir 'users/default/hapmaps/' hapmap '/'], 'dir') == 7)
-		hapmapDir = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
-	else
-		hapmapDir = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
-	end;
+elseif (exist([main_dir 'users/' user '/hapmaps/' hapmap '/'], 'dir') == 7)
+	hapmapDir = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
+	useHapmap = true;
 else
 	useHapmap = false;
 end;
 
 
 fprintf('\t|\tDetermine if parent project is in use.\n');
+%
+% The 'parent' will == the 'project' when no 'parent' is selected in setup.
+%
 if (strcmp(project,parent) == 0)
 	useParent = true;
 	if (exist([main_dir 'users/default/projects/' parent '/'], 'dir') == 7)

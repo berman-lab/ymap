@@ -115,10 +115,10 @@ for chr = 1:num_chrs
 				%   2 : unphased SNP ratio data.
 				%   3 : phased SNP position data.
 				%   4 : unphased SNP position data.
-				ratioData_phased        = chr_SNPdata{chr,1}{chr_bin};
-				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin};
-				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin};
-				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin};
+				ratioData_phased        = chr_SNPdata{chr,1}{chr_bin}
+				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin}
+				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin}
+				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin}
 				if (length(ratioData_phased) > 0)
 					for SNP_in_bin = 1:length(ratioData_phased)
 						if ((coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))

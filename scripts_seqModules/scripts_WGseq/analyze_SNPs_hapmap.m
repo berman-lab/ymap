@@ -1,4 +1,4 @@
-function [] = analyze_SNPs_hapmap(main_dir, user, genomeUser, project, hapmap, genome, ploidyEstimateString,ploidyBaseString)
+function [] = analyze_SNPs_hapmap(main_dir, user, genomeUser, project, parent_or_hapmap, genome, ploidyEstimateString,ploidyBaseString)
 % analyze_CNVS(<Project Name>,<Project File>,<Ploidy Estimate)
 % A componant of the sequence analysis pipeline, analyzing SNPs only.
 %    <Project Name>    : the name of the project.
@@ -28,9 +28,11 @@ exampleChrName = sscanf(line, '%s',1);  % grab the first column, ex : 'ChrA_C_gl
 fclose(data);
 
 
-LOH_hapmap_v4(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+LOH_hapmap_v4(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
-allelic_ratios_WGseq(main_dir,user,genomeUser,project,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+parent = parent_or_hapmap;
+hapmap = parent_or_hapmap;
+allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 
 fprintf('*--- End of ''analyze_SNPs.m'' was reached. ---*\n');
