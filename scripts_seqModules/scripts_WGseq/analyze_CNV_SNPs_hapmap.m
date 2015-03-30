@@ -1,4 +1,4 @@
-function [] = analyze_CNV_SNPs_hapmap(main_dir, user, genomeUser, project, hapmap, genome, ploidyEstimateString,ploidyBaseString)
+function [] = analyze_CNV_SNPs_hapmap(main_dir, user, genomeUser, project, parent_or_hapmap, genome, ploidyEstimateString,ploidyBaseString)
 
 testPloidy     = ploidyEstimateString
 testPloidyBase = ploidyBaseString
@@ -11,6 +11,9 @@ LOH_verString   = 'v2';
 CNV_verString   = 'v1';
 displayBREAKS   = true;
 referenceCHR    = 1;
+
+parent = parent_or_hapmap;
+hapmap = parent_or_hapmap;
 
 fprintf('\n');
 fprintf(['[analyze_CNV_SNPs_hapmap.m data inputs:\n']);
