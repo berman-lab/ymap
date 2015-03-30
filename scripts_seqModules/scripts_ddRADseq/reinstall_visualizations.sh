@@ -8,7 +8,7 @@ umask 007;
 
 
 user='darren1';
-project='SC5314_ddRADseq';
+project='9442_ddRADseq';
 hapmap='';
 
 main_dir=$(pwd)"/../../";
