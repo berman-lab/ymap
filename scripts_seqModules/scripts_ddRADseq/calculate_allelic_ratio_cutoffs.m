@@ -14,8 +14,8 @@
 %       chr_SNPdata{chr,3}{chr_bin} = parent SNP position data.
 %       chr_SNPdata{chr,4}{chr_bin} = child SNP position data.
 % else
-%       chr_SNPdata{chr,2}{chr_bin} = child SNP ratio data.
-%       chr_SNPdata{chr,4}{chr_bin} = child SNP position data.
+%       chr_SNPdata{chr,1}{chr_bin} = SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin} = SNP position data.
 % end;
 %-------------------------------------------------------------------------------------------
 if (useHapmap)
@@ -119,8 +119,8 @@ elseif (useParent)
 	end;
 else    % useHapmap and useParent == false.
 	% child == parent, so only one set of data needs to be organized.
-	%       chr_SNPdata{chr,2}{chr_bin} = child SNP ratio data.
-	%       chr_SNPdata{chr,4}{chr_bin} = child SNP position data.
+	%       chr_SNPdata{chr,1}{chr_bin} = SNP ratio data.
+	%       chr_SNPdata{chr,3}{chr_bin} = SNP position data.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_SNP_data_positions{chr}) > 1)
@@ -136,8 +136,8 @@ else    % useHapmap and useParent == false.
 
 					% Allelic ratio here is the ratio of the majority read call to all reads.
 					% The consequence of this is that it will always be on the range [0.5 .. 1.0].
-					chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} allelic_ratio];
-					chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate   ];
+					chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
+					chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
 				end;
 			end;
 		end;

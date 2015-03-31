@@ -873,8 +873,8 @@ for chr = 1:num_chrs
 			end;
 		else   % only an experimental dataset.
 			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				%       chr_SNPdata{chr,1}{chr_bin} = child SNP ratio data.
-				%       chr_SNPdata{chr,3}{chr_bin} = child SNP position data.
+				%       chr_SNPdata{chr,1}{chr_bin} = SNP ratio data.
+				%       chr_SNPdata{chr,3}{chr_bin} = SNP position data.
 
 				bin_data = chr_SNPdata{chr,1}{chr_bin};
 				for SNP = 1:length(bin_data)
@@ -1035,8 +1035,8 @@ for chr = 1:num_chrs
 				end;
 			else   % only an experimental dataset.
 				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-					%       chr_SNPdata{chr,2}{chr_bin} = child SNP ratio data.
-					%       chr_SNPdata{chr,4}{chr_bin} = child SNP position data.
+					%       chr_SNPdata{chr,2}{chr_bin} = SNP ratio data.
+					%       chr_SNPdata{chr,4}{chr_bin} = SNP position data.
 
 					bin_data = chr_SNPdata{chr,2}{chr_bin};
 					for SNP = 1:length(bin_data)
