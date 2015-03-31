@@ -15,12 +15,8 @@ fprintf('#########################################\n');
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v5_RADseq.workspace_variables.mat']);
 
-
-if (~useHapmap) && (~useParent)
-	fprintf(['\n##\n## CNV_SNP_hapmap_v5_RADseq_RedGreen.m is being skipped...\n']);
-	fprintf(['##\tbecause the dataset is not being compared to another dataset.\n']);
-else
-	fprintf(['\n##\n## CNV_SNP_hapmap_v5_RADseq_RedGreen.m is being processed.\n##\n']);
+if (useHapmap)
+	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
 
 
 	%% =========================================================================================
@@ -79,6 +75,8 @@ else
 	%-------------------------------------------------------------------------------------------
 	Main_fig = figure(1);
 	set(gcf, 'Position', [0 70 1024 600]);
+	largestChr = find(chr_width == max(chr_width));
+	largestChr = largestChr(1);
 
 
 	%% =========================================================================================
@@ -604,6 +602,12 @@ else
 		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.png'], 'png');
 		delete(Linear_fig);
 	end;
+elseif (useParent)
+	% Dataset was compared to a parent, so don't draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Parent in use, so "CNV_SNP_hapmap_v5_RADseq_RedGreen.m" is being skipped.\n##\n']);
+else
+	% Dataset was not compared to a hapmap or parent, so don't draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Neither parent or hapmap in use, so "CNV_SNP_hapmap_v5_RADseq_RedGreen.m" is being skipped.\n##\n']);
 end;
 
 end

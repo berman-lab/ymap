@@ -2,8 +2,8 @@
 #
 # project.WGseq.hapmap.install_4.sh
 #
-user="default";
-project="Fig_08A.YJB10490-WGseq";
-hapmap="C_albicans_SC5314_A21-s02-m09-r07";
+user="darren1";
+project="12353_WGseq_hapmap";
+hapmap="test";
 
 sh project.WGseq.hapmap.install_4.sh $user $project $hapmap;

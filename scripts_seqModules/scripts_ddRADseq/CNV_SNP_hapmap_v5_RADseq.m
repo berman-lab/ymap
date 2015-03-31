@@ -151,6 +151,10 @@ end;
 %% =========================================================================================
 %% =========================================================================================
 %% =========================================================================================
+%% = No further control variables below. ===================================================
+%% =========================================================================================
+%% =========================================================================================
+%% =========================================================================================
 
 
 % Process input ploidy.
@@ -162,15 +166,6 @@ if (ploidyBase > 4);   ploidyBase = 4;   end;
 if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
-
-%% =========================================================================================
-% Load CGH data after correction for GC and chr-end biases.
-%-------------------------------------------------------------------------------------------
-load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use)
-largestChr = find(chr_width == max(chr_width));
-
-
 % basic plot parameters not defined per genome.
 TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
 bases_per_bin    = max(chr_size)/700;
@@ -181,25 +176,18 @@ cen_tel_Yindent  = maxY/5;
 fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
 
 
+%% =========================================================================================
+% Define colors for figure generation.
+%-------------------------------------------------------------------------------------------
+phased_and_unphased_color_definitions;
+
+
 %%================================================================================================
-% Load SNP/LOH data.
+% Load 'Common_CNV.mat' file containing CNV estimates per standard genome bin.
 %-------------------------------------------------------------------------------------------------
-LOH_file = [projectDir 'SNP_' SNP_verString '.reduced.mat'];
-if (exist(LOH_file,'file') == 2)
-	load(LOH_file);
-	% new_bases_per_bin
-	% chr_SNPdata{chr,i} :: i = [1..4]
-	%   1 : phased SNP ratio data.
-	%   2 : unphased SNP ratio data.
-	%   3 : phased SNP coordinate data.
-	%   4 : unphased SNP coordinate data.
-	% chr_SNPdata_colorsC{chr,i} :: i = [1..3] = [R, G, B]
-	% chr_SNPdata_colorsP{chr,i} :: i = [1..3] = [R, G, B]
-else
-	load([projectDir 'SNP_' SNP_verString '.mat']);
-	% 'chr_SNPdata'
-	new_bases_per_bin = bases_per_bin;
-end;
+fprintf('\nLoading "Common_CNV" data file for ddRADseq project.');
+load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
+[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
 
 
 %% =========================================================================================
@@ -278,15 +266,20 @@ for chr = 1:num_chrs
 			chrCopyNum{chr} = [];
 			chrCopyNum{chr} = chrCopyNum_new{chr};
 		end;
+
+		test0 = chr
+		test1 = chr_breaks{chr}
+		test2 = chrCopyNum{chr}
 	end;
 end;
 
 
+%%================================================================================================
+% Load SNP/LOH data.
+%-------------------------------------------------------------------------------------------------
 if (useHapmap)
-	%
-	% Only run when compared vs. a hapmap.
-	%
 	load([projectDir 'SNP_' SNP_verString '.all3.mat']);
+
 	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs'
 	%
 	% C_chr_SNP_data_positions = coordinate of SNP.
@@ -297,25 +290,64 @@ if (useHapmap)
 	% C_chr_SNP_homologB       = hapmap homolog b basecall.
 	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?   0 = 'correct phase, no', 1 = 'incorrect phase, yes', 10 = 'no phasing info'.
 else
-	%
-	% Run when compared vs. a parent dataset or vs. itself.
-	%
 	load([projectDir 'SNP_' SNP_verString '.all1.mat']);
+
 	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
 	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'
 end;
 
 
+%%================================================================================================
+% Load earlier processed SNP/LOH data.
+%-------------------------------------------------------------------------------------------------
+LOH_file = [projectDir 'SNP_' SNP_verString '.reduced.mat'];
+if (exist(LOH_file,'file') == 2)
+	load(LOH_file);
+
+	chr_length = ceil(chr_size(chr)/new_bases_per_bin);
+
+	% chr_SNPdata{chr,i} :: i = [1..4]
+	%       1 : phased SNP ratio data.
+	%       2 : unphased SNP ratio data.
+	%       3 : phased SNP position data.
+	%       4 : unphased SNP position data.
+	%       5 : phased SNP flipper value.
+	%       6 : unphased SNP flipper value.
+	% Colors used to illustrate SNP/LOH data.
+	%       chr_SNPdata_colorsC           : colors scheme defined by hapmap or red for unspecified LOH.
+	%       chr_SNPdata_colorsC{chr,i} :: i = [1..3] = [R, G, B]
+	%       chr_SNPdata_colorsP{chr,i} :: i = [1..3] = [R, G, B]
+	% new_bases_per_bin
+else
+	load([projectDir 'SNP_' SNP_verString '.mat']);
+
+	% 'chr_SNPdata'
+	new_bases_per_bin = bases_per_bin;
+end;
+
+
 %% =========================================================================================
-% Calculate allelic fraction cutoffs.
+% Calculate allelic fraction cutoffs for each segment.
+%...........................................................................................
+% Populate data structure containing SNP phasing information.
+% if (useHapmap)
+%       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
+%       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
+%       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
+%       chr_SNPdata{chr,5}{chr_bin} = flipper value for phased SNP.
+%       chr_SNPdata{chr,6}{chr_bin} = flipper value for unphased SNP.
+% elseif (useParent)
+%       chr_SNPdata{chr,1}{chr_bin} = child SNP ratio data.
+%       chr_SNPdata{chr,2}{chr_bin} = parent SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin} = child SNP position data.
+%       chr_SNPdata{chr,4}{chr_bin} = parent SNP position data.
+% else
+%       chr_SNPdata{chr,1}{chr_bin} = child SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin} = child SNP position data.
+% end;
 %-------------------------------------------------------------------------------------------
 calculate_allelic_ratio_cutoffs;
-
-
-%% ====================================================================
-% Define colors for figure generation.
-%----------------------------------------------------------------------
-phased_and_unphased_color_definitions;
 
 
 %% ====================================================================
@@ -338,6 +370,8 @@ save([projectDir 'CNV_SNP_hapmap_v5_RADseq.workspace_variables.mat']);
 %-------------------------------------------------------------------------------------------
 Main_fig = figure(1);
 set(gcf, 'Position', [0 70 1024 600]);
+largestChr = find(chr_width == max(chr_width));
+largestChr = largestChr(1);
 
 
 %% =========================================================================================
@@ -379,15 +413,15 @@ for chr = 1:num_chrs
 
 		% standard : draw colorbars.
 		if (useHapmap)   % an experimental dataset vs. a hapmap.
-            for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-                colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
-                colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
-                colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
-                if (colorR <= 1) || (colorG <= 1) || (colorB <= 1)
-                    plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
-                end;
-            end;
-        % Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
+			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+				colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+				colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+				colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
+				if (colorR <= 1) || (colorG <= 1) || (colorB <= 1)
+					plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
+				end;
+			end;
+		% Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
 		%elseif (useParent)   % an experimental dataset vs. a reference dataset.
 		%	for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
 		%		colorR   = chr_SNPdata_colorsP{chr,1}(chr_bin);
@@ -399,32 +433,40 @@ for chr = 1:num_chrs
 		%	end;
 		elseif (useParent)   % an experimental dataset vs. a reference dataset.
 			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				bin_data_C = chr_SNPdata{chr,2}{chr_bin};
+				%       chr_SNPdata{chr,1}{chr_bin} = child SNP ratio data.
+				%       chr_SNPdata{chr,2}{chr_bin} = parent SNP ratio data.
+				%       chr_SNPdata{chr,3}{chr_bin} = child SNP position data.
+				%       chr_SNPdata{chr,4}{chr_bin} = parent SNP position data.
+
+				bin_data_C              = chr_SNPdata{chr,1}{chr_bin};
 				for SNP = 1:length(bin_data_C)
-					bin_data_C(SNP) = max(bin_data_C(SNP), 1-bin_data_C(SNP));
+					bin_data_C(SNP) = bin_data_C(SNP);
 				end;
-				allelic_ratio_C = min(bin_data_C);
-				datumY_C = allelic_ratio_C*maxY;
-				plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',[1.0 0.0 0.0]);
+				allelic_ratio_C         = min(bin_data_C);
+				datumY_C                = allelic_ratio_C*maxY;
+				plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',hom_color);
                     
-				bin_data_P = chr_SNPdata{chr,4}{chr_bin};
+				bin_data_P              = chr_SNPdata{chr,2}{chr_bin};
 				for SNP = 1:length(bin_data_P)
-					bin_data_P(SNP) = max(bin_data_P(SNP), 1-bin_data_P(SNP));
+					bin_data_P(SNP) = bin_data_P(SNP);
 				end;
-				allelic_ratio_P = min(bin_data_P);
-				datumY_P = allelic_ratio_P*maxY;
-				plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',[2/3 2/3 2/3]);
+				allelic_ratio_P         = min(bin_data_P);
+				datumY_P                = allelic_ratio_P*maxY;
+				plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',het_color);
 			end;
 		else   % only an experimental dataset.
 			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				bin_data = chr_SNPdata{chr,2}{chr_bin};
+				%       chr_SNPdata{chr,1}{chr_bin} = child SNP ratio data.
+				%       chr_SNPdata{chr,3}{chr_bin} = child SNP position data.
+
+				bin_data                = chr_SNPdata{chr,1}{chr_bin};
 				for SNP = 1:length(bin_data)
-					bin_data(SNP) = max(bin_data(SNP), 1-bin_data(SNP));
+					bin_data(SNP)   = bin_data(SNP);
 				end;
-				allelic_ratio = min(bin_data);
-				datumY_C = allelic_ratio*maxY;
-				plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',[2/3 2/3 2/3]);
-				plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_C],'Color',[2/3 2/3 2/3]);
+				allelic_ratio           = min(bin_data);
+				datumY_C                = allelic_ratio*maxY;
+				plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',het_color);
+				plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_C],'Color',het_color);
 			end;
 		end;
 		% standard : end draw colorbars.
@@ -719,30 +761,30 @@ for chr = 1:num_chrs
 			%	end;
 			elseif (useParent)   % an experimental dataset vs. a reference dataset.
 				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-					bin_data_C = chr_SNPdata{chr,2}{chr_bin};
+					bin_data_C              = chr_SNPdata{chr,1}{chr_bin};
 					for SNP = 1:length(bin_data_C)
-						bin_data_C(SNP) = max(bin_data_C(SNP), 1-bin_data_C(SNP));
+						bin_data_C(SNP) = bin_data_C(SNP);
 					end;
-					allelic_ratio_C = min(bin_data_C);
-					datumY_C = allelic_ratio_C*maxY;
+					allelic_ratio_C         = min(bin_data_C);
+					datumY_C                = allelic_ratio_C*maxY;
 					plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',hom_color);
 
-					bin_data_P = chr_SNPdata{chr,4}{chr_bin};
+					bin_data_P              = chr_SNPdata{chr,2}{chr_bin};
 					for SNP = 1:length(bin_data_P)
-						bin_data_P(SNP) = max(bin_data_P(SNP), 1-bin_data_P(SNP));
+						bin_data_P(SNP) = bin_data_P(SNP);
 					end;
-					allelic_ratio_P = min(bin_data_P);
-					datumY_P = allelic_ratio_P*maxY;
+					allelic_ratio_P         = min(bin_data_P);
+					datumY_P                = allelic_ratio_P*maxY;
 					plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_P],'Color',het_color);
 				end;
 			else   % only an experimental dataset.
 				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-					bin_data = chr_SNPdata{chr,2}{chr_bin};
+					bin_data                = chr_SNPdata{chr,1}{chr_bin};
 					for SNP = 1:length(bin_data)
-						bin_data(SNP) = max(bin_data(SNP), 1-bin_data(SNP));
+						bin_data(SNP)   = bin_data(SNP);
 					end;
-					allelic_ratio = min(bin_data);
-					datumY_C = allelic_ratio*maxY;
+					allelic_ratio           = min(bin_data);
+					datumY_C                = allelic_ratio*maxY;
 					plot([chr_bin/2 chr_bin/2], [maxY datumY_C     ],'Color',het_color);
 					plot([chr_bin/2 chr_bin/2], [0    maxY-datumY_C],'Color',het_color);
 				end;

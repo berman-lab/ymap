@@ -1,12 +1,5 @@
 %% =========================================================================================
 % Calculate allelic fraction cutoffs.
-%...........................................................................................
-%   1 : phased SNP ratio data.
-%   2 : unphased SNP ratio data.
-%   3 : phased SNP position data.
-%   4 : unphased SNP position data.
-%   5 : phased SNP allelic identity strings.    (baseCall:homologA/homologB)
-%   6 : unphased SNP allelic identity strings.
 %-------------------------------------------------------------------------------------------
 % Initialize 
 for chr = num_chrs
@@ -47,13 +40,15 @@ for chr = 1:num_chrs
 				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin};
 				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin};
 				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin};
-				if (length(ratioData_phased) > 0)
-					for SNP_in_bin = 1:length(ratioData_phased)
-						if ((coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))
-							% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
-							allelic_ratio = ratioData_phased(SNP_in_bin);
-							histAll_a = [histAll_a allelic_ratio  ];
-							histAll_b = [histAll_b allelic_ratio  ];
+				if (useHapmap)
+					if (length(ratioData_phased) > 0)
+						for SNP_in_bin = 1:length(ratioData_phased)
+							if ((coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))
+								% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
+								allelic_ratio = ratioData_phased(SNP_in_bin);
+								histAll_a = [histAll_a allelic_ratio  ];
+								histAll_b = [histAll_b allelic_ratio  ];
+							end;
 						end;
 					end;
 				end;
