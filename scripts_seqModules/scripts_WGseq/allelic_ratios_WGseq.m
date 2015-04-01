@@ -176,15 +176,16 @@ end;
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
 	% Load only putative SNP data corresponding to hapmap loci.
-	fprintf('\t|\tLoad SNP information from "putative_SNPs_v5.txt" file for project.\n');
+	fprintf('\t|\tLoad SNP information from "trimmed_SNPs_v5.txt" file for project.\n');
 	fprintf('\t|\t\t');
-	datafile   = [projectDir 'putative_SNPs_v5.txt'];
+	datafile   = [projectDir 'trimmed_SNPs_v5.txt'];
 else
 	% Load all putative SNP data.
 	fprintf('\t|\tLoad SNP information from "putative_SNPs_v4.txt" file for project.\n');
 	fprintf('\t|\t\t');
 	datafile   = [projectDir 'putative_SNPs_v4.txt'];
 end;
+
 data       = fopen(datafile, 'r');
 count      = 0;
 old_chr    = 0;
@@ -320,7 +321,7 @@ for chr = 1:num_chrs
 		dataX_CNVcorrection = ones(1,chr_length);
 		if (length(dataX) > 0)
 			% 2D smoothed hisogram with correction term.
-			[imageX{chr},imageY{chr},imageC{chr}, imageD{chr}] = smoothhist2D_4_Xcorrected([dataX dataX], [dataY2 (maxY-dataY2)], 0.5,[chr_length maxY],[chr_length maxY], dataX_CNVcorrection, 1,1);
+			[imageX{chr},imageY{chr},imageC{chr}, imageD{chr}] = smoothhist2D_4_Xcorrected([dataX dataX 0 chr_length], [dataY2 (maxY-dataY2) 0 0], 0.5,[chr_length maxY],[chr_length maxY], dataX_CNVcorrection, 1,1);
 			all_data = [all_data imageD{chr}];
 		end;
 		chr_mean(chr) = mean(imageD{chr}(:));
@@ -391,7 +392,7 @@ for chr = 1:num_chrs
 		if (length(dataX) > 0)
 			% 2D smoothed hisogram with correction term.
 			fprintf(['\t|\t\tGenerating chr' num2str(chr) ' final smoothed 2D histogram.\n']);
-			[imageX{chr},imageY{chr},imageC{chr}, discard] = smoothhist2D_4_Xcorrected([dataX dataX], [dataY2 (maxY-dataY2)], 0.5,[chr_length maxY],[chr_length maxY], dataX_CNVcorrection, mean_val, chr_mean_scaler(chr));
+			[imageX{chr},imageY{chr},imageC{chr}, discard] = smoothhist2D_4_Xcorrected([dataX dataX 0 chr_length], [dataY2 (maxY-dataY2) 0 0], 0.5,[chr_length maxY],[chr_length maxY], dataX_CNVcorrection, mean_val, chr_mean_scaler(chr));
 
 			fprintf('\t|\t\t\tDe-emphasizing near-homozygous data.\n');
 			% Image correction method to de-emphasize the near homozygous data points.

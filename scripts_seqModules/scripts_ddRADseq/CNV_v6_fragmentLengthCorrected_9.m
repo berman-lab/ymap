@@ -1680,6 +1680,7 @@ ploidy = str2num(ploidyEstimate);
 fprintf(['\nPloidy string = "' num2str(ploidy) '"\n']);
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use)
 largestChr = find(chr_width == max(chr_width));
+largestChr = largestChr(1);
 
 
 %% -----------------------------------------------------------------------------------------

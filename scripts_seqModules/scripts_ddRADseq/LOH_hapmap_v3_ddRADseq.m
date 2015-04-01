@@ -513,6 +513,7 @@ for chr = 1:num_chrs
 end;
 fprintf('\n');
 largestChr = find(chr_width == max(chr_width));
+largestChr = largestChr(1);
 
 
 %% -----------------------------------------------------------------------------------------

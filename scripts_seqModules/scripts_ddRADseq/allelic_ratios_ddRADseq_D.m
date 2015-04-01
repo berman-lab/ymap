@@ -9,16 +9,6 @@ projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 
 if (useHapmap)
-%
-% Only run when compared vs. a hapmap.
-%
-%%%% chr_SNPdata{chr,1}{pos} = phased SNP ratio data.
-%%%% chr_SNPdata{chr,2}{pos} = unphased SNP ratio data.
-%%%% chr_SNPdata{chr,3}{pos} = phased SNP position data.
-%%%% chr_SNPdata{chr,4}{pos} = unphased SNP position data.
-%%%% chr_SNPdata{chr,5}{pos} = flipper value for phased SNP.
-%%%% chr_SNPdata{chr,6}{pos} = flipper value for unphased SNP.
-	% Dataset was compared to a hapmap, so draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
 
 
@@ -261,6 +251,7 @@ if (useHapmap)
 	Main_fig = figure();
 	set(gcf, 'Position', [0 70 1024 600]);
 	largestChr = find(chr_width == max(chr_width));
+	largestChr = largestChr(1);
 
 
 	%% ===============================================================================================
@@ -533,15 +524,9 @@ if (useHapmap)
 	saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.RedGreen.c2.png'], 'png');
 	delete(Linear_fig);
 elseif (useParent)
-%
-% Only run when compared vs. a parent.
-%
 	% Dataset was compared to a parent, so don't draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Parent in use, so "allelic_ratios_ddRADseq_D.m" is being skipped.\n##\n']);
 else
-%
-% Only run when compared vs. itself.
-%
 	% Dataset was not compared to a hapmap or parent, so don't draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Neither parent or hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being skipped.\n##\n']);
 end;
