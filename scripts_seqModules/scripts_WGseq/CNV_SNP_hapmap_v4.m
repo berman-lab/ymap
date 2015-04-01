@@ -385,6 +385,12 @@ temp_holding = chr_SNPdata;
 calculate_allelic_ratio_cutoffs;
 chr_SNPdata = temp_holding;
 
+% Initialize allele ratio track:
+if (Output_CGD_annotations)
+    alleleRatiosFid = fopen([projectDir 'allele_ratios.' project  '.bed'], 'w');
+	fprintf(alleleRatiosFid, ['track name="' project ' allele ratios" description="Allele ratios" useScore=0 itemRGB=On\n']);
+end
+
 %% =========================================================================================
 % Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 %-------------------------------------------------------------------------------------------
@@ -647,10 +653,35 @@ for chr = 1:num_chrs
 				chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
 				chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
 			end;
+            
+            if (Output_CGD_annotations)
+                fprintf(alleleRatiosFid, ...
+                    ['%sAlleleRatios ' ... chromosome name
+                    '%d ' ... SNP start
+                    '%d ' ... SNP end
+                    '[%s/%s] ' ... annotation label - allele1/allele2
+                    '0 ' ... score
+                    '+ ' ... strand
+                    '%d ' ... thick start
+                    '%d ' ... thick end
+                    '%d,%d,%d\n'], ... rgb
+                    chr_name{chr}, ...
+                    coordinate, ...
+                    coordinate, ...
+                    homologA, ...
+                    homologB, ...
+                    coordinate, ...
+                    coordinate, ...
+                    round(chr_SNPdata_colorsC{chr,1}(chr_bin) * 255), ...
+                    round(chr_SNPdata_colorsC{chr,2}(chr_bin) * 255), ...
+                    round(chr_SNPdata_colorsC{chr,3}(chr_bin) * 255) ...
+                );
+            end
 		end;
 	end;
 end;
 
+fclose(alleleRatiosFid);
 
 %% =========================================================================================
 % Setup for main figure generation.
@@ -691,15 +722,6 @@ end;
 fprintf('\n');
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
-
-
-%% =========================================================================================
-% Initialize CGD annotation output file.
-%-------------------------------------------------------------------------------------------
-if (Output_CGD_annotations == true)
-	CGDid = fopen([projectDir 'CGD_annotations.' project  '.txt'], 'w');
-	fprintf(CGDid,['track name=' project ' description="WGseq annotation of SNPs" useScore=0 itemRGB=On\n']);
-end;
 
 
 %% =========================================================================================
