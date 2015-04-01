@@ -359,7 +359,8 @@ function blank_and_content_tab() {
 			}
 			var fig_linear_manual                = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.2.";
 			var fig_standard_manual              = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.1.";
-			var CGD_annotations_SNP              = "users/"+user+"/projects/"+project+"/CGD_annotations."+project+".txt";
+			var CGD_CNV_track					 = "users/"+user+"/projects/"+project+"/cnv."+project+".gff3";
+			var CGD_SNP_track					 = "users/"+user+"/projects/"+project+"/allele_ratios."+project+".bed";
 
 			var CNV_bias_SnpCghArray_GCcontent   = "users/"+user+"/projects/"+project+"/fig_GCratio_vs_CGH.png";
 			var CNV_bias_SnpCghArray_end         = "users/"+user+"/projects/"+project+"/fig_EndDistance_vs_CGH.png";
@@ -448,6 +449,9 @@ function blank_and_content_tab() {
 				if (isFile(CNV_bias_ddRADseq_2)) {            string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"\",\"100\")'>%GC</button>";             }
 				if (isFile(CNV_bias_ddRADseq_3)) {            string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";         }
 			}
+			if (isFile(CGD_CNV_track)) {
+				string1 += "<a href=\"" + CGD_CNV_track + "\">GBrowse CNV track</a>";
+			}
 			if (isFile(fig_linear_SNP+"png")) {
 				string1 = string1 + "<br><b>SNP/LOH only</b> (lin. ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_SNP+"png\",\"100\")'> ";
@@ -457,17 +461,15 @@ function blank_and_content_tab() {
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_SNP+"eps\")'>";
 				string1 = string1 + ")";
 			}
-
-			// GBrowse annotation file
-			if (isFile(CGD_annotations_SNP)) {
-				string1 = string1 + " : GBrowse-SNP ";
-				string1 = string1 + "<button onclick=\"loadExternal('"+CGD_annotations_SNP+"');\">GBrowse</button>";
-			}
+	
 			// Show allelic ratio plot version for ddRADseq and WGseq.
 			if ((isFile(fig_linear_SNPratio_histogram)) || (isFile(fig_linear_SNPratio_fireplot))) {
 				string1 = string1 + " : SNP ratios ";
 				if (isFile(fig_linear_SNPratio_histogram)) {  string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_histogram+"\",\"100\")'>histogram</button>"; }
 				if (isFile(fig_linear_SNPratio_fireplot)) {   string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"\",\"100\")'>fire plot</button>";  }
+			}
+			if (isFile(CGD_SNP_track)) {
+				string1 += "<a href=\"" + CGD_SNP_track + "\">GBrowse allele ratio track</a>";
 			}
 
 			string1 = string1 + "</font>";
