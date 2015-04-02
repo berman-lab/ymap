@@ -27,7 +27,6 @@ ChrNum                      = true;   % Show numerical etimates of copy number t
 Linear_display              = true;   % Figure version with chromosomes laid out horizontally.
 Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true    % Estimate error in overall ploidy estimate, assuming most common value is actually euploid.
-Output_CGD_annotations      = true;   % Generate CGD annotation files for analyzed datasets.
 
 
 %% =========================================================================================
@@ -219,50 +218,7 @@ load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
 
-%% ========================================================================
-% Output CNV track as a GFF3 file
-%--------------------------------------------------------------------------
-
-if (Output_CGD_annotations)
-    ploidyFileId = fopen(fullfile(projectDir, 'ploidy.txt'))
-    ploidyFile = fscanf(ploidyFileId, '%f');
-    basePloidy = ploidyFile(2);
-    fclose(ploidyFileId);
-    
-    cnvTrackFid = fopen([projectDir 'cnv.' project  '.gff3'], 'w');
-    fprintf(cnvTrackFid, ...
-            [ '##gff-version 3\n\n' ...
-            '[CNV]\n' ...
-            'glyph = xyplot\n' ...
-            'graph_type = histogram\n' ...
-            'fgcolor = black\n' ...
-            'bgcolor = black\n' ...
-            'height = 50\n' ...
-            'min_score = 0\n' ...
-            'max_score = %d\n' ...
-            'label = 1\n' ...
-            'bump = 0\n' ...
-            'scale = none\n' ...
-            'balloon hover = Estimated CNV is $description\n' ...
-            'key = ' project ' CNVs\n\n' ], ...
-            round(basePloidy*2));
-        
-    roundedBasesPerBin = round(bases_per_bin);
-    for chr = 1:num_chrs
-        if (chr_in_use(chr) == 1)
-            for chrBin = 1:length(CNVplot2{chr})
-                localCopyEstimate = CNVplot2{chr}(chrBin) * ploidy * ploidyAdjust;
-
-                binStart = (chrBin - 1) * roundedBasesPerBin + 1;
-                binEnd = binStart + roundedBasesPerBin - 1;
-                fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t%.1f\t.\t.\tNote=%.1f\n', ...
-                    chr_name{chr}, binStart, binEnd, localCopyEstimate, localCopyEstimate);
-            end
-        end
-    end
-    
-    fclose(cnvTrackFid);
-end;
+createCnvTrack(projectDir, project, CNVplot2, bases_per_bin, chr_name, ploidyBase*2, ploidy * ploidyAdjust);
 
 %% =========================================================================================
 % Load SNP/LOH data.

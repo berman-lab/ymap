@@ -24,7 +24,6 @@ ChrNum                      = true;   % Show numerical etimates of copy number t
 Linear_display              = true;   % Figure version with chromosomes laid out horizontally.
 Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true;   % Estimate error in overall ploidy estimate, assuming most common value is actually euploid.
-Output_CGD_annotations      = false;  % Generate CGD annotation files for analyzed datasets.
 
 fprintf('\n');
 fprintf('################################\n');
@@ -189,6 +188,7 @@ fprintf('\nLoading "Common_CNV" data file for ddRADseq project.');
 load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
 
+createCnvTrack(workingDir, project, CNVplot2, bases_per_bin, chr_name, ploidyBase * 2, ploidyAdjust * ploidyBase);
 
 %% =========================================================================================
 % Test adjacent segments for no change in copy number estimate.
@@ -348,16 +348,6 @@ end;
 % end;
 %-------------------------------------------------------------------------------------------
 calculate_allelic_ratio_cutoffs;
-
-
-%% ====================================================================
-% Initialize CGD annotation output file.
-%----------------------------------------------------------------------
-if (Output_CGD_annotations == true)
-	CGDid = fopen([projectDir 'CGD_annotations.' project  '.txt'], 'w');
-	fprintf(CGDid,['track name=' project ' description="WGseq annotation of SNPs" useScore=0 itemRGB=On\n']);
-end;
-
 
 %% =========================================================================================
 % Save workspace variables for use in "CNV_SNP_hapmap_v4_RedGreen.m"
