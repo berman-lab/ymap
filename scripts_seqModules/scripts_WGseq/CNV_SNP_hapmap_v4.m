@@ -648,66 +648,43 @@ end;
 %% =========================================================================================
 % Generate allele ratio track.
 %-------------------------------------------------------------------------------------------
-if (Output_CGD_annotations)
-    alleleRatiosFid = fopen([projectDir 'allele_ratios.' project  '.bed'], 'w');
-	fprintf(alleleRatiosFid, ['track name=' project 'AlleleRatios" description=' project ' allele ratios" useScore=0 itemRGB=On\n']);
-    
-    for chr = 1:num_chrs
-		if (~chr_in_use(chr))
+alleleRatiosFid = openAlleleRatiosTrack(projectDir, project);
+
+for chr = 1:num_chrs
+	if (~chr_in_use(chr))
+		continue
+	end
+
+	chrName = chr_name{chr};
+	for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+		coordinates = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
+		if (isempty(coordinates))
 			continue
 		end
-		
-		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-			coordinates = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
-			if (isempty(coordinates))
-				continue
-			end
-			
-			if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
-				allele_strings = {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+
+		if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
+			allele_strings = {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+		else
+			allele_strings = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+		end;
+
+		for SNP = 1:length(coordinates)
+			% Load phased SNP data from earlier defined structure.
+			coordinate = coordinates(SNP);
+			if (length(coordinates) > 1)
+				allele_string = allele_strings{SNP};
 			else
-				allele_strings = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+				allele_string = allele_strings;
 			end;
-			
-			for SNP = 1:length(coordinates)
-				% Load phased SNP data from earlier defined structure.
-				coordinate = coordinates(SNP);
-				if (length(coordinates) > 1)
-					allele_string = allele_strings{SNP};
-				else
-					allele_string = allele_strings;
-				end;
-				homologA = allele_string(3);
-				homologB = allele_string(5);
-				
-				fprintf(alleleRatiosFid, ...
-					['%s ' ... chromosome name
-					'%d ' ... SNP start
-					'%d ' ... SNP end
-					'[%s/%s] ' ... annotation label - allele1/allele2
-					'0 ' ... score
-					'+ ' ... strand
-					'%d ' ... thick start
-					'%d ' ... thick end
-					'%d,%d,%d\n'], ... rgb
-					chr_name{chr}, ...
-					coordinate, ...
-					coordinate, ...
-					homologA, ...
-					homologB, ...
-					coordinate, ...
-					coordinate, ...
-					round(chr_SNPdata_colorsC{chr,1}(chr_bin) * 255), ...
-					round(chr_SNPdata_colorsC{chr,2}(chr_bin) * 255), ...
-					round(chr_SNPdata_colorsC{chr,3}(chr_bin) * 255) ...
-				);
-			end
+
+			writeAlleleRatioLine(alleleRatiosFid, chrName, coordinate, ...
+				allele_string(3), allele_string(5), ...
+				[chr_SNPdata_colorsC{chr,1}(chr_bin) chr_SNPdata_colorsC{chr,2}(chr_bin) chr_SNPdata_colorsC{chr,3}(chr_bin)]);
 		end
-    end
-    
-    
-    fclose(alleleRatiosFid);
+	end
 end
+
+fclose(alleleRatiosFid);
 
 %% =========================================================================================
 % Setup for main figure generation.
