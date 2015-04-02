@@ -427,6 +427,8 @@ function blank_and_content_tab() {
 					string1 = string1 + " ";
 				}
 			}
+			
+			var CGD_tracks_present = false;
 
 			// Show CNV bias figure for SnpCghArray, WGseq, and ddRADseq.
 			if ((isFile(CNV_bias_SnpCghArray_GCcontent)) || (isFile(CNV_bias_SnpCghArray_end))) {
@@ -451,6 +453,7 @@ function blank_and_content_tab() {
 			}
 			if (isFile(CGD_CNV_track)) {
 				string1 += "<a href=\"" + CGD_CNV_track + "\">GBrowse CNV track</a>";
+				CGD_tracks_present = true;
 			}
 			if (isFile(fig_linear_SNP+"png")) {
 				string1 = string1 + "<br><b>SNP/LOH only</b> (lin. ";
@@ -470,6 +473,12 @@ function blank_and_content_tab() {
 			}
 			if (isFile(CGD_SNP_track)) {
 				string1 += "<a href=\"" + CGD_SNP_track + "\">GBrowse allele ratio track</a>";
+				CGD_tracks_present = true;
+			}
+			
+			if (CGD_tracks_present)
+			{
+				string1 += "<br><a href=\"https://github.com/darrenabbey/ymap/wiki/How-to-import-Ymap-generated-tracks-into-CGD's-GBrowse\">(help on importing tracks into GBrowse)</a>";
 			}
 
 			string1 = string1 + "</font>";
