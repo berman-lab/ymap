@@ -194,9 +194,6 @@ for chr = 1:length(chr_sizes)
 	%       5 : phased SNP allele strings.   (baseCall:alleleA/alleleB)
 	%       6 : unphased SNP allele strings.
 	chr_length = ceil(chr_size(chr)/bases_per_bin);
-%	for j = 1:6
-%		chr_SNPdata{chr,j} = cell(1,chr_length);
-%	end;
 
 	% Vectors to track RGB values for displaying SNPs.
 	for j = 1:3
@@ -345,7 +342,7 @@ chr_SNPdata = temp_holding;
 %% =========================================================================================
 % Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 %-------------------------------------------------------------------------------------------
-if (useHapmap)
+%if (useHapmap)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
@@ -616,35 +613,35 @@ if (useHapmap)
 			end;
 		end;
 	end;
-elseif (useParent)
-	fprintf('\t|\tNo hapmap is in use, so assign color for each SNP as heterozygous.\n');
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-				colorList                           = [1.0 1.0 1.0];
-				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
-				chr_SNPdata_colorsC{chr,2}(chr_bin) = colorList(2);
-				chr_SNPdata_colorsC{chr,3}(chr_bin) = colorList(3);
-
-				chr_SNPdata_colorsP{chr,1}(chr_bin) = colorList(1);
-				chr_SNPdata_colorsP{chr,2}(chr_bin) = colorList(2);
-				chr_SNPdata_colorsP{chr,3}(chr_bin) = colorList(3);
-			end;
-		end;
-	end;
-else
-	fprintf('\t|\tNo hapmap is in use, so assign color for each SNP as heterozygous.\n');
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-				colorList                           = [1.0 1.0 1.0];
-				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
-				chr_SNPdata_colorsC{chr,2}(chr_bin) = colorList(2);
-				chr_SNPdata_colorsC{chr,3}(chr_bin) = colorList(3);
-			end;
-		end;
-	end;
-end;
+%elseif (useParent)
+%	fprintf('\t|\tNo hapmap is in use, so assign color for each SNP as heterozygous.\n');
+%	for chr = 1:num_chrs
+%		if (chr_in_use(chr) == 1)
+%			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+%				colorList                           = [1.0 1.0 1.0];
+%				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
+%				chr_SNPdata_colorsC{chr,2}(chr_bin) = colorList(2);
+%				chr_SNPdata_colorsC{chr,3}(chr_bin) = colorList(3);
+%
+%				chr_SNPdata_colorsP{chr,1}(chr_bin) = colorList(1);
+%				chr_SNPdata_colorsP{chr,2}(chr_bin) = colorList(2);
+%				chr_SNPdata_colorsP{chr,3}(chr_bin) = colorList(3);
+%			end;
+%		end;
+%	end;
+%else
+%	fprintf('\t|\tNo hapmap is in use, so assign color for each SNP as heterozygous.\n');
+%	for chr = 1:num_chrs
+%		if (chr_in_use(chr) == 1)
+%			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+%				colorList                           = [1.0 1.0 1.0];
+%				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
+%				chr_SNPdata_colorsC{chr,2}(chr_bin) = colorList(2);
+%				chr_SNPdata_colorsC{chr,3}(chr_bin) = colorList(3);
+%			end;
+%		end;
+%	end;
+%end;
 
 
 %% =========================================================================================
