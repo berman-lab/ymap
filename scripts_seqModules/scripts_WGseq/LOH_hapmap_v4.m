@@ -590,7 +590,10 @@ for chr = 1:num_chrs
 							if (ratioRegionID == 2);            colorList = colorB;
 							else                                colorList = colorA;
 							end;
-						else                                        colorList = unphased_color_1of1;
+						else
+							if (useParent)                      colorList = unphased_color_1of1;
+							else                                colorList = colorNoData;
+							end;
 						end;
 					elseif (segment_copyNum == 2)
 						%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
