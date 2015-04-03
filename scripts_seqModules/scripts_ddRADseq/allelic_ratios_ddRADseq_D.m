@@ -8,7 +8,7 @@ addpath('../');
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'allelic_ratios_ddRADseq_B.workspace_variables.mat']);
 
-if (useHapmap)
+if ((useHapmap) || (useParent))
 	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
 
 

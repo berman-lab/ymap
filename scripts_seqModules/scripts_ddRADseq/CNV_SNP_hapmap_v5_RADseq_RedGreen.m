@@ -15,7 +15,7 @@ fprintf('#########################################\n');
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v5_RADseq.workspace_variables.mat']);
 
-if (useHapmap)
+if ((useHapmap) || (useParent))
 	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
 
 
