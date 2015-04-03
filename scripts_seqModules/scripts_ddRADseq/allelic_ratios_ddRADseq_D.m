@@ -135,21 +135,25 @@ if (useHapmap)
 						cutoff_end              = cutoffs(GaussianRegionID+1);
 						if (GaussianRegionID == 1)
 							if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
-								foundGaussianRegion   = mostLikelyGaussians(GaussianRegionID);
+								ratioRegionID   = mostLikelyGaussians(GaussianRegionID);
 							end;
 						else
 							if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
-								foundGaussianRegion   = mostLikelyGaussians(GaussianRegionID);
+								ratioRegionID   = mostLikelyGaussians(GaussianRegionID);
 							end;
 						end;
 					end;
 
 					allelicFraction                = C_chr_SNP_data_ratios{chr}(SNP);
-					if (segment_copyNum <= 0);                colorList = colorNoData;
-					elseif (segment_copyNum == 1);            colorList = color_unphased_1of1;
+					if (segment_copyNum <= 0);                  colorList = colorNoData;
+					elseif (segment_copyNum == 1)
+						if (useHapmap);                     colorList = color_unphased_1of1;
+						elseif (useParent);                 colorList = color_unphased_1of1;
+						else                                colorList = colorNoData;
+						end;
 					elseif (segment_copyNum == 2)
-						if (foundGaussianRegion == 3);      colorList = unphased_color_2of2;
-						elseif (foundGaussianRegion == 2);  colorList = unphased_color_1of2;
+						if (ratioRegionID == 3);            colorList = unphased_color_2of2;
+						elseif (ratioRegionID == 2);        colorList = unphased_color_1of2;
 						else                                colorList = unphased_color_2of2;
 						end;
 					elseif (segment_copyNum == 3)

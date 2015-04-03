@@ -414,7 +414,7 @@ for chr = 1:num_chrs
 							else                                colorList = colorA;
 							end;
 						else
-						if (useParent)                      colorList = unphased_color_1of1;
+						if (useParent);                             colorList = unphased_color_1of1;
 							else                                colorList = colorNoData;
 							end;
 						end;

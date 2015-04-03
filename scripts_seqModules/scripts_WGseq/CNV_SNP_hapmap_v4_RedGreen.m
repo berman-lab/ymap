@@ -148,10 +148,11 @@ if ((useHapmap) || (useParent))
 							end;
 						end;
 
-						if (segment_copyNum <= 0);                          colorList = colorNoData;
+						if (segment_copyNum <= 0);                  colorList = colorNoData;
 						elseif (segment_copyNum == 1)
 							% allelic fraction cutoffs: [0.50000] => [A B]
-							if (useParent)                      colorList = unphased_color_1of1;
+							if (useHapmap);                     colorList = unphased_color_1of1;
+							elseif (useParent);                 colorList = unphased_color_1of1;
 							else                                colorList = colorNoData;
 							end;
 						elseif (segment_copyNum == 2)
