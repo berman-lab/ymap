@@ -339,7 +339,7 @@ end;
 %		phased_alleles_string       = '()';
 %		unphased_alleles_string     = '(Z:G/C,Z:A/C)';
 %	else
-%		% coordinate sthat are heterozygous (0.25 .. 0.75).
+%		% coordinate sthat are heterozygous (0.25 .. 0.75) in the experimental dataset.
 %		phased_ratio_data_string    = '()';
 %		unphased_ratio_data_string  = '(0.529411764706,0.538461538462)';
 %		phased_coordinates_string   = '()';
@@ -520,14 +520,14 @@ calculate_allelic_ratio_cutoffs;
 chr_SNPdata = temp_holding;
 
 
-if (useHapmap)
+%if (useHapmap)
 	%% =========================================================================================
 	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 	%-------------------------------------------------------------------------------------------
 	fprintf('\t|\tDetermine display color for each SNP.\n');
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 				%
 				% Determining colors for each SNP coordinate from calculated cutoffs.
 				%
@@ -602,13 +602,13 @@ if (useHapmap)
 						elseif (segment_copyNum == 2)
 							%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
 							if ((baseCall == homologA) || (baseCall == homologB))
-								if (foundGaussianRegion == 3);      colorList = colorBB;
-								elseif (foundGaussianRegion == 2);  colorList = colorAB;
+								if (ratioRegionID == 3);            colorList = colorBB;
+								elseif (ratioRegionID == 2);        colorList = colorAB;
 								else                                colorList = colorAA;
 								end;
 							else
-								if (foundGaussianRegion == 3);      colorList = unphased_color_2of2;
-								elseif (foundGaussianRegion == 2);  colorList = unphased_color_1of2;
+								if (ratioRegionID == 3);            colorList = unphased_color_2of2;
+								elseif (ratioRegionID == 2);        colorList = unphased_color_1of2;
 								else                                colorList = unphased_color_2of2;
 								end;
 							end;
@@ -776,7 +776,7 @@ if (useHapmap)
 			% Average colors of SNPs found in bin.
 			%
 			fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
-			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 				allelic_ratios                                      = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
 				if (length(allelic_ratios) > 0)
 					if (chr_SNPdata_countC{chr}(chr_bin) > 0)
@@ -796,35 +796,35 @@ if (useHapmap)
 			end;
 		end;
 	end;
-elseif (useParent)
-	fprintf('\t|\tNo hapmap is in use, so assign color for each SNP as heterozygous.\n');
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				colorList                           = [1.0 1.0 1.0];
-				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
-				chr_SNPdata_colorsC{chr,2}(chr_bin) = colorList(2);
-				chr_SNPdata_colorsC{chr,3}(chr_bin) = colorList(3);
-
-				chr_SNPdata_colorsP{chr,1}(chr_bin) = colorList(1);
-				chr_SNPdata_colorsP{chr,2}(chr_bin) = colorList(2);
-				chr_SNPdata_colorsP{chr,3}(chr_bin) = colorList(3);
-			end;
-		end;
-	end;
-else
-	fprintf('\t|\tNo hapmap is in use, so assign color for each SNP as heterozygous.\n');
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				colorList                           = [1.0 1.0 1.0];
-				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
-				chr_SNPdata_colorsC{chr,2}(chr_bin) = colorList(2);
-				chr_SNPdata_colorsC{chr,3}(chr_bin) = colorList(3);
-			end;
-		end;
-	end;
-end;
+%elseif (useParent)
+%	fprintf('\t|\tNo hapmap is in use, so assign color for each SNP as heterozygous.\n');
+%	for chr = 1:num_chrs
+%		if (chr_in_use(chr) == 1)
+%			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+%				colorList                           = [1.0 1.0 1.0];
+%				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
+%				chr_SNPdata_colorsC{chr,2}(chr_bin) = colorList(2);
+%				chr_SNPdata_colorsC{chr,3}(chr_bin) = colorList(3);
+%
+%				chr_SNPdata_colorsP{chr,1}(chr_bin) = colorList(1);
+%				chr_SNPdata_colorsP{chr,2}(chr_bin) = colorList(2);
+%				chr_SNPdata_colorsP{chr,3}(chr_bin) = colorList(3);
+%			end;
+%		end;
+%	end;
+%else
+%	fprintf('\t|\tNo hapmap is in use, so assign color for each SNP as heterozygous.\n');
+%	for chr = 1:num_chrs
+%		if (chr_in_use(chr) == 1)
+%			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+%				colorList                           = [1.0 1.0 1.0];
+%				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
+%				chr_SNPdata_colorsC{chr,2}(chr_bin) = colorList(2);
+%				chr_SNPdata_colorsC{chr,3}(chr_bin) = colorList(3);
+%			end;
+%		end;
+%	end;
+%end;
 
 
 %%================================================================================================
@@ -838,7 +838,7 @@ largestChr          = largestChr(1);
 full_data_threshold = floor(bases_per_bin/100);
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-		for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 			% the number of heterozygous data points in this bin.
 			SNPs_count{chr}(chr_bin)                                     = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});
 
@@ -919,7 +919,7 @@ for chr = 1:num_chrs
 
 
 		%% standard : determine color of each bin.
-		for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 			c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
 			if (c_tot_post == 0)
 				c_post = colorNoData;
@@ -941,7 +941,7 @@ for chr = 1:num_chrs
 
 
 		%% standard : draw colorbars.
-		for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 			x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 			y_ = [0 maxY maxY 0];
 			c_post(1) = colors(chr_bin,1);
@@ -1089,7 +1089,7 @@ for chr = 1:num_chrs
 			title(chr_label{chr},'Interpreter','none','FontSize',20);
 
 			%% linear : draw colorbars.
-			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
+			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 				y_ = [0 maxY maxY 0];
 				c_post(1) = colors(chr_bin,1);
