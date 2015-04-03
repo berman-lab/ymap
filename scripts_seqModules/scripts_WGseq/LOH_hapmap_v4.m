@@ -597,18 +597,18 @@ if (useHapmap)
 								if (ratioRegionID == 2);            colorList = colorB;
 								else                                colorList = colorA;
 								end;
-							else                                    colorList = unphased_color_1of1;
+							else                                        colorList = unphased_color_1of1;
 							end;
 						elseif (segment_copyNum == 2)
 							%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
 							if ((baseCall == homologA) || (baseCall == homologB))
-								if (foundGaussianRegion == 3);      colorList = colorBB;
-								elseif (foundGaussianRegion == 2);  colorList = colorAB;
+								if (ratioRegionID == 3);            colorList = colorBB;
+								elseif (ratioRegionID == 2);        colorList = colorAB;
 								else                                colorList = colorAA;
 								end;
 							else
-								if (foundGaussianRegion == 3);      colorList = unphased_color_2of2;
-								elseif (foundGaussianRegion == 2);  colorList = unphased_color_1of2;
+								if (ratioRegionID == 3);            colorList = unphased_color_2of2;
+								elseif (ratioRegionID == 2);        colorList = unphased_color_1of2;
 								else                                colorList = unphased_color_2of2;
 								end;
 							end;
