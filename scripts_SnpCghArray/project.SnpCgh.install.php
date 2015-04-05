@@ -119,6 +119,42 @@
 	fclose($output);
 	chmod($outputName,0644);
 	fwrite($outputLog, "Matlab running script 'processing.m' generated.\n");
+	
+	// Running pre-processing for Matlab script, because running it within Matlab doesn't work well:
+	// http://stackoverflow.com/questions/29451735/matlab-system-function-not-running-the-command-and-not-returning-any-values
+	
+	// Standardize end-of-line characters to '\n':
+	system('perl -pi -e "s/\r\n/\n/g" ' . $inputFile); // \r\n => \n
+	system('perl -pi -e "s/\r/\n/g" ' . $inputFile); // \r   => \n
+	 
+	/*
+	Make CGH/SNP/MLST probe data subfiles.
+	
+	CGH probes  : "CGHv1_Ca_..."
+	SNP probes  : "SNPv1_Ca_..."
+	MLST probes : "MLSTv1_..."
+	*/
+	$cghRowsFile = $workingDir . 'CGH_rows.xls';
+	$snpRowsFile = $workingDir . 'SNP_rows.xls';
+	$mlstRowsFile = $workingDir . 'MLST_rows.xls';
+	system('grep "CGHv1_Ca_\|CGH_Ca_" ' . $inputFile . ' > ' . $cghRowsFile);
+	system('grep "SNPv1_Ca_\|SNP_Ca_" ' . $inputFile . ' > ' . $snpRowsFile);
+	system('grep "MLSTv1_" ' . $inputFile . ' > ' . $mlstRowsFile);
+	
+	/*
+	Sort subfiles by probe name
+	
+	-b    : ignore leading spaces in column entries.
+	-k1,1 : sort on columns from 1 to 1.
+	-o    : output file.
+	*/
+	foreach (array($cghRowsFile, $snpRowsFile, $mlstRowsFile) as $fileToProcess)
+	{
+		chmod($fileToProcess, 0644);
+		$tmpFile = "$fileToProcess.tmp";
+		system("sort -b -k1,1 $fileToProcess -o $tmpFile");
+		system("mv $tmpFile $fileToProcess");
+	}
 
 	fwrite($outputLog, "Current Path = '".getcwd()."'\n");
 	fwrite($outputLog, "Calling Matlab :\n");
