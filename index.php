@@ -334,11 +334,10 @@ function blank_and_content_tab() {
 	function openProject(user,project,key,color1,color2,parent) {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
 		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
-
 		closeProject_viewOnly(key);
-
 		console.log('# parent.openProject : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
 		console.log(show_button_element);
+
 		if (show_button_element.checked == false) {
 			closeProject(user,project,key,color1,color2,parent);
 		} else {
@@ -350,12 +349,12 @@ function blank_and_content_tab() {
 			var fig_standard_CNV                 = "users/"+user+"/projects/"+project+"/fig.CNV-map.1.";
 			if (isFile("users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.png")) {
 				// ddRADseq.
-				var fig_linear_SNP               = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.";
-				var fig_standard_SNP             = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c1.";
+				var fig_linear_SNP           = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c2.";
+				var fig_standard_SNP         = "users/"+user+"/projects/"+project+"/fig.allelic_ratio-map.c1.";
 			} else {
 				// other.
-				var fig_linear_SNP               = "users/"+user+"/projects/"+project+"/fig.SNP-map.2.";
-				var fig_standard_SNP             = "users/"+user+"/projects/"+project+"/fig.SNP-map.1.";
+				var fig_linear_SNP           = "users/"+user+"/projects/"+project+"/fig.SNP-map.2.";
+				var fig_standard_SNP         = "users/"+user+"/projects/"+project+"/fig.SNP-map.1.";
 			}
 			var fig_linear_manual                = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.2.";
 			var fig_standard_manual              = "users/"+user+"/projects/"+project+"/fig.CNV-manualLOH-map.1.";
@@ -496,7 +495,7 @@ function blank_and_content_tab() {
 			} else { // No hapmap analysis done.
 				if (parent == project) { // no LOH calculations done.
 					showColors('grey','userProjectHET_'+key,'ab');
-				} else { // LOH calculations have been done.
+				} else { // LOH calculations have been done vs. parent dataset.
 					showColors('red' ,'userProjectHOM_'+key,'hom');
 					showColors('grey','userProjectHET_'+key,'ab');
 				}

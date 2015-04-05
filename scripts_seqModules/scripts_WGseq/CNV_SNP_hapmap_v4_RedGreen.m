@@ -16,7 +16,7 @@ projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 
-if (useHapmap)
+if ((useHapmap) || (useParent))
 	fprintf(['\n##\n## "CNV_SNP_hapmap_v4_RedGreen.m" is being processed.\n##\n']);
 
 	%% =========================================================================================
@@ -148,10 +148,13 @@ if (useHapmap)
 							end;
 						end;
 
-						if (segment_copyNum <= 0);                          colorList = colorNoData;
+						if (segment_copyNum <= 0);                  colorList = colorNoData;
 						elseif (segment_copyNum == 1)
 							% allelic fraction cutoffs: [0.50000] => [A B]
-							colorList = unphased_color_1of1;
+							if (useHapmap);                     colorList = unphased_color_1of1;
+							elseif (useParent);                 colorList = unphased_color_1of1;
+							else                                colorList = colorNoData;
+							end;
 						elseif (segment_copyNum == 2)
 							%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
 							if (ratioRegionID == 3);            colorList = unphased_color_2of2;

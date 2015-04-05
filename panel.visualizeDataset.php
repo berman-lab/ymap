@@ -50,10 +50,33 @@
 		echo "<br>\n\t\t";
 		foreach($projectFolders_starting as $key_=>$project) {
 			// Load colors for project.
-			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
-			$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
-			$handle       = fopen($parentFile,'r');
-			$parentString = trim(fgets($handle));
+			$colors_file  = "users/".$user."/projects/".$project."/colors.txt";
+			if (file_exists($colors_file)) {
+				$handle       = fopen($colors_file,'r');
+				$colorString1 = trim(fgets($handle));
+				$colorString2 = trim(fgets($handle));
+				fclose($handle);
+			} else {
+				$colorString1 = 'null';
+				$colorString2 = 'null';
+			}
+
+			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
+			if (file_exists($dataType_file)) {
+				$handle       = fopen($dataType_file,'r');
+				$dataType     = trim(fgets($handle));
+				fclose($handle);
+			} else {
+				$dataType     = 'null';
+			}
+			if (strcmp($dataType,"0") == 0) {
+				$colorString1 = "cyan";
+				$colorString2 = "magenta";
+			}
+
+			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
+			$handle               = fopen($parent_file,'r');
+			$parentString         = trim(fgets($handle));
 			fclose($handle);
 			$key = $key_;
 			echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
@@ -66,9 +89,9 @@
 		}
 		foreach($projectFolders_working as $key_=>$project) {
 			// Load colors for project.
-			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
-			if (file_exists($colorFile)) {
-				$handle       = fopen($colorFile,'r');
+			$colors_file          = "users/".$user."/projects/".$project."/colors.txt";
+			if (file_exists($colors_file)) {
+				$handle       = fopen($colors_file,'r');
 				$colorString1 = trim(fgets($handle));
 				$colorString2 = trim(fgets($handle));
 				fclose($handle);
@@ -76,9 +99,23 @@
 				$colorString1 = 'null';
 				$colorString2 = 'null';
 			}
-			$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
-			$handle       = fopen($parentFile,'r');
-			$parentString = trim(fgets($handle));
+
+			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
+			if (file_exists($dataType_file)) {
+				$handle       = fopen($dataType_file,'r');
+				$dataType     = trim(fgets($handle));
+				fclose($handle);
+			} else {
+				$dataType     = 'null';
+			}
+			if (strcmp($dataType,"0") == 0) {
+				$colorString1 = "cyan";
+				$colorString2 = "magenta";
+			}
+
+			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
+			$handle               = fopen($parent_file,'r');
+			$parentString         = trim(fgets($handle));
 			fclose($handle);
 			$key = $key_ + $userProjectCount_starting;
 			echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t";
@@ -91,9 +128,9 @@
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
 			// Load colors for project.
-			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
-			if (file_exists($colorFile)) {
-				$handle       = fopen($colorFile,'r');
+			$colors_file          = "users/".$user."/projects/".$project."/colors.txt";
+			if (file_exists($colors_file)) {
+				$handle       = fopen($colors_file,'r');
 				$colorString1 = trim(fgets($handle));
 				$colorString2 = trim(fgets($handle));
 				fclose($handle);
@@ -101,9 +138,23 @@
 				$colorString1 = 'null';
 				$colorString2 = 'null';
 			}
-			$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
-			$handle       = fopen($parentFile,'r');
-			$parentString = trim(fgets($handle));
+
+			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
+			if (file_exists($dataType_file)) {
+				$handle       = fopen($dataType_file,'r');
+				$dataType     = trim(fgets($handle));
+				fclose($handle);
+			} else {
+				$dataType     = 'null';
+			}
+			if (strcmp($dataType,"0") == 0) {
+				$colorString1 = "cyan";
+				$colorString2 = "magenta";
+			}
+
+			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
+			$handle               = fopen($parent_file,'r');
+			$parentString         = trim(fgets($handle));
 			fclose($handle);
 			$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
 			echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t";
@@ -137,9 +188,9 @@
 	echo "<br>\n\t\t";
 	foreach ($systemProjectFolders as $key_=>$project) {
 		// Load colors for project.
-		$colorFile        = "users/default/projects/".$project."/colors.txt";
-		if (file_exists($colorFile)) {
-			$handle       = fopen($colorFile,'r');
+		$colors_file          = "users/default/projects/".$project."/colors.txt";
+		if (file_exists($colors_file)) {
+			$handle       = fopen($colors_file,'r');
 			$colorString1 = trim(fgets($handle));
 			$colorString2 = trim(fgets($handle));
 			fclose($handle);
@@ -147,8 +198,8 @@
 			$colorString1 = 'null';
 			$colorString2 = 'null';
 		}
-		$parentFile   = "users/default/projects/".$project."/parent.txt";
-		$handle       = fopen($parentFile,'r');
+		$parent_file  = "users/default/projects/".$project."/parent.txt";
+		$handle       = fopen($parent_file,'r');
 		$parentString = trim(fgets($handle));
 		fclose($handle);
 

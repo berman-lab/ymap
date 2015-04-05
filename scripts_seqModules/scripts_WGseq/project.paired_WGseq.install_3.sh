@@ -62,6 +62,23 @@ else
 	hapmapInUse=1;
 fi
 
+
+if [ $hapmapInUse = 1 ]
+then
+	# Determine location of hapmap being used.
+	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+		hapmapUser=$user;
+	elif [ -d $main_dir"users/default/genomes/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/default/genomes/"$hapmap"/";
+		hapmapUser="default";
+	fi
+	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+fi
+
+
 # Determine location of genome being used.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
 then
@@ -271,8 +288,6 @@ else
 
 		rm $GATKlog1;
 		rm $GATKlog2;
-
-		cd $currentDir;
 
 		echo "#============================================================================== 3" >> $logName;
 
