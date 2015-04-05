@@ -34,6 +34,17 @@ fprintf(['    15 : show MRS annotations : ' show_MRS_string    '\n']);
 fprintf(['[process_main.m] : current folder.\n']);
 	currentDir = pwd;
     fprintf(['    ' currentDir '\n']);
+	
+% For CGD track functions (createCnvTrack, openAlleleRatiosTrack,
+% writeAlleleRatioLine)
+addpath(fullfile(currentDir, '..', 'scripts_seqModules'));
+
+% Generate chromosome names
+chrNames = cell(1, num_chrs);
+for chrIx = 1:(num_chrs - 1)
+	chrNames{chrIx} = sprintf('Ca21chr%d_C_albicans_SC5314', chrIx);
+end
+chrNames{num_chrs} = 'Ca21chrR_C_albicans_SC5314';
 
 % calibration_file = ['designs/' microarray_design '/' phasing_dataset '.mat'];
 % designs/
@@ -125,9 +136,6 @@ axisLabelPosition_horiz = 0.01125;
 
 % not in place yet... uninformative currently looks like unnassigned to script.
 show_uninformative           = false;
-
-% Generate CGD annotation files for analyzed microarrays.
-Output_CGD_annotations           = true;
 
 % Makes figures showing Gaussian fits for each chromosome segment.
 Gaussian_fit_display             = false;
@@ -564,6 +572,7 @@ for chr = 1:num_chrs
 end;
 save([workingDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV');
 
+createCnvTrack(workingDir, experiment_name, CNVplot2, bases_per_bin, chrNames, ploidyBase*2, ploidy_estimate);
 
 %% ====================================================================
 % Determine average allelic ratio per figure bin.
@@ -707,17 +716,10 @@ end;
 
 
 %% ====================================================================
-% Initialize CGD annotation output file.
-%----------------------------------------------------------------------
-if (Output_CGD_annotations == true)
-	CGDid = fopen([workingDir 'CGD_annotations.' experiment_name '.txt'], 'w');
-	fprintf(CGDid,['track name=' experiment_name ' description="SNP/CGH microarray annotation of SNPs" useScore=0 itemRGB=On\n']);
-end;
-
-
-%% ====================================================================
 % Determining colors for SNP bins.
 %----------------------------------------------------------------------
+
+alleleRatiosFid = openAlleleRatiosTrack(workingDir, experiment_name);
 counter = 0;
 SNPs_hom = 0;
 SNPs_total = 0;
@@ -780,13 +782,14 @@ for i = 1:2:SNP_probeset_length
 
 			% Determines probe assignment of SNP pair.
 			ChrCopyNumber = datasetDetails.chrCopyNum{probeset1(i).probe_chromosome}(segment);
+			color = -1; % if color stays -1, don't output it.
 			if (probeset1(i).probe_polarity == 0)
 				% hom unnassigned.
 				probeset1(i).probe_assignment   = 13;
 				probeset1(i+1).probe_assignment = 13;
 				if (show_unnassigned == true) && (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
 				% start BED file output for this SNP.
-				outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorUn_Hom);
+				color = colorUn_Hom;
 			elseif (probeset1(i).probe_polarity == 4)
 				% null action for when (probe_polarity == 4) due to probe design error; probes are identical.
 			elseif (ChrCopyNumber <= 1.5)     %monosomy
@@ -795,12 +798,12 @@ for i = 1:2:SNP_probeset_length
 					probeset1(i).probe_assignment   = 1;
 					probeset1(i+1).probe_assignment = 1;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorA);
+					color = colorA;
 				else % (section == 2)   % monosomy:'b'
 					probeset1(i).probe_assignment   = 2;
 					probeset1(i+1).probe_assignment = 2;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorB);
+					color = colorB;
 				end;
 			elseif (ChrCopyNumber <= 2.5) %disomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
@@ -808,17 +811,17 @@ for i = 1:2:SNP_probeset_length
 					probeset1(i).probe_assignment   = 1;
 					probeset1(i+1).probe_assignment = 1;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorA);
+					color = colorA;
 				elseif (section == 3)   % disomy:'bb'
 					probeset1(i).probe_assignment   = 2;
 					probeset1(i+1).probe_assignment = 2;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorB);
+					color = colorB;
 				else % (section == 2)   % disomy:'ab'
 					probeset1(i).probe_assignment   = 0;
 					probeset1(i+1).probe_assignment = 0;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAB);
+					color = colorAB;
 				end;
 			elseif (ChrCopyNumber <= 3.5) %trisomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
@@ -826,22 +829,22 @@ for i = 1:2:SNP_probeset_length
 					probeset1(i).probe_assignment   = 1;
 					probeset1(i+1).probe_assignment = 1;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorA);
+					color = colorA;
 				elseif (section == 4)   % trisomy:3 'bbb'
 					probeset1(i).probe_assignment   = 2;
 					probeset1(i+1).probe_assignment = 2;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorB);
+					color = colorB;
 				elseif (section == 2)   % trisomy:'aab'
 					probeset1(i).probe_assignment   = 3;
 					probeset1(i+1).probe_assignment = 3;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAAB);
+					color = colorAAB;
 				else % (section == 3)   % trisomy:'abb'
 					probeset1(i).probe_assignment   = 4;
 					probeset1(i+1).probe_assignment = 4;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorABB);
+					color = colorABB;
 				end;
 			elseif (ChrCopyNumber <= 4.5) %tetrasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
@@ -849,27 +852,27 @@ for i = 1:2:SNP_probeset_length
 					probeset1(i).probe_assignment   = 1;
 					probeset1(i+1).probe_assignment = 1;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorA);
+					color = colorA;
 				elseif (section == 5)   % tetrasomy:'bbbb'
 					probeset1(i).probe_assignment   = 2;
 					probeset1(i+1).probe_assignment = 2;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorB);
+					color = colorB;
 				elseif (section == 2)   % tetrasomy:'aaab'
 					probeset1(i).probe_assignment   = 5;
 					probeset1(i+1).probe_assignment = 5;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAAAB);
+					color = colorAAAB;
 				elseif (section == 4)   % tetrasomy:'abbb'
 					probeset1(i).probe_assignment   = 6;
 					probeset1(i+1).probe_assignment = 6;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorABBB);
+					color = colorABBB;
 				else % (section == 3)   % tetrasomy:'aabb'
 					probeset1(i).probe_assignment   = 0;
 					probeset1(i+1).probe_assignment = 0;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAB);
+					color = colorAB;
 				end;
 			elseif (ChrCopyNumber <= 5.5) %pentasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
@@ -877,32 +880,32 @@ for i = 1:2:SNP_probeset_length
 					probeset1(i).probe_assignment   = 1;
 					probeset1(i+1).probe_assignment = 1;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorA);
+					color = colorA;
 				elseif (section == 6)   % pentasomy:'bbbbb'
 					probeset1(i).probe_assignment   = 2;
 					probeset1(i+1).probe_assignment = 2;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorB);
+					color = colorB;
 				elseif (section == 2)   % pentasomy:'aaaab'
 					probeset1(i).probe_assignment   = 7;
 					probeset1(i+1).probe_assignment = 7;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAAAAB);
+					color = colorAAAAB;
 				elseif (section == 5)   % pentasomy:'abbbb'
 					probeset1(i).probe_assignment   = 10;
 					probeset1(i+1).probe_assignment = 10;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorABBBB);
+					color = colorABBBB;
 				elseif (section == 3)   % pentasomy:'aaabb'
 					probeset1(i).probe_assignment   = 8;
 					probeset1(i+1).probe_assignment = 8;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAAABB);
+					color = colorAAABB;
 				else % (section == 4)   % pentasomy:'aabbb'
 					probeset1(i).probe_assignment   = 9;
 					probeset1(i+1).probe_assignment = 9;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAABBB);
+					color = colorAABBB;
 				end;
 			else %treat as hexasomy: if (ChrCopyNumber <= 6.5) %hexasomy
 				% Assigns probe pairs to specific interpretations, collects data for each interpretation.
@@ -910,39 +913,47 @@ for i = 1:2:SNP_probeset_length
 					probeset1(i).probe_assignment   = 1;
 					probeset1(i+1).probe_assignment = 1;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorA);
+					color = colorA;
 				elseif (section == 7)   % hexasomy:'bbbbbb'
 					probeset1(i).probe_assignment   = 2;
 					probeset1(i+1).probe_assignment = 2;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorB);
+					color = colorB;
 				elseif (section == 2)   % hexasomy:'aaaaab'
 					probeset1(i).probe_assignment   = 11;
 					probeset1(i+1).probe_assignment = 11;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAAAAAB);
+					color = colorAAAAAB;
 				elseif (section == 6)   % hexasomy:'abbbbb'
 					probeset1(i).probe_assignment   = 12;
 					probeset1(i+1).probe_assignment = 12;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorABBBBB);
+					color = colorABBBBB;
 				elseif (section == 3)   % hexasomy:'aaaabb'
 					probeset1(i).probe_assignment   = 3;
 					probeset1(i+1).probe_assignment = 3;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAAB);
+					color = colorAAB;
 				elseif (section == 5)   % hexasomy:'aabbbb'
 					probeset1(i).probe_assignment   = 4;
 					probeset1(i+1).probe_assignment = 4;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorABB);
+					color = colorABB;
 				else % (section == 4)   % hexasomy:'aaabbb'
 					probeset1(i).probe_assignment   = 0;
 					probeset1(i+1).probe_assignment = 0;
 					if (Show_Genomic_LOH_fraction == true);   SNPs_hom = SNPs_hom+1;   SNPs_total = SNPs_total+1;   end;
-					outputCGDannotationLine(CGDid,probeset1,i,Output_CGD_annotations, colorAB);
+					color = colorAB;
 				end;
 			end;
+			
+			% Write out the allele ratio:
+			if (color ~= -1)				
+				coordinate = probeset1(i).probe_location;
+				homologA = probeset1(i+1).probe_ID(length(probeset1(i+1).probe_ID));
+				homologB = probeset1(i).probe_ID(length(probeset1(i).probe_ID));
+				writeAlleleRatioLine(alleleRatiosFid, chrNames{probeset1(i).probe_chromosome}, coordinate, homologA, homologB, color);
+			end
 		end;
 
 		% val is the genomic location of the probePair.
@@ -955,6 +966,8 @@ for i = 1:2:SNP_probeset_length
 		end;
 	end;
 end;
+
+fclose(alleleRatiosFid);
 
 % Save SNP 
 save([workingDir 'SNPdata_collected.mat'], 'chr_SNPdata','probeset1','SNPs_hom','SNPs_total');
