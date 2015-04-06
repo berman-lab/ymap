@@ -16,12 +16,8 @@ projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 
-if (~useHapmap) && (~useParent)
-	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being skipped...\n']);
-	fprintf(['##\tbecause the dataset is not being compared to another dataset.\n']);
-else
-	fprintf(['\n##\n## CNV_SNP_hapmap_v4_RedGreen.m is being processed.\n##\n']);
-
+if ((useHapmap) || (useParent))
+	fprintf(['\n##\n## "CNV_SNP_hapmap_v4_RedGreen.m" is being processed.\n##\n']);
 
 	%% =========================================================================================
 	% Define alternate color scheme for figure generation.
@@ -94,10 +90,14 @@ else
 				%
 				% Determining colors for each SNP coordinate from calculated cutoffs.
 				%
-				localCopyEstimate                       = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
-				allelic_ratios                          = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
-				coordinates                             = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
-				allele_strings                          = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+				localCopyEstimate                               = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
+				allelic_ratios                                  = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
+				coordinates                                     = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
+				if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
+					allele_strings                          = {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+				else
+					allele_strings                          = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+				end;
 
 				if (length(allelic_ratios) > 0)
 					for SNP = 1:length(allelic_ratios)
@@ -105,9 +105,9 @@ else
 						allelic_ratio                   = allelic_ratios(SNP);
 						coordinate                      = coordinates(SNP);
 						if (length(allelic_ratios) > 1)
-							allele_string                   = allele_strings{SNP};
+							allele_string           = allele_strings{SNP};
 						else
-							allele_string                   = allele_strings;
+							allele_string           = allele_strings;
 						end;
 						baseCall                        = allele_string(1);
 						homologA                        = allele_string(3);
@@ -148,10 +148,13 @@ else
 							end;
 						end;
 
-						if (segment_copyNum <= 0);                          colorList = colorNoData;
+						if (segment_copyNum <= 0);                  colorList = colorNoData;
 						elseif (segment_copyNum == 1)
 							% allelic fraction cutoffs: [0.50000] => [A B]
-							colorList = unphased_color_1of1;
+							if (useHapmap);                     colorList = unphased_color_1of1;
+							elseif (useParent);                 colorList = unphased_color_1of1;
+							else                                colorList = colorNoData;
+							end;
 						elseif (segment_copyNum == 2)
 							%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
 							if (ratioRegionID == 3);            colorList = unphased_color_2of2;
@@ -239,10 +242,15 @@ else
 						% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
 					end;
 				end;
+			end;
 
-				%
-				% Average colors of SNPs found in bin.
-				%
+			
+			%
+			% Average colors of SNPs found in bin.
+			%
+			fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
+			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+				allelic_ratios                                      = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
 				if (length(allelic_ratios) > 0)
 					if (chr_SNPdata_countC{chr}(chr_bin) > 0)
 						chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
@@ -902,6 +910,12 @@ else
 	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.png'], 'png' );
 	delete(Linear_fig);
+elseif (useParent)
+	% Dataset was compared to a parent, so don't draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Parent in use, so "CNV_SNP_hapmap_v4_RedGreen.m" is being skipped.\n##\n']);
+else
+	% Dataset was not compared to a hapmap or parent, so don't draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Neither parent or hapmap in use, so "CNV_SNP_hapmap_v4_RedGreen.m" is being skipped.\n##\n']);
 end;
 
 end

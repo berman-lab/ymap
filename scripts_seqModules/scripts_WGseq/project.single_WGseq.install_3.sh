@@ -63,6 +63,23 @@ else
 	hapmapInUse=1;
 fi
 
+
+if [ $hapmapInUse = 1 ]
+then
+	# Determine location of hapmap being used.
+	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+		hapmapUser=$user;
+	elif [ -d $main_dir"users/default/genomes/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/default/genomes/"$hapmap"/";
+		hapmapUser="default";
+	fi
+	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+fi
+
+
 # Determine location of genome being used.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
 then
@@ -290,6 +307,26 @@ else
 	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
+fi
+if [ $hapmapInUse = 1 ]
+then
+	if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
+	then
+		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+		echo "\t\tDone." >> $logName;
+	else
+		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+		echo "\t\t| Inputs to python script:" >> $logName;
+		echo "\t\t|\tgenome     = '$genome'"     >> $logName;
+		echo "\t\t|\tgenomeUser = '$genomeUser'" >> $logName;
+		echo "\t\t|\tproject    = '$project'"    >> $logName;
+		echo "\t\t|\tuser       = '$user'"       >> $logName;
+		echo "\t\t|\thapmap     = '$hapmap'"     >> $logName;
+		echo "\t\t|\thapmapUser = '$hapmapUser'" >> $logName;
+		echo "\t\t|\tmain_dir   = '$main_dir'"   >> $logName;
+		python $main_dir"scripts_seqModules/scripts_WGseq/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
+		echo "\t\tDone." >> $logName;
+	fi
 fi
 
 echo "Pileup processing is complete." >> $condensedLog;

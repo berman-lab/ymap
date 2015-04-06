@@ -6,13 +6,16 @@ set -e;
 ## All created files will have permission 760
 umask 007;
 
+user=$1;
+#user='darren1';
 
-user='darren1';
-project='SC5314_ddRADseq';
-hapmap='';
+project=$2;
+#project='SC5314_ddRADseq';
+#project='9442_ddRADseq';
+#project='11461_ddRADseq';
+#project='11461_ddRADseq_hapmap';
 
 main_dir=$(pwd)"/../../";
-
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -22,7 +25,7 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 
-# Get parent name used from project's "parent.txt" file.
+# Get parent name used, from project's "parent.txt" file.
 parent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparent = '"$parent"'" >> $logName;
 # Determine location of parent.
@@ -37,10 +40,35 @@ then
 fi
 echo "\tparentDirectory = '"$parentDirectory"'" >> $logName;
 
-
-# Get genome name used from project's "genome.txt" file.
+# Get genome and hapmap names used, from project's "genome.txt" file.
 genome=$(head -n 1 $projectDirectory"genome.txt");
-echo "\tgenome = '"$genome"'" >> $logName;
+hapmap=$(tail -n 1 $projectDirectory"genome.txt");
+if [ "$genome" = "$hapmap" ]
+then
+	hapmapInUse=0;
+else
+	# Determine location of hapmap being used.
+	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+		cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
+		echo "\thapmap          = '"$hapmap"'" >> $logName;
+		echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+		hapmapUser=$user;
+		hapmapInUse=1;
+	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+	then
+		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
+		cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
+		echo "\thapmap          = '"$hapmap"'" >> $logName;
+		echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+		hapmapUser="default";
+		hapmapInUse=1;
+	else
+		hapmapInUse=0;
+	fi
+fi
+
 # Determine location of genome being used.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
 then
@@ -51,6 +79,7 @@ then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
 fi
+echo "\tgenome          = '"$genome"'" >> $logName;
 echo "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
 
 # Get ploidy estimate from "ploidy.txt" in project directory.
@@ -60,30 +89,6 @@ echo "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
 # Get ploidy baseline from "ploidy.txt" in project directory.
 ploidyBase=$(tail -n 1 $projectDirectory"ploidy.txt");
 echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
-
-if [ -z "$hapmap" ]
-then
-	hapmapUsed=0;
-else
-	# Determine location of hapmap being used.
-	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
-	then
-		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
-		hapmapUser=$user;
-		hapmapUsed=1
-	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
-	then
-		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
-		hapmapUser="default";
-		hapmapUsed=1;
-	else
-		hapmapUsed=0;
-	fi
-	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
-
-	cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
-fi
-
 
 reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.

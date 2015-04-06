@@ -15,55 +15,8 @@ fprintf('#########################################\n');
 projectDir  = [main_dir 'users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v5_RADseq.workspace_variables.mat']);
 
-
-if (~useHapmap) && (~useParent)
-	fprintf(['\n##\n## CNV_SNP_hapmap_v5_RADseq_RedGreen.m is being skipped...\n']);
-	fprintf(['##\tbecause the dataset is not being compared to another dataset.\n']);
-else
-	fprintf(['\n##\n## CNV_SNP_hapmap_v5_RADseq_RedGreen.m is being processed.\n##\n']);
-
-
-	%% =========================================================================================
-	% Define alternate color scheme for figure generation.
-	%-------------------------------------------------------------------------------------------
-	% haploid colors.
-	color_1of1      = hom_color;
-	% diploid colors.
-	color_2of2      = hom_color;
-	color_1of2      = het_color;
-	% triploid colors.
-	color_3of3      = hom_color;
-	color_2of3      = oddHet_color;
-	% tetraploid colors.
-	color_4of4      = hom_color;
-	color_3of4      = oddHet_color;
-	color_2of4      = het_color;
-	% pentaploid colors.
-	color_5of5      = hom_color;
-	color_4of5      = oddHet_color;
-	color_3of5      = oddHet_color;
-	% hexaploid colors.
-	color_6of6      = hom_color;
-	color_5of6      = oddHet_color;
-	color_4of6      = oddHet_color;
-	color_3of6      = het_color;
-	% heptaploid colors.
-	color_7of7      = hom_color;
-	color_6of7      = oddHet_color;
-	color_5of7      = oddHet_color;
-	color_4of7      = oddHet_color;
-	% octaploid colors.
-	color_8of8      = hom_color;
-	color_7of8      = oddHet_color;
-	color_6of8      = oddHet_color;
-	color_5of8      = oddHet_color;
-	color_4of8      = het_color;
-	% nonaploid colors.
-	color_9of9      = hom_color;
-	color_8of9      = oddHet_color;
-	color_7of9      = oddHet_color;
-	color_6of9      = oddHet_color;
-	color_5of9      = oddHet_color;
+if ((useHapmap) || (useParent))
+	fprintf(['\n##\n## Hapmap in use, so "allelic_ratios_ddRADseq_D.m" is being processed.\n##\n']);
 
 
 	%%================================================================================================
@@ -79,6 +32,8 @@ else
 	%-------------------------------------------------------------------------------------------
 	Main_fig = figure(1);
 	set(gcf, 'Position', [0 70 1024 600]);
+	largestChr = find(chr_width == max(chr_width));
+	largestChr = largestChr(1);
 
 
 	%% =========================================================================================
@@ -604,6 +559,12 @@ else
 		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.png'], 'png');
 		delete(Linear_fig);
 	end;
+elseif (useParent)
+	% Dataset was compared to a parent, so don't draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Parent in use, so "CNV_SNP_hapmap_v5_RADseq_RedGreen.m" is being skipped.\n##\n']);
+else
+	% Dataset was not compared to a hapmap or parent, so don't draw a Red/Green alternate colors plot.
+	fprintf(['\n##\n## Neither parent or hapmap in use, so "CNV_SNP_hapmap_v5_RADseq_RedGreen.m" is being skipped.\n##\n']);
 end;
 
 end

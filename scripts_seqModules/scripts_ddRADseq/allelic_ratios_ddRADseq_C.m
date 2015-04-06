@@ -187,9 +187,6 @@ end;
 % Load SNP/LOH data.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
-%
-% Only run when compared vs. a hapmap.
-%
 	load([projectDir 'SNP_' SNP_verString '.all3.mat']);
 	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs'
 	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count','P_chr_baseCall','P_chr_SNP_homologA','P_chr_SNP_homologB','P_chr_SNP_flipHomologs'
@@ -202,9 +199,6 @@ if (useHapmap)
 	% C_chr_SNP_homologB       = hapmap homolog b basecall.
 	% C_chr_SNP_flipHomologs   = does hapmap entry need flipped?
 else
-%
-% Run when compared vs. a parent dataset or vs. itself.
-%
 	load([projectDir 'SNP_' SNP_verString '.all1.mat']);
 	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
 	% parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'
@@ -249,6 +243,7 @@ full_data_threshold = floor(bases_per_bin/100);
 fig = figure(1);
 set(gcf, 'Position', [0 70 1024 600]);
 largestChr = find(chr_width == max(chr_width));
+largestChr = largestChr(1);
 
 
 %% -----------------------------------------------------------------------------------------
@@ -326,7 +321,13 @@ for chr = 1:num_chrs
 			for y = 1:maxY
 				imageC_correction(y,:) = 1-abs(y-maxY/2)/(maxY/2);
 			end;
-			imageC = imageC.*(1+imageC_correction);
+			if (useHapmap)
+				% Data only from hapmap loci, doesn't require adjustment.
+				imageC = imageC.*(1+imageC_correction);
+			else
+				% With all data, the heterozygous data needs to be emphasized.
+				imageC = imageC.*(1+imageC_correction.^2*16);
+			end;
 			image(imageX, imageY, imageC);
 		end;
 		% standard : end show allelic ratio data.
@@ -434,7 +435,13 @@ for chr = 1:num_chrs
 				for y = 1:maxY
 					imageC_correction(y,:) = 1-abs(y-maxY/2)/(maxY/2);
 				end;
-				imageC = imageC.*(1+imageC_correction);
+				if (useHapmap)
+					% Data only from hapmap loci, doesn't require adjustment.
+					imageC = imageC.*(1+imageC_correction);
+				else
+					% With all data, the heterozygous data needs to be emphasized.
+					imageC = imageC.*(1+imageC_correction.^2*16);
+				end;
 				hold on;
 				image(imageX, imageY, imageC);
 			end;

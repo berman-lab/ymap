@@ -1,20 +1,37 @@
 %% =========================================================================================
 % Gather allelic ratio and coordinate data for SNPs into data structure.
 %...........................................................................................
-%   1 : phased SNP ratio data.
-%   2 : unphased SNP ratio data.
-%   3 : phased SNP position data.
-%   4 : unphased SNP position data.
-%   5 : phased SNP flipper values.
-%   6 : unphased SNP flipper values.
+% if (useHapmap)
+%       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
+%       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
+%       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
+%       chr_SNPdata{chr,5}{chr_bin} = flipper value for phased SNP.
+%       chr_SNPdata{chr,6}{chr_bin} = flipper value for unphased SNP.
+% elseif (useParent)
+%       chr_SNPdata{chr,1}{chr_bin} = parent SNP ratio data.
+%       chr_SNPdata{chr,2}{chr_bin} = child SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin} = parent SNP position data.
+%       chr_SNPdata{chr,4}{chr_bin} = child SNP position data.
+% else
+%       chr_SNPdata{chr,1}{chr_bin} = SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin} = SNP position data.
+% end;
 %-------------------------------------------------------------------------------------------
 if (useHapmap)
+	%       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
+	%       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
+	%       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
+	%       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
+	%       chr_SNPdata{chr,5}{chr_bin} = flipper value for phased SNP.
+	%       chr_SNPdata{chr,6}{chr_bin} = flipper value for unphased SNP.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_SNP_data_positions{chr}) > 1)
 				%
 				% Building SNP data sctructure 'chr_SNPdata'.
 				%
+
 				for SNP = 1:length(C_chr_SNP_data_positions{chr})  % 'length(C_chr_SNP_data_positions)' is the number of SNPs per chromosome.
 					coordinate                      = C_chr_SNP_data_positions{chr}(SNP);
 					pos                             = ceil(coordinate/new_bases_per_bin);
@@ -31,45 +48,96 @@ if (useHapmap)
 						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} allelic_ratio 1-allelic_ratio];
 						chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate    coordinate     ];
 						chr_SNPdata{chr,6}{pos} = [chr_SNPdata{chr,6}{pos} flipper       flipper        ];
-					elseif (flipper == 1)
-						temp                    = homologA;
+						elseif (flipper == 1)
+					temp                    = homologA;
 						homologA                = homologB;
 						homologB                = temp;
 						if (baseCall == homologA)
 							allelic_ratio = 1-allelic_ratio;
 						end;
-						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
-						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
-						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio allelic_ratio];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate    coordinate   ];
+						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper       flipper      ];
 					else % (flipper == 0)
 						if (baseCall == homologA)
 							allelic_ratio = 1-allelic_ratio;
 						end;
-						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
-						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
-						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
+						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio allelic_ratio];
+						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate    coordinate   ];
+						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper       flipper      ];
 					end;
 				end;
 			end;
 		end;
 	end;
-else
+elseif (useParent)
+	%       chr_SNPdata{chr,1}{chr_bin} = child SNP ratio data.
+	%       chr_SNPdata{chr,2}{chr_bin} = parent SNP ratio data.
+	%       chr_SNPdata{chr,3}{chr_bin} = child SNP position data.
+	%       chr_SNPdata{chr,4}{chr_bin} = parent SNP position data.
+	%
+	% child data:  'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count'
+        % parent data: 'P_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_count'
+	%
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			if (length(C_chr_SNP_data_positions{chr}) > 1)
+				%
+				% Building SNP data sctructure 'chr_SNPdata' entries for child data.
+				%
+
+				for SNP = 1:length(C_chr_SNP_data_positions{chr})
+					coordinate              = C_chr_SNP_data_positions{chr}(SNP);
+					pos                     = ceil(coordinate/new_bases_per_bin);
+					allelic_ratio           = C_chr_SNP_data_ratios{   chr}(SNP);
+					allelic_ratio           = max(allelic_ratio, 1-allelic_ratio);
+
+					% Allelic ratio here is the ratio of the majority read call to all reads.
+					% The consequence of this is that it will always be on the range [0.5 .. 1.0].
+					chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
+					chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
+				end;
+			end;
+			if (length(P_chr_SNP_data_positions{chr}) > 1)
+				%
+				% Building SNP data sctructure 'chr_SNPdata' entries for parent data.
+				%
+
+				for SNP = 1:length(P_chr_SNP_data_positions{chr})
+					coordinate              = P_chr_SNP_data_positions{chr}(SNP);
+					pos                     = ceil(coordinate/new_bases_per_bin);
+					allelic_ratio           = P_chr_SNP_data_ratios{   chr}(SNP);
+					allelic_ratio           = max(allelic_ratio, 1-allelic_ratio);
+
+					% Allelic ratio here is the ratio of the majority read call to all reads.
+					% The consequence of this is that it will always be on the range [0.5 .. 1.0].
+					chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} allelic_ratio];
+					chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate   ];
+				end;
+			end;
+		end;
+	end;
+else    % useHapmap and useParent == false.
+	% child == parent, so only one set of data needs to be organized.
+	%       chr_SNPdata{chr,1}{chr_bin} = SNP ratio data.
+	%       chr_SNPdata{chr,3}{chr_bin} = SNP position data.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(C_chr_SNP_data_positions{chr}) > 1)
 				%
 				% Building SNP data sctructure 'chr_SNPdata'.
 				%
-				for SNP = 1:length(C_chr_SNP_data_positions{chr})  % 'length(C_chr_SNP_data_positions)' is the number of SNPs per chromosome.
-					coordinate                      = C_chr_SNP_data_positions{chr}(SNP);
-					pos                             = ceil(coordinate/new_bases_per_bin);
-					allelic_ratio                   = C_chr_SNP_data_ratios{   chr}(SNP);
+
+				for SNP = 1:length(C_chr_SNP_data_positions{chr})
+					coordinate              = C_chr_SNP_data_positions{chr}(SNP);
+					pos                     = ceil(coordinate/new_bases_per_bin);
+					allelic_ratio           = C_chr_SNP_data_ratios{   chr}(SNP);
+					allelic_ratio           = max(allelic_ratio, 1-allelic_ratio);
 
 					% Allelic ratio here is the ratio of the majority read call to all reads.
 					% The consequence of this is that it will always be on the range [0.5 .. 1.0].
-					chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} allelic_ratio 1-allelic_ratio];
-					chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate    coordinate     ];
-					chr_SNPdata{chr,6}{pos} = [chr_SNPdata{chr,6}{pos} 0             0              ];
+					chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
+					chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
 				end;
 			end;
 		end;
@@ -115,17 +183,19 @@ for chr = 1:num_chrs
 				%   2 : unphased SNP ratio data.
 				%   3 : phased SNP position data.
 				%   4 : unphased SNP position data.
-				ratioData_phased        = chr_SNPdata{chr,1}{chr_bin}
-				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin}
-				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin}
-				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin}
-				if (length(ratioData_phased) > 0)
-					for SNP_in_bin = 1:length(ratioData_phased)
-						if ((coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))
-							% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
-							allelic_ratio = ratioData_phased(SNP_in_bin);
-							histAll_a = [histAll_a allelic_ratio  ];
-							histAll_b = [histAll_b allelic_ratio  ];
+				ratioData_phased        = chr_SNPdata{chr,1}{chr_bin};
+				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin};
+				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin};
+				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin};
+				if (useHapmap)
+					if (length(ratioData_phased) > 0)
+						for SNP_in_bin = 1:length(ratioData_phased)
+							if ((coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))
+								% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
+								allelic_ratio = ratioData_phased(SNP_in_bin);
+								histAll_a = [histAll_a allelic_ratio  ];
+								histAll_b = [histAll_b allelic_ratio  ];
+							end;
 						end;
 					end;
 				end;
@@ -161,8 +231,9 @@ for chr = 1:num_chrs
 			% log-scale the histogram to minimize difference between hom & het peak heights.
 			% average this with the raw histogram so the large peaks still appear visibily larger than the small peaks.
 			
-			data_hist                  = (data_hist + log(data_hist+1))/2;
-			% data_hist                = log(data_hist+1);
+			%data_hist                  = (data_hist + log(data_hist+1))/2;
+			data_hist                  = log(data_hist+1);
+			
 
 			% smooth the histogram.
 			smoothed                   = smooth_gaussian(data_hist,10,30);
