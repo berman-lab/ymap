@@ -341,8 +341,11 @@ chr_SNPdata = temp_holding;
 %% =========================================================================================
 % Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 %-------------------------------------------------------------------------------------------
+alleleRatiosFid = openAlleleRatiosTrack(projectDir, project);
+
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
+		chrName = chr_name{chr};
 		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 			%
 			% Determining colors for each SNP coordinate from calculated cutoffs.
@@ -583,6 +586,12 @@ for chr = 1:num_chrs
 					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
 					chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
+					
+					if (~all(colorList == colorNoData))
+						writeAlleleRatioLine(alleleRatiosFid, chrName, coordinate, ...
+							homologA, homologB, ...
+							colorList);
+					end
 
 					% Troubleshooting output.
 					% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
@@ -614,46 +623,6 @@ for chr = 1:num_chrs
 		end;
 	end;
 end;
-
-
-%% =========================================================================================
-% Generate allele ratio track.
-%-------------------------------------------------------------------------------------------
-alleleRatiosFid = openAlleleRatiosTrack(projectDir, project);
-
-for chr = 1:num_chrs
-	if (~chr_in_use(chr))
-		continue
-	end
-
-	chrName = chr_name{chr};
-	for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-		coordinates = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
-		if (isempty(coordinates))
-			continue
-		end
-
-		if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
-			allele_strings = {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
-		else
-			allele_strings = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
-		end;
-
-		for SNP = 1:length(coordinates)
-			% Load phased SNP data from earlier defined structure.
-			coordinate = coordinates(SNP);
-			if (length(coordinates) > 1)
-				allele_string = allele_strings{SNP};
-			else
-				allele_string = allele_strings;
-			end;
-
-			writeAlleleRatioLine(alleleRatiosFid, chrName, coordinate, ...
-				allele_string(3), allele_string(5), ...
-				[chr_SNPdata_colorsC{chr,1}(chr_bin) chr_SNPdata_colorsC{chr,2}(chr_bin) chr_SNPdata_colorsC{chr,3}(chr_bin)]);
-		end
-	end
-end
 
 fclose(alleleRatiosFid);
 
