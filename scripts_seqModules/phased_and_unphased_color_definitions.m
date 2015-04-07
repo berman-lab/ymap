@@ -236,3 +236,45 @@ noparent_color_8of9 = colorNoData*7/9 + het_color*2/9;
 noparent_color_7of9 = colorNoData*5/9 + het_color*4/9;
 noparent_color_6of9 = colorNoData*3/9 + het_color*6/9;
 noparent_color_5of9 = colorNoData*1/9 + het_color*8/9;
+
+
+%%%%%%%% alternate colors for use with hapmap or parent.
+
+% haploid colors.
+alternate_color_1of1      = hom_color;
+% diploid colors.
+alternate_color_2of2      = hom_color;
+alternate_color_1of2      = het_color;
+% triploid colors.
+alternate_color_3of3      = hom_color;
+alternate_color_2of3      = oddHet_color;
+% tetraploid colors.
+alternate_color_4of4      = hom_color
+alternate_color_3of4      = oddHet_color;
+alternate_color_2of4      = het_color;
+% pentaploid colors.
+alternate_color_5of5      = hom_color;
+alternate_color_4of5      = oddHet_color;
+alternate_color_3of5      = oddHet_color;
+% hexaploid colors.
+alternate_color_6of6      = hom_color;
+alternate_color_5of6      = oddHet_color;
+alternate_color_4of6      = oddHet_color;
+alternate_color_3of6      = het_color;
+% heptaploid colors.
+alternate_color_7of7      = hom_color;
+alternate_color_6of7      = oddHet_color;
+alternate_color_5of7      = oddHet_color;
+alternate_color_4of7      = oddHet_color;
+% octaploid colors.
+alternate_color_8of8      = hom_color;
+alternate_color_7of8      = oddHet_color;
+alternate_color_6of8      = oddHet_color;
+alternate_color_5of8      = oddHet_color;
+alternate_color_4of8      = het_color;
+% nonaploid colors.
+alternate_color_9of9      = hom_color;
+alternate_color_8of9      = oddHet_color;
+alternate_color_7of9      = oddHet_color;
+alternate_color_6of9      = oddHet_color;
+alternate_color_5of9      = oddHet_color;
