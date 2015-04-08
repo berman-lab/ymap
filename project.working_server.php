@@ -75,7 +75,7 @@ body {font-family: arial;}
 		// Hide iframe and adjust color of entry to indicate completion.
 		?>
 		<html>
-		<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_project('<?php echo $key; ?>', 0);; parent.parent.update_project_remove_iframe('<?php echo $key; ?>');">
+		<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_project('<?php echo $key; ?>', 0);; parent.parent.update_project_remove_iframe('<?php echo $key; ?>', '<?php echo json_encode(scandir("users/$user/projects/$project")); ?>');">
 		</body>
 		</html>
 		<?php
