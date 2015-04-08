@@ -55,15 +55,23 @@ body {font-family: arial;}
 	echo "\n<!--\tuser    = ".$user;
 	echo "\n\tproject = ".$project." --!>";
 
-
+	$sizeString_1 = "";
+	$sizeString_2 = "";
+	
 	$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
-	$handle       = fopen($sizeFile_1,'r');
-	$sizeString_1 = trim(fgets($handle));
-	fclose($handle);
+	$handle       = @fopen($sizeFile_1,'r');
+	if ($handle) {
+		$sizeString_1 = trim(fgets($handle));
+		fclose($handle);
+	}
+	
 	$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-	$handle       = fopen($sizeFile_2,'r');
-	$sizeString_2 = trim(fgets($handle));
-	fclose($handle);
+	$handle       = @fopen($sizeFile_2,'r');
+	if ($handle) {
+		$sizeString_2 = trim(fgets($handle));
+		fclose($handle);
+	}
+	
 	if (($sizeString_1 !== "") || ($sizeString_2 !== "")) {
 		echo "\n<script type='text/javascript'>\n";
 		echo "parent.parent.update_project_file_size('".$key."','".$sizeString_1."','".$sizeString_2."');";
