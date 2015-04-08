@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# project.WGseq.hapmap.install_4.sh
+# project.WGseq.install_4.sh
 #
 set -e;
 ## All created files will have permission 760
@@ -9,19 +9,13 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-hapmap=$3;
-main_dir=$(pwd)"/../../";
+main_dir=$(pwd)"/../";
 
 # load local installed program location variables.
 . $main_dir/sh/local_installed_programs.sh;
 
-echo "";
-echo "Input to : project.WGseq.hapmap.install_4.sh";
-echo "\tuser     = "$user;
-echo "\tproject  = "$project;
-echo "\thapmap   = "$hapmap;
-echo "\tmain_dir = "$main_dir;
-echo "";
+user="darren1";
+project="Fig_10.FH9";
 
 
 ##==============================================================================
@@ -56,23 +50,22 @@ echo "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
 ploidyBase=$(tail -n 1 $projectDirectory"ploidy.txt");
 echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 
-# Determine location of hapmap being used.
-if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
-then
-	hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
-	hapmapUser=$user;
-	hapmapUsed=1
-elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
-then
-	hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
-	hapmapUser="default";
-	hapmapUsed=1;
-else
-	hapmapUsed=0;
-fi
-echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+# Get parent name from "parent.txt" in project directory.
+projectParent=$(head -n 1 $projectDirectory"parent.txt");
+echo "\tparentProject = '"$projectParent"'" >> $logName;
 
-cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
+# Determine location of project being used.
+if [ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]
+then
+    projectParentDirectory=$main_dir"users/"$user"/projects/"$projectParent"/";
+    projectParentUser=$user;
+elif [ -d $main_dir"users/default/projects/"$projectParent"/" ]
+then
+    projectParentDirectory=$main_dir"users/default/projects/"$projectParent"/";
+    projectParentUser="default";
+fi
+echo "\tprojectParentDirectory = '"$projectParentDirectory"'" >> $logName;
+
 
 
 ##==============================================================================
@@ -85,10 +78,10 @@ echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $con
 
 if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
 then
-	echo "\t\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
+	echo "\t\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.py'" >> $logName;
 else
-	echo "\t\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
+	echo "\t\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.py'" >> $logName;
+	$python_exec $main_dir"py/dataset_process_for_CNV_analysis.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -100,13 +93,13 @@ echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing1()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+echo "\tcd "$main_dir"Matlab/WGseq;" >> $outputName;
 echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing1()" >> $logName;
 echo "\t|\t\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/WGseq;" >> $logName;
 echo "\t|\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
@@ -134,13 +127,13 @@ else
 
 	echo "function [] = processing2()" > $outputName;
 	echo "\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+	echo "\tcd "$main_dir"Matlab/ChARM;" >> $outputName;
 	echo "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing2()" >> $logName;
 	echo "\t|\t\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $logName;
-	echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
+	echo "\t|\t\tcd "$main_dir"Matlab/ChARM;" >> $logName;
 	echo "\t|\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
 	echo "\t|\tend" >> $logName;
 
@@ -153,30 +146,49 @@ else
 	sed 's/^/\t\t\t|/;' $projectDirectory"matlab.ChARM.log" >> $logName;
 fi
 
-
 ##==============================================================================
 ## Perform SNP/LOH analysis on dataset.
 ##------------------------------------------------------------------------------
-if [ hapmapUsed = 1 ]
+if [ "$project" = "$projectParent" ]
 then
-	echo "#===========================================#" >> $logName;
-	echo "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
-	echo "#===========================================#" >> $logName;
-	echo "Preprocessing SNP data, with hapmap.   (~1 hr for SNP/LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "#==========================#" >> $logName;
+	echo "# SNP analysis of dataset. #" >> $logName;
+	echo "#==========================#" >> $logName;
+	echo "Preprocessing SNP data.   (~20 min for SNP analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
 else
-	echo "#==============================================#" >> $logName;
-	echo "# SNP/LOH analysis of dataset, with reference. #" >> $logName;
-	echo "#==============================================#" >> $logName;
-	echo "Preprocessing SNP data, with hapmap.   (~2 hrs for SNP/LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
-fi;
-
+	echo "#==========================#" >> $logName;
+	echo "# LOH analysis of dataset. #" >> $logName;
+	echo "#==========================#" >> $logName;
+	echo "Preprocessing SNP data.   (~4 hrs for LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+fi
 
 if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
 then
-	echo "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
+	echo "\t\tSNP data already preprocessed with python script : 'py/dataset_process_for_SNP_analysis.3.py'" >> $logName;
 else
-	echo "\t\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $hapmap $hapmapUser $project $user $main_dir $logName hapmap  > $projectDirectory"preprocessed_SNPs.txt";
+#	echo "\t\tPreprocessing SNP data with python script : 'py/dataset_process_for_SNP_analysis.1.py'" >> $logName;
+#	$python_exec $main_dir"py/dataset_process_for_SNP_analysis.1.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName  > $projectDirectory"preprocessed_SNPs.txt";
+#	echo "\t\tpre-processing complete." >> $logName;
+	echo "\t\tPreprocessing SNP data with python script : 'py/dataset_process_for_SNP_analysis.3.py'" >> $logName;
+	if [ -f $projectParentDirectory"putative_SNPs_v4.txt" ]
+	then
+		echo "\t\tParent SNP data already decompressed." >> $logName;
+		cp $projectParentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
+	else
+		echo "\t\tDecompressing parent SNP data." >> $logName;
+		cd $projectParentDirectory;
+		unzip -j putative_SNPs_v4.zip;
+		cd $main_dir;
+		cp $projectParentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
+	fi
+
+	# preprocess parent for comparison. abbey
+	$python_exec $main_dir"py/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
+
+	rm $projectDirectory"SNPdata_parent.txt";
+	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
+
+	$python_exec $main_dir"py/dataset_process_for_SNP_analysis.3.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
 fi
 
@@ -187,14 +199,14 @@ echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing3()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo "\tcd "$main_dir"Matlab/WGseq;" >> $outputName;
+echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing3()" >> $logName;
 echo "\t|\t\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
-echo "\t|\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/WGseq;" >> $logName;
+echo "\t|\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
 echo "\t\tCalling MATLAB." >> $logName;
@@ -204,8 +216,6 @@ echo "==========================================================================
 matlab -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from SNP analysis." >> $logName;
 sed 's/^/\t\t\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
-rm $outputName;
-rm $projectDirectory"matlab.SNP_analysis.log"
 
 
 ##==============================================================================
@@ -222,28 +232,26 @@ echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing4()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo "\tcd "$main_dir"Matlab/WGseq;" >> $outputName;
+echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing4()" >> $logName;
 echo "\t|\t\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
-echo "\t|\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/WGseq;" >> $logName;
+echo "\t|\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
 echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
 echo "================================================================================================";
-echo "== CNV/SNP/LOH figure generation ===============================================================";
+echo "== Final figures ===============================================================================";
 echo "================================================================================================";
 matlab -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from final figure generation." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
-rm $outputName;
-rm $projectDirectory"matlab.final_figs.log"
 
 
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir;
+sh $main_dir"sh/cleaning_WGseq.sh" $user $project $main_dir;

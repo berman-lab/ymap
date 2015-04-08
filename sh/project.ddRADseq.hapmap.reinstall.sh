@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# project.ddRADseq.install_4.sh
+# project.ddRADseq.hapmap.install_4.sh
 #
 set -e;
 ## All created files will have permission 760
@@ -9,10 +9,17 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$(pwd)"/../../";
+hapmap=$3;
+main_dir=$(pwd)"/../";
 
 # load local installed program location variables.
-. $main_dir/local_installed_programs.sh;
+. $main_dir/sh/local_installed_programs.sh;
+
+user='default';
+hapmap='C_albicans_SC5314_A21-s02-m09-r07';
+
+project='Fig_06C.YJB12712-d2';
+
 
 
 ##==============================================================================
@@ -57,9 +64,47 @@ echo "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
 # Get ploidy estimate from "ploidy.txt" in project directory.
 ploidyEstimate=$(head -n 1 $projectDirectory"ploidy.txt");
 echo "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
+
 # Get ploidy baseline from "ploidy.txt" in project directory.
 ploidyBase=$(tail -n 1 $projectDirectory"ploidy.txt");
 echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
+
+# Determine location of hapmap being used.
+echo "\thapmap = '$hapmap'" >> $logName;
+hapmapTestDir1=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+echo "looking for dir '$hapmapTestDir1'" >> $logName;
+echo "Script executed from: ${PWD}" >> $logName;
+testingDir=$main_dir"users/default/hapmaps/"$hapmap"/";
+if [ -d $testing ]
+then
+	echo "testing dir '$testingDir' found." >> $logName;
+else
+	echo "testing dir '$testingDir' not found." >> $logName;
+fi
+
+testingDir1=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+testingDir2=$main_dir"users/default/hapmaps/"$hapmap"/";
+echo "testingDir1 = '$testingDir1'" >> $logName;
+echo "testingDir2 = '$testingDir2'" >> $logName;
+if [ -d $testingDir1 ]
+then
+    hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+    hapmapUser=$user;
+    hapmapUsed=1;
+	echo "hapmap found in user dir." >> $logName;
+elif [ -d $testingDir2 ]
+then
+    hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
+    hapmapUser="default";
+    hapmapUsed=1;
+	echo "hapmap found in default dir." >> $logName;
+else
+    hapmapUsed=0;
+	echo "hapmap not found." >> $logName;
+fi
+echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+
+cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
 
 
 reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
@@ -74,11 +119,11 @@ ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        #
 ##------------------------------------------------------------------------------
 if [ -f $projectDirectory"preprocessed_CNVs.ddRADseq.txt" ]
 then
-	echo "\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
+	echo "\t\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
 else
-	echo "\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_CNV_analysis.ddRADseq.py" $user $project $genome $genomeUser $main_dir $RestrctionEnzymes $logName  > $projectDirectory"preprocessed_CNVs.ddRADseq.txt";
-	echo "\tpre-processing complete." >> $logName;
+	echo "\t\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
+	$python_exec $main_dir"py/dataset_process_for_CNV_analysis.ddRADseq.py" $user $project $genome $genomeUser $main_dir $RestrctionEnzymes $logName  > $projectDirectory"preprocessed_CNVs.ddRADseq.txt";
+	echo "\t\tpre-processing complete." >> $logName;
 fi
 
 
@@ -87,32 +132,30 @@ fi
 ##------------------------------------------------------------------------------
 if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]
 then
-	echo "\tParent or hapmap data already preprocessed with python script: 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
-	echo "\tSNP data already preprocessed with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
+	echo "\t\tSNP data already preprocessed with python script : 'py/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 else
+	echo "\t\tPreprocessing SNP data with python script : 'py/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 	if [ -f $parentDirectory"putative_SNPs_v4.txt" ]
 	then
-		echo "\tParent SNP data already decompressed." >> $logName;
+		echo "\t\tParent SNP data already decompressed." >> $logName;
 		cp $parentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	else
-		echo "\tDecompressing parent SNP data." >> $logName;
+		echo "\t\tDecompressing parent SNP data." >> $logName;
 		cd $parentDirectory;
 		unzip -j putative_SNPs_v4.zip;
 		cd $main_dir;
 		cp $parentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	fi
 
-	# preprocess hapmap/parent SNP data.
-	echo "\tProcessing SNP data from parent or hapmap with python script : 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
+	# preprocess parent for comparison. abbey
+	$python_exec $main_dir"py/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
+
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
-	# preprocess dataset SNP data.
-	echo "\Processing SNP data with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
+	$python_exec $main_dir"py/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	chmod 0777 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
-	echo "\tpre-processing complete." >> $logName;
+	echo "\t\tpre-processing complete." >> $logName;
 fi
 
 
@@ -126,30 +169,30 @@ echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $con
 
 if [ -f $projectDirectory"corrected_CNV.project.mat" ]
 then
-	echo "\tCNV analysis already complete." >> $logName;
+	echo "\t\tCNV analysis already complete." >> $logName;
 else
 	echo "Analyzing and mapping CNVs." >> $condensedLog;
 
-	echo "\tGenerating MATLAB script to perform CNV analysis of dataset, with GC-correction." >> $logName;
+	echo "\t\tGenerating MATLAB script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 	outputName=$projectDirectory"processing1.m";
-	echo "\toutputName = "$outputName >> $logName;
+	echo "\t\toutputName = "$outputName >> $logName;
 
 	echo "function [] = processing1()" > $outputName;
 	echo "\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
+	echo "\tcd "$main_dir"Matlab/ddRADseq;" >> $outputName;
 	echo "\tanalyze_CNVs_RADseq_3('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing1()" >> $logName;
 	echo "\t|\t\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $logName;
-	echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $logName;
+	echo "\t|\t\tcd "$main_dir"Matlab/ddRADseq;" >> $logName;
 	echo "\t|\t\tanalyze_CNVs_RADseq_3('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 	echo "\t|\tend" >> $logName;
 
-	echo "\tCalling MATLAB." >> $logName;
-	matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
-	echo "\tMATLAB log from CNV analysis." >> $logName;
-	sed 's/^/\t\t|/;' $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
+	echo "\t\tCalling MATLAB." >> $logName;
+	matlab -nosplash -r "run "$outputName"; exit;";
+	echo "\t\tMATLAB log from CNV analysis." >> $logName;
+	sed 's/^/\t\t\t|/;' $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
 fi
 
 
@@ -163,31 +206,31 @@ echo "Analyzing CNV edges." >> $condensedLog;
 
 if [ -f $projectDirectory"Common_ChARM.mat" ]
 then
-	echo "\tChARM analysis already complete." >> $logName;
+	echo "\t\tChARM analysis already complete." >> $logName;
 else
-	echo "\tGenerating MATLAB script to perform ChARM analysis of dataset." >> $logName;
+	echo "\t\tGenerating MATLAB script to perform ChARM analysis of dataset." >> $logName;
 	outputName=$projectDirectory"processing2.m";
-	echo "\toutputName = "$outputName >> $logName;
+	echo "\t\toutputName = "$outputName >> $logName; 
 
 	echo "function [] = processing2()" > $outputName;
 	echo "\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
+	echo "\tcd "$main_dir"Matlab/ChARM;" >> $outputName;
 	echo "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing2()" >> $logName;
 	echo "\t|\t\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $logName;
-	echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $logName;
+	echo "\t|\t\tcd "$main_dir"Matlab/ChARM;" >> $logName;
 	echo "\t|\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
 	echo "\t|\tend" >> $logName;
 
-	echo "\tCalling MATLAB." >> $logName;
+	echo "\t\tCalling MATLAB." >> $logName;
 	echo "================================================================================================";
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
-	matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
-	echo "\tMATLAB log from ChARM analysis." >> $logName;
-	sed 's/^/\t\t|/;' $projectDirectory"matlab.ChARM.log" >> $logName;
+	matlab -nosplash -r "run "$outputName"; exit;";
+	echo "\t\tMATLAB log from ChARM analysis." >> $logName;
+	sed 's/^/\t\t\t|/;' $projectDirectory"matlab.ChARM.log" >> $logName;
 fi
 
 
@@ -196,44 +239,44 @@ fi
 ##------------------------------------------------------------------------------
 if [ "$project" = "$parent" ]
 then
-	echo "#============================#" >> $logName;
-	echo "#= LOH analysis of dataset. =#" >> $logName;
-	echo "#============================#" >> $logName;
-	echo "Preprocessing SNP data.   (~4 hrs for LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+    echo "#==========================#" >> $logName;
+    echo "# LOH analysis of dataset. #" >> $logName;
+    echo "#==========================#" >> $logName;
+    echo "Preprocessing SNP data.   (~4 hrs for LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
 else
-	echo "#============================#" >> $logName;
-	echo "#= SNP analysis of dataset. =#" >> $logName;
-	echo "#============================#" >> $logName;
-	echo "Preprocessing SNP data.   (~20 min for SNP analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+    echo "#==========================#" >> $logName;
+    echo "# SNP analysis of dataset. #" >> $logName;
+    echo "#==========================#" >> $logName;
+    echo "Preprocessing SNP data.   (~20 min for SNP analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
 fi
 
 echo "Mapping SNPs." >> $condensedLog;
-echo "\tGenerating MATLAB script to perform SNP analysis of dataset." >> $logName;
+echo "\t\tGenerating MATLAB script to perform SNP analysis of dataset." >> $logName;
 outputName=$projectDirectory"processing3.m";
-echo "\toutputName = "$outputName >> $logName;
+echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing3()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
+echo "\tcd "$main_dir"Matlab/ddRADseq;" >> $outputName;
 echo "\tanalyze_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing3()" >> $logName;
 echo "\t|\t\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/ddRADseq;" >> $logName;
 echo "\t|\t\tanalyze_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
-echo "\tCalling MATLAB." >> $logName;
+echo "\t\tCalling MATLAB." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
-matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
-echo "\tMATLAB log from SNP analysis." >> $logName;
-sed 's/^/\t\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
+matlab -nosplash -r "run "$outputName"; exit;";
+echo "\t\tMATLAB log from SNP analysis." >> $logName;
+sed 's/^/\t\t\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
 
 
-#===============================================================================
+##==============================================================================
 ## Generate final figures for dataset.
 ##------------------------------------------------------------------------------
 echo "#==================================#" >> $logName;
@@ -242,28 +285,28 @@ echo "#==================================#" >> $logName;
 
 echo "Generating final figures." >> $condensedLog;
 
-echo "\tGenerating MATLAB script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
+echo "\t\tGenerating MATLAB script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
 outputName=$projectDirectory"processing4.m";
-echo "\toutputName = "$outputName >> $logName;
+echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing4()" > $outputName;
 echo "\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
+echo "\tcd "$main_dir"Matlab/ddRADseq;" >> $outputName;
 echo "\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing4()" >> $logName;
 echo "\t|\t\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $logName;
+echo "\t|\t\tcd "$main_dir"Matlab/ddRADseq;" >> $logName;
 echo "\t|\t\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
-echo "\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
+echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
+matlab -nosplash -r "run "$outputName"; exit;";
 sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
 
 
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $project;
+sh $main_dir"sh/cleaning_ddRADseq.sh" $user $project $main_dir;

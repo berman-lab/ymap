@@ -12,6 +12,8 @@ user=$1;
 hapmap=$2;
 main_dir=$(pwd)"/../../";
 
+# import locations of auxillary software for pipeline analysis.
+. $main_dir"local_installed_programs.sh";
 
 ##============================================================================================================
 ## Define locations and names to be used later.
@@ -38,5 +40,5 @@ echo "    hapmapDirectory   = '"$hapmapDirectory"'" >> $logName;
 ##============================================================================================================
 ## Read in 'SNPdata_parent.txt' file from Ymap-internal representation and output hapmap definition files.
 ##------------------------------------------------------------------------------------------------------------
-python $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output_cleaned.py" $hapmapDirectory"SNPdata_parent.txt" > $hapmapDirectory"hapmap_final.txt";
-python $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output_errors.py"  $hapmapDirectory"SNPdata_parent.txt" > $hapmapDirectory"hapmap_errors.txt";
+$python_exec $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output_cleaned.py" $hapmapDirectory"SNPdata_parent.txt" > $hapmapDirectory"hapmap_final.txt";
+$python_exec $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output_errors.py"  $hapmapDirectory"SNPdata_parent.txt" > $hapmapDirectory"hapmap_errors.txt";

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# project.single_ddRADseq.install_3.sh
+# project.paired_WGseq.install_3.sh
 #
 set -e;
 ## All created files will have permission 760
@@ -9,33 +9,29 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$(pwd)"/../../";
+main_dir=$(pwd)"/../";
+
+user="default";
+project="Fig_03B.FH6_corrected";
 
 
 ##==============================================================================
 ## Define locations and names to be used later.
 ##------------------------------------------------------------------------------
 
-# Setup process_log.txt file.
-projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
-logName=$projectDirectory"process_log.txt";
-condensedLog=$projectDirectory"condensed_log.txt";
-echo "#.............................................................................." >> $logName;
-echo "" >> $logName;
-echo "Input to : project.single_ddRADseq.install_3.sh" >> $logName;
-echo "\tuser     = "$user >> $logName;
-echo "\tproject  = "$project >> $logName;
-echo "\tmain_dir = "$main_dir >> $logName;
-echo "" >> $logName;
-
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"local_installed_programs.sh";
+. $main_dir"sh/local_installed_programs.sh";
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 
-echo "Running 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_3.sh'" >> $logName;
-echo "Variables passed via command-line from 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_2.php' :" >> $logName;
+# Setup process_log.txt file.
+logName=$projectDirectory"process_log.txt";
+condensedLog=$projectDirectory"condensed_log.txt";
+#chmod 0755 $logName;
+echo "#.............................................................................." >> $logName;
+echo "Running 'sh/project.paired_WGseq.install_3.sh'" >> $logName;
+echo "Variables passed via command-line from 'php/project.paired_WGseq.install_2.php' :" >> $logName;
 echo "\tuser     = '"$user"'" >> $logName;
 echo "\tproject  = '"$project"'" >> $logName;
 echo "\tmain_dir = '"$main_dir"'" >> $logName;
@@ -53,7 +49,7 @@ echo "Setting up for processing." >> $condensedLog;
 #    second line => hapmap
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
-echo "\tLocation variables from 'genome.txt' file entry." >> $logName;
+echo "\t'genome.txt' file entry." >> $logName;
 echo "\t\tgenome = '"$genome"'" >> $logName;
 if [ "$genome" = "$hapmap" ]
 then
@@ -61,21 +57,6 @@ then
 else
 	echo "\t\thapmap = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
-	# Determine location of hapmap being used.
-	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
-	then
-		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
-		hapmapUser=$user;
-		hapmapUsed=1
-	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
-	then
-		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
-		hapmapUser="default";
-		hapmapUsed=1;
-	else
-		hapmapUsed=0;
-	fi
-	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
 
 # Determine location of genome being used.
@@ -94,9 +75,13 @@ echo "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
 echo "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
 
-# Get data file name from "datafiles.txt";
-datafile=$(head -n 1 $projectDirectory"datafiles.txt");
-echo "\tdatafile = '"$datafile"'" >> $logName;
+# Get first data file name from "datafiles.txt";
+datafile1=$(head -n 1 $projectDirectory"datafiles.txt");
+echo "\tdatafile 1 = '"$datafile1"'" >> $logName;
+
+# Get second data file name from "datafiles.txt";
+datafile2=$(tail -n 1 $projectDirectory"datafiles.txt");
+echo "\tdatafile 2 = '"$datafile2"'" >> $logName;
 
 # Define temporary directory for FASTQC files.
 fastqcTempDirectory=$projectDirectory"fastqc_temp/";
@@ -117,18 +102,10 @@ echo "\tparentProject = '"$projectParent"'" >> $logName;
 echo "#============================================================================== 2" >> $logName;
 
 
-reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
-FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.
-FASTAname=$(echo $FASTA | sed 's/.fasta//g');                                  # name of genome file, without file type.
-RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   # Name of restriction enxyme list file.
-ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        # Name of digested reference for ddRADseq analysis, using chosen restriction enzymes.
-
-
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
 	echo "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
-	echo "\tDone: BAM.indelrealignment." >> $logName;
-	echo "\tDone: Samtools.pileup." >> $logName;
+	echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
 else
 	##==============================================================================
 	## Trimming/cleanup of FASTQ files.
@@ -139,17 +116,17 @@ else
 	echo "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd $projectDirectory;
-	sh $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
+	sh $main_dir"sh/FASTQ_2_trimming.sh" $projectDirectory$datafile1 $projectDirectory$datafile2 >> $logName;
 	cd $currdir;
 	echo "\tFASTQ files trimmed using : 'FASTQ_trimming.sh'" >> $logName;
 
 
 	##==============================================================================
-	## Initial processing of paired-ddRADseq dataset.
+	## Initial processing of paired-WGseq dataset.
 	##------------------------------------------------------------------------------
-	echo "#====================================================#" >> $logName;
-	echo "# Initial processing of paired-end ddRADseq dataset. #" >> $logName;
-	echo "#====================================================#" >> $logName;
+	echo "#=================================================#" >> $logName;
+	echo "# Initial processing of paired-end WGseq dataset. #" >> $logName;
+	echo "#=================================================#" >> $logName;
 
 	# Align fastq against genome.
 	echo "[[=- Align with Bowtie -=]]" >> $logName;
@@ -164,7 +141,7 @@ else
 		echo "\tBowtie : paired-end reads aligning into SAM file." >> $logName;
 		## Bowtie 2 command for paired reads:
 		echo "\nRunning bowtie2.\n";
-		bowtie2 --very-sensitive -p $threads $genomeDirectory"bowtie_index" -U $projectDirectory$datafile -S $projectDirectory"data.sam";
+		bowtie2 --very-sensitive -p $threads $genomeDirectory"bowtie_index" -1 $projectDirectory$datafile1 -2 $projectDirectory$datafile2 -S $projectDirectory"data.sam";
 			# -S : SAM output mode.
 			# -p : number of threads to use.
 			# -1 : dataset.
@@ -194,11 +171,11 @@ else
 		echo "\nRunning samtools:index.\n";
 		samtools index $projectDirectory"data_sorted.bam";
 		echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
-	fi
+	fi;
 
 	if [ -f $projectDirectory"data.pileup" ]
 	then
-		echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
+		echo "\tBAM.indelrealignment done; Samtools.pileup generated.." >> $logName;
 	else
 		echo "[[=- GATK analysis, indel-realignment -=]]" >> $logName;
 		GATKinputFile=$projectDirectory"data_sorted.bam";
@@ -222,11 +199,11 @@ else
 
 		mkdir $fastqcTempDirectory;
 
-		# -o : points to standardized output temp directory.
+		# -o : points to standardized ouptut temp directory.
 		echo "Identifying quality coding used in FASTA." >> $condensedLog;
 		FASTQClog1=$projectDirectory"fastqc.process.log";
 		echo "\nRunning fastqc.\n";
-		$fastqcDirectory"fastqc" -o $fastqcTempDirectory $projectDirectory$datafile > $FASTQClog1;
+		$fastqcDirectory"fastqc" -o $fastqcTempDirectory $projectDirectory$datafile1 > $FASTQClog1;
 		echo "\tFASTQC log output :" >> $logName;
 		sed 's/^/\t\t|/;' $FASTQClog1 >> $logName;
 		rm $FASTQClog1;
@@ -234,14 +211,14 @@ else
 		echo "fastQC_1" >> $logName;
 
 		# get file extension.
-		fileExt=${datafile#*.};
+		fileExt=${datafile1#*.};
 
 		echo "fastQC_2" >> $logName;
 
 		# generate file name with extension removed and '_fastqc' appended, to match FASTQC output files.
 		findStr="."$fileExt;
 		replaceStr="_fastqc";
-		FASTQC_temp_file=$(echo $datafile | sed -e "s/$findStr/$replaceStr/g");
+		FASTQC_temp_file=$(echo $datafile1 | sed -e "s/$findStr/$replaceStr/g");
 
 		echo "fastQC_3" >> $logName;
 
@@ -306,67 +283,39 @@ else
 		echo "\nRunning samtools:mpileup.\n";
 		samtools mpileup -f $genomeDirectory$genomeFASTA $usedFile | awk '{print $1 " " $2 " " $3 " " $4 " " $5}' > $projectDirectory"data.pileup";
 		echo "\tSamtools : Pileup generated." >> $logName;
-	fi
+	fi;
 
 	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
 	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
-	# $python_exec $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
+	# $python_exec $main_dir"py/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
 	# echo "\tPython : Pileup processed for CNVs." >> $logName; ) &
 	#
 	# ( echo "\tPython : Processing pileup for INDELs." >> $logName;
-	# $python_exec $main_dir"scripts_seqModules/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
+	# $python_exec $main_dir"py/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
 	# echo "\tPython : Pileup processed for INDELs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
-	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
+	$python_exec $main_dir"py/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNP-CNV." >> $logName;
-	$python_exec $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
+	$python_exec $main_dir"py/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
 fi
-if [ -f $projectDirectory"trimmed_SNPs_v4.txt" ]
-then
-	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
-	echo "\t\tDone." >> $logName;
-	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
-	echo "\t\tDone." >> $logName;
-else
-	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"            $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
-	echo "\t\tDone." >> $logName;
-
-	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
-	echo "\t\tDone." >> $logName;
-fi
-if [ $hapmapInUse = 1 ]
-then
-	if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
-	then
-		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-		echo "\t\tDone." >> $logName;
-	else
-		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-		$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py"   $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
-		echo "\t\tDone." >> $logName;
-	fi
-fi
-
 
 echo "Pileup processing is complete." >> $condensedLog;
-echo "\n\tPileup processing complete.\n" >> $logName;
+echo "\nPileup processing complete.\n" >> $logName;
 
 if [ $hapmapInUse = 0 ]
 then
-	echo "\nPassing processing on to 'scripts_seqModules/scripts_ddRADseq/project.ddRADseq.install_4.sh' for final analysis.\n" >> $logName;
-	echo   "============================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_ddRADseq/project.ddRADseq.install_4.sh" $user $project $main_dir;
+	echo "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
+	echo   "=========================================================================\n" >> $logName;
+	sh $main_dir"sh/project.WGseq.install_4.sh" $user $project $main_dir;
 else
-	echo "\nPassing processing on to 'scripts_seqModules/scripts_ddRADseq/project.ddRADseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
-	echo   "===================================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_ddRADseq/project.ddRADseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	echo "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
+	echo   "================================================================================\n" >> $logName;
+	sh $main_dir"sh/project.WGseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
 fi
