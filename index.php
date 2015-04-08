@@ -347,7 +347,8 @@ function blank_and_content_tab() {
 			}
 			var fig_linear_manual                = file_prefix + "fig.CNV-manualLOH-map.2.";
 			var fig_standard_manual              = file_prefix + "fig.CNV-manualLOH-map.1.";
-			var CGD_annotations_SNP              = file_prefix + "CGD_annotations."+project+".txt";
+			var CGD_CNV_track                    = file_prefix + "cnv."+project+".gff3";
+			var CGD_SNP_track                    = file_prefix + "allele_ratios."+project+".bed";
 
 			var CNV_bias_SnpCghArray_GCcontent   = file_prefix + "fig_GCratio_vs_CGH.png";
 			var CNV_bias_SnpCghArray_end         = file_prefix + "fig_EndDistance_vs_CGH.png";
@@ -415,6 +416,8 @@ function blank_and_content_tab() {
 					string1 = string1 + " ";
 				}
 			}
+			
+			var CGD_tracks_present = false;
 
 			// Show CNV bias figure for SnpCghArray, WGseq, and ddRADseq.
 			if ((file_list.indexOf(CNV_bias_SnpCghArray_GCcontent) != -1) || (file_list.indexOf(CNV_bias_SnpCghArray_end) != -1)) {
@@ -451,6 +454,10 @@ function blank_and_content_tab() {
 					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"\",\"100\")'>chr end</button>";
 				}
 			}
+			if (file_list.indexOf(CGD_CNV_track) != -1) {
+				string1 += "<a href=\"" + CGD_CNV_track + "\">GBrowse CNV track</a>";
+				CGD_tracks_present = true;
+			}
 			if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
 				string1 = string1 + "<br><b>SNP/LOH only</b> (lin. ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_SNP+"png\",\"100\")'> ";
@@ -460,12 +467,7 @@ function blank_and_content_tab() {
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_SNP+"eps\")'>";
 				string1 = string1 + ")";
 			}
-
-			// GBrowse annotation file
-			if (file_list.indexOf(CGD_annotations_SNP) != -1) {
-				string1 = string1 + " : GBrowse-SNP ";
-				string1 = string1 + "<button onclick=\"loadExternal('"+CGD_annotations_SNP+"');\">GBrowse</button>";
-			}
+	
 			// Show allelic ratio plot version for ddRADseq and WGseq.
 			if ((file_list.indexOf(fig_linear_SNPratio_histogram) != -1) || (file_list.indexOf(fig_linear_SNPratio_fireplot) != -1)) {
 				string1 = string1 + " : SNP ratios ";
@@ -475,6 +477,16 @@ function blank_and_content_tab() {
 				if (file_list.indexOf(fig_linear_SNPratio_fireplot) != -1) {
 					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"\",\"100\")'>fire plot</button>";
 				}
+			}
+			
+			if (file_list.indexOf(CGD_SNP_track) != -1) {
+				string1 += "<a href=\"" + CGD_SNP_track + "\">GBrowse allele ratio track</a>";
+				CGD_tracks_present = true;
+			}
+			
+			if (CGD_tracks_present)
+			{
+				string1 += "<br><a href=\"https://github.com/darrenabbey/ymap/wiki/How-to-import-Ymap-generated-tracks-into-CGD's-GBrowse\">(help on importing tracks into GBrowse)</a>";
 			}
 
 			string1 = string1 + "</font>";
