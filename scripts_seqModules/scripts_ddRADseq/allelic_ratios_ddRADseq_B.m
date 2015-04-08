@@ -172,6 +172,7 @@ cen_tel_Yindent  = maxY/5;
 %% =========================================================================================
 % Define colors for figure generation.
 %-------------------------------------------------------------------------------------------
+fprintf('\t|\tDefine colors used in figure generation.\n');
 phased_and_unphased_color_definitions;
 
 
@@ -458,8 +459,8 @@ if (useHapmap)
 							else                                colorList = colorA;
 							end;
 						else
-							if (useParent)                      colorList = unphased_color_1of1;
-							else                                colorList = colorNoData;
+							if (useHapmap || useParent)         colorList = unphased_color_1of1;
+							else                                colorList = noparent_color_1of1;
 							end;
 						end;
 					elseif (segment_copyNum == 2)
@@ -472,9 +473,16 @@ if (useHapmap)
 							else                                colorList = colorAA;
 							end;
 						else
-							if (ratioRegionID == 3);            colorList = unphased_color_2of2;
-							elseif (ratioRegionID == 2);        colorList = unphased_color_1of2;
-							else                                colorList = unphased_color_2of2;
+							if (useHapmap || useParent)
+								if (ratioRegionID == 3);        colorList = unphased_color_2of2;
+								elseif (ratioRegionID == 2);    colorList = unphased_color_1of2;
+								else                            colorList = unphased_color_2of2;
+								end;
+							else
+								if (ratioRegionID == 3);        colorList = noparent_color_2of2;
+								elseif (ratioRegionID == 2);    colorList = noparent_color_1of2;
+								else                            colorList = noparent_color_2of2;
+								end;
 							end;
 						end;
 					elseif (segment_copyNum == 3)
@@ -486,10 +494,18 @@ if (useHapmap)
 							else                                colorList = colorAAA;
 							end;
 						else
-							if (ratioRegionID == 4);            colorList = unphased_color_3of3;
-							elseif (ratioRegionID == 3);        colorList = unphased_color_2of3;
-							elseif (ratioRegionID == 2);        colorList = unphased_color_2of3;
-							else                                colorList = unphased_color_3of3;
+							if (useHapmap || useParent)
+								if (ratioRegionID == 4);        colorList = unphased_color_3of3;
+								elseif (ratioRegionID == 3);    colorList = unphased_color_2of3;
+								elseif (ratioRegionID == 2);    colorList = unphased_color_2of3;
+								else                            colorList = unphased_color_3of3;
+								end;
+							else
+								if (ratioRegionID == 4);        colorList = noparent_color_3of3;
+								elseif (ratioRegionID == 3);    colorList = noparent_color_2of3;
+								elseif (ratioRegionID == 2);    colorList = noparent_color_2of3;
+								else                            colorList = noparent_color_3of3;
+								end;
 							end;
 						end;
 					elseif (segment_copyNum == 4)
@@ -502,11 +518,20 @@ if (useHapmap)
 							else                                colorList = colorAAAA;
 							end;
 						else
-							if (ratioRegionID == 5);            colorList = unphased_color_4of4;
-							elseif (ratioRegionID == 4);        colorList = unphased_color_3of4;
-							elseif (ratioRegionID == 3);        colorList = unphased_color_2of4;
-							elseif (ratioRegionID == 2);        colorList = unphased_color_3of4;
-							else                                colorList = unphased_color_4of4;
+							if (useHapmap || useParent)
+								if (ratioRegionID == 5);        colorList = unphased_color_4of4;
+								elseif (ratioRegionID == 4);    colorList = unphased_color_3of4;
+								elseif (ratioRegionID == 3);    colorList = unphased_color_2of4;
+								elseif (ratioRegionID == 2);    colorList = unphased_color_3of4;
+								else                            colorList = unphased_color_4of4;
+								end;
+							else
+								if (ratioRegionID == 5);        colorList = noparent_color_4of4;
+								elseif (ratioRegionID == 4);    colorList = noparent_color_3of4;
+								elseif (ratioRegionID == 3);    colorList = noparent_color_2of4;
+								elseif (ratioRegionID == 2);    colorList = noparent_color_3of4;
+								else                            colorList = noparent_color_4of4;
+								end;
 							end;
 						end;
 					elseif (segment_copyNum == 5)
@@ -520,12 +545,22 @@ if (useHapmap)
 							else                                colorList = colorAAAAA;
 							end;
 						else
-							if (ratioRegionID == 6);            colorList = unphased_color_5of5;
-							elseif (ratioRegionID == 5);        colorList = unphased_color_4of5;
-							elseif (ratioRegionID == 4);        colorList = unphased_color_3of5;
-							elseif (ratioRegionID == 3);        colorList = unphased_color_3of5;
-							elseif (ratioRegionID == 2);        colorList = unphased_color_4of5;
-							else                                colorList = unphased_color_5of5;
+							if (useHapmap || useParent)
+								if (ratioRegionID == 6);        colorList = unphased_color_5of5;
+								elseif (ratioRegionID == 5);    colorList = unphased_color_4of5;
+								elseif (ratioRegionID == 4);    colorList = unphased_color_3of5;
+								elseif (ratioRegionID == 3);    colorList = unphased_color_3of5;
+								elseif (ratioRegionID == 2);    colorList = unphased_color_4of5;
+								else                            colorList = unphased_color_5of5;
+								end;
+							else
+								if (ratioRegionID == 6);        colorList = noparent_color_5of5;
+								elseif (ratioRegionID == 5);    colorList = noparent_color_4of5;
+								elseif (ratioRegionID == 4);    colorList = noparent_color_3of5;
+								elseif (ratioRegionID == 3);    colorList = noparent_color_3of5;
+								elseif (ratioRegionID == 2);    colorList = noparent_color_4of5;
+								else                            colorList = noparent_color_5of5;
+								end;
 							end;
 						end;
 					elseif (segment_copyNum == 6)
@@ -540,13 +575,24 @@ if (useHapmap)
 							else                                colorList = colorAAAAAA;
 							end;
 						else
-							if (ratioRegionID == 7);            colorList = unphased_color_6of6;
-							elseif (ratioRegionID == 6);        colorList = unphased_color_5of6;
-							elseif (ratioRegionID == 5);        colorList = unphased_color_4of6;
-							elseif (ratioRegionID == 4);        colorList = unphased_color_3of6;
-							elseif (ratioRegionID == 3);        colorList = unphased_color_4of6;
-							elseif (ratioRegionID == 2);        colorList = unphased_color_5of6;
-							else                                colorList = unphased_color_6of6;
+							if (useHapmap || useParent)
+								if (ratioRegionID == 7);        colorList = unphased_color_6of6;
+								elseif (ratioRegionID == 6);    colorList = unphased_color_5of6;
+								elseif (ratioRegionID == 5);    colorList = unphased_color_4of6;
+								elseif (ratioRegionID == 4);    colorList = unphased_color_3of6;
+								elseif (ratioRegionID == 3);    colorList = unphased_color_4of6;
+								elseif (ratioRegionID == 2);    colorList = unphased_color_5of6;
+								else                            colorList = unphased_color_6of6;
+								end;
+							else
+								if (ratioRegionID == 7);        colorList = noparent_color_6of6;
+								elseif (ratioRegionID == 6);    colorList = noparent_color_5of6;
+								elseif (ratioRegionID == 5);    colorList = nopanret_color_4of6;
+								elseif (ratioRegionID == 4);    colorList = nopanret_color_3of6;
+								elseif (ratioRegionID == 3);    colorList = noparent_color_4of6;
+								elseif (ratioRegionID == 2);    colorList = noparent_color_5of6;
+								else                            colorList = noparent_color_6of6;
+								end;
 							end;
 						end;
 					elseif (segment_copyNum == 7)
@@ -562,14 +608,26 @@ if (useHapmap)
 							else                                colorList = colorAAAAAAA;
 							end;
 						else
-							if (ratioRegionID == 8);            colorList = unphased_color_7of7;
-							elseif (ratioRegionID == 7);        colorList = unphased_color_6of7;
-							elseif (ratioRegionID == 6);        colorList = unphased_color_5of7;
-							elseif (ratioRegionID == 5);        colorList = unphased_color_4of7;
-							elseif (ratioRegionID == 3);        colorList = unphased_color_4of7;
-							elseif (ratioRegionID == 3);        colorList = unphased_color_5of7;
-							elseif (ratioRegionID == 2);        colorList = unphased_color_6of7;
-							else                                colorList = unphased_color_7of7;
+							if (useHapmap || useParent)
+								if (ratioRegionID == 8);        colorList = unphased_color_7of7;
+								elseif (ratioRegionID == 7);    colorList = unphased_color_6of7;
+								elseif (ratioRegionID == 6);    colorList = unphased_color_5of7;
+								elseif (ratioRegionID == 5);    colorList = unphased_color_4of7;
+								elseif (ratioRegionID == 3);    colorList = unphased_color_4of7;
+								elseif (ratioRegionID == 3);    colorList = unphased_color_5of7;
+								elseif (ratioRegionID == 2);    colorList = unphased_color_6of7;
+								else                            colorList = unphased_color_7of7;
+								end;
+							else
+								if (ratioRegionID == 8);        colorList = noparent_color_7of7;
+								elseif (ratioRegionID == 7);    colorList = noparent_color_6of7;
+								elseif (ratioRegionID == 6);    colorList = noparent_color_5of7;
+								elseif (ratioRegionID == 5);    colorList = noparent_color_4of7;
+								elseif (ratioRegionID == 3);    colorList = noparent_color_4of7;
+								elseif (ratioRegionID == 3);    colorList = noparent_color_5of7;
+								elseif (ratioRegionID == 2);    colorList = noparent_color_6of7;
+								else                            colorList = noparent_color_7of7;
+								end;
 							end;
 						end;
 					elseif (segment_copyNum == 8)
@@ -586,15 +644,28 @@ if (useHapmap)
 							else                                colorList = colorAAAAAAAA;
 							end;
 						else
-							if (ratioRegionID == 9);            colorList = unphased_color_8of8;
-							elseif (ratioRegionID == 8);        colorList = unphased_color_7of8;
-							elseif (ratioRegionID == 7);        colorList = unphased_color_6of8;
-							elseif (ratioRegionID == 6);        colorList = unphased_color_5of8;
-							elseif (ratioRegionID == 5);        colorList = unphased_color_4of8;
-							elseif (ratioRegionID == 4);        colorList = unphased_color_5of8;
-							elseif (ratioRegionID == 3);        colorList = unphased_color_6of8;
-							elseif (ratioRegionID == 2);        colorList = unphased_color_7of8;
-							else                                colorList = unphased_color_8of8;
+							if (useHapmap || useParent)
+								if (ratioRegionID == 9);        colorList = unphased_color_8of8;
+								elseif (ratioRegionID == 8);    colorList = unphased_color_7of8;
+								elseif (ratioRegionID == 7);    colorList = unphased_color_6of8;
+								elseif (ratioRegionID == 6);    colorList = unphased_color_5of8;
+								elseif (ratioRegionID == 5);    colorList = unphased_color_4of8;
+								elseif (ratioRegionID == 4);    colorList = unphased_color_5of8;
+								elseif (ratioRegionID == 3);    colorList = unphased_color_6of8;
+								elseif (ratioRegionID == 2);    colorList = unphased_color_7of8;
+								else                            colorList = unphased_color_8of8;
+								end;
+							else
+								if (ratioRegionID == 9);        colorList = noparent_color_8of8;
+								elseif (ratioRegionID == 8);    colorList = noparent_color_7of8;
+								elseif (ratioRegionID == 7);    colorList = noparent_color_6of8;
+								elseif (ratioRegionID == 6);    colorList = noparent_color_5of8;
+								elseif (ratioRegionID == 5);    colorList = noparent_color_4of8;
+								elseif (ratioRegionID == 4);    colorList = noparent_color_5of8;
+								elseif (ratioRegionID == 3);    colorList = noparent_color_6of8;
+								elseif (ratioRegionID == 2);    colorList = noparent_color_7of8;
+								else                            colorList = noparent_color_8of8;
+								end;
 							end;
 						end;
 					elseif (segment_copyNum >= 9)
@@ -613,16 +684,30 @@ if (useHapmap)
 							else                                colorList = colorAAAAAAAAA;
 							end;
 						else
-							if (ratioRegionID == 10);           colorList = unphased_color_9of9;
-							elseif (ratioRegionID == 9);        colorList = unphased_color_8of9;
-							elseif (ratioRegionID == 8);        colorList = unphased_color_7of9;
-							elseif (ratioRegionID == 7);        colorList = unphased_color_6of9;
-							elseif (ratioRegionID == 6);        colorList = unphased_color_5of9;
-							elseif (ratioRegionID == 5);        colorList = unphased_color_5of9;
-							elseif (ratioRegionID == 4);        colorList = unphased_color_6of9;
-							elseif (ratioRegionID == 3);        colorList = unphased_color_7of9;
-							elseif (ratioRegionID == 2);        colorList = unphased_color_8of9;
-							else                                colorList = unphased_color_9of9;
+							if (useHapmap || useParent)
+								if (ratioRegionID == 10);       colorList = unphased_color_9of9;
+								elseif (ratioRegionID == 9);    colorList = unphased_color_8of9;
+								elseif (ratioRegionID == 8);    colorList = unphased_color_7of9;
+								elseif (ratioRegionID == 7);    colorList = unphased_color_6of9;
+								elseif (ratioRegionID == 6);    colorList = unphased_color_5of9;
+								elseif (ratioRegionID == 5);    colorList = unphased_color_5of9;
+								elseif (ratioRegionID == 4);    colorList = unphased_color_6of9;
+								elseif (ratioRegionID == 3);    colorList = unphased_color_7of9;
+								elseif (ratioRegionID == 2);    colorList = unphased_color_8of9;
+								else                            colorList = unphased_color_9of9;
+								end;
+							else
+								if (ratioRegionID == 10);       colorList = noparent_color_9of9;
+								elseif (ratioRegionID == 9);    colorList = noparent_color_8of9;
+								elseif (ratioRegionID == 8);    colorList = noparent_color_7of9;
+								elseif (ratioRegionID == 7);    colorList = noparent_color_6of9;
+								elseif (ratioRegionID == 6);    colorList = noparent_color_5of9;
+								elseif (ratioRegionID == 5);    colorList = noparent_color_5of9;
+								elseif (ratioRegionID == 4);    colorList = noparent_color_6of9;
+								elseif (ratioRegionID == 3);    colorList = noparent_color_7of9;
+								elseif (ratioRegionID == 2);    colorList = noparent_color_8of9;
+								else                            colorList = noparent_color_9of9;
+								end;
 							end;
 						end;
 					end;
