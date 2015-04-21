@@ -203,6 +203,7 @@ fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	fwrite($logOutput, "\t\t| This is an uncompressed FASTQ file, no further pre-processing is needed.\n");
 	fwrite($output, $name_new."\n");
+	$paired = 0;
 } elseif ((strcmp($ext_new,"fasta") == 0) || (strcmp($ext_new,"fa") == 0)) {
 	fwrite($logOutput, "\t\t| This is a FASTA file.\n");
 	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
@@ -229,7 +230,7 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	fwrite($output, "data_r2.fastq\n");
 	// delete original archive.
 	unlink($projectPath.$name_new);
-	fwrite($logOutput, "\t\t| File converted to FASTQ files, original deleted.\n");
+	fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
 	$paired = 1;
 } elseif (strcmp($ext_new,"txt") == 0) {
 	fwrite($logOutput, "\t\t| This is a txt file.\n");
@@ -242,7 +243,7 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	fwrite($output, "null2\n");
 	// delete original archive.
 	unlink($projectPath.$name_new);
-	fwrite($logOutput, "\t\t| File converted to FASTQ files, original deleted.\n");
+	fwrite($logOutput, "\t\t| File converted to intermediate pileup files, original deleted.\n");
 	$paired = 1;
 } elseif (strcmp($ext_new,"none1") == 0) {
 	fwrite($logOutput, "\t\t| This archive contained a file with no extension and the file type could not be determined.\n");
