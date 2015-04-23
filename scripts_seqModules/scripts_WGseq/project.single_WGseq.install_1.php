@@ -49,7 +49,6 @@
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
-	chmod($outputName,0755);
 
 // Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = "../../users/".$user."/projects/".$project."/working.txt";

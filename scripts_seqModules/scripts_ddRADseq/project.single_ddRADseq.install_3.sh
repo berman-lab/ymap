@@ -311,19 +311,19 @@ else
 	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
 	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
-	# python $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
+	# $python_exec $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
 	# echo "\tPython : Pileup processed for CNVs." >> $logName; ) &
 	#
 	# ( echo "\tPython : Processing pileup for INDELs." >> $logName;
-	# python $main_dir"scripts_seqModules/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
+	# $python_exec $main_dir"scripts_seqModules/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
 	# echo "\tPython : Pileup processed for INDELs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
-	python $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
+	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNP-CNV." >> $logName;
-	python $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
+	$python_exec $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
@@ -336,11 +336,11 @@ then
 	echo "\t\tDone." >> $logName;
 else
 	echo "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
-	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"            $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent.py"            $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir > $projectDirectory"trimmed_SNPs_v4.parent.txt";
 	echo "\t\tDone." >> $logName;
 
 	echo "\tPython : Simplify child putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75] in the parent dataset." >> $logName;
-	python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt";
 	echo "\t\tDone." >> $logName;
 fi
 if [ $hapmapInUse = 1 ]
@@ -351,7 +351,7 @@ then
 		echo "\t\tDone." >> $logName;
 	else
 		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-		python $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py"   $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
+		$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py"   $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
 		echo "\t\tDone." >> $logName;
 	fi
 fi

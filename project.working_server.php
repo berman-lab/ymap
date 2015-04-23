@@ -55,15 +55,23 @@ body {font-family: arial;}
 	echo "\n<!--\tuser    = ".$user;
 	echo "\n\tproject = ".$project." --!>";
 
-
+	$sizeString_1 = "";
+	$sizeString_2 = "";
+	
 	$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
-	$handle       = fopen($sizeFile_1,'r');
-	$sizeString_1 = trim(fgets($handle));
-	fclose($handle);
+	$handle       = @fopen($sizeFile_1,'r');
+	if ($handle) {
+		$sizeString_1 = trim(fgets($handle));
+		fclose($handle);
+	}
+	
 	$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-	$handle       = fopen($sizeFile_2,'r');
-	$sizeString_2 = trim(fgets($handle));
-	fclose($handle);
+	$handle       = @fopen($sizeFile_2,'r');
+	if ($handle) {
+		$sizeString_2 = trim(fgets($handle));
+		fclose($handle);
+	}
+	
 	if (($sizeString_1 !== "") || ($sizeString_2 !== "")) {
 		echo "\n<script type='text/javascript'>\n";
 		echo "parent.parent.update_project_file_size('".$key."','".$sizeString_1."','".$sizeString_2."');";
@@ -75,7 +83,7 @@ body {font-family: arial;}
 		// Hide iframe and adjust color of entry to indicate completion.
 		?>
 		<html>
-		<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_project('<?php echo $key; ?>', 0);; parent.parent.update_project_remove_iframe('<?php echo $key; ?>');">
+		<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_project('<?php echo $key; ?>', 0); parent.parent.update_project_remove_iframe('<?php echo $key; ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/projects/$project"))); ?>');">
 		</body>
 		</html>
 		<?php

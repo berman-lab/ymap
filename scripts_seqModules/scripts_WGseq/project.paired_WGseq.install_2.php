@@ -80,7 +80,7 @@
 		$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput);
 
 		// formatting.
-		if ($key < count(fileNames)-1) {
+		if ($key < count($fileNames)-1) {
 			fwrite($output,"\n");
 		}
 	}

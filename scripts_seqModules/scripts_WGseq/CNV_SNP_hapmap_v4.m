@@ -27,7 +27,6 @@ ChrNum                      = true;   % Show numerical etimates of copy number t
 Linear_display              = true;   % Figure version with chromosomes laid out horizontally.
 Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true    % Estimate error in overall ploidy estimate, assuming most common value is actually euploid.
-Output_CGD_annotations      = true;   % Generate CGD annotation files for analyzed datasets.
 
 
 %% =========================================================================================
@@ -216,6 +215,7 @@ load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
 
+createCnvTrack(projectDir, project, CNVplot2, bases_per_bin, chr_name, ploidyBase*2, ploidy * ploidyAdjust);
 
 %% =========================================================================================
 % Load SNP/LOH data.
@@ -338,12 +338,14 @@ temp_holding = chr_SNPdata;
 calculate_allelic_ratio_cutoffs;
 chr_SNPdata = temp_holding;
 
-
 %% =========================================================================================
 % Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 %-------------------------------------------------------------------------------------------
+alleleRatiosFid = openAlleleRatiosTrack(projectDir, project);
+
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
+		chrName = chr_name{chr};
 		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 			%
 			% Determining colors for each SNP coordinate from calculated cutoffs.
@@ -669,6 +671,12 @@ for chr = 1:num_chrs
 					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
 					chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
+					
+					if (~all(colorList == colorNoData))
+						writeAlleleRatioLine(alleleRatiosFid, chrName, coordinate, ...
+							homologA, homologB, ...
+							colorList);
+					end
 
 					% Troubleshooting output.
 					% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
@@ -701,6 +709,7 @@ for chr = 1:num_chrs
 	end;
 end;
 
+fclose(alleleRatiosFid);
 
 %% =========================================================================================
 % Setup for main figure generation.
@@ -738,15 +747,6 @@ end;
 fprintf('\n');
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
-
-
-%% =========================================================================================
-% Initialize CGD annotation output file.
-%-------------------------------------------------------------------------------------------
-if (Output_CGD_annotations == true)
-	CGDid = fopen([projectDir 'CGD_annotations.' project  '.txt'], 'w');
-	fprintf(CGDid,['track name=' project ' description="WGseq annotation of SNPs" useScore=0 itemRGB=On\n']);
-end;
 
 
 %% =========================================================================================

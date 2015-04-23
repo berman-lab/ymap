@@ -304,19 +304,19 @@ else
 	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
 	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
-	# python $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
+	# $python_exec $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
 	# echo "\tPython : Pileup processed for CNVs." >> $logName; ) &
 	#
 	# ( echo "\tPython : Processing pileup for INDELs." >> $logName;
-	# python $main_dir"scripts_seqModules/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
+	# $python_exec $main_dir"scripts_seqModules/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt";
 	# echo "\tPython : Pileup processed for INDELs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
-	python $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
+	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNP-CNV." >> $logName;
-	python $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
+	$python_exec $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
@@ -337,7 +337,7 @@ then
 		echo "\t\t|\thapmap     = '$hapmap'"     >> $logName;
 		echo "\t\t|\thapmapUser = '$hapmapUser'" >> $logName;
 		echo "\t\t|\tmain_dir   = '$main_dir'"   >> $logName;
-		python $main_dir"scripts_seqModules/scripts_WGseq/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
+		$python_exec $main_dir"scripts_seqModules/scripts_WGseq/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
 		echo "\t\tDone." >> $logName;
 	fi
 fi
