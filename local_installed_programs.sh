@@ -1,6 +1,6 @@
 #!/bin/bash
 
-userProgramsLocation="/home/dabbey/software/";
+userProgramsLocation="/heap/hapmap/software/";
 #userProgramsLocation="~/software/";
 
 bowtie2Directory=$userProgramsLocation"bowtie2-2.1.0/";
@@ -12,4 +12,4 @@ seqtkDirectory=$userProgramsLocation"Seqtk/";
 
 # Can be used to run PyPy (or any other Python implementation) instead of
 # CPython for sripts that support it:
-python_exec=$userProgramsLocation"pypy3-2.4.0-linux64/bin/pypy3";
+python_exec=$userProgramsLocation"pypy-2.5.1-linux64/bin/pypy";
