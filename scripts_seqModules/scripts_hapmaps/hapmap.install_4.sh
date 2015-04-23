@@ -13,7 +13,7 @@ hapmap=$5;
 main_dir=$(pwd)"/../../";
 
 # load local installed program location variables.
-. $main_dir/sh/local_installed_programs.sh;
+. $main_dir/local_installed_programs.sh;
 
 
 ##==============================================================================

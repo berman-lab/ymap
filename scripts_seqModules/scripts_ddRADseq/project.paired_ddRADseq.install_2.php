@@ -90,7 +90,7 @@
 	fwrite($logOutput, "Completed 'datafiles.txt' file.\n");
 
 	// Final install functions are in shell script.
-	fwrite($logOutput, "Passing control to : 'sh/project.paired_ddRADseq.install_3.sh'\n");
+	fwrite($logOutput, "Passing control to : 'project.paired_ddRADseq.install_3.sh'\n");
 	fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
 	$system_call_string = "sh project.paired_ddRADseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
