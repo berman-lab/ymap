@@ -45,32 +45,37 @@ var allFiles = new Array;
 															files         = data.files,
 															addmore       = $("#add-more-button"),
 															existingFiles = options.existingFiles || [];
+															
+															$.getJSON('php/uploader', {file: target_dir + data.files[0].name}, function (result) {
+													            var file = result.file;
+													            data.uploadedBytes = file && file.size;
+													            
+																// Add file names to global scope variable 'allFiles'...   replacing comma characters with something not allowed in file names, to allow PHP to
+																// split names by commas added by javascript.   PHP will replace the "\\" with "," later.
+																allFiles.push(files[0].name.replace(",","\\"));
 
-															// Add file names to global scope variable 'allFiles'...   replacing comma characters with something not allowed in file names, to allow PHP to
-															// split names by commas added by javascript.   PHP will replace the "\\" with "," later.
-															allFiles.push(files[0].name.replace(",","\\"));
+																data.process(function () {
+																	return $this.html5Uploader('process', data);
+																}).always(function () {
+																//	$('#info-wrapper-1').fadeIn(0);	// this section of uploader interface is handled in per-page defined scripts.
+																	$('#info-wrapper-2').fadeIn(0);
+																	$('#info-wrapper-3').fadeIn(0);
+																	$('#select-wrapper').fadeOut(0);
+																	addmore.removeClass('hidden');
 
-															data.process(function () {
-																return $this.html5Uploader('process', data);
-															}).always(function () {
-															//	$('#info-wrapper-1').fadeIn(0);	// this section of uploader interface is handled in per-page defined scripts.
-																$('#info-wrapper-2').fadeIn(0);
-																$('#info-wrapper-3').fadeIn(0);
-																$('#select-wrapper').fadeOut(0);
-																addmore.removeClass('hidden');
+																	// 'data.context' represents a single 'li.file-item'; attached as an object to the 'data' attribute.
+																	data.context = that._renderUpload(files).data('data', data);
+																	options.filesContainer[ options.prependFiles ? 'prepend' : 'append' ](data.context);
 
-																// 'data.context' represents a single 'li.file-item'; attached as an object to the 'data' attribute.
-																data.context = that._renderUpload(files).data('data', data);
-																options.filesContainer[ options.prependFiles ? 'prepend' : 'append' ](data.context);
-
-																that._forceReflow(data.context);
-																that._transition(data.context).done(
-																	function () {
-																		if ((that._trigger('added', e, data) !== false) && (options.autoUpload || data.autoUpload) && data.autoUpload !== false && !data.files.error) {
-																			data.submit();
+																	that._forceReflow(data.context);
+																	that._transition(data.context).done(
+																		function () {
+																			if ((that._trigger('added', e, data) !== false) && (options.autoUpload || data.autoUpload) && data.autoUpload !== false && !data.files.error) {
+																				data.submit();
+																			}
 																		}
-																	}
-																);
+																	);
+																});
 															});
 														},
 									send:				function (e, data) {	// CALLBACK : invoked at the start of each file upload request.

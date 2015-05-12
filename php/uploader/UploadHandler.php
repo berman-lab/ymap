@@ -239,24 +239,10 @@ class UploadHandler {
     }
 
     protected function get_file_object($file_name) {
-        if ($this->is_valid_file_object($file_name)) {
+        if (is_file($file_name)) {
             $file = new stdClass();
-            $file->name = $file_name;
-            $file->size = $this->get_file_size(
-                $this->get_upload_path($file_name)
-            );
-            $file->url = $this->get_download_url($file->name);
-            foreach($this->options['image_versions'] as $version => $options) {
-                if (!empty($version)) {
-                    if (is_file($this->get_upload_path($file_name, $version))) {
-                        $file->{$version.'_url'} = $this->get_download_url(
-                            $file->name,
-                            $version
-                        );
-                    }
-                }
-            }
-            $this->set_file_delete_properties($file);
+            $file->name = basename($file_name);
+            $file->size = $this->get_file_size($file_name);
             return $file;
         }
         return null;
@@ -761,7 +747,7 @@ class UploadHandler {
         if ($print_response && isset($_GET['download'])) {
             return $this->download();
         }
-        $file_name = $this->get_file_name_param();
+		$file_name = $_GET['file'];
         if ($file_name) {
             $response = array(
                 substr($this->options['param_name'], 0, -1) => $this->get_file_object($file_name)
