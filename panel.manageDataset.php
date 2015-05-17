@@ -7,7 +7,19 @@
 		font-family: arial !important;
 	}
 </style>
-<font size='3'>Install SNP/CGH microarray and next generation sequence datasets to, or delete datasets from, your user account.</font><br><br>
+<font size='3'>
+	Install SNP/CGH microarray and next generation sequence datasets to, or delete datasets from, your user account.
+	<font size='2'>
+		<p>
+			Is your upload stuck? To resume it, do the following:
+			<ol>
+				<li>When all other uploads are finished, refresh the page.</li>
+				<li>Add the exact same files as you have previously to the project that is stuck.</li>
+				<li>Press the "upload" button.</li>
+			</ol>
+		</p>
+	</font>
+</font>
 <table width="100%" cellpadding="0"><tr>
 <td width="25%" valign="top">
 	<?php
