@@ -71,9 +71,9 @@ then
 	then
 		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 		hapmapUser=$user;
-	elif [ -d $main_dir"users/default/genomes/"$hapmap"/" ]
+	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
 	then
-		hapmapDirectory=$main_dir"users/default/genomes/"$hapmap"/";
+		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 		hapmapUser="default";
 	fi
 	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
