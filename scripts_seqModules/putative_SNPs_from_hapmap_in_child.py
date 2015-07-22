@@ -220,29 +220,30 @@ child_SNPs                = [];
 child_SNPs_small          = [];
 counter                   = 0;
 for line_C in data_C:
-	if (len(line_C) > 0):
-		if (line_C[0] != "#"):
-			C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
-			if C_chrID != old_C_chrID:
-				with open(logName, "a") as myfile:
-					myfile.write("\n\t\t|\t\tchr = "+str(C_chrName)+"\n");
-				counter = 0;
-			if (C_chrID > 0) and (int(C_countA)+int(C_countT)+int(C_countG)+int(C_countC) >= 20):   # chromosome is identified and in use; read depth >= 20.
-				if (C_chrName, C_position) in hapmap_loci:
-					child_SNPs.append([C_chrName,C_position,C_countA,C_countT,C_countG,C_countC]);
-					child_SNPs_small.append([C_chrName,C_position]);
-					if counter == 0:
-						with open(logName, "a") as myfile:
-							myfile.write("\t\t|\t\t");
-					if counter%10 == 0:
-						with open(logName, "a") as myfile:
-							myfile.write(".");
-					if counter == 800:
-						with open(logName, "a") as myfile:
-							myfile.write("\n\t\t|\t\t");
-						counter = 0;
-					counter += 1;
-			old_C_chrID = C_chrID;
+	if len(line_C) == 0 or line_C[0] == "#" :
+                continue
+        
+        C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
+        if C_chrID != old_C_chrID:
+                with open(logName, "a") as myfile:
+                        myfile.write("\n\t\t|\t\tchr = "+str(C_chrName)+"\n");
+                counter = 0;
+        if (C_chrID > 0) and (int(C_countA)+int(C_countT)+int(C_countG)+int(C_countC) >= 20):   # chromosome is identified and in use; read depth >= 20.
+                if (C_chrName, C_position) in hapmap_loci:
+                        child_SNPs.append( (C_chrName, C_position, C_countA, C_countT, C_countG, C_countC) );
+                        child_SNPs_small.append( (C_chrName, C_position) );
+                        if counter == 0:
+                                with open(logName, "a") as myfile:
+                                        myfile.write("\t\t|\t\t");
+                        if counter%10 == 0:
+                                with open(logName, "a") as myfile:
+                                        myfile.write(".");
+                        if counter == 800:
+                                with open(logName, "a") as myfile:
+                                        myfile.write("\n\t\t|\t\t");
+                                counter = 0;
+                        counter += 1;
+        old_C_chrID = C_chrID;
 data_C.close();
 
 # Output child lines from hapmap positions.
