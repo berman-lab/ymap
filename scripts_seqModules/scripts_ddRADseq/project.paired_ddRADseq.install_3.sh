@@ -359,7 +359,7 @@ then
 		echo "\t\tDone." >> $logName;
 	else
 		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-		$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
+		$python_exec $main_dir"scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
 		echo "\t\tDone." >> $logName;
 	fi
 fi

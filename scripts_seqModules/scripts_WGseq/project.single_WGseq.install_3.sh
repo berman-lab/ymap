@@ -324,7 +324,7 @@ then
 		echo "\t\t|\thapmap     = '$hapmap'"     >> $logName;
 		echo "\t\t|\thapmapUser = '$hapmapUser'" >> $logName;
 		echo "\t\t|\tmain_dir   = '$main_dir'"   >> $logName;
-		$python_exec $main_dir"scripts_seqModules/scripts_WGseq/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
+		$python_exec $main_dir"scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt"
 		echo "\t\tDone." >> $logName;
 	fi
 fi

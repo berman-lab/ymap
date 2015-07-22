@@ -77,7 +77,7 @@ t0 = time.clock();
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*====================================================================================*\n");
-	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py' |\n");
+	myfile.write("\t\t| Log of 'scripts_seqModules/putative_SNPs_from_hapmap_in_child.py' |\n");
 	myfile.write("\t\t*------------------------------------------------------------------------------------*\n");
 
 
@@ -198,7 +198,7 @@ with open(logName, "a") as myfile:
 print '### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, countA, countT, countG, countC]';
 data_H               = open(inputFile_H,"r");
 old_H_chrID          = 0;
-hapmap_loci          = [];
+hapmap_loci          = set();
 for line_H in data_H:
 	if (len(line_H) > 0):
 		if (line_H[0] != "#"):
@@ -207,7 +207,7 @@ for line_H in data_H:
 				with open(logName, "a") as myfile:
 					myfile.write("\t\t|\t\tchr = "+str(H_chrName)+"\n");
 			if H_chrID > 0:
-				hapmap_loci.append([H_chrName,H_position]);
+				hapmap_loci.add( (H_chrName,H_position) );
 			old_H_chrID = H_chrID;
 data_H.close();
 
@@ -228,8 +228,7 @@ for line_C in data_C:
 					myfile.write("\n\t\t|\t\tchr = "+str(C_chrName)+"\n");
 				counter = 0;
 			if (C_chrID > 0) and (int(C_countA)+int(C_countT)+int(C_countG)+int(C_countC) >= 20):   # chromosome is identified and in use; read depth >= 20.
-				testval = 0;
-				if [C_chrName,C_position] in hapmap_loci:
+				if (C_chrName, C_position) in hapmap_loci:
 					child_SNPs.append([C_chrName,C_position,C_countA,C_countT,C_countG,C_countC]);
 					child_SNPs_small.append([C_chrName,C_position]);
 					if counter == 0:
@@ -263,5 +262,5 @@ print '### End of preprocessed hapmap loci vs. child SNP data.'
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")
 	myfile.write("\t\t*------------------------------------------------------------------------------------*\n")
-	myfile.write("\t\t| End of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_hapmap_in_child.py' |\n")
+	myfile.write("\t\t| End of 'scripts_seqModules/putative_SNPs_from_hapmap_in_child.py' |\n")
 	myfile.write("\t\t*====================================================================================*\n")
