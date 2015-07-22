@@ -31,7 +31,7 @@ echo "#.........................................................................
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 
-echo "Running 'sh/project.single_IonExpressSeq.install_3.sh'" >> $logName;
+echo "Running 'scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_3.sh'" >> $logName;
 echo "Variables passed via command-line from 'php/project.single_IonExpressSeq.install_2.php' :" >> $logName;
 echo "\tuser     = '"$user"'" >> $logName;
 echo "\tproject  = '"$project"'" >> $logName;
@@ -113,7 +113,7 @@ else
 	echo "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd $projectDirectory;
-	sh $main_dir"sh/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
+	sh $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
 	cd $currdir;
 	echo "\tFASTQ files trimmed using : 'FASTQ_trimming.sh'" >> $logName;
 
@@ -304,9 +304,9 @@ if [ $hapmapInUse = 0 ]
 then
 	echo "\nPassing processing on to 'project.IonExpressSeq.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "=================================================================================\n" >> $logName;
-	sh $main_dir"sh/project.IonExpressSeq.install_4.sh" $user $project $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_IonExpressSeq/project.IonExpressSeq.install_4.sh" $user $project $main_dir;
 else
 	echo "\nPassing processing on to 'project.IonExpressSeq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "========================================================================================\n" >> $logName;
-	sh $main_dir"sh/project.IonExpressSeq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_IonExpressSeq/project.IonExpressSeq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
 fi

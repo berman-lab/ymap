@@ -13,7 +13,7 @@ hapmap=$3
 main_dir=$(pwd)"/";
 
 # load local installed program location variables.
-. $main_dir/sh/local_installed_programs.sh;
+. $main_dir/local_installed_programs.sh;
 
 #user="darren";
 #project="test_12353_vs_hapmap_2a";
@@ -245,4 +245,4 @@ rm $projectDirectory"matlab.final_figs.log"
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"sh/cleaning_IonExpressSeq.sh" $user $project $main_dir;
+sh $main_dir"scripts_seqModules/scripts_IonExpressSeq/cleaning_IonExpressSeq.sh" $user $project $main_dir;

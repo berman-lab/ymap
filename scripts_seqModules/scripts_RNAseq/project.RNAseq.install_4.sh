@@ -16,7 +16,7 @@ main_dir=$(pwd)"/";
 #main_dir='/heap/hapmap/bermanlab/'
 
 # load local installed program location variables.
-. $main_dir/sh/local_installed_programs.sh;
+. $main_dir/local_installed_programs.sh;
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -261,4 +261,4 @@ sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"sh/cleaning_RNAseq.sh" $user $project $main_dir;
+sh $main_dir"scripts_seqModules/scripts_RNAseq/cleaning_RNAseq.sh" $user $project $main_dir;

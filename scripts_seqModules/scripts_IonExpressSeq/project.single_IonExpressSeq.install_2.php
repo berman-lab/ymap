@@ -91,21 +91,21 @@
 
 	// Final install functions are in shell script.
     if ($paired == 1) {
-		fwrite($logOutput, "Passing control to : 'sh/project.paired_IonExpressSeq.install_3.sh'\n");
+		fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_IonExpressSeq/project.paired_IonExpressSeq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tPaired-end reads being processed.\n");
 		fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-		$system_call_string = "sh ../sh/project.paired_IonExpressSeq.install_3.sh ".$user." ".$project." > /dev/null &";
+		$system_call_string = "sh ../scripts_seqModules/scripts_IonExpressSeq/project.paired_IonExpressSeq.install_3.sh ".$user." ".$project." > /dev/null &";
 	} else {
-		fwrite($logOutput, "Passing control to : 'sh/project.single_IonExpressSeq.install_3.sh'\n");
+		fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tSingle-end reads being processed.\n");
 		fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-		$system_call_string = "sh ../sh/project.single_IonExpressSeq.install_3.sh ".$user." ".$project." > /dev/null &";
+		$system_call_string = "sh ../scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_3.sh ".$user." ".$project." > /dev/null &";
 	}
 
 //	// Final install functions are in shell script.
-//	fwrite($logOutput, "Passing control to : 'sh/project.single_IonExpressSeq.install_3.sh'\n");
+//	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_3.sh'\n");
 //	fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-//	$system_call_string = "sh ../sh/project.single_IonExpressSeq.install_3.sh ".$user." ".$project." > /dev/null &";
+//	$system_call_string = "sh ../scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_3.sh ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 	fclose($condensedLogOutput);
 	fclose($logOutput);

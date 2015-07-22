@@ -30,7 +30,7 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 chmod 0755 $logName;
 echo "#.............................................................................." >> $logName;
-echo "Running 'sh/project.paired_WGseq.install_3.sh'" >> $logName;
+echo "Running 'scripts_seqModules/scripts_RNAseq/project.paired_WGseq.install_3.sh'" >> $logName;
 echo "Variables passed via command-line from 'php/project.paired_WGseq.install_2.php' :" >> $logName;
 echo "\tuser     = '"$user"'" >> $logName;
 echo "\tproject  = '"$project"'" >> $logName;
@@ -116,7 +116,7 @@ else
 	echo "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd $projectDirectory;
-	sh $main_dir"sh/FASTQ_2_trimming.sh" $projectDirectory$datafile1 $projectDirectory$datafile2 >> $logName;
+	sh $main_dir"scripts_seqModules/FASTQ_2_trimming.sh" $projectDirectory$datafile1 $projectDirectory$datafile2 >> $logName;
 	cd $currdir;
 	echo "\tFASTQ files trimmed using : 'FASTQ_trimming.sh'" >> $logName;
 
@@ -313,9 +313,9 @@ if [ $hapmapInUse = 0 ]
 then
 	echo "\nPassing processing on to 'project.RNAseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "============================================================================\n" >> $logName;
-	sh $main_dir"sh/project.RNAseq.install_4.sh" $user $project $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_RNAseq/project.RNAseq.install_4.sh" $user $project $main_dir;
 else
 	echo "\nPassing processing on to 'project.RNAseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "===================================================================================\n" >> $logName;
-	sh $main_dir"sh/project.RNAseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_RNAseq/project.RNAseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
 fi
