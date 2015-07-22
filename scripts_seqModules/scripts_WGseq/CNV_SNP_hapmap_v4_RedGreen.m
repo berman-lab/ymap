@@ -23,7 +23,7 @@ if ((useHapmap) || (useParent))
 	% Define colors for figure generation.
 	%-------------------------------------------------------------------------------------------
 	fprintf('\t|\tDefine colors used in figure generation.\n');
-	phased_and_unphased_color_definitions.m
+	phased_and_unphased_color_definitions;
 
 	%%================================================================================================
 	% Process SNP/hapmap data to determine colors to be presented for each SNP locus.
