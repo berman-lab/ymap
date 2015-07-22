@@ -343,7 +343,7 @@ then
 	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project $main_dir;
 else
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$main_dir >> $logName;
+	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$hapmap" "$main_dir >> $logName;
 	echo "Script executed from: ${PWD}" >> $logName;
 
 	echo "=========================================================================\n" >> $logName;
