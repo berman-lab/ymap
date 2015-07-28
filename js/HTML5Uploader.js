@@ -95,7 +95,7 @@ var allFiles = new Array;
 															}
 															return that._trigger('sent', e, data);
 														},
-									done:				function (e, data) {	// CALLBACK : called upon completion of each file upload request.
+									stop:				function (e, data) {	// CALLBACK : called upon completion of each file upload request.
 															var that     = $(this).data('filkor-html5Uploader'),
 															getFileList  = data.getFileList || that.options.getFileList,
 															files        = getFileList(data),
@@ -110,7 +110,7 @@ var allFiles = new Array;
 																data.context.find('.progress').show();
 															}
 														},
-									stop:				function (e, data) {	// CALLBACK : called upon conclusion of all uploads.
+									done:				function (e, data) {	// CALLBACK : called upon conclusion of all uploads.
 															// Hide timeer and speed counters.
 															$('#info-wrapper-1').fadeOut(0);
 															$('#info-wrapper-3').fadeOut(0);
