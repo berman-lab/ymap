@@ -185,13 +185,4 @@ body {font-family: arial;}
 	echo "\n";
 	?>
 	</body>
-	<script type="text/javascript">
-		function loadImage(imageUrl,imageScale,iframeHeight) {
-			document.getElementById('imageContainer').innerHTML = "<img src=\""+imageUrl+"\" style=\"max-width:"+imageScale+"%\"></img>";
-			parent.parent.resize_project('<?php echo $key; ?>', iframeHeight);
-		}
-		function loadExternal(imageUrl) {
-			window.open(imageUrl);
-		}
-	</script>
 </HTML>
