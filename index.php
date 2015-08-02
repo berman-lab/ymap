@@ -71,10 +71,10 @@
 		project_key                  = project_key.replace('p_','');
 		var project_size1_span       = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_size1_'+project_key);
 		var project_size2_span       = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_size2_'+project_key);
-		if (sizeString_1 != "") {
+		if (sizeString_1 != "" && project_size1_span != null) {
 			project_size1_span.innerHTML = " <font color='black' size='1'>("+sizeString_1+" bytes)</font>";
 		}
-		if (sizeString_2 != "") {
+		if (sizeString_2 != "" && project_size2_span != null) {
 			project_size2_span.innerHTML = " <font color='black' size='1'>("+sizeString_2+" bytes)</font>";
 		}
 	}
