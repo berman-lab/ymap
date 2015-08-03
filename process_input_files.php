@@ -213,6 +213,11 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	exit;
 } elseif ((strcmp($ext_new,"sam") == 0) || (strcmp($ext_new,"bam") == 0)) {
 	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
+	
+	// The .sh scripts assume we're running from Ymap root.
+	$currentDir = getcwd();
+	chdir($projectPath . "/../../../../"); // ymap_root/users/user_name/projects/this_project
+	
 	// Convert BAM to SAM file, if needed.
 	if (strcmp($ext_new,"bam") == 0) {
 		fwrite($condensedLogOutput, "Decompressing BAM file to SAM.\n");
@@ -223,7 +228,6 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	}
 	// Convert SAM file to FASTQ files.
 	fwrite($condensedLogOutput, "Decompressing SAM file to FASTQ.\n");
-	$currentDir = getcwd();
 	$null       = shell_exec("sh scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
 	// sam2fastq.sh user project main_dir inputFile;
 	fwrite($output, "data_r1.fastq\n");
@@ -232,6 +236,8 @@ if ((strcmp($ext_new,"fastq") == 0) || (strcmp($ext_new,"fq") == 0)) {
 	unlink($projectPath.$name_new);
 	fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
 	$paired = 1;
+	
+	chdir($currentDir);
 } elseif (strcmp($ext_new,"txt") == 0) {
 	fwrite($logOutput, "\t\t| This is a txt file.\n");
 	fwrite($logOutput, "\t\t|\tCurrentDir = ".getcwd()."\n");
