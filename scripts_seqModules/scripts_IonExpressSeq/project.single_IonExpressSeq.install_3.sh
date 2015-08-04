@@ -286,11 +286,11 @@ else
 	# echo "\tPython : Pileup processed for INDELs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
-	$python_exec $main_dir"py/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
+	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNP-CNV." >> $logName;
-	$python_exec $main_dir"py/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
+	$python_exec $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
