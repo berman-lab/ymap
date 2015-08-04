@@ -286,6 +286,7 @@ else
 		GATKlog1=$projectDirectory"gatk.RealignerTargetCreator.log";
 		GATKlog2=$projectDirectory"gatk.IndelRealigner.log";
 		currentDir=$(pwd);
+		cd $gatkDirectory;
 
 		echo "\tGATK : preparing for IndelRealignment." >> $logName;
 		echo "Preparing for indel realignment." >> $condensedLog;
