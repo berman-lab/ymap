@@ -274,7 +274,7 @@ elseif (copyNum == 8)
 	for i = 1:9; x_peak(i) = G{i}.b; end;
 
 	% Construct curve
-	Fit_curve_1 = G{1}.a*exp(-0.5*((range-G{1}.b)./G{1}.c).^2);
+	fit_curve_1 = G{1}.a*exp(-0.5*((range-G{1}.b)./G{1}.c).^2);
 	fit_curve_2 = G{2}.a*exp(-0.5*((range-G{2}.b)./G{2}.c).^2);
 	fit_curve_3 = G{3}.a*exp(-0.5*((range-G{3}.b)./G{3}.c).^2);
 	fit_curve_4 = G{4}.a*exp(-0.5*((range-G{4}.b)./G{4}.c).^2);
