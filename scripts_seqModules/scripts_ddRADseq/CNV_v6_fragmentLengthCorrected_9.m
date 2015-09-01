@@ -1606,6 +1606,32 @@ if (exist([main_dir 'users/' user '/projects/' project '/Common_CNV.mat'],'file'
 		saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.png'], 'png');
 		delete(GCfig);
 	end;
+	
+	%% -----------------------------------------------------------------------------------------
+	% Median normalize CNV data before figure generation.
+	%-------------------------------------------------------------------------------------------
+	% Gather CGH data for LOWESS fitting.
+	CNVdata_all      = [];
+	CNV_tracking_all = [];
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			CNVdata_all      = [CNVdata_all CNVplot2{chr}];
+			CNV_tracking_all = [CNV_tracking_all CNV_tracking{chr}];
+		end;
+	end;
+
+
+	% Calculate median of final CNV data per standard_bin.
+	CNVdata_all(CNV_tracking_all == 0) = [];
+	medianCNV                          = median(CNVdata_all);
+	fprintf(['\n\n***\n*** median CNV value of standard_bins = ' num2str(medianCNV) '\n***\n\n']);
+
+
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			CNVplot2{chr} = CNVplot2{chr}/medianCNV;
+		end;
+	end;
 
 	% Save presented CNV data in a file format common across data types being processed.
 	fprintf('\nSaving "Common_CNV" data file.');
@@ -1647,33 +1673,6 @@ if (Linear_display == true)
 	axisLabelPosition_horiz = 0.01125;
 end;
 axisLabelPosition_vert = 0.01125;
-
-
-%% -----------------------------------------------------------------------------------------
-% Median normalize CNV data before figure generation.
-%-------------------------------------------------------------------------------------------
-% Gather CGH data for LOWESS fitting.
-CNVdata_all      = [];
-CNV_tracking_all = [];
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		CNVdata_all      = [CNVdata_all CNVplot2{chr}];
-		CNV_tracking_all = [CNV_tracking_all CNV_tracking{chr}];
-	end;
-end;
-
-
-% Calculate median of final CNV data per standard_bin.
-CNVdata_all(CNV_tracking_all == 0) = [];
-medianCNV                          = median(CNVdata_all);
-fprintf(['\n\n***\n*** median CNV value of standard_bins = ' num2str(medianCNV) '\n***\n\n']);
-
-
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		CNVplot2{chr} = CNVplot2{chr}/medianCNV;
-	end;
-end;
 
 
 ploidy = str2num(ploidyEstimate);
