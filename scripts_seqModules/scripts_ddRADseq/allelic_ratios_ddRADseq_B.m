@@ -919,21 +919,21 @@ for chr = 1:num_chrs
 		% standard : draw colorbars.
 		if (useHapmap)   % an experimental dataset vs. a hapmap.
 			for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
-				colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
-				colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
-				if (colorR <= 1) || (colorG <= 1) || (colorB <= 1)
-					plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
+				snpColorR = chr_SNPdata_colorsC{chr,1}(chr_bin);
+				snpColorG = chr_SNPdata_colorsC{chr,2}(chr_bin);
+				snpColorB = chr_SNPdata_colorsC{chr,3}(chr_bin);
+				if (snpColorR <= 1) || (snpColorG <= 1) || (snpColorB <= 1)
+					plot([chr_bin chr_bin], [0 maxY],'Color',[snpColorR snpColorG snpColorB]);
 				end;
 			end;
 		% Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
 		%	elseif (useParent)   % an experimental dataset vs. a reference dataset.
 		%		for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-		%			colorR   = chr_SNPdata_colorsP{chr,1}(chr_bin);
-		%			colorG   = chr_SNPdata_colorsP{chr,2}(chr_bin);
-		%			colorB   = chr_SNPdata_colorsP{chr,3}(chr_bin);
-		%			if (colorR <= 1) || (colorG <= 1) || (colorB <= 1)
-		%				plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
+		%			snpColorR   = chr_SNPdata_colorsP{chr,1}(chr_bin);
+		%			snpColorG   = chr_SNPdata_colorsP{chr,2}(chr_bin);
+		%			snpColorB   = chr_SNPdata_colorsP{chr,3}(chr_bin);
+		%			if (snpColorR <= 1) || (snpColorG <= 1) || (snpColorB <= 1)
+		%				plot([chr_bin chr_bin], [0 maxY],'Color',[snpColorR snpColorG snpColorB]);
 		%			end;
 		%		end;
 		elseif (useParent)   % an experimental dataset vs. a reference dataset.
@@ -1081,21 +1081,21 @@ for chr = 1:num_chrs
 			% linear : draw colorbars
 			if (useHapmap)   % an experimental dataset vs. a hapmap.
 				for chr_bin = 1:ceil(chr_size(chr)/new_bases_per_bin)
-					colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
-					colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
-					colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
-					if (colorR < 1) || (colorG < 1) || (colorB < 1)
-						plot([chr_bin chr_bin], [0 maxY],'Color',[colorR colorG colorB]);
+					snpColorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+					snpColorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+					snpColorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
+					if (snpColorR < 1) || (snpColorG < 1) || (snpColorB < 1)
+						plot([chr_bin chr_bin], [0 maxY],'Color',[snpColorR snpColorG snpColorB]);
 					end;
 				end;
 			% Following variation will draw experimetnal vs. reference dataset like the above vs. hapmap figure.
 			%	elseif (useParent)   % an experimental dataset vs. a reference dataset.
 			%		for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-			%			colorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
-			%			colorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
-			%			colorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
-			%			if (colorR < 1) || (colorG < 1) || (colorB < 1)
-			%				plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
+			%			snpColorR   = chr_SNPdata_colorsC{chr,1}(chr_bin);
+			%			snpColorG   = chr_SNPdata_colorsC{chr,2}(chr_bin);
+			%			snpColorB   = chr_SNPdata_colorsC{chr,3}(chr_bin);
+			%			if (snpColorR < 1) || (snpColorG < 1) || (snpColorB < 1)
+			%				plot([i i], [0 maxY],'Color',[snpColorR snpColorG snpColorB]);
 			%			end;
 			%		end;
 			elseif (useParent)   % an experimental dataset vs. a reference dataset.
