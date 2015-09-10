@@ -25,7 +25,7 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
+    require_once '../../constants.php';
 	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
