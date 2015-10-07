@@ -41,7 +41,7 @@ echo "#| file extension, lowercase   = "$fileExt1 >> $logFile;
 # Check if inputfile is BAM format, then decompress if needed.
 if [ "$fileExt2" = "bam" ]
 then
-	samtools view -h $projectDirectory$inputFile > $projectDirectory$fileName.sam
+	$samtools_exec view -h $projectDirectory$inputFile > $projectDirectory$fileName.sam
 	newExt=".sam";
 else
 	newExt="."$fileExt1;

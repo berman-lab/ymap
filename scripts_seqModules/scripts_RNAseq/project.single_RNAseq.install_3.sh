@@ -145,7 +145,7 @@ else
 		echo "\tSamtools : converting Bowtie-SAM into compressed format (BAM) file." >> $logName;
 		echo "Compressing SAM file => BAM file." >> $condensedLog;
 		echo "\nRunning samtools:view.\n";
-		samtools view -bT $genomeDirectory$genomeFASTA $projectDirectory"data.sam" > $projectDirectory"data.temp.bam";
+		$samtools_exec view -bT $genomeDirectory$genomeFASTA $projectDirectory"data.sam" > $projectDirectory"data.temp.bam";
 		rm $projectDirectory"data.sam";
 		echo "\tSamtools : Bowtie-SAM converted into compressed format (BAM) file." >> $logName;
 
@@ -160,10 +160,10 @@ else
 		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo "Sorting BAM file." >> $condensedLog;
 		echo "\nRunning samtools:sort.\n";
-		samtools sort $projectDirectory"data.bam" $projectDirectory"data_sorted";
+		$samtools_exec sort $projectDirectory"data.bam" $projectDirectory"data_sorted";
 		echo "Indexing BAM file." >> $condensedLog;
 		echo "\nRunning samtools:index.\n";
-		samtools index $projectDirectory"data_sorted.bam";
+		$samtools_exec index $projectDirectory"data_sorted.bam";
 		echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi
 
@@ -275,7 +275,7 @@ else
 		echo "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
 		echo "Generating pileup file." >> $condensedLog;
 		echo "\nRunning samtools:mpileup.\n";
-		samtools mpileup -f $genomeDirectory$genomeFASTA $usedFile | awk '{print $1 " " $2 " " $3 " " $4 " " $5}' > $projectDirectory"data.pileup";
+		$samtools_exec mpileup -f $genomeDirectory$genomeFASTA $usedFile | awk '{print $1 " " $2 " " $3 " " $4 " " $5}' > $projectDirectory"data.pileup";
 		echo "\tSamtools : Pileup generated." >> $logName;
 	fi
 
