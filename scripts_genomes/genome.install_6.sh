@@ -55,7 +55,7 @@ then
 	echo "Generating Bowtie2 index for genome." >> $condensedLog;
 	echo "\tBowtie index for genome '$genome' not found: Reindexing genome." >> $logName;
 	## Bowtie 2 commands:
-	bowtie2-build $reflocation$FASTA $reflocation"bowtie_index";
+	$bowtie2Directory"bowtie2-build" $reflocation$FASTA $reflocation"bowtie_index";
 else
 	echo "\tBowtie index for genome '$genome' found" >> $logName;
 fi

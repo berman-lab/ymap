@@ -164,7 +164,7 @@ else
 		echo "\tBowtie : paired-end reads aligning into SAM file." >> $logName;
 		## Bowtie 2 command for paired reads:
 		echo "\nRunning bowtie2.\n";
-		bowtie2 --very-sensitive -p $threads $genomeDirectory"bowtie_index" -U $projectDirectory$datafile -S $projectDirectory"data.sam";
+		$bowtie2Directory"bowtie2" --very-sensitive -p $threads $genomeDirectory"bowtie_index" -U $projectDirectory$datafile -S $projectDirectory"data.sam";
 			# -S : SAM output mode.
 			# -p : number of threads to use.
 			# -1 : dataset.
