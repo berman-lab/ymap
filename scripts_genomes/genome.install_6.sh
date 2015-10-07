@@ -96,7 +96,7 @@ then
 else
 	echo "Generatiing FASTA dictionary file for genome, step2." >> $condensedLog;
 	echo "\tFASTA index file not found for genome '$genome': Regenerating using SamTools." >> $logName;
-	samtools faidx $reflocation$FASTA;
+	$samtools_exec faidx $reflocation$FASTA;
 fi
 
 echo "\n\t============================================================================================== 5" >> $logName;
