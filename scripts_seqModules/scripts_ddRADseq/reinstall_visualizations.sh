@@ -24,6 +24,8 @@ projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
+# load local installed program location variables.
+. $main_dir/local_installed_programs.sh;
 
 # Get parent name used, from project's "parent.txt" file.
 parent=$(head -n 1 $projectDirectory"parent.txt");
@@ -123,6 +125,6 @@ echo "\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$p
 echo "end" >> $outputName;
 
 echo "\tCalling MATLAB." >> $logName;
-matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
 echo "\tMATLAB log from redo of visualization.." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.rerun_visualization.log" >> $logName;

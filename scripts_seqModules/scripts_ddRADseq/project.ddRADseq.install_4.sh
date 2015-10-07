@@ -147,7 +147,7 @@ else
 	echo "\t|\tend" >> $logName;
 
 	echo "\tCalling MATLAB." >> $logName;
-	matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
+	$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
 	echo "\tMATLAB log from CNV analysis." >> $logName;
 	sed 's/^/\t\t|/;' $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
 fi
@@ -185,7 +185,7 @@ else
 	echo "================================================================================================";
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
-	matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
+	$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
 	echo "\tMATLAB log from ChARM analysis." >> $logName;
 	sed 's/^/\t\t|/;' $projectDirectory"matlab.ChARM.log" >> $logName;
 fi
@@ -228,7 +228,7 @@ echo "\tCalling MATLAB." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
-matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
 echo "\tMATLAB log from SNP analysis." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
 
@@ -259,7 +259,7 @@ echo "\t|\t\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project
 echo "\t|\tend" >> $logName;
 
 echo "\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-matlab -nosplash -nodesktop -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
 sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
 
 

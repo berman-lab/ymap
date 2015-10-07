@@ -109,7 +109,7 @@ echo "\t|\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genom
 echo "\t|\tend" >> $logName;
 
 echo "\t\tCalling MATLAB." >> $logName;
-matlab -nosplash -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from CNV analysis." >> $logName;
 sed 's/^/\t\t\t|/;' $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
 
@@ -146,7 +146,7 @@ else
 	echo "================================================================================================";
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
-	matlab -nosplash -r "run "$outputName"; exit;";
+	$matlab_exec -nosplash -r "run "$outputName"; exit;";
 	echo "\t\tMATLAB log from ChARM analysis." >> $logName;
 	sed 's/^/\t\t\t|/;' $projectDirectory"matlab.ChARM.log" >> $logName;
 fi
@@ -219,7 +219,7 @@ echo "\t\tCalling MATLAB." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
-matlab -nosplash -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from SNP analysis." >> $logName;
 sed 's/^/\t\t\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
 
@@ -252,7 +252,7 @@ echo "\t\tCalling MATLAB.   (Log will be appended here after completion.)" >> $l
 echo "================================================================================================";
 echo "== Final figures ===============================================================================";
 echo "================================================================================================";
-matlab -nosplash -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from final figure generation." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
 
