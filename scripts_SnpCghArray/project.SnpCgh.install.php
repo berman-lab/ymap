@@ -158,7 +158,7 @@
 
 	fwrite($outputLog, "Current Path = '".getcwd()."'\n");
 	fwrite($outputLog, "Calling Matlab :\n");
-	$system_call_string_2 = "matlab -nosplash -nodesktop -r 'run ../users/".$user."/projects/".$project."/processing.m' > /dev/null &";
+	$system_call_string_2 = 'source ../local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run ../users/'.$user.'/projects/'.$project.'/processing.m\' > /dev/null &';
 	fwrite($outputLog, "\t\"".$system_call_string_2."\"\n\n");
 	fclose($outputLog);
 	system($system_call_string_2);
