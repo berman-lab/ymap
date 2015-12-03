@@ -123,7 +123,11 @@
 						<script type="text/javascript">
 						var hapmapGenome_entries = [['hapmap','genome']<?php
 						foreach ($hapmapFolders_raw as $key=>$folder) {
-							$handle        = fopen($folder."/genome.txt", "r");
+							$filename = $folder."/genome.txt";
+							if (!file_exists($filename)) {
+								continue;
+							}
+							$handle        = fopen($filename, "r");
 							$genome_string = trim(fgets($handle));
 							fclose($handle);
 							$hapmapName    = $folder;
@@ -154,9 +158,14 @@
 						<script type="text/javascript">
 						var parentGenomeDatatype_entries = [['parent','genome','dataType']<?php
 						foreach ($projectFolders_raw as $key=>$folder) {
-							$handle1         = fopen($folder."/genome.txt", "r");
-							$genome_string   = trim(fgets($handle1));
-							fclose($handle1);
+							$genome_filename = $folder."/genome.txt";
+							$genome_string = "";
+							if (file_exists($genome_filename)) {
+								// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
+								$handle1         = fopen($genome_filename, "r");
+								$genome_string   = trim(fgets($handle1));
+								fclose($handle1);
+							}
 					 		$handle2         = fopen($folder."/dataType.txt", "r");
 							$dataType_string = trim(fgets($handle2));
 							$dataType_string = explode(":",$dataType_string);

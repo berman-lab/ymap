@@ -143,7 +143,11 @@ if (isset($_SESSION['user']) != 0) {
 	// Trim path from each folder string.
 	foreach ($hapmapFolders as $key=>$folder) {   $hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
 	foreach ($hapmapFolders as $key=>$hapmap) {
-		$handle       = fopen("users/".$user."/hapmaps/".$hapmap."/colors.txt",'r');
+		$filename = "users/".$user."/hapmaps/".$hapmap."/colors.txt";
+		if (!file_exists($filename)) {
+			continue;
+		}
+		$handle       = fopen($filename, 'r');
 		$colorString1 = trim(fgets($handle));
 		$colorString2 = trim(fgets($handle));
 		fclose($handle);

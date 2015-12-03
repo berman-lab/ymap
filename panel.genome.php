@@ -65,68 +65,38 @@
 		echo "<b><font size='2'>User Installed Genomes:</font></b>\n\t\t\t\t";
 		echo "<br>\n\t\t\t\t";
 		foreach($genomeFolders_starting as $key_=>$genome) {
-			$genomeNameString = file_get_contents("users/".$user."/genomes/".$genome."/name.txt");
-			$genomeNameString = trim($genomeNameString);
-			$key = $key_;
-			echo "<span id='g_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
-			echo "<font size='2'>".($key+1).".";
-			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString;
-
-			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
-			$handle       = fopen($sizeFile_1,'r');
-			$sizeString_1 = trim(fgets($handle));
-			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
-			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
-
-			echo "</font></span>\n\t\t\t\t";
-			echo "<span id='g_delete_".$key."'></span>\n\t\t";
-			echo "\n\t\t\t\t";
-			echo "<div id='frameContainer.g3_".$key."'></div>";
+			printGenomeInfo("3", $key_, "CC0000", $user, $genome);
 		}
 		foreach($genomeFolders_working as $key_=>$genome) {
-			$genomeNameString = file_get_contents("users/".$user."/genomes/".$genome."/name.txt");
-			$genomeNameString = trim($genomeNameString);
-			$key = $key_ + $userGenomeCount_starting;
-			echo "<span id='g_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
-			echo "<font size='2'>".($key+1).".";
-			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString;
-
-			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
-			$handle       = fopen($sizeFile_1,'r');
-			$sizeString_1 = trim(fgets($handle));
-			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
-			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
-
-			echo "</font></span>\n\t\t\t\t";
-			echo "<span id='g_delete_".$key."'></span>\n\t\t";
-			echo "\n\t\t\t\t";
-			echo "<div id='frameContainer.g2_".$key."'></div>";
+			printGenomeInfo("2", $key_ + $userGenomeCount_starting, "BB9900", $user, $genome);
 		}
 		foreach($genomeFolders_complete as $key_=>$genome) {
-			$genomeNameString = file_get_contents("users/".$user."/genomes/".$genome."/name.txt");
-			$genomeNameString = trim($genomeNameString);
-			$key = $key_ + $userGenomeCount_starting + $userGenomeCount_working;
-			echo "<span id='g_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
-			echo "<font size='2'>".($key+1).". ";
-			echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
-			echo $genomeNameString;
+			printGenomeInfo("1", $key_ + $userGenomeCount_starting + $userGenomeCount_working, "00AA00", $user, $genome);
+		}
+	}
+	
+	function printGenomeInfo($frameContainerIx, $key, $labelRgbColor, $user, $genome) {
+		$genomeNameString = file_get_contents("users/".$user."/genomes/".$genome."/name.txt");
+		$genomeNameString = trim($genomeNameString);
+		echo "<span id='g_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
+		echo "<font size='2'>".($key+1).".";
+		echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
+		echo $genomeNameString;
 
-			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+		$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+		$sizeString_1 = "";
+		if (file_exists($sizeFile_1)) {
 			$handle       = fopen($sizeFile_1,'r');
 			$sizeString_1 = trim(fgets($handle));
 			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
-			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
-
-			echo "</font></span>\n\t\t\t\t";
-			echo "<span id='g_delete_".$key."'></span>\n\t\t";
-			echo "\n\t\t\t\t";
-			echo "<div id='frameContainer.g1_".$key."'></div>";
 		}
+		if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
+		} else {                    echo " <span id='g_size1_".$key."'></span>"; }
+
+		echo "</font></span>\n\t\t\t\t";
+		echo "<span id='g_delete_".$key."'></span>\n\t\t";
+		echo "\n\t\t\t\t";
+		echo "<div id='frameContainer.g".$frameContainerIx."_".$key."'></div>";
 	}
 	?>
 </td><td width="50%" valign="top">
