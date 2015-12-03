@@ -222,7 +222,7 @@ if(localStorage.getItem("projectsShown")){
 function Display_sample_figures() {
 	localStorage.setItem("projectsShown","");
 <?php
-	if (!isset($_SESSION['logged_on'])) {
+	if (isset($_SESSION['logged_on'])) {
 		foreach ($systemProjectFolders as $key=>$project) {
 			if ($key < 2) {
 				$new_key = $key+$userProjectCount; // offset example datasets by number of user projects.

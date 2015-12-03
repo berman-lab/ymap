@@ -117,12 +117,15 @@
 	function resize_genome(genome_key, pixels) {
 		document.getElementById('panel_genome_iframe').contentDocument.getElementById(genome_key).style.height = pixels+"px";
 	}
-
-	if ('<?php isset($_SESSION['logged_on']) ?>' == '') {
-		var user = "default";
+	
+<?php
+	if (isset($_SESSION['logged_on'])) {
+		$user = $_SESSION['user'];
 	} else {
-		var user = "<?php echo $_SESSION['user']; ?>";
+		$user = "default";
 	}
+?>
+	user = <?php echo $user ?>;
 	</script>
 </head>
 <body>
@@ -136,11 +139,6 @@
 <!-- Combined figures option is acting strangely. --!>
 	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
 <?php
-	if (isset($_SESSION['logged_on'])) {
-		$user = $_SESSION['user'];
-	} else {
-		$user = "default";
-	}
 	$cfig_CNV_SNP = "users/".$user."/combined_figure.1.png";
 	$cfig_CNV     = "users/".$user."/combined_figure.2.png";
 	$cfig_SNP     = "users/".$user."/combined_figure.3.png";
@@ -561,6 +559,7 @@ function blank_and_content_tab() {
 
 
 <!=====================================================================!>
+<?php if (isset($_SESSION['logged_on'])) { ?>
 <DIV id="Hidden_InstallNewDataset" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
 	<table width="100%"><tr>
 	<td width="95%" align="left">Install New Dataset</td>
@@ -601,6 +600,7 @@ function blank_and_content_tab() {
 	<br>
 	<iframe id="Hidden_BugTracker_Frame" src="bug_window.php"></iframe>
 </DIV>
+<?php } ?>
 
 <script type="text/javascript">
 function show_hidden(hidden_panel) {
