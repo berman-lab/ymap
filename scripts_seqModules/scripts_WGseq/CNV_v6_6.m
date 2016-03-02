@@ -322,7 +322,8 @@ if (performEndbiasCorrection)
 			fprintf(['chr_bin_count(' num2str(chr) ') = ' num2str(chr_bin_count) '\n']);
 			chr_middle_bin    = round(chr_bin_count/2);
 			fprintf(['chr_middle_bin   = ' num2str(chr_middle_bin) '\n']);
-			center_median_CGH = mean(chr_CGHdata_extended{chr}((chr_middle_bin-20):(chr_middle_bin+20)));
+			median_range = min(20, chr_bin_count/4); % Bin length could be less than 40, so taking a range of 20 crashes the analysis.
+			center_median_CGH = mean(chr_CGHdata_extended{chr}((chr_middle_bin-median_range):(chr_middle_bin+median_range)));
 			for pos = 1:(largest_chr_bin_count - chr_bin_count)
 				chr_CGHdata_extended{chr}(end+1) = center_median_CGH;
 			end;
