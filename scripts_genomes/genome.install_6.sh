@@ -120,8 +120,7 @@ else
 	echo "" > $repetgenome;
         $python_exec $main_dir"scripts_genomes/repetitiveness_1.py"      $user $genome $main_dir $logName     >> $repetgenome;
 	echo "" > $repetgenome_smoothed;
-    # Using python always because this script uses numpy:
-	python $main_dir"scripts_genomes/repetitiveness_smooth.py" $user $genome $main_dir $logName 128 >> $repetgenome_smoothed;
+	$python_numpy_exec $main_dir"scripts_genomes/repetitiveness_smooth.py" $user $genome $main_dir $logName 128 >> $repetgenome_smoothed;
 	mv $repetgenome_smoothed $repetgenome;
 fi
 
