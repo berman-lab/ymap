@@ -44,7 +44,7 @@
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
-	chmod($outputName,0755);
+	chmod($condensedLogOutputName,0744);
 
 
 	// Generate 'reference.txt' file containing:
