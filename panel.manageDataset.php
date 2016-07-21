@@ -212,9 +212,15 @@
 			$sizeString_1 = trim(fgets($handle));
 			fclose($handle);
 			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-			$handle       = fopen($sizeFile_2,'r');
-			$sizeString_2 = trim(fgets($handle));
-			fclose($handle);
+			// handling upload_size_2.txt only if file exits
+			if (file_exists($sizeFile_2))
+			{
+				$handle       = fopen($sizeFile_2,'r');
+				$sizeString_2 = trim(fgets($handle));
+				fclose($handle);
+			}
+			else
+				$sizeString_2 = "";
 			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
 			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
 			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
