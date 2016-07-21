@@ -14,7 +14,7 @@ then
 else
 	findStr=".fastq";
 	replaceStr=".residue.fastq";
-	residueName1=$(echo $1 | sed -e "s/$findStr/$replaceStr/g");
+	residueName1=$(echo $1 | sed -e "s/$findStr$/$replaceStr/g");
 	# If final files are found, don't process these data files.
 	if [ -f $residueName1 ]
 	then
@@ -58,7 +58,7 @@ else
 
 			findStr=".fastq";
 			replaceStr=".trimmed.fastq";
-			trimmedName1=$(echo $1 | sed -e "s/$findStr/$replaceStr/g");
+			trimmedName1=$(echo $1 | sed -e "s/$findStr$/$replaceStr/g");
 
 			# make copy of the original read file which are trimmed to valid length.
 			echo "#\tMaking trimmed valid fastq files:";
