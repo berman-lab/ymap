@@ -18,6 +18,7 @@ main_dir=$(pwd)"/../../";
 
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"local_installed_programs.sh";
+. $main_dir"config.sh";
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
@@ -164,8 +165,6 @@ else
 	echo "[[=- Align with Bowtie -=]]" >> $logName;
 	echo "Aligning reads with Bowtie2 => SAM file." >> $condensedLog;
 
-	threads=4;
-
 	if [ -f $projectDirectory"data.bam" ]
 	then
 		echo "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
@@ -173,7 +172,7 @@ else
 		echo "\tBowtie : paired-end reads aligning into SAM file." >> $logName;
 		## Bowtie 2 command for paired reads:
 		echo "\nRunning bowtie2.\n";
-		$bowtie2Directory"bowtie2" --very-sensitive -p $threads $genomeDirectory"bowtie_index" -1 $projectDirectory$datafile1 -2 $projectDirectory$datafile2 -S $projectDirectory"data.sam";
+		$bowtie2Directory"bowtie2" --very-sensitive -p $cores $genomeDirectory"bowtie_index" -1 $projectDirectory$datafile1 -2 $projectDirectory$datafile2 -S $projectDirectory"data.sam";
 			# -S : SAM output mode.
 			# -p : number of threads to use.
 			# -1 : dataset.
@@ -235,7 +234,7 @@ else
 		echo "Identifying quality coding used in FASTA." >> $condensedLog;
 		FASTQClog1=$projectDirectory"fastqc.process.log";
 		echo "\nRunning fastqc.\n";
-		$fastqcDirectory"fastqc" -o $fastqcTempDirectory $projectDirectory$datafile1 > $FASTQClog1;
+		$fastqcDirectory"fastqc" -t $cores -o $fastqcTempDirectory $projectDirectory$datafile1 > $FASTQClog1;
 		echo "\tFASTQC log output :" >> $logName;
 		sed 's/^/\t\t|/;' $FASTQClog1 >> $logName;
 		rm $FASTQClog1;
@@ -291,7 +290,7 @@ else
 		echo "\tGATK : preparing for IndelRealignment." >> $logName;
 		echo "Preparing for indel realignment." >> $condensedLog;
 		echo "\nRunning gatk:RealignerTargetCreator.\n";
-		$java7Directory"java" -jar GenomeAnalysisTK.jar -T RealignerTargetCreator -I $GATKinputFile -R $GATKreference -o $GATKoutputFile1 $GATKoptions > $GATKlog1;
+		$java7Directory"java" -jar GenomeAnalysisTK.jar -T RealignerTargetCreator -nt $cores -I $GATKinputFile -R $GATKreference -o $GATKoutputFile1 $GATKoptions > $GATKlog1;
 		sed 's/^/\t\t|/;' $GATKlog1 >> $logName;
 		echo "\tGATK : prepared for IndelRealignment." >> $logName;
 		echo "\tGATK : performing IndelRealignment." >> $logName;

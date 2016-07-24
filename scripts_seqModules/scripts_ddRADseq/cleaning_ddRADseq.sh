@@ -19,6 +19,20 @@ projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
+. $main_dir"config.sh";
+if [ $debug -eq 1 ];
+then
+	echo "\tReached cleanup stage, but skipping it because the debug flag is on." >> $logName;
+	echo "\tCreating complete.txt, so that the front-end recognizes the completion." >> $logName;
+	
+	completeFile=$projectDirectory"complete.txt";
+	echo "complete" > $completeFile;
+	echo "\tGenerated 'complete.txt' file." >> $logName;
+	chmod 0744 $completeFile;
+	
+	exit 0;
+fi
+
 echo "#==========================================#" >> $logName;
 echo "# Cleaning up intermediate ddRADseq files. #" >> $logName;
 echo "#==========================================#" >> $logName;
