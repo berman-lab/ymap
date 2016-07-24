@@ -16,7 +16,6 @@
 	$ploidyBase             = filter_input(INPUT_POST, "ploidyBase",               FILTER_SANITIZE_STRING);
 	$dataType               = filter_input(INPUT_POST, "dataType",                 FILTER_SANITIZE_STRING);
 	$showAnnotations        = filter_input(INPUT_POST, "showAnnotations",          FILTER_SANITIZE_STRING);
-	$FTP_drop               = filter_input(INPUT_POST, "FTP_drop",                 FILTER_SANITIZE_STRING);
 	if ($dataType != "0") {		// we're dealing with ddRADseq, WGseq, or RNAseq.
 		$readType           = filter_input(INPUT_POST, "readType",                 FILTER_SANITIZE_STRING);
 		$genome             = filter_input(INPUT_POST, "genome",                   FILTER_SANITIZE_STRING);
@@ -180,16 +179,6 @@
 		} else {
 			fwrite($file, $genome."\n".$hapmap);
 		}
-		fclose($file);
-		chmod($fileName,0644);
-
-		// Generate 'FTP_drop.txt' file : indicates where data is to be retrieved from.
-		//	'True'  : Data will be transferred from [Ymap_root]/FTP_drop/[user_directory]/
-		//	'False' : Data is uploaded through web interface, this is the pre-existing method.
-		if (strcmp($FTP_drop ,"") == 0) { $FTP_drop = "False"; }
-		$fileName = "users/".$user."/projects/".$projectName."/FTP_drop.txt";
-		$file     = fopen($fileName, 'w');
-		fwrite($file, $FTP_drop);
 		fclose($file);
 		chmod($fileName,0644);
 

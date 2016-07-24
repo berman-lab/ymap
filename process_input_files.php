@@ -11,7 +11,7 @@ fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 // Deal with compressed archives.
 if (strcmp($ext,"zip") == 0) {
 	fwrite($condensedLogOutput, "Decompressing ZIP file : ".$name."\n");
-	fwrite($logOutput, "\t\t| This is a ZIP archive of : \n");
+	fwrite($logOutput, "\t\t| This is a ZIP archive of : ");
 	$currentDir = getcwd();                             // get script's path.
 	// figure out filename contained in zip archive.
 	$null               = shell_exec("unzip -l ".$projectPath.$name." > ".$projectPath."zipTemp.txt");   // generate txt file containing archive contents.
