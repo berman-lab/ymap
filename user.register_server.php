@@ -31,7 +31,6 @@
 			chmod($dir,0777);
 			mkdir($dir."/projects/");    // initialize user projects dir.
 			mkdir($dir."/genomes/");     // initialize user genomes dir.
-			chmod($dir,0777);
 			chmod($dir."/projects/",0777);
 			chmod($dir."/genomes/", 0777);
 			writePassword($user, $pw);
