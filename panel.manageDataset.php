@@ -334,8 +334,8 @@ if (isset($_SESSION['logged_on'])) {
 			echo "p_js.display_string[0] = 'Add : IonExpress data (SAM/BAM/TXT)...';\n";
 			echo "p_js.conclusion_script = '".$script_IonExpressSeq_single."';\n";
 		}
-		}
-		foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
+	}
+	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
 		$key      = $key_ + $userProjectCount_starting;
 		$project  = $projectFolders[$key];
 		$handle   = fopen("users/".$user."/projects/".$project."/dataType.txt", "r");
