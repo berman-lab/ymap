@@ -9,9 +9,7 @@
 
 	if($user == $_SESSION['user']){
 		// User confirmed, can delete user.
-		$FTPdir = "FTP_drop/".$user."/";
-		rrmdir($FTPdir);
-		$dir = "users/".$user."/";
+		$dir = "users/".$user;
 		rrmdir($dir);
 		session_unset();
 		echo "COMPLETE";
