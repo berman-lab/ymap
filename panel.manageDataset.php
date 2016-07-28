@@ -23,7 +23,7 @@
 <?php
 	if (isset($_SESSION['logged_on']))
 	{
-		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new genome will not appear
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = FALSE;
 		// calculate current size string (return format for example 7.4G)
 		$currentSizeStr = shell_exec("find " . "users/".$user . "/  -type f -iname 'complete.txt' | sed -e \"s/complete.txt//g\" | xargs du -sch | awk 'END{print $1}'");
