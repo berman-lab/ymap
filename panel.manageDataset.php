@@ -192,15 +192,24 @@
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
 			echo $project;
-
+		
 			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
-			$handle       = fopen($sizeFile_1,'r');
-			$sizeString_1 = trim(fgets($handle));
-			fclose($handle);
+			$sizeString_1 = "";
+			if (file_exists($sizeFile_1))
+			{
+				$handle       = fopen($sizeFile_1,'r');
+				$sizeString_1 = trim(fgets($handle));
+				fclose($handle);
+			}
+
 			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-			$handle       = fopen($sizeFile_2,'r');
-			$sizeString_2 = trim(fgets($handle));
-			fclose($handle);
+			$sizeString_2 = "";
+			if (file_exists($sizeFile_2))
+			{
+				$handle       = fopen($sizeFile_2,'r');
+				$sizeString_2 = trim(fgets($handle));
+				fclose($handle);
+			}
 			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
 			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
 			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
