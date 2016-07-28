@@ -20,6 +20,40 @@
 		</p>
 	</font>
 </font>
+<?php
+	if (isset($_SESSION['logged_on']))
+	{
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new genome will not appear
+		$exceededSpace = FALSE;
+		// calculate current size string (return format for example 7.4G)
+		$currentSizeStr = shell_exec("find " . "users/".$user . "/  -type f -iname 'working_done.txt' | sed -e \"s/working_done.txt//g\" | xargs du -sch | awk 'END{print $1}'");
+		// calculate size only if there are finished datasets/genomes/hapmaps
+		if ($currentSizeStr != "")
+		{
+			$currentSizeStr = trim($currentSizeStr); // removing white spaces
+			// Remove unit and calcaulate size in gigabyte
+			$currentSize = substr($currentSizeStr, -1) == 'M' ? substr($currentSizeStr, 0, -1) / 1000 : substr($currentSizeStr, 0, -1);
+			// Checking if user exceeded it's allocted space 
+			// First checking if quota.txt exists in user folder if yes reading the first number 
+			if (file_exists("users/".$user . "/quota.txt"))
+				$quota = trim(file_get_contents("users/".$user . "/quota.txt"));
+			// check if the global qouta exists (globalquota.txt in users directory) if yes reading the first number - note: the globalquota.txt should always exist
+			else if (file_exists("users/globalquota.txt"))
+				$quota = trim(file_get_contents("users/globalquota.txt"));
+			// In case no quota file exists (either global or local) using hard coded quota to avoid failure
+			else
+				$quota = 25;
+			// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to generate new hapmap will not appear
+			// notice if $quota = $currentSize it is also set to exceeded space
+			$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
+			// display messgae if space exceeded
+			if ($exceededSpace)
+				echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to add new dataset</span><br><br>";
+		}
+		else
+			$currentSize = 0;
+	}
+?>
 <table width="100%" cellpadding="0"><tr>
 <td width="25%" valign="top">
 	<?php
@@ -27,7 +61,9 @@
 	// | Make new project |
 	// '------------------'
 	if (isset($_SESSION['logged_on'])) {
-		echo "<input name='button_InstallNewDataset' type='button' value='Install New Dataset' onclick='parent.show_hidden(\"Hidden_InstallNewDataset\")'><br>";
+		// show Install new dataset button only if user has space
+		if(!$exceededSpace)
+			echo "<input name='button_InstallNewDataset' type='button' value='Install New Dataset' onclick='parent.show_hidden(\"Hidden_InstallNewDataset\")'><br>";
 
 		$_SESSION['pending_install_project_count'] = 0;
 		?>
@@ -76,8 +112,11 @@
 		$projectFolders   = array();
 		$projectFolders   = array_merge($projectFolders_starting, $projectFolders_working, $projectFolders_complete);
 		$userProjectCount = count($projectFolders);
-
-		echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
+		// displaying size if it's bigger then 0
+		if ($currentSize > 0)
+			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSizeStr . ")</font></b>\n\t\t\t\t";
+		else
+			echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
 		echo "<br>\n\t\t\t\t";
 		foreach($projectFolders_starting as $key_=>$project) {
 			// Load colors for project.

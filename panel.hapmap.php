@@ -33,6 +33,38 @@ function showColors(colorName,targetToChange,contentString) {
 	}
 }
 </script>
+<?php 	
+	if (isset($_SESSION['logged_on']))
+	{
+		// calculate current size string (return format for example 7.4G)
+		$currentSizeStr = shell_exec("find " . "users/".$user . "/  -type f -iname 'working_done.txt' | sed -e \"s/working_done.txt//g\" | xargs du -sch | awk 'END{print $1}'");
+		// calculate size only if there are finished datasets/genomes/hapmaps
+		if ($currentSizeStr != "")
+		{
+			$currentSizeStr = trim($currentSizeStr); // removing white spaces
+			// Remove unit and calcaulate size in gigabyte
+			$currentSize = substr($currentSizeStr, -1) == 'M' ? substr($currentSizeStr, 0, -1) / 1000 : substr($currentSizeStr, 0, -1);
+			// Checking if user exceeded it's allocted space 
+			// First checking if quota.txt exists in user folder if yes reading the first number 
+			if (file_exists("users/".$user . "/quota.txt"))
+				$quota = trim(file_get_contents("users/".$user . "/quota.txt"));
+			// check if the global qouta exists (globalquota.txt in users directory) if yes reading the first number - note: the globalquota.txt should always exist
+			else if (file_exists("users/globalquota.txt"))
+				$quota = trim(file_get_contents("users/globalquota.txt"));
+			// In case no quota file exists (either global or local) using hard coded quota to avoid failure
+			else
+				$quota = 25;
+			// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to generate new hapmap will not appear
+			// notice if $quota = $currentSize it is also set to exceeded space
+			$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
+			// display messgae if space exceeded
+			if ($exceededSpace)
+				echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to generate new hapmap</span><br><br>";
+		}
+		else
+			$currentSize = 0;
+	}
+?>
 <table width="100%" cellpadding="0"><tr valign="top">
 <td width="50%">
 	<?php
@@ -43,11 +75,19 @@ function showColors(colorName,targetToChange,contentString) {
 		array_multisort(array_map('filemtime', $hapmapFolders), SORT_DESC, $hapmapFolders);
 		// Trim path from each folder string.
 		foreach($hapmapFolders as $key=>$folder) {   $hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
-		echo "<div class='hapmap'><b><font size='2'>User generated hapmaps:</font></b><br>\n\t\t";
-		echo "<input name='button_GenerateNewHapmap' type='button' value='Generate New Hapmap' onclick='";
-		echo     "parent.show_hidden(\"Hidden_GenerateNewHapmap\"); ";
-		echo     "parent.reload_hidden(\"Hidden_GenerateNewHapmap\",\"hapmap.create_window.php\"); ";
-		echo "'>\n\t\t";
+		// displaying size if it's bigger then 0
+		if ($currentSize > 0)
+			echo "<div class='hapmap'><b><font size='2' >User generated hapmaps: (currently using " . $currentSizeStr . ")</font></b><br>\n\t\t";
+		else
+			echo "<div class='hapmap'><b><font size='2' >User generated hapmaps:</font></b><br>\n\t\t";
+		// show generate new hapmap button only if user has space
+		if (!$exceededSpace)
+		{
+			echo "<input name='button_GenerateNewHapmap' type='button' value='Generate New Hapmap' onclick='";
+			echo     "parent.show_hidden(\"Hidden_GenerateNewHapmap\"); ";
+			echo     "parent.reload_hidden(\"Hidden_GenerateNewHapmap\",\"hapmap.create_window.php\"); ";
+			echo "'>\n\t\t";
+		}
 
 		foreach($hapmapFolders as $key=>$hapmap) {
 			echo "<div class='tab'><table><tr><td>\n\t\t\t\t";
