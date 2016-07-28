@@ -31,6 +31,13 @@ then
 	echo "\tGenerated 'complete.txt' file." >> $logName;
 	chmod 0744 $completeFile;
 	
+	## changing working.txt to working_done.txt
+	if [ -f $projectDirectory"working.txt" ]
+	then
+		mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
+		echo "\t changed working.txt to working_done.txt" >> $logName;
+	fi
+	
 	exit 0;
 fi
 
