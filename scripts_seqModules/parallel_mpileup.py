@@ -37,10 +37,9 @@ while True:
                    "-f", fasta,
                    "-r", next_chrom, bam],
                   stdout=subprocess.PIPE)
-        # As Ymap ignores quality scores, we throw out the last two columns from the
-        # pileup file using awk.
+        # As Ymap ignores quality scores, we throw out the last column.
         awk = \
-            Popen(["awk", '{print $1 " " $2 " " $3 " " $4}'],
+            Popen(["awk", '{print $1 " " $2 " " $3 " " $4 " " $5}'],
                   stdin=pileup.stdout,
                   stdout=open(temp_pileup_files[chroms.index(next_chrom)], 'w'))
         running_chroms[next_chrom] = (pileup, awk)

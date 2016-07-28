@@ -73,6 +73,7 @@ for i in my_file:	# process pileup file line by line.
 		ref_count                 = len(re.findall("\.", reads_noIndels_noStartEnd)) + len(re.findall("\,", reads_noIndels_noStartEnd));
 			# count of reads identical to reference at this locus.
 	else:
+        # There are no reads at this position.
 		A                         = 0;
 		T                         = 0;
 		G                         = 0;
