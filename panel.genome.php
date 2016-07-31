@@ -121,16 +121,41 @@
 		echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
 		echo $genomeNameString;
 
-		$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
-		$sizeString_1 = "";
-		if (file_exists($sizeFile_1)) {
-			$handle       = fopen($sizeFile_1,'r');
-			$sizeString_1 = trim(fgets($handle));
-			fclose($handle);
+		// display basic size files only if the genome is still processed, if the genome completed display total size
+		if ($frameContainerIx != "1")
+		{
+			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+			$sizeString_1 = "";
+			if (file_exists($sizeFile_1)) {
+				$handle       = fopen($sizeFile_1,'r');
+				$sizeString_1 = trim(fgets($handle));
+				fclose($handle);
+			}
+			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
+			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
 		}
-		if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
-		} else {                    echo " <span id='g_size1_".$key."'></span>"; }
-
+		else
+		{
+			// display total genome size
+			// first checking if size already calculated and is stored in totalSize.txt
+			if (file_exists("users/".$user."/genomes/". $genome ."/totalSize.txt"))
+			{
+				$handle       = fopen("users/".$user."/genomes/". $genome ."/totalSize.txt",'r');
+				$genomeSizeStr = trim(fgets($handle));
+				fclose($handle);
+			}
+			else // calculate size and store in totalSize.txt to avoid calculating again
+			{
+				// calculating size
+				$genomeSizeStr = trim(shell_exec("du -sh " . "users/".$user."/genomes/". $genome . "/ | cut -f1"));
+				// saving to file
+				$output       = fopen("users/".$user."/genomes/". $genome ."/totalSize.txt", 'w');
+				fwrite($output, $genomeSizeStr);
+				fclose($output);
+			}
+			// printing total size
+			echo " <font color='black' size='1'>(". $genomeSizeStr .")</font>";
+		}
 		echo "</font></span>\n\t\t\t\t";
 		echo "<span id='g_delete_".$key."'></span>\n\t\t";
 		echo "\n\t\t\t\t";
