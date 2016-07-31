@@ -45,13 +45,10 @@ function showColors(colorName,targetToChange,contentString) {
 			$currentSizeStr = trim($currentSizeStr); // removing white spaces
 			// Remove unit and calcaulate size in gigabyte
 			$currentSize = substr($currentSizeStr, -1) == 'M' ? substr($currentSizeStr, 0, -1) / 1000 : substr($currentSizeStr, 0, -1);
-			// Checking if user exceeded it's allocted space - In case no quota file exists (either global or local) using hard coded quota to avoid failure (the hard coded quota is located in constants.php)
+			// Checking if user exceeded it's allocted space - In case no quota file exists using from constants.php)
 			// First checking if quota.txt exists in user folder if yes reading the first number 
 			if (file_exists("users/".$user . "/quota.txt"))
 				$quota = trim(file_get_contents("users/".$user . "/quota.txt"));
-			// check if the global qouta exists (globalquota.txt in users directory) if yes reading the first number - note: the globalquota.txt should always exist
-			else if (file_exists("users/globalquota.txt"))
-				$quota = trim(file_get_contents("users/globalquota.txt"));
 			// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to generate new hapmap will not appear
 			// notice if $quota = $currentSize it is also set to exceeded space
 			$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
@@ -75,7 +72,7 @@ function showColors(colorName,targetToChange,contentString) {
 		foreach($hapmapFolders as $key=>$folder) {   $hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0)
-			echo "<div class='hapmap'><b><font size='2' >User generated hapmaps: (currently using " . $currentSizeStr . ")</font></b><br>\n\t\t";
+			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSizeStr . " of " . $quota . "G)</font></b>\n\t\t\t\t";
 		else
 			echo "<div class='hapmap'><b><font size='2' >User generated hapmaps:</font></b><br>\n\t\t";
 		// show generate new hapmap button only if user has space

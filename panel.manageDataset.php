@@ -34,14 +34,11 @@
 			$currentSizeStr = trim($currentSizeStr); // removing white spaces
 			// Remove unit and calcaulate size in gigabyte
 			$currentSize = substr($currentSizeStr, -1) == 'M' ? substr($currentSizeStr, 0, -1) / 1000 : substr($currentSizeStr, 0, -1);
-			// Checking if user exceeded it's allocted space - In case no quota file exists (either global or local) using hard coded quota to avoid failure (the hard coded quota is located in constants.php)
+			// Checking if user exceeded it's allocted space - In case no quota file exists using from constants.php)
 			// First checking if quota.txt exists in user folder if yes reading the first number 
 			if (file_exists("users/".$user . "/quota.txt"))
-				$quota = trim(file_get_contents("users/".$user . "/quota.txt"));
-			// check if the global qouta exists (globalquota.txt in users directory) if yes reading the first number - note: the globalquota.txt should always exist
-			else if (file_exists("users/globalquota.txt"))
-				$quota = trim(file_get_contents("users/globalquota.txt"));	
-			// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to generate new hapmap will not appear
+				$quota = trim(file_get_contents("users/".$user . "/quota.txt"));	
+			// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to install new dataset will not appear
 			// notice if $quota = $currentSize it is also set to exceeded space
 			$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 			// display messgae if space exceeded
@@ -112,7 +109,7 @@
 		$userProjectCount = count($projectFolders);
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0)
-			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSizeStr . ")</font></b>\n\t\t\t\t";
+			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSizeStr . " of " . $quota . "G)</font></b>\n\t\t\t\t";
 		else
 			echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
 		echo "<br>\n\t\t\t\t";
@@ -275,13 +272,6 @@
 			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
 			
 			echo "</span>";
-			if ($dataType <> '0') {
-				// valid output for sequence data types, but not array data type.
-				echo "<font size='1'> : </font>";
-				echo "<a href=# onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></a> ";
-				echo "<a href=# onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></a> ";
-				echo "<a href=# onclick='loadExternal(\"users/".$user."/projects/".$project."/data.bam\")'><font size='1'>[BAM]</font></a>\n\t\t\t\t";
-			}
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p1_".$key."'></div>\n";
 		}
