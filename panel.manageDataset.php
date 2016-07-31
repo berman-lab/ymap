@@ -23,6 +23,7 @@
 <?php
 	if (isset($_SESSION['logged_on']))
 	{
+		require_once 'constants.php'; // require constants.php to use hardcoded quota
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = FALSE;
 		// calculate current size string (return format for example 7.4G)
@@ -33,16 +34,13 @@
 			$currentSizeStr = trim($currentSizeStr); // removing white spaces
 			// Remove unit and calcaulate size in gigabyte
 			$currentSize = substr($currentSizeStr, -1) == 'M' ? substr($currentSizeStr, 0, -1) / 1000 : substr($currentSizeStr, 0, -1);
-			// Checking if user exceeded it's allocted space 
+			// Checking if user exceeded it's allocted space - In case no quota file exists (either global or local) using hard coded quota to avoid failure (the hard coded quota is located in constants.php)
 			// First checking if quota.txt exists in user folder if yes reading the first number 
 			if (file_exists("users/".$user . "/quota.txt"))
 				$quota = trim(file_get_contents("users/".$user . "/quota.txt"));
 			// check if the global qouta exists (globalquota.txt in users directory) if yes reading the first number - note: the globalquota.txt should always exist
 			else if (file_exists("users/globalquota.txt"))
-				$quota = trim(file_get_contents("users/globalquota.txt"));
-			// In case no quota file exists (either global or local) using hard coded quota to avoid failure
-			else
-				$quota = 25;
+				$quota = trim(file_get_contents("users/globalquota.txt"));	
 			// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to generate new hapmap will not appear
 			// notice if $quota = $currentSize it is also set to exceeded space
 			$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
