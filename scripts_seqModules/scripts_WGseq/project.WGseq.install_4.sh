@@ -249,6 +249,7 @@ echo "==========================================================================
 $matlab_exec -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from final figure generation." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
+echo "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 
 
 ##==============================================================================
