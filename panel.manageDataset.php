@@ -33,7 +33,18 @@
 		{
 			$currentSizeStr = trim($currentSizeStr); // removing white spaces
 			// Remove unit and calcaulate size in gigabyte
-			$currentSize = substr($currentSizeStr, -1) == 'M' ? substr($currentSizeStr, 0, -1) / 1000 : substr($currentSizeStr, 0, -1);
+			$sizeUnit = substr($currentSizeStr, -1); // will save the size unit of the folder (K for kilobytes, M for megabytes, G for gigabytes) 
+			// determine current size
+			switch ($sizeUnit) {
+			    case 'K':
+			       $currentSize = substr($currentSizeStr, 0, -1) / 1000000;
+			        break;
+			    case 'M':
+			       $currentSize = substr($currentSizeStr, 0, -1) / 1000;
+			        break;
+			    default: // Gigabytes
+			        $currentSize = substr($currentSizeStr, 0, -1);
+			}
 			// Checking if user exceeded it's allocted space - In case no quota file exists using from constants.php)
 			// First checking if quota.txt exists in user folder if yes reading the first number 
 			if (file_exists("users/".$user . "/quota.txt"))
