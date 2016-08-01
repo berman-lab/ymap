@@ -22,8 +22,8 @@ function deleteGenome_yes(user,genome,key){
 		},
 		success : function(answer){
 			if(answer == "COMPLETE"){
-				var ff = parent.document.getElementById('panel_genome_iframe');
-				ff.src = ff.src;
+				// reload entire page
+				window.top.location.reload();
 			}
 		}
 	});

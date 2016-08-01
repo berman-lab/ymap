@@ -22,8 +22,8 @@ function deleteHapmap_yes(user,hapmap,key){
 		},
 		success : function(answer){
 			if(answer == "COMPLETE"){
-				var ff = parent.document.getElementById('panel_hapmap_iframe');
-				ff.src = ff.src;
+				// reload entire page
+				window.top.location.reload(); 
 			}
 		}
 	});

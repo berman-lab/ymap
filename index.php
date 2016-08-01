@@ -485,7 +485,7 @@ function blank_and_content_tab() {
 			
 			if (CGD_tracks_present)
 			{
-				string1 += "<br><a href=\"https://github.com/darrenabbey/ymap/wiki/How-to-import-Ymap-generated-tracks-into-CGD's-GBrowse\">(help on importing tracks into GBrowse)</a>";
+				string1 += "<br><a href=\"https://github.com/berman-lab/ymap/wiki/How-to-import-Ymap-generated-tracks-into-CGD's-GBrowse\">(help on importing tracks into GBrowse)</a>";
 			}
 
 			string1 = string1 + "</font>";
