@@ -115,6 +115,17 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
 
+# Determine location of parent being used.
+if [ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]
+then
+	projectParentDirectory=$main_dir"users/"$user"/genomes/"$projectParent"/";
+	projectParentUser=$user;
+elif [ -d $main_dir"users/default/projects/"$projectParent"/" ]
+then
+	projectParentDirectory=$main_dir"users/default/genomes/"$projectParent"/";
+	projectParentUser="default";
+fi
+
 echo "#============================================================================== 2" >> $logName;
 
 
