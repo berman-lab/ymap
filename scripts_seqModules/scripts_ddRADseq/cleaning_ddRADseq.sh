@@ -202,13 +202,7 @@ fi
 #if [ "$(echo $pattern)" != "$pattern" ]; then rm *.fastq; fi
 #echo "\t*.fastq" >> $logName;
 
-# Compress 'putative_SNPs_v1.txt' and 'SNP_CNVs_v1.txt'.
-if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
-then
-	zip -9 $projectDirectory"putative_SNPs_v4.zip" $projectDirectory"putative_SNPs_v4.txt";
-	rm $projectDirectory"putative_SNPs_v4.txt";
-	echo "\tputative_SNPs_v4.txt" >> $logName;
-fi
+# Compress 'SNP_CNVs_v1.txt'.
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
 	zip -9 $projectDirectory"SNP_CNV_v1.zip" $projectDirectory"SNP_CNV_v1.txt";
