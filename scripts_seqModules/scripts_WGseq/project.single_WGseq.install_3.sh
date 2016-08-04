@@ -182,7 +182,7 @@ else
 		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo "Sorting BAM file." >> $condensedLog;
 		echo "\nRunning samtools:sort.\n";
-		$samtools_exec sort -@ $cores $projectDirectory"data.bam" -o $projectDirectory"data_sorted.bam" -T "data_sorted";
+		$samtools_exec sort -@ $cores $projectDirectory"data.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
 		echo "Indexing BAM file." >> $condensedLog;
 		echo "\nRunning samtools:index.\n";
 		$samtools_exec index $projectDirectory"data_sorted.bam";

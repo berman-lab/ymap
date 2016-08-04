@@ -115,6 +115,17 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
 
+# Determine location of parent being used.
+if [ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]
+then
+	projectParentDirectory=$main_dir"users/"$user"/genomes/"$projectParent"/";
+	projectParentUser=$user;
+elif [ -d $main_dir"users/default/projects/"$projectParent"/" ]
+then
+	projectParentDirectory=$main_dir"users/default/genomes/"$projectParent"/";
+	projectParentUser="default";
+fi
+
 echo "#============================================================================== 2" >> $logName;
 
 
@@ -188,7 +199,7 @@ else
 		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo "Sorting BAM file." >> $condensedLog;
 		echo "\nRunning samtools:sort.\n";
-		$samtools_exec sort -@ $cores $projectDirectory"data.bam" -o $projectDirectory"data_sorted.bam" -T "data_sorted";
+		$samtools_exec sort -@ $cores $projectDirectory"data.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
 		echo "Indexing BAM file." >> $condensedLog;
 		echo "\nRunning samtools:index.\n";
 		$samtools_exec index $projectDirectory"data_sorted.bam";
