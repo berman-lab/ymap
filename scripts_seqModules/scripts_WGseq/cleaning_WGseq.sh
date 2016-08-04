@@ -152,14 +152,23 @@ then
 		# deleting only if a valid file name is written
 		if [ "$datafile1" != "null1" ]
 		then
+			if [ -f $projectDirectory$datafile1]
+			then
+				rm $projectDirectory$datafile1;
+				echo "\t"$datafile1 >> $logName;
+			fi
+		fi
+	else
+		if [ -f $projectDirectory$datafile1]
+		then
 			rm $projectDirectory$datafile1;
 			echo "\t"$datafile1 >> $logName;
 		fi
-	else
-		rm $projectDirectory$datafile1;
-		rm $projectDirectory$datafile2;
-		echo "\t"$datafile1 >> $logName;
-		echo "\t"$datafile2 >> $logName;
+		if [ -f $projectDirectory$datafile2]
+		then
+			rm $projectDirectory$datafile2;
+			echo "\t"$datafile2 >> $logName;
+		fi
 	fi
 	rm $projectDirectory"datafiles.txt";
 	echo "\tdatafiles.txt" >> $logName;
