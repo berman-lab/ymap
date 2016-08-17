@@ -23,41 +23,16 @@
 <?php
 	if (isset($_SESSION['logged_on']))
 	{
-		require_once 'constants.php'; // require constants.php to use hardcoded quota
-		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
-		$exceededSpace = FALSE;
-		// calculate current size string (return format for example 7.4G)
-		$currentSizeStr = shell_exec("find " . "users/".$user . "/  -type f -iname 'complete.txt' | sed -e \"s/complete.txt//g\" | xargs du -sch | awk 'END{print $1}'");
-		// calculate size only if there are finished datasets/genomes/hapmaps
-		if ($currentSizeStr != "")
-		{
-			$currentSizeStr = trim($currentSizeStr); // removing white spaces
-			// Remove unit and calcaulate size in gigabyte
-			$sizeUnit = substr($currentSizeStr, -1); // will save the size unit of the folder (K for kilobytes, M for megabytes, G for gigabytes) 
-			// determine current size
-			switch ($sizeUnit) {
-			    case 'K':
-			       $currentSize = substr($currentSizeStr, 0, -1) / 1000000;
-			        break;
-			    case 'M':
-			       $currentSize = substr($currentSizeStr, 0, -1) / 1000;
-			        break;
-			    default: // Gigabytes
-			        $currentSize = substr($currentSizeStr, 0, -1);
-			}
-			// Checking if user exceeded it's allocted space - In case no quota file exists using from constants.php)
-			// First checking if quota.txt exists in user folder if yes reading the first number 
-			if (file_exists("users/".$user . "/quota.txt"))
-				$quota = trim(file_get_contents("users/".$user . "/quota.txt"));	
-			// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to install new dataset will not appear
-			// notice if $quota = $currentSize it is also set to exceeded space
-			$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
-			// display messgae if space exceeded
-			if ($exceededSpace)
-				echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to add new dataset</span><br><br>";
-		}
-		else
-			$currentSize = 0;
+		require_once 'sharedFunctions.php';
+		// getting the current size of the user folder in Gigabytes
+		$currentSize = getUserUsageSize($user);
+		// getting user quota in Gigabytes
+		$quota = getUserQuota($userName);
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
+		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
+		if ($exceededSpace)
+			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to add new dataset</span><br><br>";
+
 	}
 ?>
 <table width="100%" cellpadding="0"><tr>
@@ -120,7 +95,7 @@
 		$userProjectCount = count($projectFolders);
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0)
-			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSizeStr . " of " . $quota . "G)</font></b>\n\t\t\t\t";
+			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSize . "G of " . $quota . "G)</font></b>\n\t\t\t\t";
 		else
 			echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
 		echo "<br>\n\t\t\t\t";
