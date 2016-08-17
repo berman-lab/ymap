@@ -83,7 +83,7 @@ function showColors(colorName,targetToChange,contentString) {
 		foreach($hapmapFolders as $key=>$folder) {   $hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0)
-			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSizeStr . " of " . $quota . "G)</font></b>\n\t\t\t\t";
+			echo "<b><font size='2'>User generated hapmaps: (currently using " . $currentSizeStr . " of " . $quota . "G)</font></b>\n\t\t\t\t";
 		else
 			echo "<div class='hapmap'><b><font size='2' >User generated hapmaps:</font></b><br>\n\t\t";
 		// show generate new hapmap button only if user has space

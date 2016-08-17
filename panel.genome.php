@@ -106,7 +106,7 @@
 		$userGenomeCount = count($genomeFolders);
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0 )
-			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSizeStr . " of " . $quota . "G)</font></b>\n\t\t\t\t";
+			echo "<b><font size='2'>User Installed Genomes: (currently using " . $currentSizeStr . " of " . $quota . "G)</font></b>\n\t\t\t\t";
 		else
 			echo "<b><font size='2'>User Installed Genomes:</font></b>\n\t\t\t\t";
 		echo "<br>\n\t\t\t\t";
