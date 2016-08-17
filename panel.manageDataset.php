@@ -27,7 +27,7 @@
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
-		$quota = getUserQuota($userName);
+		$quota = getUserQuota($user);
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 		if ($exceededSpace)
@@ -121,32 +121,8 @@
 			echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			echo $project;
-
-			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
-			$sizeString_1 = "";
-			if (file_exists($sizeFile_1))
-			{
-				$handle       = fopen($sizeFile_1,'r');
-				$sizeString_1 = trim(fgets($handle));
-				fclose($handle);
-			}
-
-			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-			$sizeString_2 = "";
-			if (file_exists($sizeFile_2))
-			{
-				$handle       = fopen($sizeFile_2,'r');
-				$sizeString_2 = trim(fgets($handle));
-				fclose($handle);
-			}
-
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
-			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
-			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
-			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
 			
-
+			echo $project;
 			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p3_".$key."'></div>\n";
@@ -174,28 +150,6 @@
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
 			echo $project;
-		
-			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
-			$sizeString_1 = "";
-			if (file_exists($sizeFile_1))
-			{
-				$handle       = fopen($sizeFile_1,'r');
-				$sizeString_1 = trim(fgets($handle));
-				fclose($handle);
-			}
-
-			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-			$sizeString_2 = "";
-			if (file_exists($sizeFile_2))
-			{
-				$handle       = fopen($sizeFile_2,'r');
-				$sizeString_2 = trim(fgets($handle));
-				fclose($handle);
-			}
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
-			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
-			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
-			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
 
 			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
@@ -238,10 +192,11 @@
 			echo $project."</font>";
 
 			// display total project size
+			$totalSizeFile = "users/".$user."/projects/".$project. "/totalSize.txt";
 			// first checking if size already calculated and is stored in totalSize.txt
-			if (file_exists("users/".$user."/projects/".$project. "/totalSize.txt"))
+			if (file_exists($totalSizeFile))
 			{
-				$handle       = fopen("users/".$user."/projects/".$project. "/totalSize.txt",'r');
+				$handle       = fopen($totalSizeFile,'r');
 				$projectSizeStr = trim(fgets($handle));
 				fclose($handle);
 			}
@@ -250,7 +205,7 @@
 				// calculating size
 				$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/".$project. "/ | cut -f1"));
 				// saving to file
-				$output       = fopen("users/".$user."/projects/".$project. "/totalSize.txt", 'w');
+				$output       = fopen($totalSizeFile, 'w');
 				fwrite($output, $projectSizeStr);
 				fclose($output);
 			}

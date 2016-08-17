@@ -40,7 +40,7 @@ function showColors(colorName,targetToChange,contentString) {
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
-		$quota = getUserQuota($userName);
+		$quota = getUserQuota($user);
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 		if ($exceededSpace)

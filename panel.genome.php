@@ -15,7 +15,7 @@
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
-		$quota = getUserQuota($userName);
+		$quota = getUserQuota($user);
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 		if ($exceededSpace)
@@ -103,26 +103,15 @@
 		echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
 		echo $genomeNameString;
 
-		// display basic size files only if the genome is still processed, if the genome completed display total size
-		if ($frameContainerIx != "1")
+		// display total size of files only if the genome is finished processeing
+		if ($frameContainerIx == "1")
 		{
-			$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
-			$sizeString_1 = "";
-			if (file_exists($sizeFile_1)) {
-				$handle       = fopen($sizeFile_1,'r');
-				$sizeString_1 = trim(fgets($handle));
-				fclose($handle);
-			}
-			if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
-			} else {                    echo " <span id='g_size1_".$key."'></span>"; }
-		}
-		else
-		{
+			$totalSizeFile = "users/".$user."/genomes/". $genome ."/totalSize.txt";
 			// display total genome size
 			// first checking if size already calculated and is stored in totalSize.txt
-			if (file_exists("users/".$user."/genomes/". $genome ."/totalSize.txt"))
+			if (file_exists($totalSizeFile))
 			{
-				$handle       = fopen("users/".$user."/genomes/". $genome ."/totalSize.txt",'r');
+				$handle       = fopen($totalSizeFile,'r');
 				$genomeSizeStr = trim(fgets($handle));
 				fclose($handle);
 			}
@@ -131,7 +120,7 @@
 				// calculating size
 				$genomeSizeStr = trim(shell_exec("du -sh " . "users/".$user."/genomes/". $genome . "/ | cut -f1"));
 				// saving to file
-				$output       = fopen("users/".$user."/genomes/". $genome ."/totalSize.txt", 'w');
+				$output       = fopen($totalSizeFile, 'w');
 				fwrite($output, $genomeSizeStr);
 				fclose($output);
 			}
