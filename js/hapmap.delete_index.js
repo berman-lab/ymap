@@ -22,7 +22,7 @@ function deleteHapmap_yes(user,hapmap,key){
 		},
 		success : function(answer){
 			if(answer == "COMPLETE"){
-				// reload entire page
+				// reload entire page - in order to ensure the update of the quota calculation
 				window.top.location.reload(); 
 			}
 		}

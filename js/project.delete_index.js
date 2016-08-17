@@ -24,7 +24,7 @@ function deleteProject_yes(user,project,key){
 		success : function(answer){
 			console.log('deleteProject_yes return: '+answer);
 			if(answer == "COMPLETE"){
-				// reload entire page
+				// reload entire page - in order to ensure the update of the quota calculation
 				window.top.location.reload();
 			}
 		}
