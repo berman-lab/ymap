@@ -3,7 +3,11 @@
 // return the current size in GB of the user folder
 function getUserUsageSize($userName)
 {
-	return shell_exec("find " . "users/".$userName . "/  -type f -iname 'complete.txt' | sed -e \"s/complete.txt//g\" | xargs du -scm | awk 'END{print $1}'") / (1000);
+	$finishedFolders = shell_exec("find " . "users/".$userName . "/  -type f -iname 'complete.txt' | sed -e \"s/complete.txt//g\" ");
+	// check if finished folders were found if so calculating the size else return 0
+	if ($finishedFolders != "")
+		return shell_exec($finishedFolders  . " | xargs du -scm | awk 'END{print $1}'") / (1000);
+	return 0;
 }
 
 // return the size of the user quota in GB
