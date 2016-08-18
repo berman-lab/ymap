@@ -22,8 +22,8 @@ function deleteGenome_yes(user,genome,key){
 		},
 		success : function(answer){
 			if(answer == "COMPLETE"){
-				var ff = parent.document.getElementById('panel_genome_iframe');
-				ff.src = ff.src;
+				// reload entire page - in order to ensure the update of the quota calculation
+				window.top.location.reload();
 			}
 		}
 	});

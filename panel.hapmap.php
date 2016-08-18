@@ -33,6 +33,20 @@ function showColors(colorName,targetToChange,contentString) {
 	}
 }
 </script>
+<?php 	
+	if (isset($_SESSION['logged_on']))
+	{
+		require_once 'sharedFunctions.php';
+		// getting the current size of the user folder in Gigabytes
+		$currentSize = getUserUsageSize($user);
+		// getting user quota in Gigabytes
+		$quota = getUserQuota($user);
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
+		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
+		if ($exceededSpace)
+			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to generate new hapmap</span><br><br>";
+	}
+?>
 <table width="100%" cellpadding="0"><tr valign="top">
 <td width="50%">
 	<?php
@@ -43,11 +57,19 @@ function showColors(colorName,targetToChange,contentString) {
 		array_multisort(array_map('filemtime', $hapmapFolders), SORT_DESC, $hapmapFolders);
 		// Trim path from each folder string.
 		foreach($hapmapFolders as $key=>$folder) {   $hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
-		echo "<div class='hapmap'><b><font size='2'>User generated hapmaps:</font></b><br>\n\t\t";
-		echo "<input name='button_GenerateNewHapmap' type='button' value='Generate New Hapmap' onclick='";
-		echo     "parent.show_hidden(\"Hidden_GenerateNewHapmap\"); ";
-		echo     "parent.reload_hidden(\"Hidden_GenerateNewHapmap\",\"hapmap.create_window.php\"); ";
-		echo "'>\n\t\t";
+		// displaying size if it's bigger then 0
+		if ($currentSize > 0)
+			echo "<b><font size='2'>User generated hapmaps: (currently using " . $currentSize . "G of " . $quota . "G)</font></b>\n\t\t\t\t";
+		else
+			echo "<div class='hapmap'><b><font size='2' >User generated hapmaps:</font></b><br>\n\t\t";
+		// show generate new hapmap button only if user has space
+		if (!$exceededSpace)
+		{
+			echo "<input name='button_GenerateNewHapmap' type='button' value='Generate New Hapmap' onclick='";
+			echo     "parent.show_hidden(\"Hidden_GenerateNewHapmap\"); ";
+			echo     "parent.reload_hidden(\"Hidden_GenerateNewHapmap\",\"hapmap.create_window.php\"); ";
+			echo "'>\n\t\t";
+		}
 
 		foreach($hapmapFolders as $key=>$hapmap) {
 			echo "<div class='tab'><table><tr><td>\n\t\t\t\t";

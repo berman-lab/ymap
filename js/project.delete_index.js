@@ -24,10 +24,8 @@ function deleteProject_yes(user,project,key){
 		success : function(answer){
 			console.log('deleteProject_yes return: '+answer);
 			if(answer == "COMPLETE"){
-				var ff1 = parent.document.getElementById('panel_manageDataset_iframe');
-				var ff2 = parent.document.getElementById('panel_visualizeDataset_iframe');
-				ff1.src = ff1.src;	// reload manageDatasets panel.
-				ff2.src = ff2.src;	// reload visualize Datasets panel.
+				// reload entire page - in order to ensure the update of the quota calculation
+				window.top.location.reload();
 			}
 		}
 	});

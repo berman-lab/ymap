@@ -8,6 +8,21 @@
 	}
 </style>
 <font size='3'>Install new reference genomes for use in sequence analysis.</font><br><br>
+<?php
+	if(isset($_SESSION['logged_on']))
+	{
+		require_once 'sharedFunctions.php';
+		// getting the current size of the user folder in Gigabytes
+		$currentSize = getUserUsageSize($user);
+		// getting user quota in Gigabytes
+		$quota = getUserQuota($user);
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
+		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
+		if ($exceededSpace)
+			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to install new genome</span><br><br>";
+		
+	}
+?>
 <table width="100%" cellpadding="0"><tr>
 <td width="50%">
 	<?php
@@ -15,7 +30,9 @@
 	// | Make new genome |
 	// '-----------------'
 	if (isset($_SESSION['logged_on'])) {
-		echo "<input name=\"button_InstallNewGenome\"  type=\"button\" value=\"Install New Genome\"  onclick=\"parent.show_hidden('Hidden_InstallNewGenome')\"><br>\n\t\t\t\t";
+		// show Install new genome button only if user has space
+		if (!$exceededSpace)
+			echo "<input name=\"button_InstallNewGenome\"  type=\"button\" value=\"Install New Genome\"  onclick=\"parent.show_hidden('Hidden_InstallNewGenome')\"><br>\n\t\t\t\t";
 
 		$_SESSION['pending_install_genome_count'] = 0;
 		?>
@@ -61,8 +78,11 @@
 		$genomeFolders   = array();
 		$genomeFolders   = array_merge($genomeFolders_starting, $genomeFolders_working, $genomeFolders_complete);
 		$userGenomeCount = count($genomeFolders);
-
-		echo "<b><font size='2'>User Installed Genomes:</font></b>\n\t\t\t\t";
+		// displaying size if it's bigger then 0
+		if ($currentSize > 0 )
+			echo "<b><font size='2'>User Installed Genomes: (currently using " . $currentSize . "G of " . $quota . "G)</font></b>\n\t\t\t\t";
+		else
+			echo "<b><font size='2'>User Installed Genomes:</font></b>\n\t\t\t\t";
 		echo "<br>\n\t\t\t\t";
 		foreach($genomeFolders_starting as $key_=>$genome) {
 			printGenomeInfo("3", $key_, "CC0000", $user, $genome);
@@ -83,16 +103,30 @@
 		echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
 		echo $genomeNameString;
 
-		$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
-		$sizeString_1 = "";
-		if (file_exists($sizeFile_1)) {
-			$handle       = fopen($sizeFile_1,'r');
-			$sizeString_1 = trim(fgets($handle));
-			fclose($handle);
+		// display total size of files only if the genome is finished processeing
+		if ($frameContainerIx == "1")
+		{
+			$totalSizeFile = "users/".$user."/genomes/". $genome ."/totalSize.txt";
+			// display total genome size
+			// first checking if size already calculated and is stored in totalSize.txt
+			if (file_exists($totalSizeFile))
+			{
+				$handle       = fopen($totalSizeFile,'r');
+				$genomeSizeStr = trim(fgets($handle));
+				fclose($handle);
+			}
+			else // calculate size and store in totalSize.txt to avoid calculating again
+			{
+				// calculating size
+				$genomeSizeStr = trim(shell_exec("du -sh " . "users/".$user."/genomes/". $genome . "/ | cut -f1"));
+				// saving to file
+				$output       = fopen($totalSizeFile, 'w');
+				fwrite($output, $genomeSizeStr);
+				fclose($output);
+			}
+			// printing total size
+			echo " <font color='black' size='1'>(". $genomeSizeStr .")</font>";
 		}
-		if ($sizeString_1 !== "") { echo " <span id='g_size1_".$key."'><font color='black' size='1'>(".$sizeString_1." bytes)</font></span>";
-		} else {                    echo " <span id='g_size1_".$key."'></span>"; }
-
 		echo "</font></span>\n\t\t\t\t";
 		echo "<span id='g_delete_".$key."'></span>\n\t\t";
 		echo "\n\t\t\t\t";
