@@ -125,7 +125,7 @@
 		$user = "default";
 	}
 ?>
-	user = <?php echo $user ?>;
+	user = "<?php echo $user ?>";
 	</script>
 </head>
 <body>
