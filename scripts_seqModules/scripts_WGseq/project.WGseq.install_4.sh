@@ -249,9 +249,11 @@ echo "==========================================================================
 $matlab_exec -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from final figure generation." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
+echo "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 
 
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir;
+echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
+sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;

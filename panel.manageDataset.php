@@ -20,6 +20,21 @@
 		</p>
 	</font>
 </font>
+<?php
+	if (isset($_SESSION['logged_on']))
+	{
+		require_once 'sharedFunctions.php';
+		// getting the current size of the user folder in Gigabytes
+		$currentSize = getUserUsageSize($user);
+		// getting user quota in Gigabytes
+		$quota = getUserQuota($user);
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
+		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
+		if ($exceededSpace)
+			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to add new dataset</span><br><br>";
+
+	}
+?>
 <table width="100%" cellpadding="0"><tr>
 <td width="25%" valign="top">
 	<?php
@@ -27,7 +42,9 @@
 	// | Make new project |
 	// '------------------'
 	if (isset($_SESSION['logged_on'])) {
-		echo "<input name='button_InstallNewDataset' type='button' value='Install New Dataset' onclick='parent.show_hidden(\"Hidden_InstallNewDataset\")'><br>";
+		// show Install new dataset button only if user has space
+		if(!$exceededSpace)
+			echo "<input name='button_InstallNewDataset' type='button' value='Install New Dataset' onclick='parent.show_hidden(\"Hidden_InstallNewDataset\")'><br>";
 
 		$_SESSION['pending_install_project_count'] = 0;
 		?>
@@ -76,8 +93,11 @@
 		$projectFolders   = array();
 		$projectFolders   = array_merge($projectFolders_starting, $projectFolders_working, $projectFolders_complete);
 		$userProjectCount = count($projectFolders);
-
-		echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
+		// displaying size if it's bigger then 0
+		if ($currentSize > 0)
+			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSize . "G of " . $quota . "G)</font></b>\n\t\t\t\t";
+		else
+			echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
 		echo "<br>\n\t\t\t\t";
 		foreach($projectFolders_starting as $key_=>$project) {
 			// Load colors for project.
@@ -101,31 +121,8 @@
 			echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
+			
 			echo $project;
-
-			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
-			$sizeString_1 = "";
-			if (file_exists($sizeFile_1))
-			{
-				$handle       = fopen($sizeFile_1,'r');
-				$sizeString_1 = trim(fgets($handle));
-				fclose($handle);
-			}
-
-			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-			$sizeString_2 = "";
-			if (file_exists($sizeFile_2))
-			{
-				$handle       = fopen($sizeFile_2,'r');
-				$sizeString_2 = trim(fgets($handle));
-				fclose($handle);
-			}
-
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
-			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
-			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
-			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
-
 			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p3_".$key."'></div>\n";
@@ -153,19 +150,6 @@
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
 			echo $project;
-
-			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
-			$handle       = fopen($sizeFile_1,'r');
-			$sizeString_1 = trim(fgets($handle));
-			fclose($handle);
-			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-			$handle       = fopen($sizeFile_2,'r');
-			$sizeString_2 = trim(fgets($handle));
-			fclose($handle);
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
-			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
-			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
-			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
 
 			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
@@ -207,33 +191,28 @@
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
 			echo $project."</font>";
 
-			$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
-			$handle       = fopen($sizeFile_1,'r');
-			$sizeString_1 = trim(fgets($handle));
-			fclose($handle);
-			$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
-			// handling upload_size_2.txt only if file exits
-			if (file_exists($sizeFile_2))
+			// display total project size
+			$totalSizeFile = "users/".$user."/projects/".$project. "/totalSize.txt";
+			// first checking if size already calculated and is stored in totalSize.txt
+			if (file_exists($totalSizeFile))
 			{
-				$handle       = fopen($sizeFile_2,'r');
-				$sizeString_2 = trim(fgets($handle));
+				$handle       = fopen($totalSizeFile,'r');
+				$projectSizeStr = trim(fgets($handle));
 				fclose($handle);
 			}
-			else
-				$sizeString_2 = "";
-			if ($sizeString_1 !== "") { echo " <font color='black' size='1'>(".$sizeString_1." bytes)</font>";
-			} else {                    echo " <span id='p_size1_".$key."'></span>"; }
-			if ($sizeString_2 !== "") { echo " <font color='black' size='1'>(".$sizeString_2." bytes)</font>";
-			} else {                    echo " <span id='p_size2_".$key."'></span>"; }
-
-			echo "</span>";
-			if ($dataType <> '0') {
-				// valid output for sequence data types, but not array data type.
-				echo "<font size='1'> : </font>";
-				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/SNP_CNV_v1.txt\")'><font size='1'>[SNP/CNV data]</font></span> ";
-				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/putative_SNPs_v4.txt\")'><font size='1'>[SNP data]</font></span> ";
-				echo "<span onclick='loadExternal(\"users/".$user."/projects/".$project."/data.bam\")'><font size='1'>[BAM]</font></span>\n\t\t\t\t";
+			else // calculate size and store in totalSize.txt to avoid calculating again
+			{
+				// calculating size
+				$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/".$project. "/ | cut -f1"));
+				// saving to file
+				$output       = fopen($totalSizeFile, 'w');
+				fwrite($output, $projectSizeStr);
+				fclose($output);
 			}
+			// printing total size
+			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
+			
+			echo "</span>";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p1_".$key."'></div>\n";
 		}
