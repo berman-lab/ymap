@@ -821,6 +821,11 @@ function Generate_combined_figure() {
 	autoSubmitForm.submit();
 }
 restore_shown_figures();
+
+function hide_combined_fig_menu() {
+    menu = document.getElementById("combined_fig_options");
+    menu.style.display = "none";
+}
 </script>
 
 
