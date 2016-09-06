@@ -267,8 +267,10 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]);
 		end;
 	end;
+	%{
 	saveas(fig,[projectDir 'fig.ChARM_test.1.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.1.png'], 'png');
+	%}
 	delete(fig);
 
 	fig = figure(2);    dataShow = data2;
@@ -296,8 +298,10 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]); 
 		end;
 	end;
+	%{
 	saveas(fig,[projectDir 'fig.ChARM_test.2.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.2.png'], 'png');
+	%}
 	delete(fig);
 
 	fig = figure(3);    dataShow = data3;
@@ -325,8 +329,10 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]); 
 		end;
 	end;
+	%{
 	saveas(fig,[projectDir 'fig.ChARM_test.3.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.3.png'], 'png');
+	%}
 	delete(fig);
 
 	fig = figure(4);
@@ -363,9 +369,11 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]);
 		end;
 	end;
+	%{
 	saveas(fig,[projectDir 'fig.ChARM_test.4.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.4.png'], 'png');
-	delete(fig)
+	%}
+	delete(fig);
 end;
 
 
@@ -758,9 +766,11 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]);
 		end;
 	end;
+	%{
 	saveas(fig,[projectDir 'fig.ChARM_test.5.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.5.png'], 'png');
-	delete(fig)
+	%}
+	delete(fig);
 end;
 
 %%=========================================================================

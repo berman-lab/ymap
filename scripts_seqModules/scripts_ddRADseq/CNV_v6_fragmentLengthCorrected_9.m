@@ -1651,10 +1651,14 @@ end;
 %% -----------------------------------------------------------------------------------------
 % Make figures
 %-------------------------------------------------------------------------------------------
+% load size definitions
+[linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height...
+    ,Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
+    stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
+    gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size);
+
 % Generate a new figure for the main output.
 Main_fig = figure(4);
-set(gcf, 'Position', [0 70 1024 600]);
-
 
 %% -----------------------------------------------------------------------------------------
 % Setup for linear-view figure generation.
@@ -1662,11 +1666,6 @@ set(gcf, 'Position', [0 70 1024 600]);
 if (Linear_display == true)
 	Linear_fig           = figure(5);
 	Linear_genome_size   = sum(chr_size);
-	Linear_Chr_max_width = 0.91;               % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-	Linear_left_start    = 0.02;               % left margin (also right margin).
-	Linear_left_chr_gap  = 0.07/(num_chrs-1);  % gaps between chr subfigures.
-	Linear_height        = 0.6;
-	Linear_base          = 0.1;
 	Linear_TickSize      = -0.01;              % negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
 	Linear_left          = Linear_left_start;
@@ -1788,31 +1787,31 @@ for chr = 1:num_chrs
 		set(gca,'YTick',[]);
 		set(gca,'YTickLabel',[]);
 		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-		text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+		text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 		% This section sets the Y-axis labelling.
 		switch ploidyBase
 			case 1
-				text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
 			case 2
-				text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
 			case 3
-				text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
 			case 4
-				text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
-				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
+				text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
 		end;
-		set(gca,'FontSize',12);
+		set(gca,'FontSize',gca_stacked_font_size);
 		if (chr == find(chr_posY == max(chr_posY)))
-			title([ project ' CNV map'],'Interpreter','none','FontSize',24);
+			title([ project ' CNV map'],'Interpreter','none','FontSize',stacked_title_size);
 		end;
 		hold on;
 		% End of : Setup axis labels, subfigure limits, etc.
@@ -1986,7 +1985,7 @@ for chr = 1:num_chrs
 						chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
 					end;
 				end;
-				text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24);
+				text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',stacked_copy_font_size);
 			end;
 		end;
 		%% end of : places chr copy number to the right of the main chr cartoons.
@@ -1997,10 +1996,9 @@ for chr = 1:num_chrs
 			figure(Linear_fig);  
 			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
 			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
-			Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
+			Linear_left = Linear_left + Linear_width + Linear_chr_gap;
 			hold on;
-			title(chr_label{chr},'Interpreter','none','FontSize',20);
-
+            
 			% linear : cgh plot section.
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
@@ -2161,25 +2159,33 @@ for chr = 1:num_chrs
 				% This section sets the Y-axis labelling.
 				switch ploidyBase
 					case 1
-						text(axisLabelPosition_horiz, maxY/2,   '1','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY,     '2','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '1','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,     '2','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
 					case 2
-						text(axisLabelPosition_horiz, maxY/4,   '1','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY/2,   '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY,     '4','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4,   '1','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,   '2','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,     '4','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
 					case 3
-						text(axisLabelPosition_horiz, maxY/2,   '3','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY,     '6','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/2,   '3','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,     '6','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
 					case 4
-						text(axisLabelPosition_horiz, maxY/4,   '2','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY/2,   '4','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',10);
-						text(axisLabelPosition_horiz, maxY,     '8','HorizontalAlignment','right','Fontsize',10);
+						text(axisLabelPosition_horiz, maxY/4,   '2','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,   '4','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,     '8','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
 				end;
 			end;
-			set(gca,'FontSize',12);
+			set(gca,'FontSize',linear_gca_font_size);
 			% linear : end final reformatting.
+			% adding title in the middle of the cartoon
+			% note: adding title is done in the end since if placed upper
+			% in the code somehow the plot function changes the title position			
+			if (rotate == 0 && chr_size(chr) ~= 0 )
+				title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+			else
+				text((chr_size(chr)/bases_per_bin)/2,maxY+0.5,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+			end;
             
 			% shift back to main figure generation.
 			figure(Main_fig);
@@ -2195,13 +2201,13 @@ end;
 %==========================================================================
 
 % Save figures.
-set(Main_fig,'PaperPosition',[0 0 8 6]*2);
+set(Main_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 saveas(Main_fig,   [projectDir 'fig.CNV-map.1.eps'], 'epsc');
 saveas(Main_fig,   [projectDir 'fig.CNV-map.1.png'], 'png');
 delete(Main_fig);
 
 if (Linear_display == true)
-	set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
+	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.png'], 'png');
 	delete(Linear_fig);
