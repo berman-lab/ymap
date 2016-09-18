@@ -83,9 +83,10 @@
 	} else {
 		$output       = fopen($outputName, 'w');
 		fwrite($output, "# Chr\tsize(bp)\tname\n");
+		$chrID = 0;		
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
-			$chrID = $chr + 1;
 			if ($chr_draws[$chr] == 1) {
+				$chrID += 1;
 				fwrite($output, $chrID."\t".$chr_lengths[$chr]."\t".$chr_shortNames[$chr]."\n");
 			}
 		}
@@ -103,9 +104,10 @@
     } else {
 		$output       = fopen($outputName, 'w');
 		fwrite($output, "# Chr\tCEN-start\tCEN-end\n");
+		$chrID = 0;
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
-			$chrID    = $chr + 1;
 			if ($chr_draws[$chr] == 1) {
+				$chrID  += 1;
 				fwrite($output, $chrID."\t".$chr_cenStarts[$chr]."\t".$chr_cenEnds[$chr]."\n");
 			}
 		}
@@ -125,24 +127,21 @@
 		$output       = fopen($outputName, 'w');
 		fwrite($output, "# Chr\tUse\tLabel\tName\tposX\tposY\twidth\theight\n");
 		if ($chr_count != 0) {
-			$usedChrID = 0; // used to count the number of used chromosomes that will be drawn for positioning of the stacked figure	
 			// setting figure height to be the same for all figures making them ocuppy 50 precent of the maximum height (50 precent for gap)
 			$fig_height = 0.5*(0.97/($chr_count_used + 0.5));			
+			$chrID = 0;			
 			for ($chr=0; $chr<$chr_count; $chr += 1) {
-				$chrID = $chr + 1;
-				if ($chr_draws[$chr] == 1) {// if this chromosome should be drawn incrementing 
-					$usedChrID += 1;
-				}
 				$fig_posX   = 0.15;
 				// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end)
-				$fig_posY   = 0.97-(0.97/($chr_count_used + 0.5))*$usedChrID;
+				$fig_posY   = 0.97-(0.97/($chr_count_used + 0.5))*$chrID;
 				if ($chr_lengths[$chr] == $max_length) {
 					$fig_width = "0.8"; 
 				} else {
 					$fig_width = "*";
 				}
 				if ($chr_draws[$chr] == 1) {
-					fwrite($output, $usedChrID."\t1\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t".$fig_posX."\t".$fig_posY."\t".$fig_width."\t".$fig_height."\n");
+					$chrID += 1;
+					fwrite($output, $chrID."\t1\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t".$fig_posX."\t".$fig_posY."\t".$fig_width."\t".$fig_height."\n");
 				} else {
 					fwrite($output, "0\t0\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t0\t0\t0\t0\n");
 				}
