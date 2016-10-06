@@ -96,11 +96,7 @@ if ((useHapmap) || (useParent))
 			fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for chr_bin = 1:length(CNVplot2{chr});
 				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-				if (CNVplot2{chr}(chr_bin) == 0)
-					CNVhistValue = 1;
-				else
-					CNVhistValue = CNVplot2{chr}(chr_bin);
-				end;
+				CNVhistValue = CNVplot2{chr}(chr_bin);
 				% The CNV-histogram values were normalized to a median value of 1.
 				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 				startY = maxY/2;
@@ -397,11 +393,7 @@ if ((useHapmap) || (useParent))
 				fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 				for chr_bin = 1:length(CNVplot2{chr});
 					x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-					if (CNVplot2{chr}(chr_bin) == 0)
-						CNVhistValue = 1;
-					else
-						CNVhistValue = CNVplot2{chr}(chr_bin);
-					end;
+					CNVhistValue = CNVplot2{chr}(chr_bin);
 					% The CNV-histogram values were normalized to a median value of 1.
 					% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 					startY = maxY/2;

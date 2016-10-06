@@ -48,7 +48,8 @@ if ((useHapmap) || (useParent))
 	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 	%-------------------------------------------------------------------------------------------
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
+		% avoid running over chromosomes with empty copy number
+		if (chr_in_use(chr) == 1 && ~isempty(chrCopyNum{chr}))
 			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin);
 				%
 				% Determining colors for each SNP coordinate from calculated cutoffs.
@@ -370,11 +371,7 @@ if ((useHapmap) || (useParent))
 			fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
 			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-				if (CNVplot2{chr}(chr_bin) == 0)
-					CNVhistValue = 1;
-				else
-					CNVhistValue = CNVplot2{chr}(chr_bin);
-				end;
+				CNVhistValue = CNVplot2{chr}(chr_bin);
 				% The CNV-histogram values were normalized to a median value of 1.
 				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 				startY = maxY/2;
@@ -682,11 +679,7 @@ if ((useHapmap) || (useParent))
 				fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 				for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 					x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-					if (CNVplot2{chr}(chr_bin) == 0)
-						CNVhistValue = 1;
-					else
-						CNVhistValue = CNVplot2{chr}(chr_bin);
-					end;
+					CNVhistValue = CNVplot2{chr}(chr_bin);
 					% The CNV-histogram values were normalized to a median value of 1.
 					% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 					startY = maxY/2;

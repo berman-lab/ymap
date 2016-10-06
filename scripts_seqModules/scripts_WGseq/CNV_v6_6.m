@@ -163,10 +163,14 @@ else
 	if (strcmp(bias2,'True') == 1)  performGCbiasCorrection    = true;
 	else                            performGCbiasCorrection    = false;
 	end;
-	if (strcmp(bias3,'True') == 1)  performRepetbiasCorrection = true;
+	if (strcmp(bias3,'True') == 1)  
+        performRepetbiasCorrection = true;
+        performGCbiasCorrection    = true; % needed since repet bias use gc data
 	else                            performRepetbiasCorrection = false;
 	end;
-	if (strcmp(bias4,'True') == 1)  performEndbiasCorrection   = true;
+	if (strcmp(bias4,'True') == 1)  
+        performEndbiasCorrection   = true;
+        performGCbiasCorrection    = true; % needed since end bias use gc data
 	else                            performEndbiasCorrection   = false;
 	end;
 end;
@@ -199,7 +203,9 @@ medianRawY = median(CGHdata_all)
 CGHdata_all = [];
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-		CNVplot{chr} = CNVplot{chr}/medianRawY;
+		if (medianRawY ~= 0)
+		    CNVplot{chr} = CNVplot{chr}/medianRawY;
+		end;
 		CGHdata_all = [CGHdata_all CNVplot{chr}];
 	end;
 end;
@@ -377,18 +383,30 @@ if (performEndbiasCorrection)
 	% Perform LOWESS fitting : end bias.
 	rawData_X1     = chr_EndDistanceData_extended_clean;
 	rawData_Y1     = chr_CGHdata_extended_clean;
-	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
-	[fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1,10, 0);
+	% perform correction only if the data it not empty
+	if (~isempty(rawData_X1) && ~isempty(rawData_Y1))
+		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
+		[fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1,10, 0);
 
-	% Correct data using normalization to LOWESS fitting
-	Y_target = 1;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-			rawData_chr_X1{chr}        = chr_EndDistanceData{chr};
-			rawData_chr_Y1{chr}        = CNVplot{chr};
-			fitData_chr_Y1{chr}        = interp1(fitX1,fitY1,rawData_chr_X1{chr},'spline');
-			normalizedData_chr_Y1{chr} = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target;
+		% Correct data using normalization to LOWESS fitting
+		Y_target = 1;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+				rawData_chr_X1{chr}        = chr_EndDistanceData{chr};
+				rawData_chr_Y1{chr}        = CNVplot{chr};
+				fitData_chr_Y1{chr}        = interp1(fitX1,fitY1,rawData_chr_X1{chr},'spline');
+				normalizedData_chr_Y1{chr} = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target;
+				% setting all NaN values to zero (since dividing by zero
+				% can occur in empty dataset)
+				normalizedData_chr_Y1{chr}(isnan(normalizedData_chr_Y1{chr}))=0;
+			end;
+		end;
+	else
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				normalizedData_chr_Y1{chr} = CNVplot{chr};
+			end;
 		end;
 	end;
 else
@@ -397,6 +415,8 @@ else
 			normalizedData_chr_Y1{chr} = CNVplot{chr};
 		end;
 	end;
+	% disabling perform End bias correction since data is invalid or empty and so the figure should not be created
+	performEndbiasCorrection = 0;
 end;
 
 
@@ -424,30 +444,41 @@ if (performGCbiasCorrection)
 	% Perform LOWESS fitting : GC_bias.
 	rawData_X2     = GCratioData_clean;
 	rawData_Y2     = CGHdata_clean;
+	% perform correction only if the data has more then one value since
+	% otherwise inner functions of matlab will cause crash
+	if (size(rawData_X2,2) > 1 && size(rawData_Y2,2) > 1)
+        fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
+        [fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);
+        % Correct data using normalization to LOWESS fitting
+        Y_target = 1;
+        for chr = 1:num_chrs
+            if (chr_in_use(chr) == 1)
+                fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+                rawData_chr_X2{chr}        = chr_GCratioData{chr};
+                rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
+                fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
 
-	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
-	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);
-	% Correct data using normalization to LOWESS fitting
-	Y_target = 1;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-			rawData_chr_X2{chr}        = chr_GCratioData{chr};
-			rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
-			fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
+                % Filter by dividing out the fit curve.
+                normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
 
-%			% Filter by dividing out the fit curve.
-			normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+                % Filter by subtracting out the fit curve : no strong rationale for this.
+                %normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
 
-%			% Filter by subtracting out the fit curve : no strong rationale for this.
-%			normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+                %Filter by average of above two methods.
+                %try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+                %try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+                %normalizedData_chr_Y2{chr} = (try1+try2)/2;
 
-%			% Filter by average of above two methods.
-%			try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
-%			try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
-%			normalizedData_chr_Y2{chr} = (try1+try2)/2;
-
+            end;
+        end;
+	else
+		for chr = 1:num_chrs
+		    if (chr_in_use(chr) == 1)
+			normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
+		    end;
 		end;
+		% disabling perform GC bias correction since data is invalid or empty and so the figure should not be created
+		performGCbiasCorrection = 0; 
 	end;
 else
 	for chr = 1:num_chrs
@@ -486,18 +517,30 @@ if (performRepetbiasCorrection)
 	% Perform LOWESS fitting : Repetitiveness bias.
 	rawData_X3     = repetitivenessData_clean;
 	rawData_Y3     = CGHdata_clean;
-	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X3,1)) ',' num2str(size(rawData_X3,2)) ']:[' num2str(size(rawData_Y3,1)) ',' num2str(size(rawData_Y3,2)) ']\n']);
-	[fitX3, fitY3] = optimize_mylowess(rawData_X3,rawData_Y3,10, 0);
-	% Correct data using normalization to LOWESS fitting
-	Y_target = 1;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-			rawData_chr_X3{chr}        = chr_repetitivenessData{chr};
-			rawData_chr_Y3{chr}        = normalizedData_chr_Y2{chr}; % CNVplot{chr};
-			fitData_chr_Y3{chr}        = interp1(fitX3,fitY3,rawData_chr_X3{chr},'spline');
-			normalizedData_chr_Y3{chr} = rawData_chr_Y3{chr}./fitData_chr_Y3{chr}*Y_target;
+	% perform correction only if the data has more then one value since
+	% otherwise inner functions of matlab will cause crash
+	if (size(rawData_X3,2) > 1 && size(rawData_Y3,2) > 1)
+		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X3,1)) ',' num2str(size(rawData_X3,2)) ']:[' num2str(size(rawData_Y3,1)) ',' num2str(size(rawData_Y3,2)) ']\n']);
+		[fitX3, fitY3] = optimize_mylowess(rawData_X3,rawData_Y3,10, 0);
+		% Correct data using normalization to LOWESS fitting
+		Y_target = 1;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+				rawData_chr_X3{chr}        = chr_repetitivenessData{chr};
+				rawData_chr_Y3{chr}        = normalizedData_chr_Y2{chr}; % CNVplot{chr};
+				fitData_chr_Y3{chr}        = interp1(fitX3,fitY3,rawData_chr_X3{chr},'spline');
+				normalizedData_chr_Y3{chr} = rawData_chr_Y3{chr}./fitData_chr_Y3{chr}*Y_target;
+			end;
 		end;
+	else
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				normalizedData_chr_Y3{chr} = normalizedData_chr_Y2{chr};
+			end;
+		end;
+		% disabling perform Repet bias correction since data is invalid or empty and so the figure should not be created
+		performRepetbiasCorrection = 0; 
 	end;
 else
 	for chr = 1:num_chrs
@@ -686,9 +729,12 @@ for chr = 1:num_chrs
     end;
 end;
 medianCNV = median(CNVdata_all)
-for chr = 1:num_chrs
-    if (chr_in_use(chr) == 1)
-        CNVplot2{chr} = CNVplot2{chr}/medianCNV;
+% avoid divding by zero
+if (medianCNV ~= 0)
+    for chr = 1:num_chrs
+        if (chr_in_use(chr) == 1)
+            CNVplot2{chr} = CNVplot2{chr}/medianCNV;
+        end;
     end;
 end;
 
@@ -715,11 +761,7 @@ for chr = 1:num_chrs
 		fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 		for i = 1:length(CNVplot2{chr});
 			x_ = [i i i-1 i-1];
-			if (CNVplot2{chr}(i) == 0)
-				CNVhistValue = 1;
-			else
-				CNVhistValue = CNVplot2{chr}(i);
-			end;
+			CNVhistValue = CNVplot2{chr}(i);
 
 			% The CNV-histogram values were normalized to a median value of 1.
 			% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the 
@@ -1018,11 +1060,7 @@ for chr = 1:num_chrs
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(CNVplot2{chr});
 				x_ = [i i i-1 i-1];
-				if (CNVplot2{chr}(i) == 0)
-					CNVhistValue = 1;
-				else
-					CNVhistValue = CNVplot2{chr}(i);
-				end;
+				CNVhistValue = CNVplot2{chr}(i);
 
 				% The CNV-histogram values were normalized to a median value of 1.
 				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.

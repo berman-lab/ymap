@@ -1703,11 +1703,7 @@ for chr = 1:num_chrs
 		fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 		for i = 1:length(CNVplot2{chr});
 			x_ = [i i i-1 i-1];
-			if (CNVplot2{chr}(i) == 0)
-				CNVhistValue = 1;
-			else
-				CNVhistValue = CNVplot2{chr}(i);
-			end;
+			CNVhistValue = CNVplot2{chr}(i);
 
 			% The CNV-histogram values were normalized to a median value of 1.
 			% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
@@ -2004,11 +2000,7 @@ for chr = 1:num_chrs
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(CNVplot2{chr});
 				x_ = [i i i-1 i-1];
-				if (CNVplot2{chr}(i) == 0)
-					CNVhistValue = 1;
-				else
-					CNVhistValue = CNVplot2{chr}(i);
-				end;
+				CNVhistValue = CNVplot2{chr}(i);
 
 				% The CNV-histogram values were normalized to a median value of 1.
 				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.

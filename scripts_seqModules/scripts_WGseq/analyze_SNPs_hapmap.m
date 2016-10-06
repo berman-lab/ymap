@@ -23,8 +23,13 @@ datafile       = [workingDir 'putative_SNPs_' SNP_verString '.txt'];
 data           = fopen(datafile);
 fprintf(['datafile : ' datafile]);
 line           = fgetl(data);           % grab the first line of the putative_CNV datafile.
-fprintf(['\n' datafile '::' num2str(data) '::' line '\n']);
-exampleChrName = sscanf(line, '%s',1);  % grab the first column, ex : 'ChrA_C_glabrata_CBS138';
+% printing first line only if file is not empty
+if (~feof(data))
+    fprintf(['\n' datafile '::' num2str(data) '::' line '\n']);
+    exampleChrName = sscanf(line, '%s',1);  % grab the first column, ex : 'ChrA_C_glabrata_CBS138';
+else
+    fprintf('putative_SNPs file is empty');
+end;
 fclose(data);
 
 
