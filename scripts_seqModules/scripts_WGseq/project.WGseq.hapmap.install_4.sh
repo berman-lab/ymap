@@ -204,8 +204,6 @@ echo "==========================================================================
 $matlab_exec -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from SNP analysis." >> $logName;
 sed 's/^/\t\t\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
-rm $outputName;
-rm $projectDirectory"matlab.SNP_analysis.log"
 
 
 ##==============================================================================
@@ -239,8 +237,6 @@ echo "==========================================================================
 $matlab_exec -nosplash -r "run "$outputName"; exit;";
 echo "\t\tMATLAB log from final figure generation." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
-rm $outputName;
-rm $projectDirectory"matlab.final_figs.log"
 
 
 ##==============================================================================
