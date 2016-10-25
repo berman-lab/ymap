@@ -16,7 +16,7 @@ HistPlot          = true;
 ChrNum            = true;
 Chr_max_width     = 0.8;
 show_annotations  = true;
-   temp_figures   = true;
+   temp_figures   = false;
 
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
@@ -268,7 +268,6 @@ if (temp_figures == true)
 	saveas(fig,[projectDir 'fig.ChARM_test.1.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.1.png'], 'png');
 	delete(fig);
-
 	fig = figure(2);    dataShow = data2;
 	set(gcf, 'Position', [0 70 1024 600]);
 	for chr = 1:num_chrs
@@ -295,7 +294,6 @@ if (temp_figures == true)
 	saveas(fig,[projectDir 'fig.ChARM_test.2.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.2.png'], 'png');
 	delete(fig);
-
 	fig = figure(3);    dataShow = data3;
 	set(gcf, 'Position', [0 70 1024 600]);
 	for chr = 1:num_chrs
@@ -322,7 +320,6 @@ if (temp_figures == true)
 	saveas(fig,[projectDir 'fig.ChARM_test.3.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.3.png'], 'png');
 	delete(fig);
-
 	fig = figure(4);
 	dataShow = data4;
 	set(gcf, 'Position', [0 70 1024 600]);
@@ -359,7 +356,7 @@ if (temp_figures == true)
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.4.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.4.png'], 'png');
-	delete(fig)
+	delete(fig);
 end;
 
 
@@ -754,7 +751,7 @@ if (temp_figures == true)
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.5.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.5.png'], 'png');
-	delete(fig)
+	delete(fig);
 end;
 
 %%=========================================================================

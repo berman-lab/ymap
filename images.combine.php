@@ -1,15 +1,27 @@
 <?php
+	// auxillary functions
+	// sets image background to white and init default image parameters
+	function setBackgroundWhite($image) {
+		$white = imagecolorallocate($image , 255, 255, 255);
+		imagefill($image, 0, 0, $white);
+		// setting default image parameters
+		imagealphablending($image, false);
+		imagesavealpha($image, true);
+	}
+
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script><?php echo "\n"; } else { $user = $_SESSION['user']; }
 	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-
+	
 	$projectsShown = filter_input(INPUT_POST, "projectsShown", FILTER_SANITIZE_STRING);
 //	$user          = 'darren1';
 //	$projectsShown = 'darren1:12353_A21-s02-m08-r09:1:null:null:SC5314_A21-s02-m08-r09 darren1:12353_vs_hapmap_A21-s02-m08-r09:3:cyan:magenta:12353_vs_hapmap_A21-s02-m08-r09 darren1:testing_hapmap:18:green:blue:testing_hapmap darren1:aaaaa:14:null:null:none default:Fig_02A.YQ2_raw:19:null:null:Fig_02A darren1:Fig_04_11461:5:null:null:Fig_04_11461';
 
 	echo "projectsShown = '".$projectsShown."'<br><br>\n";
-
+	// general variables
+	$linearCartoonHeight = 140; // the height in px of the cartoon without labels 136 valid so 4px
+	// creating combined images
 	$projectsShown_entries = explode(" ",$projectsShown);
 	$initial_entry = $projectsShown_entries[0];
 	$entry_parts   = explode(":",$initial_entry);
@@ -29,20 +41,20 @@
 	if (file_exists($fig_CNV_SNP)) {     $initial_image = $fig_CNV_SNP;
 	} elseif (file_exists($fig_CNV)) {   $initial_image = $fig_CNV;
 	} elseif (file_exists($fig_SNP)) {   $initial_image = $fig_SNP;
-	}
+}
 	$image_size    = getimagesize($initial_image);
-	$image_width   = $image_size[0];           // 1152
-	$image_height  = $image_size[1];           // 90
+	$image_width   = $image_size[0];           
+	$image_height  = $image_size[1];           
 	$numImages     = count($projectsShown_entries);
-	$working1      = imagecreatetruecolor($image_width,$image_height*$numImages - 25*($numImages-1) - 5*$numImages);
-	$working2      = imagecreatetruecolor($image_width,$image_height*$numImages - 25*($numImages-1) - 5*$numImages);
-	$working3      = imagecreatetruecolor($image_width,$image_height*$numImages - 25*($numImages-1) - 5*$numImages);
-	imagealphablending($working1, false);
-	imagealphablending($working2, false);
-	imagealphablending($working3, false);
-	imagesavealpha(    $working1, true);
-	imagesavealpha(    $working2, true);
-	imagesavealpha(    $working3, true);
+	// creating new images containers, width remains the same, height the same for first picture and then 130px for every other image (to contain only the cartoons)
+	// and setting backgorund to white
+	$working1      = imagecreatetruecolor($image_width,$image_height + ($numImages - 1)*$linearCartoonHeight);
+	setBackgroundWhite($working1); // set background to white
+	$working2      = imagecreatetruecolor($image_width,$image_height + ($numImages - 1)*$linearCartoonHeight);
+	setBackgroundWhite($working2); // set background to white	
+	$working3      = imagecreatetruecolor($image_width,$image_height + ($numImages - 1)*$linearCartoonHeight);
+	setBackgroundWhite($working3); // set background to white	
+	// connecting pictures
 	foreach ($projectsShown_entries as $entry_key => $projectsShown_entry) {
 		$entry_parts = explode(":",$projectsShown_entry);
 		$fig_user    = $entry_parts[0];
@@ -58,21 +70,41 @@
 		} else { // other.
 			$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.SNP-map.2.png";
 		}
+		// creating images for copy
 		$image1      = imagecreatefrompng($fig_CNV_SNP);
 		$image2      = imagecreatefrompng($fig_CNV);
 		$image3      = imagecreatefrompng($fig_SNP);
+		// getting sizes
+		$image1_size    = getimagesize($fig_CNV_SNP);          
+		$image1_height  = $image_size[1];
+		$image2_size    = getimagesize($fig_CNV);           
+		$image2_height  = $image_size[1];
+		$image3_size    = getimagesize($fig_SNP);         
+		$image3_height  = $image_size[1];
+		// loading white color for in between filling
+		$white = imagecolorallocate($working1, 255, 255, 255);
 		if ($entry_key == 0) {
-			imagecopy(    $working1, $image1, 0, 0,              0, 0,  $image_width, $image_height);
-			imagecopy(    $working2, $image2, 0, 0,              0, 0,  $image_width, $image_height);
-			imagecopy(    $working3, $image3, 0, 0,              0, 0,  $image_width, $image_height);
+			// copy first picture entirely 
+			imagecopy($working1, $image1, 0, 0, 0, 0,  $image_width, $image_height);
+			imagecopy($working2, $image2, 0, 0, 0, 0,  $image_width, $image_height);
+			imagecopy($working3, $image3, 0, 0, 0, 0,  $image_width, $image_height);
 			echo "[] ".$entry_key." ".$fig_CNV_SNP."<br>\n";
 		} else {
-			imagecopy(    $working1, $image1, 0, 85+60*($entry_key-1), 0, 25, $image_width, $image_height);
-			imagecopy(    $working2, $image2, 0, 85+60*($entry_key-1), 0, 25, $image_width, $image_height);
-			imagecopy(    $working3, $image3, 0, 85+60*($entry_key-1), 0, 25, $image_width, $image_height);
+			// copy only cartoon
+			imagecopy($working1, $image1, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image1_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
+			// filing in white in between
+			imagefilledrectangle($working1, 50, $image_height + $linearCartoonHeight*($entry_key-1) - 10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1) + 4, $white);
+			imagecopy($working2, $image2, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image2_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
+			// filing in white in between
+			imagefilledrectangle($working2, 50, $image_height + $linearCartoonHeight*($entry_key-1)-10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1) + 4, $white);		
+			imagecopy($working3, $image3, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image3_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
+			// filing in white in between			
+			imagefilledrectangle($working3, 50, $image_height + $linearCartoonHeight*($entry_key-1) - 10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1) + 4, $white);			
 			echo "...   ".$entry_key." ".$fig_CNV_SNP."<br>\n";
 		}
 	}
+
+// saving images and destroying
 imagepng($working1,"users/".$user."/combined_figure.1.png");
 imagepng($working2,"users/".$user."/combined_figure.2.png");
 imagepng($working3,"users/".$user."/combined_figure.3.png");

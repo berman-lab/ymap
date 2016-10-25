@@ -16,7 +16,7 @@ HistPlot          = true;
 ChrNum            = true;
 Chr_max_width     = 0.8;
 show_annotations  = true;
-   temp_figures   = true;
+   temp_figures   = false;
 
 projectDir = [main_dir 'users/' user '/projects/' project '/'];
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
@@ -365,7 +365,7 @@ if (temp_figures == true)
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.4.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.4.png'], 'png');
-	delete(fig)
+	delete(fig);
 end;
 
 
@@ -760,7 +760,7 @@ if (temp_figures == true)
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.5.eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.5.png'], 'png');
-	delete(fig)
+	delete(fig);
 end;
 
 %%=========================================================================

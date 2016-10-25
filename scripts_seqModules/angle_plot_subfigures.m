@@ -277,7 +277,7 @@ if (AnglePlot == true)
 		for cutoff = 1:length(actual_cutoffs)
 			plot([actual_cutoffs(cutoff); actual_cutoffs(cutoff)],[0; 1],'color',colorCutoff);
 		end;
-		set(gca,'FontSize',10);
+		set(gca,'FontSize',stacked_axis_font_size);
 		hold off;
 		set(gca,'YTick',[]);
 		if (segment ~= 1)

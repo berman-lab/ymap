@@ -82,7 +82,7 @@
 		fwrite($output, $fileContents);
 	} else {
 		$output       = fopen($outputName, 'w');
-		fwrite($output, "# Chr\tsize(bp)\tname\n");
+		fwrite($output, "# Chr\tsize(bp)\tname\n");		
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
 			$chrID = $chr + 1;
 			if ($chr_draws[$chr] == 1) {
@@ -125,16 +125,22 @@
 		$output       = fopen($outputName, 'w');
 		fwrite($output, "# Chr\tUse\tLabel\tName\tposX\tposY\twidth\theight\n");
 		if ($chr_count != 0) {
+			$usedChrID = 0; // used to count the number of used chromosomes that will be drawn for positioning of the stacked figure   
+			// setting figure height to be the same for all figures making them ocuppy 50 precent of the maximum height (50 precent for gap)
+			$fig_height = 0.5*(0.97/($chr_count_used + 0.5));						
 			for ($chr=0; $chr<$chr_count; $chr += 1) {
-				$chrID = $chr + 1;
+				$chrID = $chr + 1; 
+				if ($chr_draws[$chr] == 1) {// if this chromosome should be drawn incrementing  
+				  $usedChrID += 1; 
+				} 
 				$fig_posX   = 0.15;
-				$fig_posY   = 1-(1/($chr_count_used+1))*$chrID;
+				// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end)
+				$fig_posY   = 0.97-(0.97/($chr_count_used + 0.5))*$usedChrID;
 				if ($chr_lengths[$chr] == $max_length) {
 					$fig_width = "0.8"; 
 				} else {
 					$fig_width = "*";
 				}
-				$fig_height = 0.5/$chr_count_used;
 				if ($chr_draws[$chr] == 1) {
 					fwrite($output, $chrID."\t1\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t".$fig_posX."\t".$fig_posY."\t".$fig_width."\t".$fig_height."\n");
 				} else {
