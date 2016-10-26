@@ -194,8 +194,8 @@
 					</div>
 					<div id="hiddenFormSection9b" style="display:none">
 						<!-- WGseq --!>
-						<input type="checkbox"      name="1_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      name="1_bias4" value="True"        >chromosome-end bias
+						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" checked>GC-content bias<br>
+						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True"  onchange="UpdateBiasWG();"      >chromosome-end bias (forces using GC content bias)
 					</div>
 					<div id="hiddenFormSection9c" style="display:none">
 						<!-- ddRADseq --!>
@@ -343,6 +343,18 @@
 					document.getElementById("hiddenFormSection8a").style.display = 'inline';
 					document.getElementById("hiddenFormSection8b").style.display = 'none';
 				}
+			}
+			UpdateBiasWG=function() {
+				if (document.getElementById("1_bias4").checked)
+				{
+					document.getElementById("1_bias2").checked = true;
+					document.getElementById("1_bias2").disabled = true;
+				}
+				else
+				{
+					document.getElementById("1_bias2").disabled = false;
+					document.getElementById("1_bias2").checked = true;
+				}	
 			}
 			</script>
 		</p></div>

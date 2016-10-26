@@ -194,6 +194,7 @@ end;
 % [gaussian] smoothing filter
 %     Original ChARM implementation did not smooth the differentiated signal before peak finding, but
 %     doing so reduces the number of spurious peaks found by local peak-finder algorithms.
+%     Update: this block is not removed since when running glabrata datasets with hapmap it fails to recognize the right segments and part of this stems from the second diffrentation
 %-----------------------------------------------------------------------------------------------------
 fprintf('\nSmoothing Filter 2');
 window_width = smooth_window_width;
@@ -201,7 +202,8 @@ window_halfwidth = (window_width-1)/2;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 	    fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNV_differentiated{chr})) ]);
-	    CNV_differentiated_smoothed{chr} = smooth_gaussian(CNV_differentiated{chr},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
+	    %CNV_differentiated_smoothed{chr} = smooth_gaussian(CNV_differentiated{chr},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
+	    CNV_differentiated_smoothed{chr} = CNV_differentiated{chr};
 	end;
 end;
 
@@ -254,7 +256,7 @@ if (temp_figures == true)
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(dataShow{chr});
 				x_ = [i i i-1 i-1];
-				if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
+				CNVhistValue = dataShow{chr}(i);
 				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
@@ -414,75 +416,78 @@ end;
 
 %% This iterated section of the ChARM algoritm adjusts the local positions of the edges.
 for t = 1:1; % num_permutations
-    %% ###################################################################################################
-    %=====================================================================================================
-    % Update membership (E-step).
-    %-----------------------------------------------------------------------------------------------------
-    %% Calculate Conditional probabilities that a data point is in the left vs. right distributions adjacent to each edge.
+	%% ###################################################################################################
+	%=====================================================================================================
+	% Update membership (E-step).
+	%-----------------------------------------------------------------------------------------------------
+	%% Calculate Conditional probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 	fprintf('\nUpdate Membership (E-step)\n');
 	fprintf(  '--------------------------\n');
-    for chr = 1:num_chrs
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			position  = locs{chr};       % locations of edges for this chromosome.
 			num_edges = length(position);
 			data      = CNVplot2{chr};   % data to be examined for this chromosome.
-			for edge = 1
-			    % Left edge of chromosome.
-			    position(edge) = 1;
-			end;
-			for edge = 2:(num_edges-1);
-			    pos                  = position(edge);
-				% max_ROI             = 20;
-				% percent_window_size = 0.5;
-				% The radius of influence is determined as follows: min(percent_window_size*window_size,max_ROI).
-			    L_windowSize(edge)   = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
-			    R_windowSize(edge)   = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
-			    L_dist{edge}         = data((pos-L_windowSize(edge)):(pos));
-			    R_dist{edge}         = data((pos):(pos+R_windowSize(edge)));
-				% Anything outside these ranges has a zero chance of being on either side of the edge.
-				% This means that though the conditional probability is calculated for all positions relative to each edge,
-				%    only a small area around each edge has to be stored.
-			    L_distMean(edge)     = mean(L_dist{edge});
-			    R_distMean(edge)     = mean(R_dist{edge});
-			    L_distStdev(edge)    = std(L_dist{edge});
-			    R_distStdev(edge)    = std(R_dist{edge});
+			if (num_edges > 1)
+				for edge = 1
+					% Left edge of chromosome.
+					position(edge) = 1;
+				end;
+				for edge = 2:(num_edges-1);
+					pos                  = position(edge);
+					% max_ROI             = 20;
+					% percent_window_size = 0.5;
+					% The radius of influence is determined as follows: min(percent_window_size*window_size,max_ROI).
+					L_windowSize(edge)   = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
+					R_windowSize(edge)   = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
+					L_dist{edge}         = data((pos-L_windowSize(edge)):(pos));
+					R_dist{edge}         = data((pos):(pos+R_windowSize(edge)));
+					% Anything outside these ranges has a zero chance of being on either side of the edge.
+					% This means that though the conditional probability is calculated for all positions relative to each edge,
+					%    only a small area around each edge has to be stored.
+					L_distMean(edge)     = mean(L_dist{edge});
+					R_distMean(edge)     = mean(R_dist{edge});
+					L_distStdev(edge)    = std(L_dist{edge});
+					R_distStdev(edge)    = std(R_dist{edge});
 
-			    cP_dist_is_L{edge}   = zeros(1,length(data));
-			    cP_dist_is_R{edge}   = zeros(1,length(data));
-			    for loc = (pos-L_windowSize(edge)):(pos)
-					cP_dist_is_L{edge}(loc) = normpdf(L_dist{edge}(loc-(pos-L_windowSize(edge))+1),L_distMean(edge),L_distStdev(edge));
-					cP_dist_is_R{edge}(loc) = normpdf(L_dist{edge}(loc-(pos-L_windowSize(edge))+1),R_distMean(edge),R_distStdev(edge));
-			    end;
-			    for loc = (pos):(pos+R_windowSize(edge))
-					cP_dist_is_L{edge}(loc) = normpdf(R_dist{edge}(loc-(pos)+1)  ,L_distMean(edge),L_distStdev(edge));
-					cP_dist_is_R{edge}(loc) = normpdf(R_dist{edge}(loc-(pos)+1)  ,R_distMean(edge),R_distStdev(edge));
-			    end;
-			end;
-			for edge = length(position)
-			    % Right edge of chromosome.
-			    position(edge) = length(data);
-			end;
-			locs{chr} = position;
-			Pcond_dist_is_L{chr} = cP_dist_is_L;
-			Pcond_dist_is_R{chr} = cP_dist_is_R;
+					cP_dist_is_L{edge}   = zeros(1,length(data));
+					cP_dist_is_R{edge}   = zeros(1,length(data));
+					for loc = (pos-L_windowSize(edge)):(pos)
+						cP_dist_is_L{edge}(loc) = normpdf(L_dist{edge}(loc-(pos-L_windowSize(edge))+1),L_distMean(edge),L_distStdev(edge));
+						cP_dist_is_R{edge}(loc) = normpdf(L_dist{edge}(loc-(pos-L_windowSize(edge))+1),R_distMean(edge),R_distStdev(edge));
+					end;
+					for loc = (pos):(pos+R_windowSize(edge))
+						cP_dist_is_L{edge}(loc) = normpdf(R_dist{edge}(loc-(pos)+1)  ,L_distMean(edge),L_distStdev(edge));
+						cP_dist_is_R{edge}(loc) = normpdf(R_dist{edge}(loc-(pos)+1)  ,R_distMean(edge),R_distStdev(edge));
+					end;
+				end;
+				for edge = length(position)
+					% Right edge of chromosome.
+					position(edge) = length(data);
+				end;
+				locs{chr} = position;
+				Pcond_dist_is_L{chr} = cP_dist_is_L;
+				Pcond_dist_is_R{chr} = cP_dist_is_R;
 
-			locs{chr} = position;
+				locs{chr} = position;
+			end;
 		end;
-    end;
+	end;
 
-    %% Calculate P(theta_(j,k)^(t-1)) terms used in calculating posterior probabilities.
-    for chr = 1:num_chrs
+	%% Calculate P(theta_(j,k)^(t-1)) terms used in calculating posterior probabilities.
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			position         = locs{chr};       % locations of edges for this chromosome.
 			num_edges        = length(position);
 			data             = CNVplot2{chr};
 			chr_bins         = length(data);
+		if (num_edges > 1)
 			old_pP_dist_is_L = old_Ppost_dist_is_L{chr};
 			old_pP_dist_is_R = old_Ppost_dist_is_R{chr};
 			if (num_edges > 1)
 				for edge = 1:num_edges
-				    L_term(edge) = sum(old_pP_dist_is_L{edge})/chr_bins;
-				    R_term(edge) = sum(old_pP_dist_is_R{edge})/chr_bins;
+					L_term(edge) = sum(old_pP_dist_is_L{edge})/chr_bins;
+					R_term(edge) = sum(old_pP_dist_is_R{edge})/chr_bins;
 				end;
 			else
 				L_term = sum(old_pP_dist_is_L)/chr_bins;
@@ -491,108 +496,118 @@ for t = 1:1; % num_permutations
 			L_terms{chr} = L_term;
 			R_terms{chr} = R_term;
 		end;
-    end;
+		end;
+	end;
 
-    %% Calculate posterior probabilities that a data point is in the left vs. right distributions adjacent to each edge.
-    %  Posterior probabilities are likelihood of membership in left vs. right distributions for each edge.
-    for chr = 1:num_chrs
+	%% Calculate posterior probabilities that a data point is in the left vs. right distributions adjacent to each edge.
+	%  Posterior probabilities are likelihood of membership in left vs. right distributions for each edge.
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			position     = locs{chr};       % locations of edges for this chromosome.
 			num_edges    = length(position);
-			L_term       = L_terms{chr};
-			R_term       = R_terms{chr};
-			cP_dist_is_L = Pcond_dist_is_L{chr};
-			cP_dist_is_R = Pcond_dist_is_R{chr};
-			data         = CNVplot2{chr};
-			for edge = 2:(num_edges-1);
-			    L_windowSize(edge)   = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
-			    R_windowSize(edge)   = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
-			    pP_dist_is_L{edge} = cP_dist_is_L{edge}.*L_term(edge)/(sum(cP_dist_is_L{edge})*L_term(edge) + sum(cP_dist_is_R{edge})*R_term(edge));
-			    pP_dist_is_R{edge} = cP_dist_is_R{edge}.*R_term(edge)/(sum(cP_dist_is_L{edge})*L_term(edge) + sum(cP_dist_is_R{edge})*R_term(edge));
+			if (num_edges > 1)
+				L_term       = L_terms{chr};
+				R_term       = R_terms{chr};
+				cP_dist_is_L = Pcond_dist_is_L{chr};
+				cP_dist_is_R = Pcond_dist_is_R{chr};
+				data         = CNVplot2{chr};
+				for edge = 2:(num_edges-1);
+					L_windowSize(edge)   = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
+					R_windowSize(edge)   = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
+					pP_dist_is_L{edge} = cP_dist_is_L{edge}.*L_term(edge)/(sum(cP_dist_is_L{edge})*L_term(edge) + sum(cP_dist_is_R{edge})*R_term(edge));
+					pP_dist_is_R{edge} = cP_dist_is_R{edge}.*R_term(edge)/(sum(cP_dist_is_L{edge})*L_term(edge) + sum(cP_dist_is_R{edge})*R_term(edge));
+				end;
+
+				Ppost_dist_is_L{chr} = pP_dist_is_L;
+				Ppost_dist_is_R{chr} = pP_dist_is_R;
 			end;
-
-			Ppost_dist_is_L{chr} = pP_dist_is_L;
-			Ppost_dist_is_R{chr} = pP_dist_is_R;
 		end;
-    end;
+	end;
 
-    %% ###################################################################################################
-    %=====================================================================================================
-    % Mean and variance computation (M-step 1).
-    %-----------------------------------------------------------------------------------------------------
+	%% ###################################################################################################
+	%=====================================================================================================
+	% Mean and variance computation (M-step 1).
+	%-----------------------------------------------------------------------------------------------------
 	fprintf('\nMean and Variance computation (M-step 1)\n');
 	fprintf(  '----------------------------------------\n');
-    for chr = 1:num_chrs
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			position     = locs{chr};       % locations of edges for this chromosome.
 			num_edges    = length(position);
 			data         = CNVplot2{chr};   % data to be examined for this chromosome.
-			pP_dist_is_L = Ppost_dist_is_L{chr};
-			pP_dist_is_R = Ppost_dist_is_R{chr};
-			for edge = 2:(num_edges-1)
-			    L_mean(edge)     = sum(pP_dist_is_L{edge}.*data)/sum(pP_dist_is_L{edge});
-			    R_mean(edge)     = sum(pP_dist_is_R{edge}.*data)/sum(pP_dist_is_R{edge});
-			    L_sigma_sq(edge) = sum((data-L_mean(edge)).^2.*pP_dist_is_L{edge})/sum(pP_dist_is_L{edge});
-			    R_sigma_sq(edge) = sum((data-R_mean(edge)).^2.*pP_dist_is_R{edge})/sum(pP_dist_is_R{edge});
+			if (num_edges > 1)
+				pP_dist_is_L = Ppost_dist_is_L{chr};
+				pP_dist_is_R = Ppost_dist_is_R{chr};
+				for edge = 2:(num_edges-1)
+					L_mean(edge)     = sum(pP_dist_is_L{edge}.*data)/sum(pP_dist_is_L{edge});
+					R_mean(edge)     = sum(pP_dist_is_R{edge}.*data)/sum(pP_dist_is_R{edge});
+					L_sigma_sq(edge) = sum((data-L_mean(edge)).^2.*pP_dist_is_L{edge})/sum(pP_dist_is_L{edge});
+					R_sigma_sq(edge) = sum((data-R_mean(edge)).^2.*pP_dist_is_R{edge})/sum(pP_dist_is_R{edge});
+				end;
+
+				L_means{chr}     = L_mean;
+				R_means{chr}     = R_mean;
+				L_sigmas_sq{chr} = L_sigma_sq;
+				R_sigmas_sq{chr} = R_sigma_sq;
 			end;
-
-			L_means{chr}     = L_mean;
-			R_means{chr}     = R_mean;
-			L_sigmas_sq{chr} = L_sigma_sq;
-			R_sigmas_sq{chr} = R_sigma_sq;
 		end;
-    end;
+	end;
 
-    %% ###################################################################################################
-    %=====================================================================================================
-    % Edge adjustment (M-step 2).
-    %-----------------------------------------------------------------------------------------------------
+	%% ###################################################################################################
+	%=====================================================================================================
+	% Edge adjustment (M-step 2).
+	%-----------------------------------------------------------------------------------------------------
 	fprintf('\nEdge adjustment (M-step 2)\n');
 	fprintf(  '--------------------------\n');
-    pos_change   = [];
-    fprintf(['\nIteration : ' num2str(t) ]);
-    for chr = 1:num_chrs
+	pos_change   = [];
+	fprintf(['\nIteration : ' num2str(t) ]);
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			position     = locs{chr};       % locations of edges for this chromosome.
 			num_edges    = length(position);
+			data         = CNVplot2{chr};   % data to be examined for this chromosome.
 			chr_bins     = length(data);
-			pP_dist_is_L = Ppost_dist_is_L{chr};
-			pP_dist_is_R = Ppost_dist_is_R{chr};
-			L_mean       = L_means{chr};
-			R_mean       = R_means{chr};
-			L_sigma_sq   = L_sigmas_sq{chr};
-			R_sigma_sq   = R_sigmas_sq{chr};
-			new_position = [];
-			for edge = 2:(num_edges-1)
-			    old_pos   = position(edge);
-			    pos_start = position(edge) - min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
-			    pos_end   = position(edge) + min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
-			    new_edge_pos = [];
-			    count = 0;
-			    for pos = pos_start:(pos_end-1)
-				count = count+1;
-				new_edge_pos(count) = -(sum(log10(pP_dist_is_L{edge}(pos_start:pos))) + sum(log10(pP_dist_is_R{edge}((pos+1):pos_end))));
-		    end;
-		    [minVal,minIndex]  = min(new_edge_pos);
-		    new_pos            = pos_start+minIndex-1;
-		    new_position(edge) = new_pos;
+			if (num_edges > 1)
+				pP_dist_is_L = Ppost_dist_is_L{chr};
+				pP_dist_is_R = Ppost_dist_is_R{chr};
+				L_mean       = L_means{chr};
+				R_mean       = R_means{chr};
+				L_sigma_sq   = L_sigmas_sq{chr};
+				R_sigma_sq   = R_sigmas_sq{chr};
+				new_position = [];
+				for edge = 2:(num_edges-1)
+					old_pos   = position(edge);
+					pos_start = position(edge) - min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
+					pos_end   = position(edge) + min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
+					new_edge_pos = [];
+					count = 0;
+					for pos = pos_start:(pos_end-1)
+						count = count+1;
+						new_edge_pos(count) = -(sum(log10(pP_dist_is_L{edge}(pos_start:pos))) + sum(log10(pP_dist_is_R{edge}((pos+1):pos_end))));
+					end;
+					[minVal,minIndex]  = min(new_edge_pos);
+					new_pos            = pos_start+minIndex-1;
+					new_position(edge) = new_pos;
+				end;
+				new_position(1)         = 1;
+				new_position(num_edges) = chr_bins;
+				pos_change{chr}         = new_position - position;
+				new_locs{chr}           = new_position;   
+				fprintf(['\n\tchr' num2str(chr) ' : ' num2str(pos_change{chr}) ]);
+			else
+				% setting new locs to be the same
+				new_locs{chr}           = locs{chr}; 
+				fprintf('\nchr %d has no edges\n', chr);
+			end;
+		else
+			% setting new locs to be the same
+			new_locs{chr}           = locs{chr}; 
+			fprintf('\nchr %d is not used\n', chr);
 		end;
 	end;
-	new_position(1)         = 1;
-	new_position(num_edges) = chr_bins;
-	pos_change{chr}         = new_position - position;
-	new_locs{chr}           = new_position;
-
-	fprintf(['\n\tchr' num2str(chr) ' : ' num2str(pos_change{chr}) ]);
-    end;
-    fprintf(['\n\tave : ' num2str(mean(abs([pos_change{1} pos_change{2} pos_change{3}]))) ]);
-    
-    %% Update positions of edges.
-    locs = new_locs;
-
-    old_Ppost_dist_is_L{chr} = Ppost_dist_is_L{chr};
-    old_Ppost_dist_is_R{chr} = Ppost_dist_is_R{chr};
-end;
+	%% Update positions of edges.
+	locs = new_locs;
+	end;
 
 %% ###################################################################################################
 %=====================================================================================================
@@ -606,20 +621,15 @@ end;
 fprintf('\n\nWindow Similarity test\n');
 fprintf(    '----------------------\n');
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
+	% avoiding etering if all of the data is empty
+	if (chr_in_use(chr) == 1 && chr < length(locs))
 		fprintf(['[Window similarity test]:chr' num2str(chr) '\n']);
-	    test_edge = 2;
-	    num_starting_edges = length(locs{chr});
-	    for t = 1:num_starting_edges
+		test_edge = 2;
+		num_starting_edges = length(locs{chr});
+		for t = 1:num_starting_edges
 			position     = locs{chr};
 			num_edges    = length(position);
-			data         = CNVplot2{chr};
-			%----------------------------------------------------------------------
-			% Force left and right edges to left and right of datasets.
-			%    This was not described in the ChARM paper, but is useful.
-			%----------------------------------------------------------------------
-			position(1)   = 1;
-			position(end) = length(CNVplot2{chr});   
+			data         = CNVplot2{chr};  
 
 			%----------------------------------------------------------------------
 			% Converts edge pairs that are too close into single edges.
@@ -664,10 +674,10 @@ for chr = 1:num_chrs
 					%  [G2_a, G2_b, G2_c] = fit_Gaussian(R_hist, mean(data(pos:pos_R))*10, 'linear', false);
 					%  med_j1    = G1_b/10;
 					%  med_j2    = G2_b/10;
-	
+
 					n_j1            = length(pos_L:pos);
 					n_j2            = length(pos:pos_R);
-						numer           = abs(med_j1-med_j2)*(n_j1+n_j2);
+					numer           = abs(med_j1-med_j2)*(n_j1+n_j2);
 					denom           = sum(abs(data(pos_L:pos)-med_j1)) + sum(abs(data(pos:pos_R)-med_j2));
 					SNR(edge)       = numer/denom;
 					med_delta(edge) = abs(med_j2-med_j1);
@@ -679,12 +689,12 @@ for chr = 1:num_chrs
 			SNR(num_edges)       = 1000;
 			med_delta(1)         = 1000;
 			med_delta(num_edges) = 1000;
-	
+
 			if (t == 1) || (t == num_starting_edges)
 				fprintf(['\t%%%% SNR       = [' num2str(SNR      ) ']\n\n']);
 				fprintf(['\t&&&& med_delta = [' num2str(med_delta) ']\n\n']);
 			end;
-	
+
 			%----------------------------------------------------------------------
 			% Sort edges by difference of side window medians.
 			%----------------------------------------------------------------------
@@ -700,11 +710,11 @@ for chr = 1:num_chrs
 			delta_threshold = 0.25;
 			if (num_edges > test_edge)
 				edge = test_edge;
-			%	if (SNR_sorted(edge) < SNR_threshold)
-			%		position_sorted(edge) = [];
-			%	else
-			%		test_edge = test_edge + 1;
-			%	end;
+				%	if (SNR_sorted(edge) < SNR_threshold)
+				%		position_sorted(edge) = [];
+				%	else
+				%		test_edge = test_edge + 1;
+				%	end;
 				if (med_delta(edge) < delta_threshold)
 					position_sorted(edge) = [];
 				else
@@ -741,7 +751,7 @@ if (temp_figures == true)
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) ' :: ']);
 			for i = 1:length(dataShow{chr});
 				x_ = [i i i-1 i-1];
-				if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
+				CNVhistValue = dataShow{chr}(i);
 				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 				set(f,'linestyle','none');   
 			end;
@@ -774,7 +784,8 @@ fprintf(['\nSaving common_ChARM file for "' project '" : ' dataFile '$$$$\n']);
 i = 0;
 segmental_aneuploidy = [];
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
+	% avoid entering when there is no data at all
+	if (chr_in_use(chr) == 1 && chr < length(locs))
 	    position  = locs{chr};
 	    num_edges = length(position);
 	    data      = CNVplot2{chr};

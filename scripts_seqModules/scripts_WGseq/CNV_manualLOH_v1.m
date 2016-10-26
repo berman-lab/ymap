@@ -184,37 +184,6 @@ else
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
-
-				%% Clear any segments with a copy number of zero.
-				% add break representing left end of chromosome.
-				breakCount_new         = 0;
-				chr_breaks_new{chr}    = [];
-				chrCopyNum_new{chr}    = [];
-				chr_breaks_new{chr}(1) = 0.0;
-				for segment = 1:(length(chrCopyNum{chr}))
-					if (round(chrCopyNum{chr}(segment)) <= 0)
-						% segment has a zero copy number, so don't add right end break to list.
-					else
-						% segment has a non-zero copy number, so add right end break.
-						breakCount_new                        = breakCount_new + 1;
-						chr_breaks_new{chr}(breakCount_new+1) = chr_breaks{chr}(segment+1);
-						chrCopyNum_new{chr}(breakCount_new  ) = chrCopyNum{chr}(segment  );
-					end;
-				end;
-				% If the last segment has a zero copy number, trim off the last added edge.
-				if (round(chrCopyNum{chr}(length(chrCopyNum{chr}))) <= 0)
-					chr_breaks_new{chr}(breakCount_new+1) = [];
-					chrCopyNum_new{chr}(breakCount_new  ) = [];
-					breakCount_new = breakCount_new-1;
-				end;
-				% add break representing right end of chromosome.
-				breakCount_new = breakCount_new+1;
-				chr_breaks_new{chr}(breakCount_new+1) = 1.0;
-				% copy new lists to old.
-				chr_breaks{chr} = chr_breaks_new{chr};
-				chrCopyNum{chr} = [];
-				chrCopyNum{chr} = chrCopyNum_new{chr};
-
 				%% Merge any adjacent segments with the same copy number.
 				% add break representing left end of chromosome.
 				breakCount_new         = 1;
@@ -385,11 +354,7 @@ else
 			fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
 			for chr_bin = 1:length(CNVplot2{chr});
 				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-				if (CNVplot2{chr}(chr_bin) == 0)
-					CNVhistValue = 1;
-				else
-					CNVhistValue = CNVplot2{chr}(chr_bin);
-					end;
+				CNVhistValue = CNVplot2{chr}(chr_bin);
 				% The CNV-histogram values were normalized to a median value of 1.
 				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 				startY = maxY/2;
@@ -684,11 +649,7 @@ else
 				fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 				for chr_bin = 1:length(CNVplot2{chr});
 					x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-					if (CNVplot2{chr}(chr_bin) == 0)
-						CNVhistValue = 1;
-					else
-						CNVhistValue = CNVplot2{chr}(chr_bin);
-					end;
+					CNVhistValue = CNVplot2{chr}(chr_bin);
 					% The CNV-histogram values were normalized to a median value of 1.
 					% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 					startY = maxY/2;

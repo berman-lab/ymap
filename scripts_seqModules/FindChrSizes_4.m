@@ -30,7 +30,9 @@ for usedChr = 1:num_chrs
 		fprintf(['chr' num2str(usedChr) ' : ' num2str(length(chr_breaks{usedChr})) '\n']);
 		for segment = 1:length(chr_breaks{usedChr})-1
 			smoothed = [];
+			smoothed2 = [];
 			segment_CGHdata = [];
+			segment_CGHdata2  = [];
 			% find set of CGH data for this segment of this chromosome.
 			for i = 1:length(CNVplot{usedChr})
 				% val = ploidy estimate adjusted copy number for each CGH probe.
@@ -49,10 +51,21 @@ for usedChr = 1:num_chrs
 			segment_CGHdata(segment_CGHdata==0) = [];
 			segment_CGHdata(length(segment_CGHdata)+1) = 0;   % endpoints added to ensure histogram bounds.
 			segment_CGHdata(length(segment_CGHdata)+1) = maxY;
+			% clearing 
 			segment_CGHdata(segment_CGHdata<0) = [];
 			segment_CGHdata(segment_CGHdata>maxY) = [];
 			histogram_width = 200;
 			smoothed        = smooth_gaussian(hist(segment_CGHdata,histogram_width),5,20);
+			
+			% make a smoothed version of just the endpoints used to ensure histogram bounds.
+			segment_CGHdata2(1) = 0;
+			segment_CGHdata2(2) = maxY;
+			smoothed2 = smooth_gaussian(hist(segment_CGHdata2,histogram_width),5,20);
+
+			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+			smoothed = smoothed - smoothed2;
+			smoothed = smoothed/max(smoothed);
+            
 			% find initial estimage of peak location from smoothed segment CGH data.
 			peakLocation = find(smoothed==max(smoothed));
 			% fit Gaussian to segment CGH data.
@@ -76,13 +89,23 @@ chrCopyNum_vector(chrCopyNum_vector == 0) = [];
 common_copyNum = mode(chrCopyNum_vector);
 for chr = 1:length(chrCopyNum)
 	for segment = 1:length(chrCopyNum{chr})
-		% rounds to 1 decimal place.
-		chrCopyNum2{chr}(segment) = round(chrCopyNum{chr}(segment)/common_copyNum*round(common_copyNum)*10)/10;
+		% avoid avoid dividing by Nan if common_copyNum is NaN (since the whole copy vector can be empty)
+		if (~isnan(common_copyNum))
+			% rounds to 1 decimal place.
+			chrCopyNum2{chr}(segment) = round(chrCopyNum{chr}(segment)/common_copyNum*round(common_copyNum)*10)/10;
+		else
+			chrCopyNum2{chr}(segment) = 0;
+		end;
 	end;
 end;
 chrCopyNum1  = chrCopyNum;
 chrCopyNum   = chrCopyNum2;
-ploidyAdjust = round(common_copyNum)/common_copyNum;
+% set ploidy adjust according to copy num, avoid dividing by Nan if common_copyNum is NaN (since the whole copy vector can be empty)
+if (~isnan(common_copyNum))
+    ploidyAdjust = round(common_copyNum)/common_copyNum;
+else
+    ploidyAdjust = Ploidy;
+end;
 
 end
 

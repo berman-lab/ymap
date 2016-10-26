@@ -190,8 +190,10 @@ data       = fopen(datafile, 'r');
 count      = 0;
 old_chr    = 0;
 gap_string = '';
+% reading the line before checking for end of file to avoid reading empty
+% file
+dataLine = fgetl(data);
 while not (feof(data))
-	dataLine = fgetl(data);
 	if (length(dataLine) > 0)
 		% process the loaded line into data channels.
 		SNP_chr_name   = sscanf(dataLine, '%s',1);
@@ -229,9 +231,10 @@ while not (feof(data))
 			old_chr          = chr_num;
 		end;
 	end;
+    % read next line
+	dataLine = fgetl(data);
 end;
 fclose(data);
-
 
 %%================================================================================================
 % Clean up data vectors.
@@ -323,14 +326,20 @@ for chr = 1:num_chrs
 			[imageX{chr},imageY{chr},imageC{chr}, imageD{chr}] = smoothhist2D_4_Xcorrected([dataX dataX 0 chr_length], [dataY2 (maxY-dataY2) 0 0], 0.5,[chr_length maxY],[chr_length maxY], dataX_CNVcorrection, 1,1);
 			all_data = [all_data imageD{chr}];
 		end;
-		chr_mean(chr) = mean(imageD{chr}(:));
+		if (length(dataX) > 0)
+		    chr_mean(chr) = mean(imageD{chr}(:));
+		else
+		    chr_mean(chr) = 0;
+		end;
 		fprintf(['\t|\t\tChr' num2str(chr) ' smoothhist2D average value = ' num2str(chr_mean) '\n']);
 	end;
 end;
 max_mean = max(chr_mean);
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
+	if (chr_in_use(chr) == 1 && chr_mean(chr) ~= 0)
 		chr_mean_scaler(chr) = max_mean/chr_mean(chr);
+	else
+		chr_mean_scaler(chr) = 0;
 	end;
 end;
 median_val = median(all_data(:));
@@ -512,7 +521,11 @@ for chr = 1:num_chrs
 
 			% linear : show allelic ratio data as 2D-smoothed scatter-plot.
 			fprintf('\t|\t\t\tDraw 2D smoothed histogram of allelic ratio data in linear figure.\n');
-			image(imageX{chr}, imageY{chr}, imageC{chr});
+			% display only if processing succeeded (variables will no be
+			% present if the data is zero)
+			if (exist('imageX') && exist('imageY') && exist('imageC'))
+				image(imageX{chr}, imageY{chr}, imageC{chr});
+			end;
 			% linear : end show allelic ratio data.
 
 			% linear : show centromere.
