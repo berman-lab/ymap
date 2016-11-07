@@ -196,15 +196,29 @@ dataLine = fgetl(data);
 while not (feof(data))
 	if (length(dataLine) > 0)
 		% process the loaded line into data channels.
-		SNP_chr_name   = sscanf(dataLine, '%s',1);
-		SNP_coordinate = sscanf(dataLine, '%s',2);   for i = 1:size(sscanf(dataLine,'%s',1),2);   SNP_coordinate(1) = [];   end;
-		SNP_reference  = sscanf(dataLine, '%s',3);   for i = 1:size(sscanf(dataLine,'%s',2),2);   SNP_reference(1)  = [];   end;
-		SNP_countA     = sscanf(dataLine, '%s',4);   for i = 1:size(sscanf(dataLine,'%s',3),2);   SNP_countA(1)     = [];   end;
-		SNP_countT     = sscanf(dataLine, '%s',5);   for i = 1:size(sscanf(dataLine,'%s',4),2);   SNP_countT(1)     = [];   end;
-		SNP_countG     = sscanf(dataLine, '%s',6);   for i = 1:size(sscanf(dataLine,'%s',5),2);   SNP_countG(1)     = [];   end;
-		SNP_countC     = sscanf(dataLine, '%s',7);   for i = 1:size(sscanf(dataLine,'%s',6),2);   SNP_countC(1)     = [];   end;
-		chr_num        = find(strcmp(SNP_chr_name, chr_name));
-		if (length(chr_num) > 0)
+		% if using hapmap no SNP reference is in the file so avoid reading
+		% it
+		if (useHapmap)
+		    lineVariables = textscan(dataLine, '%s %d %d %d %d %d');
+		    SNP_chr_name   = lineVariables{1}{1};
+		    SNP_coordinate = lineVariables{2};
+		    SNP_countA     = lineVariables{3};
+		    SNP_countT     = lineVariables{4};
+		    SNP_countG     = lineVariables{5};
+		    SNP_countC     = lineVariables{6};
+		else
+		    lineVariables = textscan(dataLine, '%s %d %s %d %d %d %d');
+		    SNP_chr_name   = lineVariables{1}{1};
+		    SNP_coordinate = lineVariables{2};
+		    SNP_reference  = lineVariables{3}{1};
+		    SNP_countA     = lineVariables{4};
+		    SNP_countT     = lineVariables{5};
+		    SNP_countG     = lineVariables{6};
+		    SNP_countC     = lineVariables{7};
+		end;
+		chr_num = find(strcmp(SNP_chr_name, chr_name));
+		% running if it's not a comment line and the chromosome is found
+		if (~strcmp(SNP_chr_name,'###') && length(find(strcmp(SNP_chr_name, chr_name))) > 0)
 			count = count+1;
 			if (old_chr ~= chr_num)
 				fprintf(['\n\t|\t' SNP_chr_name '\n\t|\t' gap_string]);
@@ -218,12 +232,7 @@ while not (feof(data))
 				count = 0;
 				gap_string = '';
 			end;
-			SNP_countA       = str2num(SNP_countA);
-			SNP_countT       = str2num(SNP_countT);
-			SNP_countG       = str2num(SNP_countG);
-			SNP_countC       = str2num(SNP_countC);
 			count_vector     = [SNP_countA SNP_countT SNP_countG SNP_countC];
-			SNP_coordinate   = str2num(SNP_coordinate);
 			chr_lines_analyzed(chr_num) = chr_lines_analyzed(chr_num)+1;
 			chr_SNP_data_positions{chr_num}(chr_lines_analyzed(chr_num)) = SNP_coordinate;
 			chr_SNP_data_ratios   {chr_num}(chr_lines_analyzed(chr_num)) = max(count_vector)/sum(count_vector);
