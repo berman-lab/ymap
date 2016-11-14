@@ -216,11 +216,12 @@ while not (feof(data))
 		    SNP_countG     = lineVariables{6};
 		    SNP_countC     = lineVariables{7};
 		end;
-		chr_num = find(strcmp(SNP_chr_name, chr_name));
-		% running if it's not a comment line and the chromosome is found
-		if (~strcmp(SNP_chr_name,'###') && length(find(strcmp(SNP_chr_name, chr_name))) > 0)
+		chr_num = strcmp(SNP_chr_name, chr_name);
+		% running only if chromsome was found meaning at least 1 cell is not zero (inheritnley igonres ###
+		% lines that are used for comments)
+		if (any(chr_num) > 0)
 			count = count+1;
-			if (old_chr ~= chr_num)
+			if (~isequal(old_chr,chr_num))
 				fprintf(['\n\t|\t' SNP_chr_name '\n\t|\t' gap_string]);
 			end;
 			if (mod(count,300) == 0)
