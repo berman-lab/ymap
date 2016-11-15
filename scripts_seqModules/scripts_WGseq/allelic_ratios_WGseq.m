@@ -352,7 +352,7 @@ max_val    = max(all_data(:));
 %% Generate chromosome figures.
 fprintf('\t|\tGenerate final chromosome figures.\n');
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
+	if (chr_in_use(chr) == 1 && chr_size(chr) > 0)
 	    figure(fig);
 
 	    % make standard chr cartoons.

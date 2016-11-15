@@ -128,27 +128,44 @@
 
 	// Process FASTA file for chromosome count, names, and lengths.
 	fwrite($logOutput, "\tReading chromosome count, names, and lengths from FASTA.\n");
-	$file_lines  = file($file_path);
-	$num_lines   = sizeof($file_lines);
 	$chr_count   = 0;
 	$chr_names   = array();
-	$chr_lengths = array();
-	for ($i = 0; $i < $num_lines; $i += 1) {
-		if ($file_lines[$i][0] == '>') {
-			// chromosome name is the header string (starting with ">"), after trimming trailing whitespace characters.
-			$line_parts = explode(" ",$file_lines[$i]);
-			$chr_name   = str_replace(array("\r","\n"),"",$line_parts[0]);
-			$chr_name   = substr($chr_name,1,strlen($chr_name)-1);
-			array_push($chr_names, $chr_name);
-			$chr_count  += 1;
-		} else {
-			// chromosome length is determined by the length of sequence strings.
-			$chr_length = strlen($file_lines[$i]);
-			array_push($chr_lengths, $chr_length);
+	$chr_lengths = array();	
+	$chr_length = 0;
+	$fileHandle = fopen($file_path, "r") or die("Couldn't open fasta file after first reformat");
+	$firstLine = true;	
+	if ($fileHandle) {
+		while (!feof($fileHandle)) {
+			$buffer = fgets($fileHandle, 4096);
+			if ($buffer[0] == '>') {
+				if ($chr_length != 0) 
+					fwrite($logOutput, "\t" . 'finished processing chromosome ' . $chr_name . ' length: ' . $chr_length . PHP_EOL);
+				// chromosome name is the header string (starting with ">"), after trimming trailing whitespace characters.				
+				$line_parts = explode(" ",$buffer);
+				$chr_name   = str_replace(array("\r","\n"),"",$line_parts[0]);
+				$chr_name   = substr($chr_name,1,strlen($chr_name)-1);
+				array_push($chr_names, $chr_name);
+				$chr_count  += 1;
+				// pushing chromosome length only if it's not the first line to avoid pushing 0
+				if ($firstLine == false) {
+					// pushing latest chromosome length and reseting count
+					array_push($chr_lengths, $chr_length);
+					$chr_length = 0;
+				} 
+				else
+					$firstLine = false;		
+			}
+			else
+				$chr_length += strlen($buffer);
 		}
-	}
-	unset($file_lines);
-	unset($num_lines);
+		// adding last chr_length, pushing zero if it doesn't exist
+		if ($chr_length > 0)
+		{
+			array_push($chr_lengths, $chr_length);
+			fwrite($logOutput, "\t" . 'finished processing chromosome ' . $chr_name . ' length: ' . $chr_length . PHP_EOL);
+		}
+		fclose($handle);
+	}	
 	unset($line);
 	unset($chr_length);
 	unset($line_parts);
