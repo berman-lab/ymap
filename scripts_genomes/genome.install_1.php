@@ -7,6 +7,24 @@
 	<style type="text/css">
 		body {font-family: arial;}
 	</style>
+	<script>	
+		// validating that the number of checked box is up to 50
+		function validateChromSelectForm() {
+			// getting the checkboxes
+			var checkBoxes = document.getElementsByClassName("draw");
+			var i = 0; // loop variable
+			var count = 0; // will count the number of checked checkboxes
+			for (i = 0; i < checkBoxes.length; i++) {
+				if (checkBoxes[i].checked) {
+					count += 1;				
+				}
+			}
+			if (count > 50) {
+				alert("Up to 50 chromosomes can be chosen");
+				return false;
+			}
+		}
+	</script>
 <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 <title>Install genome into pipeline.</title>
 </HEAD>
@@ -206,8 +224,9 @@
 	}
 ?>">
 
-<font color="red" size="2">Fill in genome details:</font>
-	<form action="genome.install_2.php" method="post">
+<font color="red" size="2">Fill in genome details:</font><br>
+<font color="black" size="2">Please select the chromosomes to be drawn (up to 50 chromosomes can be selected)<br>The 50 longest chromosomes are selected automatically</font>
+	<form name="chromSelect" action="genome.install_2.php" onsubmit="return validateChromSelectForm()" method="post">
 		<table border="0">
 		<tr>
 			<th rowspan="2"><font size="2">Use</font></th>
@@ -215,21 +234,48 @@
 			<th rowspan="2"><font size="2">Short</font></th>
 			<th colspan="2"><font size="2">Centromere</font></th>
 			<th rowspan="2"><font size="2">rDNA</font></th>
+			<th rowspan="2"><font size="2">Size(BP)</font></th>
 		</tr>
 		<tr>
 			<th><font size="2">start bp</font></th>
 			<th><font size="2">end bp</font></th>
 		</tr>
 <?php
+			// if the chr_count is above 50 sorting and getting the size of the 51 chromosome to use as a reference whether to check or uncheck chromosomes
+			if ($chr_count > 51) {
+				// creating temp array
+				$chr_lengthsTemp = $chr_lengths;
+				// sorting		
+				rsort($chr_lengthsTemp);
+				// getting reference value
+				$lowestSize = $chr_lengthsTemp[49];
+				// clearing the copied array
+				unset($chr_lengthsTemp);
+				$countUsed = 50; // will decrease for each checked chromosome
+			}
 			for ($chr=0; $chr<$chr_count; $chr+=1) {
 				$chrID = $chr+1;
 				echo "\t\t<tr>\n";
-				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" name=\"draw_{$chrID}\" checked></td>\n";
+				// checking all if number of chromsomes is less or equal to 50
+				if ($chr_count < 51) {
+					echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" checked></td>\n";
+				}
+				else {
+					if ($chr_lengths[$chr] >= $lowestSize && $countUsed >= 1) {
+						echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" checked></td>\n";
+						// reduce the count of used to avoid checking more then 50 if multiple have the same size
+						$countUsed -= 1;
+					}
+					else {
+						echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\"></td>\n";
+					}
+				}
 				echo "\t\t\t<td><font size='2'>{$chr_names[$chr]}</font></td>\n";
 				echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"></td>\n";
 				echo "\t\t\t<td><input type=\"text\"     name=\"cenStart_{$chrID}\" value=\"0\"           size=\"6\"></td>\n";
 				echo "\t\t\t<td><input type=\"text\"     name=\"cenEnd_{$chrID}\"   value=\"0\"           size=\"6\"></td>\n";
 				echo "\t\t\t<td align=\"middle\" ><input type=\"radio\"    name=\"rDNAchr\"      value=\"{$chrID}\"></td>\n";
+				echo "\t\t\t<td><font size='2'>{$chr_lengths[$chr]}</font></td>\n";
 				echo "\t\t</tr>\n";
 			}
 		?>
