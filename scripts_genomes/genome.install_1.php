@@ -117,15 +117,7 @@
 		process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
 		$fileName = $fasta_name;
 
-	// Reformat FASTA file from multiple lines per text block to single line.
-	fwrite($logOutput, "\tReformatting genome FASTA to single-line entries.\n");
-	$currentdir = getcwd();
-	fwrite($logOutput, "\tCurrDir     : '$currentdir'.\n");
 	$file_path  = "../users/".$user."/genomes/".$genome."/".$fileName;
-	fwrite($logOutput, "\tfile_path   : '$file_path'.\n");
-	$system_call_string = "sh ../scripts_seqModules/FASTA_reformat_1.sh ".$file_path;
-	exec($system_call_string, $result);
-
 	// Process FASTA file for chromosome count, names, and lengths.
 	fwrite($logOutput, "\tReading chromosome count, names, and lengths from FASTA.\n");
 	$chr_count   = 0;
@@ -138,8 +130,9 @@
 		while (!feof($fileHandle)) {
 			$buffer = fgets($fileHandle, 4096);
 			if ($buffer[0] == '>') {
-				if ($chr_length != 0) 
+				if ($chr_length != 0) {
 					fwrite($logOutput, "\t" . 'finished processing chromosome ' . $chr_name . ' length: ' . $chr_length . PHP_EOL);
+				}
 				// chromosome name is the header string (starting with ">"), after trimming trailing whitespace characters.				
 				$line_parts = explode(" ",$buffer);
 				$chr_name   = str_replace(array("\r","\n"),"",$line_parts[0]);
@@ -152,11 +145,21 @@
 					array_push($chr_lengths, $chr_length);
 					$chr_length = 0;
 				} 
-				else
-					$firstLine = false;		
+				else {
+					$firstLine = false;
+				}		
 			}
-			else
-				$chr_length += strlen($buffer);
+			else {
+				// checking if the buffer contains \n if yes avoid counting it 
+				if ($buffer[strlen($buffer) - 1] == PHP_EOL) {
+					$chr_length += strlen($buffer) - 1;
+				}
+				else {
+					$chr_length += strlen($buffer);
+				}
+				
+
+			}
 		}
 		// adding last chr_length, pushing zero if it doesn't exist
 		if ($chr_length > 0)
@@ -171,11 +174,6 @@
 	unset($line_parts);
 	unset($chr_name);
 	fwrite($logOutput, "\tnum chrs    : '$chr_count'.\n");
-
-	// Reformat FASTA file from multiple lines per text block to single line.
-	fwrite($logOutput, "\tReformatting genome FASTA to multi-line entries.\n");
-	$system_call_string = "sh ../scripts_seqModules/FASTA_reformat_2.sh ".$file_path;
-	exec($system_call_string,$result);
 
 	// Store variables of interest into $_SESSION.
 	fwrite($logOutput, "\tStoring PHP session variables.\n");
