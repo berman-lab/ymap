@@ -319,7 +319,7 @@ else
 	%-------------------------------------------------------------------------------------------
 	first_chr = true;
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1 && chr_size(chr) > 0)
+		if (chr_in_use(chr) == 1)
 			figure(fig);
 			% make standard chr cartoons.
 			left          = chr_posX(chr);
