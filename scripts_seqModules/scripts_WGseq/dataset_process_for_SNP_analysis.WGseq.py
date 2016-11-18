@@ -179,8 +179,6 @@ for line in figureDefinitionData:
 figureDefinitionFile.close()
 # Pre-allocate chrName_array
 chrName = []
-for x in range(0, chrName_maxcount+10):
-	chrName.append([])
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
 # Gather name strings for chromosomes, in order.
@@ -203,7 +201,7 @@ for line in figureDefinitionData:
 		chrNames.append(chr_name);
 		chr_nameShort                  = chr_label
 		chrShorts.append(chr_nameShort);
-		chrName[chrCounter] = chr_name
+		chrName.append(chr_name)
 		with open(logName, "a") as myfile:
 			myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
 		chrCounter += 1
