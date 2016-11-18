@@ -36,19 +36,24 @@ while True:
             Popen([samtools, "mpileup",
                    "-f", fasta,
                    "-r", next_chrom, bam],
-                  stdout=subprocess.PIPE)
+                  stdout=subprocess.PIPE,
+                  close_fds=True)
         # As Ymap ignores quality scores, we throw out the last column.
+        tmp_pileup_file = open(temp_pileup_files[chroms.index(next_chrom)], 'w')
         awk = \
             Popen(["awk", '{print $1 " " $2 " " $3 " " $4 " " $5}'],
                   stdin=pileup.stdout,
-                  stdout=open(temp_pileup_files[chroms.index(next_chrom)], 'w'))
-        running_chroms[next_chrom] = (pileup, awk)
+                  stdout=tmp_pileup_file,
+                  close_fds=True)
+        running_chroms[next_chrom] = (pileup, awk, tmp_pileup_file)
 
     # Wait for a little and check if any pileups finished:
     time.sleep(SLEEP)
-    for chrom, (pileup, awk) in list(running_chroms.items()):
+    for chrom, (pileup, awk, tmp_file) in list(running_chroms.items()):
         if pileup.poll() is None or awk.poll() is None:
             continue
+        pileup.stdout.close()
+        tmp_file.close()
         del running_chroms[chrom]
 
     # Have we finished running all pileups?
