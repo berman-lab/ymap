@@ -214,8 +214,9 @@
 	$_SESSION['genome_'.$key]      = $genome;
 	$_SESSION['fileName_'.$key]    = $fileName;
 	$_SESSION['chr_count_'.$key]   = $chr_count;
-	$_SESSION['chr_names_'.$key]   = $chr_names;
-	$_SESSION['chr_lengths_'.$key] = $chr_lengths;
+	// saving all chr details in files to avoid overloading $_SESSION
+	file_put_contents("../users/".$user."/genomes/".$genome."/chr_names.json",json_encode($chr_names));
+	file_put_contents("../users/".$user."/genomes/".$genome."/chr_lengths.json",json_encode($chr_lengths));
 
 //// Debugging output of all variables.
 //	print_r($_SESSION);
@@ -240,23 +241,27 @@
 	}
 ?>">
 
-<font color="red" size="2">Fill in genome details:</font><br>
-<?php if ($chr_count > 50) { ?><font color="black" size="2">Ymap can only display up to 50 scaffolds.<br>The longest 50 have been automatically selected, though you can change the selection</font><?php } ?>
-	<form name="chromSelect" action="genome.install_2.php" method="post">
-		<table border="0">
-		<tr>
-			<th rowspan="2"><font size="2">Use</font></th>
-			<th rowspan="2"><font size="2">FASTA entry name</font></th>
-			<th rowspan="2"><font size="2">Short</font></th>
-			<th colspan="2"><font size="2">Centromere</font></th>
-			<th rowspan="2"><font size="2">rDNA</font></th>
-			<th rowspan="2"><font size="2">Size(BP)</font></th>
-		</tr>
-		<tr>
-			<th><font size="2">start bp</font></th>
-			<th><font size="2">end bp</font></th>
-		</tr>
-<?php
+
+	<?php if ($chr_count < 900) {  
+			echo "<font color=\"red\" size=\"2\">Fill in genome details:</font><br>";
+			if ($chr_count > 50) { 
+				echo "<font color=\"black\" size=\"2\">Ymap can only display up to 50 scaffolds.<br>The longest 50 have been automatically selected, though you can change the selection</font>";
+			}
+			echo "<form name=\"chromSelect\" action=\"genome.install_2.php\" method=\"post\">";
+				echo "<table border=\"0\">";
+				echo "<tr>";
+					echo "<th rowspan=\"2\"><font size=\"2\">Use</font></th>";
+					echo "<th rowspan=\"2\"><font size=\"2\">FASTA entry name</font></th>";
+					echo "<th rowspan=\"2\"><font size=\"2\">Short</font></th>";
+					echo "<th colspan=\"2\"><font size=\"2\">Centromere</font></th>";
+					echo "<th rowspan=\"2\"><font size=\"2\">rDNA</font></th>";
+					echo "<th rowspan=\"2\"><font size=\"2\">Size(BP)</font></th>";
+				echo "</tr>";
+				echo "<tr>";
+					echo "<th><font size=\"2\">start bp</font></th>";
+					echo "<th><font size=\"2\">end bp</font></th>";
+				echo "</tr>";
+
 			// if the chr_count is above 50 sorting and getting the size of the 50 chromosome to use as a reference whether to check or uncheck chromosomes
 			if ($chr_count > 50) {
 				$chr_lengthsTemp = $chr_lengths;		
@@ -288,26 +293,28 @@
 						echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" onchange=\"chromosomCheck()\" name=\"draw_{$chrID}\" disabled></td>\n";
 					}
 				}
-				echo "\t\t\t<td><font size='2'>{$chr_names[$chr]}</font></td>\n";
+				echo "\t\t\t<td><font size=\"2\">{$chr_names[$chr]}</font></td>\n";
 				echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"></td>\n";
 				echo "\t\t\t<td><input type=\"text\"     name=\"cenStart_{$chrID}\" value=\"0\"           size=\"6\"></td>\n";
 				echo "\t\t\t<td><input type=\"text\"     name=\"cenEnd_{$chrID}\"   value=\"0\"           size=\"6\"></td>\n";
 				echo "\t\t\t<td align=\"middle\" ><input type=\"radio\"    name=\"rDNAchr\"      value=\"{$chrID}\"></td>\n";
-				echo "\t\t\t<td><font size='2'>{$chr_lengths[$chr]}</font></td>\n";
+				echo "\t\t\t<td><font size=\"2\">{$chr_lengths[$chr]}</font></td>\n";
 				echo "\t\t</tr>\n";
 			}
-		?>
-		</table><br>
-		<font size="2">
-		Ploidy = <input type="text" name="ploidy" value="2.0" size="6"><br>
-		rDNA (start = <input type="text" name="rDNAstart" value="0" size="6">; end = <input type="text" name="rDNAend" value="0" size="6">)<br>
-		Futher annotations to add to the genome? <input type="text" name="annotation_count" value="0" size="6"><br>
-		Select <input type="checkbox" name="expression_regions"> if a tab-delimited-text file listing ORF coordinates is available.<br>
-		</font>
-		<br>
-		<input type="submit" value="Save genome details...">
-		<input type="hidden" id="key" name="key" value="<?php echo $key; ?>">
-	</form>
+		
+			echo "</table><br>";
+			echo "<font size=\"2\">";
+			echo "Ploidy = <input type=\"text\" name=\"ploidy\" value=\"2.0\" size=\"6\"><br>";
+			echo "rDNA (start = <input type=\"text\" name=\"rDNAstart\" value=\"0\" size=\"6\">; end = <input type=\"text\" name=\"rDNAend\" value=\"0\" size=\"6\">)<br>";
+			echo "Futher annotations to add to the genome? <input type=\"text\" name=\"annotation_count\" value=\"0\" size=\"6\"><br>";
+			echo "Select <input type=\"checkbox\" name=\"expression_regions\"> if a tab-delimited-text file listing ORF coordinates is available.<br>";
+			echo "</font>";
+			echo "<br>";
+			echo "<input type=\"submit\" value=\"Save genome details...\">";
+			echo "<input type=\"hidden\" id=\"key\" name=\"key\" value=\"".  $key . "\">";
+		echo "</form>"; }
+	    else { echo "<font color=\"red\" size=\"2\">Sorry, this genome has to many scaffolds (".$chr_count."), Ymap can handle up to 900 scaffolds</font>"; } ?>
+
 </BODY>
 </HTML>
 <?php
