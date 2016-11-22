@@ -184,15 +184,8 @@
 				}		
 			}
 			else {
-				// checking if the buffer contains \n if yes avoid counting it 
-				if (strstr($buffer, PHP_EOL)) {
-					$chr_length += strlen($buffer) - 1;
-				}
-				else {
-					$chr_length += strlen($buffer);
-				}
-				
-
+				// adding char count without line end or whitespaces at start
+				$chr_length += strlen(trim($buffer));	
 			}
 		}
 		// adding last chr_length, pushing zero if it doesn't exist
@@ -240,80 +233,90 @@
 		echo "; parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
 	}
 ?>">
+<?php   
+	echo "<font color=\"red\" size=\"2\">Fill in genome details:</font><br>";
+	if ($chr_count > 50 && $chr_count <= 300) { 
+		echo "<font color=\"black\" size=\"2\">Ymap can only display up to 50 scaffolds.<br>The longest 50 have been automatically selected, though you can change the selection.</font>";
+	}
+	else if ($chr_count > 300) {
+		echo "<font color=\"black\" size=\"2\">Ymap can only work with up to 300 scaffolds, and visualize only up to 50. The reference you uploaded had " . $chr_count ." scaffolds. 						The longest 300 are available for choosing and the longest 50 have been automatically selected, though you can change the selection in the form below.</font>";
+	}
+	echo "<form name=\"chromSelect\" action=\"genome.install_2.php\" method=\"post\">";	
+		echo "<table border=\"0\">";
+		echo "<tr>";
+			echo "<th rowspan=\"2\"><font size=\"2\">Use</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">FASTA entry name</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">Short</font></th>";
+			echo "<th colspan=\"2\"><font size=\"2\">Centromere</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">rDNA</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">Size(BP)</font></th>";
+		echo "</tr>";
+		echo "<tr>";
+			echo "<th><font size=\"2\">start bp</font></th>";
+			echo "<th><font size=\"2\">end bp</font></th>";
+		echo "</tr>";
 
+	// if the chr_count is above 50 sorting and getting the size of the 50 chromosome to use as a reference whether to check or uncheck chromosomes
+	// also getting the size of the 			
+	if ($chr_count > 50) {
+		$chr_lengthsTemp = $chr_lengths;		
+		rsort($chr_lengthsTemp);
+		// getting cutoff value for the 50 longest chromsomes
+		$lowestSize = $chr_lengthsTemp[49];
+		if ($chr_count > 300) {				
+			$lowestSizeDisplay = $chr_lengthsTemp[299];
+		}
+		// clearing the copied array
+		unset($chr_lengthsTemp);
+		$countUsed = 50; // will decrease for each checked chromosome
+	}
+	for ($chr=0; $chr<$chr_count; $chr+=1) {
+		$chrID = $chr+1;
+		// in case we have to many chromsomes dispaying only the 900 longest ones, so jumping lower size chromosomes			
+		if ($chr_count > 300 && $chr_lengths[$chr] < $lowestSizeDisplay) {
+			continue;				
+		}
+		echo "\t\t<tr>\n";
+		// disabling chromosomes with length of 0 from been checked
+		if ($chr_lengths[$chr] == 0) {
+			echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw_disabled\" name=\"draw_{$chrID}\" disabled></td>\n";
+		}
+		// checking all if number of chromsomes is less or equal to 50
+		else if ($chr_count <= 50) {
+			echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" checked></td>\n";
+		}
+		else {
+			// checking only the 50 longest
+			if ($chr_lengths[$chr] >= $lowestSize && $countUsed >= 1) {
+				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" onchange=\"chromosomCheck()\" checked></td>\n";
+				// reduce the count of used to avoid checking more then 50 if multiple have the same size
+				$countUsed -= 1;
+			}
+			else {
+				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" onchange=\"chromosomCheck()\" name=\"draw_{$chrID}\" disabled></td>\n";
+			}
+		}
+		echo "\t\t\t<td><font size=\"2\">{$chr_names[$chr]}</font></td>\n";
+		echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"></td>\n";
+		echo "\t\t\t<td><input type=\"text\"     name=\"cenStart_{$chrID}\" value=\"0\"           size=\"6\"></td>\n";
+		echo "\t\t\t<td><input type=\"text\"     name=\"cenEnd_{$chrID}\"   value=\"0\"           size=\"6\"></td>\n";
+		echo "\t\t\t<td align=\"middle\" ><input type=\"radio\"    name=\"rDNAchr\"      value=\"{$chrID}\"></td>\n";
+		echo "\t\t\t<td><font size=\"2\">{$chr_lengths[$chr]}</font></td>\n";
+		echo "\t\t</tr>\n";
+	}
 
-	<?php if ($chr_count < 900) {  
-			echo "<font color=\"red\" size=\"2\">Fill in genome details:</font><br>";
-			if ($chr_count > 50) { 
-				echo "<font color=\"black\" size=\"2\">Ymap can only display up to 50 scaffolds.<br>The longest 50 have been automatically selected, though you can change the selection</font>";
-			}
-			echo "<form name=\"chromSelect\" action=\"genome.install_2.php\" method=\"post\">";
-				echo "<table border=\"0\">";
-				echo "<tr>";
-					echo "<th rowspan=\"2\"><font size=\"2\">Use</font></th>";
-					echo "<th rowspan=\"2\"><font size=\"2\">FASTA entry name</font></th>";
-					echo "<th rowspan=\"2\"><font size=\"2\">Short</font></th>";
-					echo "<th colspan=\"2\"><font size=\"2\">Centromere</font></th>";
-					echo "<th rowspan=\"2\"><font size=\"2\">rDNA</font></th>";
-					echo "<th rowspan=\"2\"><font size=\"2\">Size(BP)</font></th>";
-				echo "</tr>";
-				echo "<tr>";
-					echo "<th><font size=\"2\">start bp</font></th>";
-					echo "<th><font size=\"2\">end bp</font></th>";
-				echo "</tr>";
-
-			// if the chr_count is above 50 sorting and getting the size of the 50 chromosome to use as a reference whether to check or uncheck chromosomes
-			if ($chr_count > 50) {
-				$chr_lengthsTemp = $chr_lengths;		
-				rsort($chr_lengthsTemp);
-				// getting cutoff value for the 50 longest chromsomes
-				$lowestSize = $chr_lengthsTemp[49];
-				// clearing the copied array
-				unset($chr_lengthsTemp);
-				$countUsed = 50; // will decrease for each checked chromosome
-			}
-			for ($chr=0; $chr<$chr_count; $chr+=1) {
-				$chrID = $chr+1;
-				echo "\t\t<tr>\n";
-				// disabling chromosomes with length of 0 from been checked
-				if ($chr_lengths[$chr] == 0) {
-					echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" disabled></td>\n";
-				}
-				// checking all if number of chromsomes is less or equal to 50
-				else if ($chr_count <= 50) {
-					echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" checked></td>\n";
-				}
-				else {
-					if ($chr_lengths[$chr] >= $lowestSize && $countUsed >= 1) {
-						echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" onchange=\"chromosomCheck()\" checked></td>\n";
-						// reduce the count of used to avoid checking more then 50 if multiple have the same size
-						$countUsed -= 1;
-					}
-					else {
-						echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" onchange=\"chromosomCheck()\" name=\"draw_{$chrID}\" disabled></td>\n";
-					}
-				}
-				echo "\t\t\t<td><font size=\"2\">{$chr_names[$chr]}</font></td>\n";
-				echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"></td>\n";
-				echo "\t\t\t<td><input type=\"text\"     name=\"cenStart_{$chrID}\" value=\"0\"           size=\"6\"></td>\n";
-				echo "\t\t\t<td><input type=\"text\"     name=\"cenEnd_{$chrID}\"   value=\"0\"           size=\"6\"></td>\n";
-				echo "\t\t\t<td align=\"middle\" ><input type=\"radio\"    name=\"rDNAchr\"      value=\"{$chrID}\"></td>\n";
-				echo "\t\t\t<td><font size=\"2\">{$chr_lengths[$chr]}</font></td>\n";
-				echo "\t\t</tr>\n";
-			}
-		
-			echo "</table><br>";
-			echo "<font size=\"2\">";
-			echo "Ploidy = <input type=\"text\" name=\"ploidy\" value=\"2.0\" size=\"6\"><br>";
-			echo "rDNA (start = <input type=\"text\" name=\"rDNAstart\" value=\"0\" size=\"6\">; end = <input type=\"text\" name=\"rDNAend\" value=\"0\" size=\"6\">)<br>";
-			echo "Futher annotations to add to the genome? <input type=\"text\" name=\"annotation_count\" value=\"0\" size=\"6\"><br>";
-			echo "Select <input type=\"checkbox\" name=\"expression_regions\"> if a tab-delimited-text file listing ORF coordinates is available.<br>";
-			echo "</font>";
-			echo "<br>";
-			echo "<input type=\"submit\" value=\"Save genome details...\">";
-			echo "<input type=\"hidden\" id=\"key\" name=\"key\" value=\"".  $key . "\">";
-		echo "</form>"; }
-	    else { echo "<font color=\"red\" size=\"2\">Sorry, this genome has to many scaffolds (".$chr_count."), Ymap can handle up to 900 scaffolds</font>"; } ?>
+	echo "</table><br>";
+	echo "<font size=\"2\">";
+	echo "Ploidy = <input type=\"text\" name=\"ploidy\" value=\"2.0\" size=\"6\"><br>";
+	echo "rDNA (start = <input type=\"text\" name=\"rDNAstart\" value=\"0\" size=\"6\">; end = <input type=\"text\" name=\"rDNAend\" value=\"0\" size=\"6\">)<br>";
+	echo "Futher annotations to add to the genome? <input type=\"text\" name=\"annotation_count\" value=\"0\" size=\"6\"><br>";
+	echo "Select <input type=\"checkbox\" name=\"expression_regions\"> if a tab-delimited-text file listing ORF coordinates is available.<br>";
+	echo "</font>";
+	echo "<br>";
+	echo "<input type=\"submit\" value=\"Save genome details...\">";
+	echo "<input type=\"hidden\" id=\"key\" name=\"key\" value=\"".  $key . "\">";
+	echo "</form>"; 
+?>
 
 </BODY>
 </HTML>

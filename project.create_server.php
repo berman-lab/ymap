@@ -16,6 +16,16 @@
 	$ploidyBase             = filter_input(INPUT_POST, "ploidyBase",               FILTER_SANITIZE_STRING);
 	$dataType               = filter_input(INPUT_POST, "dataType",                 FILTER_SANITIZE_STRING);
 	$showAnnotations        = filter_input(INPUT_POST, "showAnnotations",          FILTER_SANITIZE_STRING);
+	$originalNames = filter_input(INPUT_POST, "keepOriginal", FILTER_SANITIZE_STRING)  == "on";
+	
+	// creating an empty file to indicate that this data set will use the original chromosome names as in the reference
+	if ($originalNames) {
+		$fileName = "users/".$user."/projects/".$projectName."/original.txt";
+		$file     = fopen($fileName, 'w');
+		fclose($file);
+		chmod($fileName,0644);
+	}	
+	
 	if ($dataType != "0") {		// we're dealing with ddRADseq, WGseq, or RNAseq.
 		$readType           = filter_input(INPUT_POST, "readType",                 FILTER_SANITIZE_STRING);
 		$genome             = filter_input(INPUT_POST, "genome",                   FILTER_SANITIZE_STRING);
