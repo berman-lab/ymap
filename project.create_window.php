@@ -216,9 +216,7 @@
 					</div>
 				</td><td>
 				Corrections applied.
-				</td></tr>
-				<tr bgcolor="#CCCCFF"><td colspan="2"><input type="checkbox" name="keepOriginal" value="True" checked>Keep scaffolds names up to 10 char length from the reference file (if deselected or scaffold name is longer then 10 chars,<br>&nbsp;&nbsp;&nbsp;&nbsp;Ymap will assign a running number to each scaffold shorter scaffold names are easier to visualize)</td></tr>
-				</table><br>
+				</td></tr></table><br>
 				<input type="submit" value="Create New Dataset">
 			</form>
 

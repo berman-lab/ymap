@@ -74,12 +74,6 @@ end;
 fprintf('\t|\tLoading dataset information.\n');
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [Aneuploidy]                                                          = Load_dataset_information(projectDir);
-originalNamePath = [projectDir 'original.txt'];
-if (exist(originalNamePath,'file'))
-	useOriginal = true;
-else 
-	useOriginal = false;
-end;
 
 num_chrs = length(chr_sizes);
 for chrID = 1:length(chr_sizes)
@@ -116,11 +110,7 @@ for figureDetailID = 1:length(figure_details)
 		end;
 	else
 		chr_id    (figure_details(figureDetailID).chr) = figure_details(figureDetailID).chr;
-		if (useOriginal && length(figure_details(figureDetailID).name) < 10)
-		    chr_label {figure_details(figureDetailID).chr} = figure_details(figureDetailID).name;
-		else
-		    chr_label {figure_details(figureDetailID).chr} = figure_details(figureDetailID).label;
-		end;
+		chr_label {figure_details(figureDetailID).chr} = figure_details(figureDetailID).label;
 		chr_name  {figure_details(figureDetailID).chr} = figure_details(figureDetailID).name;
 		chr_posX  (figure_details(figureDetailID).chr) = figure_details(figureDetailID).posX;
 		chr_posY  (figure_details(figureDetailID).chr) = figure_details(figureDetailID).posY;
