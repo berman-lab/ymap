@@ -18,7 +18,7 @@ fprintf('num_chrs_used - %d\n',num_chrs_used);
 max_chrom_label_size = 1;
 for chr = 1:num_chrs
     if (chr_in_use(chr) == 1)
-        if (numel(chr_label{chr}) > numel(max_chrom_label_size))
+        if (numel(chr_label{chr}) > max_chrom_label_size)
             max_chrom_label_size = numel(chr_label{chr});
         end;
     end;

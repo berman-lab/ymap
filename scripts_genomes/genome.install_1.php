@@ -235,6 +235,7 @@
 ?>">
 <?php   
 	echo "<font color=\"red\" size=\"2\">Fill in genome details:</font><br>";
+	echo "<font color=\"black\" size=\"2\">Label can be up to 6 characters</font><br>";
 	if ($chr_count > 50 && $chr_count <= 300) { 
 		echo "<font color=\"black\" size=\"2\">Ymap can only display up to 50 scaffolds.<br>The longest 50 have been automatically selected, though you can change the selection.</font>";
 	}
@@ -246,7 +247,7 @@
 		echo "<tr>";
 			echo "<th rowspan=\"2\"><font size=\"2\">Use</font></th>";
 			echo "<th rowspan=\"2\"><font size=\"2\">FASTA entry name</font></th>";
-			echo "<th rowspan=\"2\"><font size=\"2\">Short</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">Label</font></th>";
 			echo "<th colspan=\"2\"><font size=\"2\">Centromere</font></th>";
 			echo "<th rowspan=\"2\"><font size=\"2\">rDNA</font></th>";
 			echo "<th rowspan=\"2\"><font size=\"2\">Size(BP)</font></th>";
@@ -297,7 +298,7 @@
 			}
 		}
 		echo "\t\t\t<td><font size=\"2\">{$chr_names[$chr]}</font></td>\n";
-		echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"></td>\n";
+		echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"maxlength=\"6\" ></td>\n";
 		echo "\t\t\t<td><input type=\"text\"     name=\"cenStart_{$chrID}\" value=\"0\"           size=\"6\"></td>\n";
 		echo "\t\t\t<td><input type=\"text\"     name=\"cenEnd_{$chrID}\"   value=\"0\"           size=\"6\"></td>\n";
 		echo "\t\t\t<td align=\"middle\" ><input type=\"radio\"    name=\"rDNAchr\"      value=\"{$chrID}\"></td>\n";
