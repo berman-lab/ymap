@@ -11,12 +11,16 @@
 		header('Location: user.login.php');
 	}
 
-	$bad_chars      = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/"," ","'",'"',"[","]","!");
-	$genomeName     = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING) ));
+	$bad_chars      = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$genomeName = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING)); 
+	// removing unwanted characters
+	$genomeNameTrimmed     = str_replace($bad_chars,"",$genomeName);
+	// changing spaces to underlines
+	$genomeNameTrimmed     = str_replace(" ","_",$genomeNameTrimmed);
 	$user           = $_SESSION['user'];
 	$dir1           = "users/".$user."/genomes";
-	$dir2           = "users/".$user."/genomes/".$genomeName;
-	$dir3           = "users/default/genomes/".$genomeName;
+	$dir2           = "users/".$user."/genomes/".$genomeNameTrimmed;
+	$dir3           = "users/default/genomes/".$genomeNameTrimmed;
 
 	// Deals with accidental deletion of genomes dir.
 	if (!file_exists($dir1)){
@@ -49,9 +53,9 @@
 
 		// Generate 'name.txt' file containing:
 		//      one line; name of genome.
-		$outputName   = "users/".$user."/genomes/".$genomeName."/name.txt";
+		$outputName   = "users/".$user."/genomes/".$genomeNameTrimmed."/name.txt";
 		$output       = fopen($outputName, 'w');
-		fwrite($output, str_replace("_"," ",$genomeName));
+		fwrite($output, $genomeName);
 		fclose($output);
 
 		$_SESSION['pending_install_genome_count'] += 1;

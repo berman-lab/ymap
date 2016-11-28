@@ -10,8 +10,12 @@
 	}
 
 	// Proces POST data.
-	$bad_chars              = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/"," ","'",'"',"[","]","!");
-	$projectName            = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING) )) ;
+	$bad_chars              = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$projectName = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING)); 
+	// removing unwanted characters
+	$projectNameTrimmed     = str_replace($bad_chars,"",$projectName);
+	// changing spaces to underlines
+	$projectNameTrimmed     = str_replace(" ","_",$projectNameTrimmed);	
 	$ploidy                 = filter_input(INPUT_POST, "ploidy",                   FILTER_SANITIZE_STRING);
 	$ploidyBase             = filter_input(INPUT_POST, "ploidyBase",               FILTER_SANITIZE_STRING);
 	$dataType               = filter_input(INPUT_POST, "dataType",                 FILTER_SANITIZE_STRING);
@@ -30,8 +34,8 @@
 
 	$user              = $_SESSION["user"];
 	$dir1              = "users/".$user."/projects";
-	$dir2              = "users/".$user."/projects/".$projectName;
-	$dir3              = "users/default/projects/".$projectName;
+	$dir2              = "users/".$user."/projects/".$projectNameTrimmed;
+	$dir3              = "users/default/projects/".$projectNameTrimmed;
 
 	// Deals with accidental deletion of projects dir.
 	if (!file_exists($dir1)){
@@ -64,15 +68,15 @@
 
 		// Generate 'name.txt' file containing:
 		//      one line; name of genome.
-		$outputName   = "users/".$user."/projects/".$projectName."/name.txt";
+		$outputName   = "users/".$user."/projects/".$projectNameTrimmed."/name.txt";
 		$output       = fopen($outputName, 'w');
-		fwrite($output, str_replace("_"," ",$projectName));
+		fwrite($output, $projectName);
 		fclose($output);
 
 		$_SESSION['pending_install_project_count'] += 1;
 
 		// Generate 'ploidy.txt' file.
-		$fileName = "users/".$user."/projects/".$projectName."/ploidy.txt";
+		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/ploidy.txt";
 		$file     = fopen($fileName, 'w');
 		if (is_numeric($ploidy)) {
 			fwrite($file, $ploidy."\n");
@@ -93,7 +97,7 @@
 		chmod($fileName,0644);
 
 		// Generate 'parent.txt' file.
-		$fileName = "users/".$user."/projects/".$projectName."/parent.txt";
+		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/parent.txt";
 		$file     = fopen($fileName, 'w');
 		if ($dataType == "0") {
 			fwrite($file, "none");
@@ -104,9 +108,9 @@
 		chmod($fileName,0644);
 
 		// Generate 'dataType.txt' and 'dataBiases.txt' files.
-		$fileName1 = "users/".$user."/projects/".$projectName."/dataType.txt";
+		$fileName1 = "users/".$user."/projects/".$projectNameTrimmed."/dataType.txt";
 		$file1     = fopen($fileName1, 'w');
-		$fileName2 = "users/".$user."/projects/".$projectName."/dataBiases.txt";
+		$fileName2 = "users/".$user."/projects/".$projectNameTrimmed."/dataBiases.txt";
 		$file2     = fopen($fileName2, 'w');
 		if ($dataType == "0") { // SnpCghArray
 			fwrite($file1, $dataType);
@@ -155,7 +159,7 @@
 
 		// Generate 'restrictionEnzymes.txt' file, only for ddRADseq projects.
 		if ($dataType == "2") { // ddRADseq
-			$fileName = "users/".$user."/projects/".$projectName."/restrictionEnzymes.txt";
+			$fileName = "users/".$user."/projects/".$projectNameTrimmed."/restrictionEnzymes.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $restrictionEnzymes);
 			fclose($file);
@@ -163,7 +167,7 @@
 		}
 
 		// Generate 'snowAnnotations.txt' file.
-		$fileName = "users/".$user."/projects/".$projectName."/showAnnotations.txt";
+		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/showAnnotations.txt";
 		$file     = fopen($fileName, 'w');
 		fwrite($file, $showAnnotations);
 		fclose($file);
@@ -172,7 +176,7 @@
 		// Generate 'genome.txt' file : containing genome used.
 		//	1st line : (String) genome name.
 		//	2nd line : (String) hapmap name.
-		$fileName = "users/".$user."/projects/".$projectName."/genome.txt";
+		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/genome.txt";
 		$file     = fopen($fileName, 'w');
 		if ($hapmap == "none") {
 			fwrite($file, $genome);
@@ -192,7 +196,7 @@
 		//    5. G
 		//    6. B
 		if (strlen($manualLOH) > 0) {
-			$fileName = "users/".$user."/projects/".$projectName."/manualLOH.txt";
+			$fileName = "users/".$user."/projects/".$projectNameTrimmed."/manualLOH.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $manualLOH);
 			fclose($file);

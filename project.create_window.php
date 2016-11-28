@@ -77,7 +77,9 @@
 						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
 							<?php
 							foreach ($genomeFolders as $key=>$genome) {
-								echo "\n\t\t\t\t\t<option value='".$genome."'>".$genome."</option>";
+								// reading name
+								$genomeNameString = file_get_contents("users/".$user."/genomes/".$genome."/name.txt");
+								echo "\n\t\t\t\t\t<option value='".$genome."'>".$genomeNameString."</option>";
 							}
 							?>
 						</select><br>
@@ -172,9 +174,16 @@
 							$dataType_string = $dataType_string[0];
 							fclose($handle2);
 							$parentName      = $folder;
+							// reading name according to the folder the parent exist
+							if (file_exists($folder."/name.txt")) {
+								$projectNameString = file_get_contents($folder."/name.txt");
+								$parentName      = str_replace($projectsDir1,"",$parentName);
+							} else {
+								$projectNameString = file_get_contents($folder."/name.txt");
+							}
 							$parentName      = str_replace($projectsDir1,"",$parentName);
 							$parentName      = str_replace($projectsDir2,"",$parentName);
-							echo ",['{$parentName}','{$genome_string}',{$dataType_string}]";
+							echo ",['{$parentName}','{$genome_string}',{$dataType_string}, '{$projectNameString}']";
 						}
 						?>];
 						</script>
@@ -271,7 +280,7 @@
 					var item = parentGenomeDatatype_entries[i];
 					if (selectedGenome == item[1] && selectedDatatype == item[2]) {
 						var el         = document.createElement("option");
-						el.textContent = item[0];
+						el.textContent = item[3];
 						el.value       = item[0];
 						select.appendChild(el);
 					}
