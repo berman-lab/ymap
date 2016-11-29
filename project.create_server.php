@@ -27,7 +27,7 @@
 		$hapmap             = filter_input(INPUT_POST, "selectHapmap",             FILTER_SANITIZE_STRING);
 		$parent             = filter_input(INPUT_POST, "selectParent",             FILTER_SANITIZE_STRING);
 		if (($parent == "none") || ($parent == "")) {
-			$parent         = $projectName;  // no parent is used, so all calculations use the current project name as the parent.
+			$parent         = $projectNameTrimmed;  // no parent is used, so all calculations use the current project name as the parent.
 		}
 	}
 	$manualLOH         = filter_input(INPUT_POST, "manualLOH",                    FILTER_SANITIZE_STRING);
