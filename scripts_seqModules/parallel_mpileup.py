@@ -17,16 +17,16 @@ SLEEP = 1
 # loading the relevant chromosomes from figure defenitions file
 chroms = []
 temp_pileup_files = []
-with open(genome_folder + "figure_definitions.txt", "r") as figure_definitions_file:
+with open(os.path.join(genome_folder, "figure_definitions.txt"), "r") as figure_definitions_file:
     reader = csv.reader(figure_definitions_file, delimiter='\t')
     next(reader, None) # skip header line
     for line in reader:
-    # the structure of line in the file:
-    #	# Chr	Use	Label	Name	posX	posY	width	height
-    # checking if Use equals 1  if yes adding chromosome name to list (equals original name in fasta
-        if (line[1] == "1"):
+        # the structure of line in the file:
+        #	# Chr	Use	Label	Name	posX	posY	width	height
+        # checking if Use equals 1  if yes adding chromosome name to list (equals original name in fasta
+        if line[1] == "1":
             chroms.append(line[3])
-            temp_pileup_files.append(os.path.join(analysis_folder,chroms[-1] + ".tmp.pileup"))
+            temp_pileup_files.append(os.path.join(analysis_folder, chroms[-1] + ".tmp.pileup"))
 
 # Start the pileups going:
 pending_chroms = list(chroms)

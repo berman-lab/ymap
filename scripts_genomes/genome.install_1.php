@@ -23,11 +23,12 @@
 
 		function chromosomCheck() { 
 			// getting the checkboxes
+			var MAX_CHROM_SELECTION = 50; // the limit of chromosomes that can be displayed
 			var checkBoxes = document.getElementsByClassName("draw");
 			var count = getCheckedNumber(checkBoxes);
-			var i = 0; // loop variable		
+			var i = 0; // loop variable	 	
 			// disable all unchecked boxes if we have reached limit			
-			if (count == 50) {
+			if (count == MAX_CHROM_SELECTION) {
 				for (i = 0; i < checkBoxes.length; i++) {
 					if (!checkBoxes[i].checked) {
 						checkBoxes[i].disabled = true;				
@@ -53,6 +54,13 @@
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$genome   = filter_input(INPUT_POST, "genome",   FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
+	
+	/*
+	 * The following constants stem from the fact that Ymap display up to 50 chromosomes and that php supports up to around 1000 variables that can be passed
+	 * between forms and in $_SESSION variables which limits the genome form to up to 300 entries
+	**/
+	$MAX_CHROM_SELECTION = 50; // the maximum number of chromosomes that can be chosen for drawing
+	$MAX_CHROM_POOL = 300;	   // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw
 
 //// Debugging
 // echo getcwd() . "\n";
@@ -236,11 +244,11 @@
 <?php   
 	echo "<font color=\"red\" size=\"2\">Fill in genome details:</font><br>";
 	echo "<font color=\"black\" size=\"2\">Label can be up to 6 characters</font><br>";
-	if ($chr_count > 50 && $chr_count <= 300) { 
-		echo "<font color=\"black\" size=\"2\">Ymap can only display up to 50 scaffolds.<br>The longest 50 have been automatically selected, though you can change the selection.</font>";
+	if ($chr_count > $MAX_CHROM_SELECTION && $chr_count <= $MAX_CHROM_POOL) { 
+		echo "<font color=\"black\" size=\"2\">Ymap can only display up to " . $MAX_CHROM_SELECTION . " scaffolds.<br>The longest " . $MAX_CHROM_SELECTION ." have been automatically selected, though you can change the selection.</font>";
 	}
-	else if ($chr_count > 300) {
-		echo "<font color=\"black\" size=\"2\">Ymap can only work with up to 300 scaffolds, and visualize only up to 50. The reference you uploaded had " . $chr_count ." scaffolds. 						The longest 300 are available for choosing and the longest 50 have been automatically selected, though you can change the selection in the form below.</font>";
+	else if ($chr_count > $MAX_CHROM_POOL) {
+		echo "<font color=\"black\" size=\"2\">Ymap can only work with up to " . $MAX_CHROM_SELECTION . " scaffolds, and visualize only up to ". $MAX_CHROM_SELECTION .". The reference you uploaded had " . $chr_count . " scaffolds. The longest " . $MAX_CHROM_POOL . " are available for choosing and the longest " . $MAX_CHROM_SELECTION . " have been automatically selected, though you can change the selection in the form below.</font>";
 	}
 	echo "<form name=\"chromSelect\" action=\"genome.install_2.php\" method=\"post\">";	
 		echo "<table border=\"0\">";
@@ -257,24 +265,23 @@
 			echo "<th><font size=\"2\">end bp</font></th>";
 		echo "</tr>";
 
-	// if the chr_count is above 50 sorting and getting the size of the 50 chromosome to use as a reference whether to check or uncheck chromosomes
+	// if the chr_count is above $MAX_CHROM_SELECTION sorting and getting the size of the $MAX_CHROM_SELECTION chromosome to use as a reference whether to check or uncheck chromosomes
 	// also getting the size of the 			
-	if ($chr_count > 50) {
+	if ($chr_count > $MAX_CHROM_SELECTION) {
 		$chr_lengthsTemp = $chr_lengths;		
 		rsort($chr_lengthsTemp);
-		// getting cutoff value for the 50 longest chromsomes
-		$lowestSize = $chr_lengthsTemp[49];
-		if ($chr_count > 300) {				
-			$lowestSizeDisplay = $chr_lengthsTemp[299];
+		// getting cutoff value for the $MAX_CHROM_SELECTION longest chromsomes
+		$lowestSize = $chr_lengthsTemp[$MAX_CHROM_SELECTION - 1];
+		if ($chr_count > $MAX_CHROM_POOL) {				
+			$lowestSizeDisplay = $chr_lengthsTemp[$MAX_CHROM_POOL - 1];
 		}
-		// clearing the copied array
 		unset($chr_lengthsTemp);
-		$countUsed = 50; // will decrease for each checked chromosome
+		$countUsed = $MAX_CHROM_SELECTION; // will decrease for each checked chromosome
 	}
 	for ($chr=0; $chr<$chr_count; $chr+=1) {
 		$chrID = $chr+1;
-		// in case we have to many chromsomes dispaying only the 900 longest ones, so jumping lower size chromosomes			
-		if ($chr_count > 300 && $chr_lengths[$chr] < $lowestSizeDisplay) {
+		// in case we have to many chromsomes dispaying only the $MAX_CHROM_SELECTION longest ones, so jumping lower size chromosomes			
+		if ($chr_count > $MAX_CHROM_POOL && $chr_lengths[$chr] < $lowestSizeDisplay) {
 			continue;				
 		}
 		echo "\t\t<tr>\n";
@@ -282,15 +289,14 @@
 		if ($chr_lengths[$chr] == 0) {
 			echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw_disabled\" name=\"draw_{$chrID}\" disabled></td>\n";
 		}
-		// checking all if number of chromsomes is less or equal to 50
-		else if ($chr_count <= 50) {
+		else if ($chr_count <= $MAX_CHROM_SELECTION) {
 			echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" checked></td>\n";
 		}
 		else {
-			// checking only the 50 longest
+			// checking only the $MAX_CHROM_SELECTION longest
 			if ($chr_lengths[$chr] >= $lowestSize && $countUsed >= 1) {
 				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" onchange=\"chromosomCheck()\" checked></td>\n";
-				// reduce the count of used to avoid checking more then 50 if multiple have the same size
+				// reduce the count of used to avoid checking more then $MAX_CHROM_SELECTION if multiple have the same size
 				$countUsed -= 1;
 			}
 			else {
