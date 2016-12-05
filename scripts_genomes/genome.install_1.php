@@ -1,5 +1,11 @@
 <?php
 	session_start();
+	/*
+	 * The following constants stem from the fact that Ymap display up to 50 chromosomes and that php supports up to around 1000 variables that can be passed
+	 * between forms and in $_SESSION variables which limits the genome form to up to 300 entries
+	**/
+	$MAX_CHROM_SELECTION = 50; // the maximum number of chromosomes that can be chosen for drawing
+	$MAX_CHROM_POOL = 300;	   // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -23,7 +29,7 @@
 
 		function chromosomCheck() { 
 			// getting the checkboxes
-			var MAX_CHROM_SELECTION = 50; // the limit of chromosomes that can be displayed
+			var MAX_CHROM_SELECTION = <?php echo $MAX_CHROM_SELECTION; ?>; // the limit of chromosomes that can be displayed
 			var checkBoxes = document.getElementsByClassName("draw");
 			var count = getCheckedNumber(checkBoxes);
 			var i = 0; // loop variable	 	
@@ -54,13 +60,6 @@
 	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$genome   = filter_input(INPUT_POST, "genome",   FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
-	
-	/*
-	 * The following constants stem from the fact that Ymap display up to 50 chromosomes and that php supports up to around 1000 variables that can be passed
-	 * between forms and in $_SESSION variables which limits the genome form to up to 300 entries
-	**/
-	$MAX_CHROM_SELECTION = 50; // the maximum number of chromosomes that can be chosen for drawing
-	$MAX_CHROM_POOL = 300;	   // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw
 
 //// Debugging
 // echo getcwd() . "\n";
