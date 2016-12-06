@@ -63,24 +63,23 @@
 						Tab-delimted TXT column format is described in 'About' tab of main page.
 					</div>
 				</td></tr><tr bgcolor="#CCFFCC"><td>
-					<?php
-					$genomesDir1       = "users/default/genomes/";
-					$genomesDir2       = "users/".$user."/genomes/";
-					$genomeFolders1    = array_diff(glob($genomesDir1."*"), array('..', '.'));
-					$genomeFolders2    = array_diff(glob($genomesDir2."*"), array('..', '.'));
-					foreach($genomeFolders1 as $key=>$folder) {   $genomeFolders1[$key] = str_replace($genomesDir1,"",$folder);   }
-					foreach($genomeFolders2 as $key=>$folder) {   $genomeFolders2[$key] = str_replace($genomesDir2,"",$folder);   }
-					$genomeFolders  = array_merge($genomeFolders1,$genomeFolders2);
-					sort($genomeFolders);   //sort alphabetical.
-					?>
 					<div id="hiddenFormSection3" style="display:none">
 						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
 							<?php
-							foreach ($genomeFolders as $key=>$genome) {
-								// reading name
-								$genomeNameString = file_get_contents("users/".$user."/genomes/".$genome."/name.txt");
-								echo "\n\t\t\t\t\t<option value='".$genome."'>".$genomeNameString."</option>";
-							}
+                                $genomesMap = array(); // A mapping of folder names to display names, sorted by folder names.
+                                foreach (array("default", $user) as $genomeUser) {
+                                    $genomesDir = "users/" . $genomeUser . "/genomes/";
+                                    foreach (array_diff(glob($genomesDir . "*"), array('..', '.')) as $genomeDir) {
+                                        $genomeDirName = str_replace($genomesDir, "", $genomeDir);
+                                        $genomeDisplayName = file_get_contents($genomeDir . "/name.txt");
+                                        $genomesMap[$genomeDirName] = $genomeDisplayName;
+                                    }
+                                }
+                                
+                                ksort($genomesMap);
+                                foreach ($genomesMap as $genomeDirName => $genomeDisplayName) {
+                                    echo "\n\t\t\t\t\t<option value='" . $genomeDirName . "'>" . $genomeDisplayName . "</option>";
+                                }
 							?>
 						</select><br>
 					</div>
