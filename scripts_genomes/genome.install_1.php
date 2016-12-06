@@ -1,5 +1,11 @@
 <?php
 	session_start();
+	/*
+	 * The following constants stem from the fact that Ymap display up to 50 chromosomes and that php supports up to around 1000 variables that can be passed
+	 * between forms and in $_SESSION variables which limits the genome form to up to 300 entries
+	**/
+	$MAX_CHROM_SELECTION = 50; // the maximum number of chromosomes that can be chosen for drawing
+	$MAX_CHROM_POOL = 300;	   // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -7,6 +13,41 @@
 	<style type="text/css">
 		body {font-family: arial;}
 	</style>
+	<script>	
+		// will return the number of checked draw check boxes
+		function getCheckedNumber(checkBoxes) {
+			// getting the checkboxes
+			var i = 0; // loop variable
+			var count = 0; // will count the number of checked checkboxes
+			for (i = 0; i < checkBoxes.length; i++) {
+				if (checkBoxes[i].checked) {
+					count += 1;				
+				}
+			}
+			return count;
+		}
+
+		function chromosomCheck() { 
+			// getting the checkboxes
+			var MAX_CHROM_SELECTION = <?php echo $MAX_CHROM_SELECTION; ?>; // the limit of chromosomes that can be displayed
+			var checkBoxes = document.getElementsByClassName("draw");
+			var count = getCheckedNumber(checkBoxes);
+			var i = 0; // loop variable	 	
+			// disable all unchecked boxes if we have reached limit			
+			if (count == MAX_CHROM_SELECTION) {
+				for (i = 0; i < checkBoxes.length; i++) {
+					if (!checkBoxes[i].checked) {
+						checkBoxes[i].disabled = true;				
+					}
+				}
+			}
+			else { // enable checkboxes
+				for (var i = 0; i < checkBoxes.length; i++) {
+					checkBoxes[i].disabled = false;				
+				}	
+			}
+		}
+	</script>
 <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 <title>Install genome into pipeline.</title>
 </HEAD>
@@ -117,56 +158,65 @@
 		process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
 		$fileName = $fasta_name;
 
-	// Reformat FASTA file from multiple lines per text block to single line.
-	fwrite($logOutput, "\tReformatting genome FASTA to single-line entries.\n");
-	$currentdir = getcwd();
-	fwrite($logOutput, "\tCurrDir     : '$currentdir'.\n");
 	$file_path  = "../users/".$user."/genomes/".$genome."/".$fileName;
-	fwrite($logOutput, "\tfile_path   : '$file_path'.\n");
-	$system_call_string = "sh ../scripts_seqModules/FASTA_reformat_1.sh ".$file_path;
-	exec($system_call_string, $result);
-
 	// Process FASTA file for chromosome count, names, and lengths.
 	fwrite($logOutput, "\tReading chromosome count, names, and lengths from FASTA.\n");
-	$file_lines  = file($file_path);
-	$num_lines   = sizeof($file_lines);
 	$chr_count   = 0;
 	$chr_names   = array();
-	$chr_lengths = array();
-	for ($i = 0; $i < $num_lines; $i += 1) {
-		if ($file_lines[$i][0] == '>') {
-			// chromosome name is the header string (starting with ">"), after trimming trailing whitespace characters.
-			$line_parts = explode(" ",$file_lines[$i]);
-			$chr_name   = str_replace(array("\r","\n"),"",$line_parts[0]);
-			$chr_name   = substr($chr_name,1,strlen($chr_name)-1);
-			array_push($chr_names, $chr_name);
-			$chr_count  += 1;
-		} else {
-			// chromosome length is determined by the length of sequence strings.
-			$chr_length = strlen($file_lines[$i]);
-			array_push($chr_lengths, $chr_length);
+	$chr_lengths = array();	
+	$chr_length = 0;
+	$fileHandle = fopen($file_path, "r") or die("Couldn't open fasta file after first reformat");
+	$firstLine = true;	
+	if ($fileHandle) {
+		while (!feof($fileHandle)) {
+			$buffer = fgets($fileHandle, 4096);
+			if ($buffer[0] == '>') {
+				if ($chr_length != 0) {
+					fwrite($logOutput, "\t" . 'finished processing chromosome ' . $chr_name . ' length: ' . $chr_length . PHP_EOL);
+				}
+				// chromosome name is the header string (starting with ">"), after trimming trailing whitespace characters.				
+				$line_parts = explode(" ",$buffer);
+				$chr_name   = str_replace(array("\r","\n"),"",$line_parts[0]);
+				$chr_name   = substr($chr_name,1,strlen($chr_name)-1);
+				array_push($chr_names, $chr_name);
+				$chr_count  += 1;
+				// pushing chromosome length only if it's not the first line to avoid pushing 0
+				if ($firstLine == false) {
+					// pushing latest chromosome length and reseting count
+					array_push($chr_lengths, $chr_length);
+					$chr_length = 0;
+				} 
+				else {
+					$firstLine = false;
+				}		
+			}
+			else {
+				// adding char count without line end or whitespaces at start
+				$chr_length += strlen(trim($buffer));	
+			}
 		}
+		// adding last chr_length, pushing zero if it doesn't exist
+		if ($chr_length > 0)
+		{
+			array_push($chr_lengths, $chr_length);
+			fwrite($logOutput, "\t" . 'finished processing chromosome ' . $chr_name . ' length: ' . $chr_length . PHP_EOL);
+		}
+		fclose($handle);
 	}
-	unset($file_lines);
-	unset($num_lines);
 	unset($line);
 	unset($chr_length);
 	unset($line_parts);
 	unset($chr_name);
 	fwrite($logOutput, "\tnum chrs    : '$chr_count'.\n");
 
-	// Reformat FASTA file from multiple lines per text block to single line.
-	fwrite($logOutput, "\tReformatting genome FASTA to multi-line entries.\n");
-	$system_call_string = "sh ../scripts_seqModules/FASTA_reformat_2.sh ".$file_path;
-	exec($system_call_string,$result);
-
 	// Store variables of interest into $_SESSION.
 	fwrite($logOutput, "\tStoring PHP session variables.\n");
 	$_SESSION['genome_'.$key]      = $genome;
 	$_SESSION['fileName_'.$key]    = $fileName;
 	$_SESSION['chr_count_'.$key]   = $chr_count;
-	$_SESSION['chr_names_'.$key]   = $chr_names;
-	$_SESSION['chr_lengths_'.$key] = $chr_lengths;
+	// saving all chr details in files to avoid overloading $_SESSION
+	file_put_contents("../users/".$user."/genomes/".$genome."/chr_names.json",json_encode($chr_names));
+	file_put_contents("../users/".$user."/genomes/".$genome."/chr_lengths.json",json_encode($chr_lengths));
 
 //// Debugging output of all variables.
 //	print_r($_SESSION);
@@ -190,45 +240,90 @@
 		echo "; parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
 	}
 ?>">
+<?php   
+	echo "<font color=\"red\" size=\"2\">Fill in genome details:</font><br>";
+	echo "<font color=\"black\" size=\"2\">Label can be up to 6 characters</font><br>";
+	if ($chr_count > $MAX_CHROM_SELECTION && $chr_count <= $MAX_CHROM_POOL) { 
+		echo "<font color=\"black\" size=\"2\">Ymap can only display up to " . $MAX_CHROM_SELECTION . " scaffolds.<br>The longest " . $MAX_CHROM_SELECTION ." have been automatically selected, though you can change the selection.</font>";
+	}
+	else if ($chr_count > $MAX_CHROM_POOL) {
+		echo "<font color=\"black\" size=\"2\">Ymap can only work with up to " . $MAX_CHROM_SELECTION . " scaffolds, and visualize only up to ". $MAX_CHROM_SELECTION .". The reference you uploaded had " . $chr_count . " scaffolds. The longest " . $MAX_CHROM_POOL . " are available for choosing and the longest " . $MAX_CHROM_SELECTION . " have been automatically selected, though you can change the selection in the form below.</font>";
+	}
+	echo "<form name=\"chromSelect\" action=\"genome.install_2.php\" method=\"post\">";	
+		echo "<table border=\"0\">";
+		echo "<tr>";
+			echo "<th rowspan=\"2\"><font size=\"2\">Use</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">FASTA entry name</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">Label</font></th>";
+			echo "<th colspan=\"2\"><font size=\"2\">Centromere</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">rDNA</font></th>";
+			echo "<th rowspan=\"2\"><font size=\"2\">Size(BP)</font></th>";
+		echo "</tr>";
+		echo "<tr>";
+			echo "<th><font size=\"2\">start bp</font></th>";
+			echo "<th><font size=\"2\">end bp</font></th>";
+		echo "</tr>";
 
-<font color="red" size="2">Fill in genome details:</font>
-	<form action="genome.install_2.php" method="post">
-		<table border="0">
-		<tr>
-			<th rowspan="2"><font size="2">Use</font></th>
-			<th rowspan="2"><font size="2">FASTA entry name</font></th>
-			<th rowspan="2"><font size="2">Short</font></th>
-			<th colspan="2"><font size="2">Centromere</font></th>
-			<th rowspan="2"><font size="2">rDNA</font></th>
-		</tr>
-		<tr>
-			<th><font size="2">start bp</font></th>
-			<th><font size="2">end bp</font></th>
-		</tr>
-<?php
-			for ($chr=0; $chr<$chr_count; $chr+=1) {
-				$chrID = $chr+1;
-				echo "\t\t<tr>\n";
-				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" name=\"draw_{$chrID}\" checked></td>\n";
-				echo "\t\t\t<td><font size='2'>{$chr_names[$chr]}</font></td>\n";
-				echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"></td>\n";
-				echo "\t\t\t<td><input type=\"text\"     name=\"cenStart_{$chrID}\" value=\"0\"           size=\"6\"></td>\n";
-				echo "\t\t\t<td><input type=\"text\"     name=\"cenEnd_{$chrID}\"   value=\"0\"           size=\"6\"></td>\n";
-				echo "\t\t\t<td align=\"middle\" ><input type=\"radio\"    name=\"rDNAchr\"      value=\"{$chrID}\"></td>\n";
-				echo "\t\t</tr>\n";
+	// if the chr_count is above $MAX_CHROM_SELECTION sorting and getting the size of the $MAX_CHROM_SELECTION chromosome to use as a reference whether to check or uncheck chromosomes
+	// also getting the size of the 			
+	if ($chr_count > $MAX_CHROM_SELECTION) {
+		$chr_lengthsTemp = $chr_lengths;		
+		rsort($chr_lengthsTemp);
+		// getting cutoff value for the $MAX_CHROM_SELECTION longest chromsomes
+		$lowestSize = $chr_lengthsTemp[$MAX_CHROM_SELECTION - 1];
+		if ($chr_count > $MAX_CHROM_POOL) {				
+			$lowestSizeDisplay = $chr_lengthsTemp[$MAX_CHROM_POOL - 1];
+		}
+		unset($chr_lengthsTemp);
+		$countUsed = $MAX_CHROM_SELECTION; // will decrease for each checked chromosome
+	}
+	for ($chr=0; $chr<$chr_count; $chr+=1) {
+		$chrID = $chr+1;
+		// in case we have to many chromsomes dispaying only the $MAX_CHROM_SELECTION longest ones, so jumping lower size chromosomes			
+		if ($chr_count > $MAX_CHROM_POOL && $chr_lengths[$chr] < $lowestSizeDisplay) {
+			continue;				
+		}
+		echo "\t\t<tr>\n";
+		// disabling chromosomes with length of 0 from been checked
+		if ($chr_lengths[$chr] == 0) {
+			echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw_disabled\" name=\"draw_{$chrID}\" disabled></td>\n";
+		}
+		else if ($chr_count <= $MAX_CHROM_SELECTION) {
+			echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" checked></td>\n";
+		}
+		else {
+			// checking only the $MAX_CHROM_SELECTION longest
+			if ($chr_lengths[$chr] >= $lowestSize && $countUsed >= 1) {
+				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" onchange=\"chromosomCheck()\" checked></td>\n";
+				// reduce the count of used to avoid checking more then $MAX_CHROM_SELECTION if multiple have the same size
+				$countUsed -= 1;
 			}
-		?>
-		</table><br>
-		<font size="2">
-		Ploidy = <input type="text" name="ploidy" value="2.0" size="6"><br>
-		rDNA (start = <input type="text" name="rDNAstart" value="0" size="6">; end = <input type="text" name="rDNAend" value="0" size="6">)<br>
-		Futher annotations to add to the genome? <input type="text" name="annotation_count" value="0" size="6"><br>
-		Select <input type="checkbox" name="expression_regions"> if a tab-delimited-text file listing ORF coordinates is available.<br>
-		</font>
-		<br>
-		<input type="submit" value="Save genome details...">
-		<input type="hidden" id="key" name="key" value="<?php echo $key; ?>">
-	</form>
+			else {
+				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" onchange=\"chromosomCheck()\" name=\"draw_{$chrID}\" disabled></td>\n";
+			}
+		}
+		echo "\t\t\t<td><font size=\"2\">{$chr_names[$chr]}</font></td>\n";
+		echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"maxlength=\"6\" ></td>\n";
+		echo "\t\t\t<td><input type=\"text\"     name=\"cenStart_{$chrID}\" value=\"0\"           size=\"6\"></td>\n";
+		echo "\t\t\t<td><input type=\"text\"     name=\"cenEnd_{$chrID}\"   value=\"0\"           size=\"6\"></td>\n";
+		echo "\t\t\t<td align=\"middle\" ><input type=\"radio\"    name=\"rDNAchr\"      value=\"{$chrID}\"></td>\n";
+		echo "\t\t\t<td><font size=\"2\">{$chr_lengths[$chr]}</font></td>\n";
+		echo "\t\t</tr>\n";
+	}
+
+	echo "</table><br>";
+	echo "<font size=\"2\">";
+	echo "Ploidy = <input type=\"text\" name=\"ploidy\" value=\"2.0\" size=\"6\"><br>";
+	echo "rDNA (start = <input type=\"text\" name=\"rDNAstart\" value=\"0\" size=\"6\">; end = <input type=\"text\" name=\"rDNAend\" value=\"0\" size=\"6\">)<br>";
+	echo "Futher annotations to add to the genome? <input type=\"text\" name=\"annotation_count\" value=\"0\" size=\"6\"><br>";
+	echo "Select <input type=\"checkbox\" name=\"expression_regions\"> if a tab-delimited-text file listing ORF coordinates is available.<br>";
+	echo "</font>";
+	echo "<br>";
+	echo "<input type=\"submit\" value=\"Save genome details...\">";
+	echo "<input type=\"hidden\" id=\"key\" name=\"key\" value=\"".  $key . "\">";
+	echo "</form>"; 
+?>
+
 </BODY>
 </HTML>
 <?php

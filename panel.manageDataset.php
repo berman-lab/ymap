@@ -115,6 +115,9 @@
 			$handle       = fopen($parentFile,'r');
 			$parentString = trim(fgets($handle));
 			fclose($handle);
+			// getting project name
+			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+			$projectNameString = trim($projectNameString);
 
 			$key = $key_;
 			echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
@@ -122,7 +125,7 @@
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
 			
-			echo $project;
+			echo $projectNameString;
 			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p3_".$key."'></div>\n";
@@ -143,13 +146,16 @@
 			$handle       = fopen($parentFile,'r');
 			$parentString = trim(fgets($handle));
 			fclose($handle);
+			// getting project name
+			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+			$projectNameString = trim($projectNameString);
 
 			$key = $key_ + $userProjectCount_starting;
 			echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
 			echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			echo $project;
+			echo $projectNameString;
 
 			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
@@ -183,13 +189,16 @@
 			$handle       = fopen($parentFile,'r');
 			$parentString = trim(fgets($handle));
 			fclose($handle);
+			// getting project name
+			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+			$projectNameString = trim($projectNameString);
 
 			$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
 			echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
 			echo "<span id='p_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).". ";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			echo $project."</font>";
+			echo $projectNameString."</font>";
 
 			// display total project size
 			$totalSizeFile = "users/".$user."/projects/".$project. "/totalSize.txt";
