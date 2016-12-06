@@ -63,22 +63,23 @@
 						Tab-delimted TXT column format is described in 'About' tab of main page.
 					</div>
 				</td></tr><tr bgcolor="#CCFFCC"><td>
-					<?php
-					$genomesDir1       = "users/default/genomes/";
-					$genomesDir2       = "users/".$user."/genomes/";
-					$genomeFolders1    = array_diff(glob($genomesDir1."*"), array('..', '.'));
-					$genomeFolders2    = array_diff(glob($genomesDir2."*"), array('..', '.'));
-					foreach($genomeFolders1 as $key=>$folder) {   $genomeFolders1[$key] = str_replace($genomesDir1,"",$folder);   }
-					foreach($genomeFolders2 as $key=>$folder) {   $genomeFolders2[$key] = str_replace($genomesDir2,"",$folder);   }
-					$genomeFolders  = array_merge($genomeFolders1,$genomeFolders2);
-					sort($genomeFolders);   //sort alphabetical.
-					?>
 					<div id="hiddenFormSection3" style="display:none">
 						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
 							<?php
-							foreach ($genomeFolders as $key=>$genome) {
-								echo "\n\t\t\t\t\t<option value='".$genome."'>".$genome."</option>";
-							}
+                                $genomesMap = array(); // A mapping of folder names to display names, sorted by folder names.
+                                foreach (array("default", $user) as $genomeUser) {
+                                    $genomesDir = "users/" . $genomeUser . "/genomes/";
+                                    foreach (array_diff(glob($genomesDir . "*"), array('..', '.')) as $genomeDir) {
+                                        $genomeDirName = str_replace($genomesDir, "", $genomeDir);
+                                        $genomeDisplayName = file_get_contents($genomeDir . "/name.txt");
+                                        $genomesMap[$genomeDirName] = $genomeDisplayName;
+                                    }
+                                }
+                                
+                                ksort($genomesMap);
+                                foreach ($genomesMap as $genomeDirName => $genomeDisplayName) {
+                                    echo "\n\t\t\t\t\t<option value='" . $genomeDirName . "'>" . $genomeDisplayName . "</option>";
+                                }
 							?>
 						</select><br>
 					</div>
@@ -172,9 +173,16 @@
 							$dataType_string = $dataType_string[0];
 							fclose($handle2);
 							$parentName      = $folder;
+							// reading name according to the folder the parent exist
+							if (file_exists($folder."/name.txt")) {
+								$projectNameString = file_get_contents($folder."/name.txt");
+								$parentName      = str_replace($projectsDir1,"",$parentName);
+							} else {
+								$projectNameString = file_get_contents($folder."/name.txt");
+							}
 							$parentName      = str_replace($projectsDir1,"",$parentName);
 							$parentName      = str_replace($projectsDir2,"",$parentName);
-							echo ",['{$parentName}','{$genome_string}',{$dataType_string}]";
+							echo ",['{$parentName}','{$genome_string}',{$dataType_string}, '{$projectNameString}']";
 						}
 						?>];
 						</script>
@@ -271,7 +279,7 @@
 					var item = parentGenomeDatatype_entries[i];
 					if (selectedGenome == item[1] && selectedDatatype == item[2]) {
 						var el         = document.createElement("option");
-						el.textContent = item[0];
+						el.textContent = item[3];
 						el.value       = item[0];
 						select.appendChild(el);
 					}

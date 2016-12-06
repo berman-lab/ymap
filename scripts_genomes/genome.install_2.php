@@ -17,8 +17,8 @@
 	$key              = filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING);
 	$genome           = $_SESSION['genome_'.$key];
 	$chr_count        = $_SESSION['chr_count_'.$key];
-	$chr_names        = $_SESSION['chr_names_'.$key];
-	$chr_lengths      = $_SESSION['chr_lengths_'.$key];
+	$chr_names        = json_decode(file_get_contents("../users/".$user."/genomes/".$genome."/chr_names.json"), true);
+	$chr_lengths      = json_decode(file_get_contents("../users/".$user."/genomes/".$genome."/chr_lengths.json"), true);;
 	$chr_draws        = array();
 	$chr_shortNames   = array();
 	$chr_cenStarts    = array();
@@ -166,11 +166,7 @@
 	fclose($output);
 
 	// Save important variables to $_SESSION.
-	fwrite($logOutput, "\tStoring PHP session variables.\n");
-	$_SESSION['chr_draws_'.$key]        = $chr_draws;
-	$_SESSION['chr_shortNames_'.$key]   = $chr_shortNames;
-	$_SESSION['chr_cenStarts_'.$key]    = $chr_cenStarts;
-	$_SESSION['chr_cenEnds_'.$key]      = $chr_cenEnds;
+	fwrite($logOutput, "\tStoring PHP session variables.\n");	
 	$_SESSION['rDNA_chr_'.$key]         = $rDNA_chr;
 	$_SESSION['rDNA_start_'.$key]       = $rDNA_start;
 	$_SESSION['rDNA_end_'.$key]         = $rDNA_end;

@@ -31,18 +31,9 @@
 	$key                = filter_input(INPUT_POST, "key",                FILTER_SANITIZE_STRING);
 	$expression_regions = filter_input(INPUT_POST, "expression_regions", FILTER_SANITIZE_STRING);
 	$genome             = $_SESSION['genome_'.$key];
-//	$chr_count          = $_SESSION['chr_count_'.$key];
-//	$chr_used_count     = $_SESSION['chr_used_count_'.$key];
-//	$chr_lengths        = $_SESSION['chr_lengths_'.$key];
-//	$chr_names          = $_SESSION['chr_names_'.$key];
-//	$chr_draws          = $_SESSION['chr_draws_'.$key];
-//	$chr_shortNames     = $_SESSION['chr_shortNames_'.$key];
-//	$chr_cenStarts      = $_SESSION['chr_cenStarts_'.$key];
-//	$chr_cenEnds        = $_SESSION['chr_cenEnds_'.$key];
 	$rDNA_chr           = $_SESSION['rDNA_chr_'.$key];
 	$rDNA_start         = $_SESSION['rDNA_start_'.$key];
 	$rDNA_end           = $_SESSION['rDNA_end_'.$key];
-//	$ploidyDefault      = $_SESSION['ploidyDefault_'.$key];
 	$annotation_count   = $_SESSION['annotation_count_'.$key];
 
 	$annotation_chrs       = array();

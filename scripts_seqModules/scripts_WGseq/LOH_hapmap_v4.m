@@ -324,20 +324,19 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 		if (length(dataLine) > 0)
 			if (dataLine(1) ~= '#')
 				% process the loaded line into data channels.
-				chr_num                     = sscanf(dataLine, '%s',1);
-				fragment_start              = sscanf(dataLine, '%s',2);   for i = 1:size(sscanf(dataLine,'%s',1),2);   fragment_start(1)              = [];   end;
-				fragment_end                = sscanf(dataLine, '%s',3);   for i = 1:size(sscanf(dataLine,'%s',2),2);   fragment_end(1)                = [];   end;
-				phased_ratio_data_string    = sscanf(dataLine, '%s',4);   for i = 1:size(sscanf(dataLine,'%s',3),2);   phased_ratio_data_string(1)    = [];   end;
-				unphased_ratio_data_string  = sscanf(dataLine, '%s',5);   for i = 1:size(sscanf(dataLine,'%s',4),2);   unphased_ratio_data_string(1)  = [];   end;
-				phased_coordinates_string   = sscanf(dataLine, '%s',6);   for i = 1:size(sscanf(dataLine,'%s',5),2);   phased_coordinates_string(1)   = [];   end;
-				unphased_coordinates_string = sscanf(dataLine, '%s',7);   for i = 1:size(sscanf(dataLine,'%s',6),2);   unphased_coordinates_string(1) = [];   end;
-				phased_alleles_string       = sscanf(dataLine, '%s',8);   for i = 1:size(sscanf(dataLine,'%s',7),2);   phased_alleles_string(1)       = [];   end;
-				unphased_alleles_string     = sscanf(dataLine, '%s',9);   for i = 1:size(sscanf(dataLine,'%s',8),2);   unphased_alleles_string(1)     = [];   end;
-
+				lineVariables = textscan(dataLine, '%f %f %f %s %s %s %s %s %s');
+				chr_num = lineVariables{1};
+				fragment_start = lineVariables{2};
+				fragment_end = lineVariables{3};
+				phased_ratio_data_string = lineVariables{4}{1};
+				unphased_ratio_data_string = lineVariables{5}{1};
+				phased_coordinates_string = lineVariables{6}{1};
+				unphased_coordinates_string = lineVariables{7}{1};
+				phased_alleles_string = lineVariables{8}{1};
+				unphased_alleles_string = lineVariables{9}{1};
+				
+				
 				% format = simple, one number per column.
-				chr_num                     = str2num(chr_num);
-				fragment_start              = str2num(fragment_start);
-				fragment_end                = str2num(fragment_end);
 				chr_length                  = ceil(chr_size(chr_num)/bases_per_bin);
 				chr_bin                     = ceil(fragment_start/bases_per_bin);
 
