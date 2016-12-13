@@ -176,10 +176,8 @@ else
 		cp $projectParentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	else
 		echo "\t\tDecompressing parent SNP data." >> $logName;
-		cd $projectParentDirectory;
-		unzip -j putative_SNPs_v4.zip;
-		cd $main_dir;
-		cp $projectParentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
+		unzip -j $projectParentDirectory"putative_SNPs_v4.zip" -d $projectDirectory;
+        mv $projectDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	fi
 
 	# preprocess parent for comparison. abbey

@@ -96,10 +96,8 @@ else
 		cp $parentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	else
 		echo "\tDecompressing parent SNP data." >> $logName;
-		cd $parentDirectory;
-		unzip -j putative_SNPs_v4.zip;
-		cd $main_dir;
-		cp $parentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
+		unzip -j $parentDirectory"putative_SNPs_v4.zip" -d $projectDirectory;
+        mv $projectDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	fi
 
 	# preprocess hapmap/parent SNP data.
