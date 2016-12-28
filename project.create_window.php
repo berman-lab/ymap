@@ -162,7 +162,7 @@
 						<script type="text/javascript">
 						var parentGenomeDatatype_entries = [['parent','genome','dataType']<?php
 						foreach ($projectFolders_raw as $key=>$folder) {
-							// display genome only if processing finished
+							// display project only if processing finished
 							if (file_exists($folder . "/complete.txt")) {
 								$genome_filename = $folder."/genome.txt";
 								$genome_string = "";
