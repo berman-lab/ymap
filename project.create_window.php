@@ -70,9 +70,12 @@
                                 foreach (array("default", $user) as $genomeUser) {
                                     $genomesDir = "users/" . $genomeUser . "/genomes/";
                                     foreach (array_diff(glob($genomesDir . "*"), array('..', '.')) as $genomeDir) {
-                                        $genomeDirName = str_replace($genomesDir, "", $genomeDir);
-                                        $genomeDisplayName = file_get_contents($genomeDir . "/name.txt");
-                                        $genomesMap[$genomeDirName] = $genomeDisplayName;
+                                        // display genome only if processing finished
+                                        if (file_exists($genomeDir . "/complete.txt")) {
+                                                $genomeDirName = str_replace($genomesDir, "", $genomeDir);
+                                                $genomeDisplayName = file_get_contents($genomeDir . "/name.txt");
+                                                $genomesMap[$genomeDirName] = $genomeDisplayName;
+                                        }
                                     }
                                 }
                                 
@@ -159,30 +162,33 @@
 						<script type="text/javascript">
 						var parentGenomeDatatype_entries = [['parent','genome','dataType']<?php
 						foreach ($projectFolders_raw as $key=>$folder) {
-							$genome_filename = $folder."/genome.txt";
-							$genome_string = "";
-							if (file_exists($genome_filename)) {
-								// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
-								$handle1         = fopen($genome_filename, "r");
-								$genome_string   = trim(fgets($handle1));
-								fclose($handle1);
-							}
-					 		$handle2         = fopen($folder."/dataType.txt", "r");
-							$dataType_string = trim(fgets($handle2));
-							$dataType_string = explode(":",$dataType_string);
-							$dataType_string = $dataType_string[0];
-							fclose($handle2);
-							$parentName      = $folder;
-							// reading name according to the folder the parent exist
-							if (file_exists($folder."/name.txt")) {
-								$projectNameString = file_get_contents($folder."/name.txt");
+							// display project only if processing finished
+							if (file_exists($folder . "/complete.txt")) {
+								$genome_filename = $folder."/genome.txt";
+								$genome_string = "";
+								if (file_exists($genome_filename)) {
+									// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
+									$handle1         = fopen($genome_filename, "r");
+									$genome_string   = trim(fgets($handle1));
+									fclose($handle1);
+								}
+						 		$handle2         = fopen($folder."/dataType.txt", "r");
+								$dataType_string = trim(fgets($handle2));
+								$dataType_string = explode(":",$dataType_string);
+								$dataType_string = $dataType_string[0];
+								fclose($handle2);
+								$parentName      = $folder;
+								// reading name according to the folder the parent exist
+								if (file_exists($folder."/name.txt")) {
+									$projectNameString = file_get_contents($folder."/name.txt");
+									$parentName      = str_replace($projectsDir1,"",$parentName);
+								} else {
+									$projectNameString = file_get_contents($folder."/name.txt");
+								}
 								$parentName      = str_replace($projectsDir1,"",$parentName);
-							} else {
-								$projectNameString = file_get_contents($folder."/name.txt");
+								$parentName      = str_replace($projectsDir2,"",$parentName);
+								echo ",['{$parentName}','{$genome_string}',{$dataType_string}, '{$projectNameString}']";
 							}
-							$parentName      = str_replace($projectsDir1,"",$parentName);
-							$parentName      = str_replace($projectsDir2,"",$parentName);
-							echo ",['{$parentName}','{$genome_string}',{$dataType_string}, '{$projectNameString}']";
 						}
 						?>];
 						</script>
