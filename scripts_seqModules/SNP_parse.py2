@@ -59,29 +59,27 @@ while True:
         break
 
 # if we finished running VariantsToTable move on to concatenation
-fout=open(os.path.join(vcf_folder,  "parsedVCF.txt"), "w+")
-numOfFiles = len(tableFiles)
-# first file:
-first =  open(tableFiles[0])
-# write header
-fout.write(first.readline())
-for line in first:
-    lineParts = re.split(r'\t+', line)
-    # include only rows that contain SNPs
-    if (len(lineParts[2]) == 1 and len(lineParts[3]) == 1):
-        fout.write(line)
-# now the rest:    
-for i in range(1,numOfFiles):
-    f = open(tableFiles[i])
-    f.next() # skip the header
-    for line in f:
+with open(os.path.join(vcf_folder,  "parsedVCF.txt"), "w+") as fout:
+    numOfFiles = len(tableFiles)
+    # first file:
+    first =  open(tableFiles[0])
+    # write header
+    fout.write(first.readline())
+    for line in first:
         lineParts = re.split(r'\t+', line)
         # include only rows that contain SNPs
         if (len(lineParts[2]) == 1 and len(lineParts[3]) == 1):
             fout.write(line)
-    f.close() # not really needed
-fout.close()
-
+    # now the rest:    
+    for i in range(1,numOfFiles):
+        with open(tableFiles[i]) as f:
+            f.next() # skip the header
+            for line in f:
+                lineParts = re.split(r'\t+', line)
+                # include only rows that contain SNPs
+                if (len(lineParts[2]) == 1 and len(lineParts[3]) == 1):
+                    fout.write(line)
+                    
 # remove all table files since they are not needed anymore
 for tableFile in tableFiles:
     os.remove(tableFile)
