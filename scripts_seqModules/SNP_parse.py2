@@ -25,9 +25,9 @@ SLEEP = 1
 pending_files = list(filesToProcess)
 running_files = {}
 tableFiles = [] # will save the name of the the table files created
+i = 0
 while True:
     # Can we start running more pileups now?
-    i = 0
     while len(running_files) < cores and len(pending_files) > 0:
         next_file = pending_files[0]
         tableFiles.append(os.path.splitext(filesToProcess[i])[0]  + '.table')
