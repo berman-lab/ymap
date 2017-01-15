@@ -39,9 +39,9 @@ with open(os.path.join(project_folder, "chr_segments.txt"), "r") as chr_segments
 # Start the vcf's going:
 pending_segments = list(chromSegments)
 running_segments = {}
+i = 0
 while True:
     # Can we start running more pileups now?
-    i = 0
     while len(running_segments) < cores and len(pending_segments) > 0:
         next_segment = pending_segments[0]
         del pending_segments[0]
