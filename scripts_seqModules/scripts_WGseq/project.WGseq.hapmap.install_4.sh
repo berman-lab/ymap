@@ -124,7 +124,7 @@ echo "# ChARM analysis of dataset. #" >> $logName;
 echo "#============================#" >> $logName;
 echo "Analyzing CNV edges." >> $condensedLog;
 
-if [ -f $projectDirectory"Common_ChARM.mat" ]
+if [ -f $projectDirectory"Common_ChARM.mat"] && [ -f $projectDirectory"chr_segments.txt" ]
 then
 	echo "\t\tChARM analysis already completed." >> $logName;
 else
@@ -136,12 +136,14 @@ else
 	echo "\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $outputName;
 	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 	echo "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
+	echo "\tploidyDetection('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate');" >> $outputName;
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing2()" >> $logName;
 	echo "\t|\t\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $logName;
 	echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
 	echo "\t|\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
+	echo "\t|\t\tploidyDetection('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate');" >> $outputName;
 	echo "\t|\tend" >> $logName;
 
 	echo "\t\tCalling MATLAB." >> $logName;
@@ -175,6 +177,18 @@ if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
 then
 	echo "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
+	echo "\t\tRunning SNP caller : 'scripts_seqModules/SNP_call.py2'" >> $logName;
+	$python_exec $main_dir"scripts_seqModules/SNP_call.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory"data_indelRealigned.bam" $logName $cores 2>> $logName;
+	echo "\t\tFinished Running SNP caller" >> $logName;
+	echo "\t\tRunning SNP parse : 'scripts_seqModules/SNP_parse.py2'" >> $logName;
+	$python_exec $main_dir"scripts_seqModules/SNP_parse.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores 2>> $logName;
+	echo "\t\tFinished Running SNP parse" >> $logName;
+	echo "\t\tUpdating SNP_CNV : 'scripts_seqModules/MergeSNPcallSNPCNV.py2'" >> $logName;
+	$python_exec $main_dir"scripts_seqModules/MergeSNPcallSNPCNV.py2" $projectDirectory 2>> $logName;
+	echo "\t\tFinished Updating SNP_CNV" >> $logName;
+	echo "\t\tReplacing SNP_CNV with new one" >> $logName;
+	rm $projectDirectory"SNP_CNV_v1.txt";
+	mv $projectDirectory"SNP_CNV_v2.txt" $projectDirectory"SNP_CNV_v1.txt";
 	echo "\t\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $hapmap $hapmapUser $project $user $main_dir $logName hapmap  > $projectDirectory"preprocessed_SNPs.txt";
 	echo "\t\tpre-processing complete." >> $logName;
