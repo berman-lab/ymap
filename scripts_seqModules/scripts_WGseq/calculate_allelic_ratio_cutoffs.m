@@ -105,8 +105,25 @@ for chr = 1:num_chrs
 
 			% Define cutoffs between Gaussian fits.
 			saveName = ['allelic_ratios.chr_' num2str(chr) '.seg_' num2str(segment)];
-			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, false);
-
+			% -----------
+			% The original cutoff finding was by drawing gaussian for each of the expected points where there should be a pick according to the ploidy level (for example if the ploidy
+			% is 3 the gaussians will be drawn with peaks a 0,66.67,133.67,200) then a fitting function is trying to fit the gaussians to the existing data, and each intersection of the output 
+			% gaussians determines a cutoff region, currently there is a problem that the gaussians can have numerous intersection point and so the cutoff division is not right.
+			% Therefore we currently don't use this version and instead we split the histogram to equally spaced regions between each expected pick.
+			% -----------			
+			%[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, true);
+            
+			if (segment_copyNum ~= 0)
+				peaks = 0:200/segment_copyNum:200;
+				diff = (peaks(2) - peaks(1))/2;
+				actual_cutoffs = diff:diff*2:200;
+				mostLikelyGaussians = 1:(length(actual_cutoffs)+1);
+			else
+				peaks = [];
+				actual_cutoffs = [];
+				mostLikelyGaussians = [];
+			end;
+            
 			fprintf(['^^^ copyNum             = ' num2str(segment_copyNum    ) '\n']);
 			fprintf(['^^^ peaks               = ' num2str(peaks              ) '\n']);
 			fprintf(['^^^ mostLikelyGaussians = ' num2str(mostLikelyGaussians) '\n']);
