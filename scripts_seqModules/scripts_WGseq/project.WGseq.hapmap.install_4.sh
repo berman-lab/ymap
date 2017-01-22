@@ -14,6 +14,7 @@ main_dir=$(pwd)"/../../";
 
 # load local installed program location variables.
 . $main_dir/local_installed_programs.sh;
+. $main_dir"config.sh";
 
 echo "";
 echo "Input to : project.WGseq.hapmap.install_4.sh";
@@ -47,6 +48,10 @@ then
     genomeUser="default";
 fi
 echo "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
+
+# Get reference FASTA file name from "reference.txt";
+genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
+echo "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
 
 # Get ploidy estimate from "ploidy.txt" in project directory.
 ploidyEstimate=$(head -n 1 $projectDirectory"ploidy.txt");
@@ -143,7 +148,7 @@ else
 	echo "\t|\t\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $logName;
 	echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
 	echo "\t|\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
-	echo "\t|\t\tploidyDetection('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate');" >> $outputName;
+	echo "\t|\t\tploidyDetection('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate');" >> $logName;
 	echo "\t|\tend" >> $logName;
 
 	echo "\t\tCalling MATLAB." >> $logName;
@@ -178,12 +183,15 @@ then
 	echo "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
 	echo "\t\tRunning SNP caller : 'scripts_seqModules/SNP_call.py2'" >> $logName;
+	echo $python_exec $main_dir"scripts_seqModules/SNP_call.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory"data_indelRealigned.bam" $logName $cores >> $logName;
 	$python_exec $main_dir"scripts_seqModules/SNP_call.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory"data_indelRealigned.bam" $logName $cores 2>> $logName;
 	echo "\t\tFinished Running SNP caller" >> $logName;
 	echo "\t\tRunning SNP parse : 'scripts_seqModules/SNP_parse.py2'" >> $logName;
+	echo $python_exec $main_dir"scripts_seqModules/SNP_parse.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores >> $logName;
 	$python_exec $main_dir"scripts_seqModules/SNP_parse.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores 2>> $logName;
 	echo "\t\tFinished Running SNP parse" >> $logName;
 	echo "\t\tUpdating SNP_CNV : 'scripts_seqModules/MergeSNPcallSNPCNV.py2'" >> $logName;
+	echo $python_exec $main_dir"scripts_seqModules/MergeSNPcallSNPCNV.py2" $projectDirectory >> $logName;
 	$python_exec $main_dir"scripts_seqModules/MergeSNPcallSNPCNV.py2" $projectDirectory 2>> $logName;
 	echo "\t\tFinished Updating SNP_CNV" >> $logName;
 	echo "\t\tReplacing SNP_CNV with new one" >> $logName;
