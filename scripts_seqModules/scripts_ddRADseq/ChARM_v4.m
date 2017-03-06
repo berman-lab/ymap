@@ -787,6 +787,7 @@ for chr = 1:num_chrs
 	% avoid entering when there is no data at all
 	if (chr_in_use(chr) == 1 && chr < length(locs))
 	    position  = locs{chr};
+	    position(diff(position) == 0) = []; % remove duplicate positions
 	    num_edges = length(position);
 	    data      = CNVplot2{chr};
 	    chr_size  = length(data);
