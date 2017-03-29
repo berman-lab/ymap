@@ -34,7 +34,7 @@
 		input3.setAttribute("name","key");
 		input3.setAttribute("value",key);
 		conclusion.appendChild(input3);
-
+		document.body.appendChild(conclusion);
 		// Automatically submit constructed form to post data to page.
 		conclusion.submit();		// works in Safari, but not Firefox.
 	}
