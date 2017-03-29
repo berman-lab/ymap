@@ -38,6 +38,7 @@ reload_page=function() {
 	var autoSubmitForm = document.createElement('form');
 	    autoSubmitForm.setAttribute('method','post');
 	    autoSubmitForm.setAttribute('action','statusUpdate.php');
+	    document.body.appendChild(autoSubmitForm);
 	    autoSubmitForm.submit();
 }
 var internalIntervalID = window.setInterval(reload_page, 30000);

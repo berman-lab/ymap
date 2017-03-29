@@ -51,6 +51,7 @@
 	echo "\t\tinput5.setAttribute('name','referencePloidy');\n";
 	echo "\t\tinput5.setAttribute('value','2');\n";
 	echo "\t\tautoSubmitForm.appendChild(input5);\n";
+	echo "\t\tdocument.body.appendChild(autoSubmitForm);\n";
 	echo "\tautoSubmitForm.submit();\n";
 	echo "</script>";
 

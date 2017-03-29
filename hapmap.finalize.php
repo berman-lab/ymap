@@ -45,6 +45,7 @@
 				input3.setAttribute('name','key');
 				input3.setAttribute('value',key);
 				autoSubmitForm.appendChild(input3);
+			document.body.appendChild(autoSubmitForm);
 			autoSubmitForm.submit();
 			}
 		</script>
