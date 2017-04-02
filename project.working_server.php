@@ -158,6 +158,7 @@ body {font-family: arial;}
 				    input4.setAttribute('name','status');
 				    input4.setAttribute('value',status);
 				    autoSubmitForm.appendChild(input4);
+				document.body.appendChild(autoSubmitForm);
 				autoSubmitForm.submit();
 			}
 			// Initiate recurrent call to reload_page function, which depends upon project status.

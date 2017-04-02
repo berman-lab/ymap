@@ -77,7 +77,7 @@
 		echo "\t\tinput5.setAttribute('name','project2');\n";
 		echo "\t\tinput5.setAttribute('value','{$project2}');\n";
 		echo "\t\tautoSubmitForm.appendChild(input5);\n";
-
+		echo "\t\tdocument.body.appendChild(autoSubmitForm);";
 		echo "\tautoSubmitForm.submit();\n";
 		echo "</script>";
 	}

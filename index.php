@@ -818,6 +818,7 @@ function Generate_combined_figure() {
 	    input2.setAttribute("name","projectsShown");
 	    input2.setAttribute("value",projectsShown);
 	    autoSubmitForm.appendChild(input2);
+	document.body.appendChild(autoSubmitForm);
 	autoSubmitForm.submit();
 }
 restore_shown_figures();

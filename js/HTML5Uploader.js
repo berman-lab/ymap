@@ -145,6 +145,8 @@ var allFiles = new Array;
 																input4.setAttribute("name","key");
 																input4.setAttribute("value",key);
 																conclusion.appendChild(input4);
+															// append form to allow submit
+															document.body.appendChild(conclusion);
 															// Submit generated form : works in Safari, but not Firefox.
 															conclusion.submit();
 														},
