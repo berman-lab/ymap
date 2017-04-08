@@ -724,7 +724,6 @@ if (useHapmap)
 elseif (useParent)
 	% Initialize values for display.
 	for chr = 1:num_chrs
-        chrName = chr_name{chr};
 		if (chr_in_use(chr) == 1)
 			for chr_bin = 1:length(chr_SNPdata_countC{chr})
 				colorList                       = [1.0 1.0 1.0];
@@ -743,7 +742,6 @@ else
 	% Initialize values for display.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-            chrName = chr_name{chr};
 			for chr_bin = 1:length(chr_SNPdata_countC{chr})
 				colorList                       = [1.0 1.0 1.0];
 				chr_SNPdata_colorsC{chr,1}(chr_bin) = colorList(1);
