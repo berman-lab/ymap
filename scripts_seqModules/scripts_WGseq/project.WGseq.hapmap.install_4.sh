@@ -187,8 +187,8 @@ else
 	$python_exec $main_dir"scripts_seqModules/SNP_call.py" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory"data_indelRealigned.bam" $logName $cores 2>> $logName;
 	echo "\t\tFinished Running SNP caller" >> $logName;
 	echo "\t\tRunning SNP parse : 'scripts_seqModules/SNP_parse.py'" >> $logName;
-	echo $python_exec $main_dir"scripts_seqModules/SNP_parse.py" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores >> $logName;
-	$python_exec $main_dir"scripts_seqModules/SNP_parse.py" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores 2>> $logName;
+	echo $python_exec $main_dir"scripts_seqModules/SNP_parse.py" $gatkDirectory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores >> $logName;
+	$python_exec $main_dir"scripts_seqModules/SNP_parse.py" $gatkDirectory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores 2>> $logName;
 	echo "\t\tFinished Running SNP parse" >> $logName;
 	echo "\t\tUpdating SNP_CNV : 'scripts_seqModules/MergeSNPcallSNPCNV.py'" >> $logName;
 	echo $python_exec $main_dir"scripts_seqModules/MergeSNPcallSNPCNV.py" $projectDirectory >> $logName;
