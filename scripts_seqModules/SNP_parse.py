@@ -71,7 +71,7 @@ with open(os.path.join(vcf_folder, "parsedVCF.txt"), "w+") as fout:
         if (len(line_parts[2]) == 1 and len(line_parts[3]) == 1):
             fout.write(line)
     # now the rest:    
-    for i in range(1, numOfFiles):
+    for i in range(1, num_of_files):
         with open(table_files[i]) as f:
             f.next() # skip the header
             for line in f:

@@ -49,7 +49,7 @@ while True:
                    "-R", fasta,
                    "-T", "HaplotypeCaller",
                    "-I", bam,
-                   "-L", chrom_segments[i] + "." + start_bp[i] + "-" + end_bp[i],
+                   "-L", chrom_segments[i] + ":" + start_bp[i] + "-" + end_bp[i],
                    "-ploidy", ploidy[i], 
                    "-o", os.path.join(vcf_folder, chrom_segments[i] + "." + start_bp[i] + "-" + end_bp[i] + ".vcf")],
                    stdout=subprocess.PIPE,
