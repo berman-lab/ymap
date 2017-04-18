@@ -141,14 +141,14 @@ else
 	echo "\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $outputName;
 	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 	echo "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
-	echo "\tploidyDetection('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate');" >> $outputName;
+	echo "\tploidyDetection('$main_dir','$user','$genomeUser','$project','$genome', $ploidyEstimate);" >> $outputName;
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing2()" >> $logName;
 	echo "\t|\t\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $logName;
 	echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
 	echo "\t|\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
-	echo "\t|\t\tploidyDetection('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate');" >> $logName;
+	echo "\t|\t\tploidyDetection('$main_dir','$user','$genomeUser','$project','$genome', $ploidyEstimate);" >> $logName;
 	echo "\t|\tend" >> $logName;
 
 	echo "\t\tCalling MATLAB." >> $logName;
