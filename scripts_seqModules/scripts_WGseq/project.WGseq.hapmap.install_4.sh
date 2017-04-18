@@ -182,17 +182,17 @@ if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
 then
 	echo "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
-	echo "\t\tRunning SNP caller : 'scripts_seqModules/SNP_call.py2'" >> $logName;
-	echo $python_exec $main_dir"scripts_seqModules/SNP_call.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory"data_indelRealigned.bam" $logName $cores >> $logName;
-	$python_exec $main_dir"scripts_seqModules/SNP_call.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory"data_indelRealigned.bam" $logName $cores 2>> $logName;
+	echo "\t\tRunning SNP caller : 'scripts_seqModules/SNP_call.py'" >> $logName;
+	echo $python_exec $main_dir"scripts_seqModules/SNP_call.py" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory"data_indelRealigned.bam" $logName $cores >> $logName;
+	$python_exec $main_dir"scripts_seqModules/SNP_call.py" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory"data_indelRealigned.bam" $logName $cores 2>> $logName;
 	echo "\t\tFinished Running SNP caller" >> $logName;
-	echo "\t\tRunning SNP parse : 'scripts_seqModules/SNP_parse.py2'" >> $logName;
-	echo $python_exec $main_dir"scripts_seqModules/SNP_parse.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores >> $logName;
-	$python_exec $main_dir"scripts_seqModules/SNP_parse.py2" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores 2>> $logName;
+	echo "\t\tRunning SNP parse : 'scripts_seqModules/SNP_parse.py'" >> $logName;
+	echo $python_exec $main_dir"scripts_seqModules/SNP_parse.py" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores >> $logName;
+	$python_exec $main_dir"scripts_seqModules/SNP_parse.py" $gatk37Directory $genomeDirectory$genomeFASTA $projectDirectory $logName $cores 2>> $logName;
 	echo "\t\tFinished Running SNP parse" >> $logName;
-	echo "\t\tUpdating SNP_CNV : 'scripts_seqModules/MergeSNPcallSNPCNV.py2'" >> $logName;
-	echo $python_exec $main_dir"scripts_seqModules/MergeSNPcallSNPCNV.py2" $projectDirectory >> $logName;
-	$python_exec $main_dir"scripts_seqModules/MergeSNPcallSNPCNV.py2" $projectDirectory 2>> $logName;
+	echo "\t\tUpdating SNP_CNV : 'scripts_seqModules/MergeSNPcallSNPCNV.py'" >> $logName;
+	echo $python_exec $main_dir"scripts_seqModules/MergeSNPcallSNPCNV.py" $projectDirectory >> $logName;
+	$python_exec $main_dir"scripts_seqModules/MergeSNPcallSNPCNV.py" $projectDirectory 2>> $logName;
 	echo "\t\tFinished Updating SNP_CNV" >> $logName;
 	echo "\t\tReplacing SNP_CNV with new one" >> $logName;
 	rm $projectDirectory"SNP_CNV_v1.txt";
