@@ -96,6 +96,8 @@
 		input4.setAttribute("type","hidden");
 		input4.setAttribute("name","status");
 		input4.setAttribute("value",status);
+	// append form to body to allow submit
+	document.body.appendChild(autoSubmitForm);
 	autoSubmitForm.submit();
 </script>
 </BODY>

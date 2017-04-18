@@ -374,6 +374,7 @@ if ($referencePloidy == 2) {
 			    input8.setAttribute('name','homolog_b_color');
 			    input8.setAttribute('value',colorB);
 			    autoSubmitForm.appendChild(input8);
+			document.body.appendChild(autoSubmitForm);
 			autoSubmitForm.submit();
 		}
 		function trim(str) {

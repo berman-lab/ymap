@@ -107,6 +107,7 @@
 				echo "\t\tinput4.setAttribute('name','status');\n";
 				echo "\t\tinput4.setAttribute('value',status);\n";
 				echo "\t\tautoSubmitForm.appendChild(input4);\n";
+				echo "\t\tdocument.body.appendChild(autoSubmitForm);\n";
 				echo "\tautoSubmitForm.submit();\n";
 				?>
 			}

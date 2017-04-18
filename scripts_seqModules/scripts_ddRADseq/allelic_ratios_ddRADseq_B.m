@@ -344,11 +344,14 @@ calculate_allelic_ratio_cutoffs;
 % Process SNP/LOH data.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
+    alleleRatiosFid = openAlleleRatiosTrack(projectDir, project);
+    
 	%% =========================================================================================
 	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 	%-------------------------------------------------------------------------------------------
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
+            chrName = chr_name{chr};
 			if (length(C_chr_count{chr}) > 1)
 				%
 				% Determining colors for each SNP coordinate from calculated cutoffs.
@@ -683,6 +686,12 @@ if (useHapmap)
 					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
 					chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
+                    
+                    if (~all(colorList == colorNoData))
+						writeAlleleRatioLine(alleleRatiosFid, chrName, coordinate, ...
+							homologA, homologB, ...
+							colorList);
+					end
 
 					% Troubleshooting output.
 					% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
@@ -711,6 +720,7 @@ if (useHapmap)
 			end;
 		end;
 	end;
+    fclose(alleleRatiosFid);
 elseif (useParent)
 	% Initialize values for display.
 	for chr = 1:num_chrs
