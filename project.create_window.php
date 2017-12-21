@@ -362,13 +362,8 @@
 				if (document.getElementById("1_bias4").checked)
 				{
 					document.getElementById("1_bias2").checked = true;
-					document.getElementById("1_bias2").disabled = true;
 				}
-				else
-				{
-					document.getElementById("1_bias2").disabled = false;
-					document.getElementById("1_bias2").checked = true;
-				}	
+			
 			}
 			</script>
 		</p></div>
