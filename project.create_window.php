@@ -361,6 +361,12 @@
 			UpdateBiasWG=function() {
 				if (document.getElementById("1_bias4").checked)
 				{
+					document.getElementById("1_bias2").disabled = true;
+					document.getElementById("1_bias2").checked = true;
+				}
+				else 
+				{
+					document.getElementById("1_bias2").disabled = false;
 					document.getElementById("1_bias2").checked = true;
 				}
 			
