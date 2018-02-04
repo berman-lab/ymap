@@ -108,7 +108,7 @@ elseif (LOWESS_method == 3)
 			if (arrayDim(1) > arrayDim(2))
 				Training_Y_smoothed         = mylowess([Training_X,  Training_Y ],Testing_X,spans(j));
 				Fitting_Y{partitionIndex}   = mylowess([Training_X,  Training_Y ],Fitting_X,spans(j));
-			else
+			elseif (arrayDim(2) > 0)
 				Training_Y_smoothed         = mylowess([Training_X', Training_Y'],Testing_X,spans(j));
 				Fitting_Y{partitionIndex}   = mylowess([Training_X', Training_Y'],Fitting_X,spans(j));
 			end;
