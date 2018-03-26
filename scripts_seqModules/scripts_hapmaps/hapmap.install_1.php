@@ -1,3 +1,12 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://w3.org/TR/html4/loose.dtd">
+<HEAD>
+	<style type="text/css">
+		body {font-family: arial;}
+	</style>
+	<meta charset="UTF-8">
+</HEAD>
+<BODY>
 <?php
     session_start();
     if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
@@ -82,3 +91,5 @@
 		echo "</script>";
 	}
 ?>
+</BODY>
+</HTML>
