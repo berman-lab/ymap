@@ -3,12 +3,14 @@ YMAP - Yeast Mapping Analysis Pipeline : An online pipeline for the analysis of 
 
 Text below copied from "YMAP_User_Manual.docx". Download and open that file for detailed descriptions of the Ymap user interface and instructions for use.
 ======================================================================================
+
 Introduction
 Overview
 
 YMAP is a web-based tool for the analysis of genome alterations in single cell Eukaryotes. The purpose of this tool is to facilitate the analysis of three major genome changes:  copy number variations (CNV), single nucleotide polymorphisms (SNPs) and loss of heterozygosity (LOH).
 
 ======================================================================================
+
 The YMAP implementation
 
 The genome analysis pipeline is composed of three main components:  a module that performs raw sequence alignment and processing, a module that performs custom copy number variation (CNV) and single nucleotide polymorphism (SNP)/loss of heterozygosity (LOH) analyses, and a module that constructs figures summarizing all completed analyses and then displays them on the webpage. The implementation details for each of these components are described in more detail in the following sections.
@@ -20,6 +22,7 @@ The second step in the central computation pipeline is to processes the correcte
 The third step in the sequence data processing component of the pipeline is to convert the BAM file into a simpler text file containing limited data for each coordinate across the genome, which simplifies later processing. The SAMtools function mpileup first processes the BAM file into a ‘pileup’ file, which contains information about all of the mapped reads at each chromosome coordinate in a simple format that facilitates subsequent processing by custom Python scripts. The Python scripts extract base call counts for each coordinate, discarding indel and read start/end information. The raw read-depth data per coordinate is saved to a text file that is input into the CNV analysis section of the pipeline. Any coordinates with more than one base call have that information saved to a separate text file that is input into the SNP and LOH analysis section of the pipeline.
 
 ======================================================================================
+
 CNV Analysis
 
 CNV analysis of NGS data by the pipeline is based upon read depth across the genome. Several biases can impact read depth and thereby interfere with CNV analysis. Two separate biases, a chromosome-end bias and a GC-content bias, appear sporadically in all types of data examined (including microarray and whole genome sequence (WGseq) data). The mechanism that results in the chromosome end artifact is unclear, but the smooth change in the apparent copy number increase towards the chromosome ends (Fig. 2A) suggests that some DNA preparations may release more genomic DNA as a function of telomere proximity (Jane Usher, personal comm.). A GC-content bias is due to strong positional variations in GC content in the C. albicans genome. This, combined with the PCR amplification bias introduced during sequence library or array preparation, results in a strong positional effect in local copy number estimates (Fig. 3A). In datasets produced from the ddRADseq protocol, a third bias is associated with the length of restriction fragments. A fourth bias, seen consistently in all ddRADseq data sets, appears as a high frequency of short-range increases and decreases in read depth at specific genome positions across all strains analyzed, and thus can be removed by normalization to a control dataset from the reference genome. The YMAP pipeline includes filters, which can be deselected by the user, for each of these biases to correct the data before final presentation and to facilitate detection of bona fide CNVs. The final presentation of the corrected copy number data is in the form of a histogram drawn vertically from the figure centerline (Figs. 2-4, A-B).
@@ -33,6 +36,7 @@ For ddRADseq analyses, first the chromosome-end and GC-content bias corrections 
 After these corrections are applied to the raw sequence read data, the corrected copy number estimates are locally smoothed to reduce the impact of high-frequency noise. The estimates are then multiplied by the whole genome ploidy estimate that was determined by flow cytometry of DNA content and entered during setup of the project. The corrected estimates are plotted as a histogram along each chromosome, with the lines drawn vertically from the baseline ploidy entered during project setup. Copy number variations are then evident as regions with prominent black bars.
 
 ======================================================================================
+
 SNP/LOH analysis
 
 SNPs are regions of a genome that have two different alleles at the same locus on different homologs. The allelic ratio (0 or 1 for homozygous regions and 0.5 for heterozygous regions in a diploid genome) is used to determine whether a region that had SNPs in the parent/reference strain has undergone LOH to become homozygous. An allelic ratio is calculated for each coordinate by dividing the number of reads with the more abundant base base call by the total number of reads at each coordinate (resulting in values ranging from 0.5 to 1.0).
