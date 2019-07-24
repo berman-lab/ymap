@@ -34,20 +34,18 @@ algorithm.
 
 The second step in the central computation pipeline is to processes the corrected FASTQ file into a final Binary sequence
 Alignment/Mapping (BAM) file. The single- or paired-end reads are aligned to one of the installed reference genomes using
-Bowtie2 [27], resulting in a Sequence Alignment/Mapping (SAM) file. SAMtools [28] is used to compress this into a BAM file.
-PicardTools [29] is used to standardize the read-group headers in the BAM files, to resolve some formatting irregularities to
-the BAM file. SAMtools is then used to sort the BAM file, which is required for efficient later processing steps. FASTQC [30]
+Bowtie2 [27], resulting in a Sequence Alignment/Mapping (SAM) file. SAMtools [28] is used to compress this into a BAM file.
+PicardTools [29] is used to standardize the read-group headers in the BAM files, to resolve some formatting irregularities to
+the BAM file. SAMtools is then used to sort the BAM file, which is required for efficient later processing steps. FASTQC [30]
 is used to identify the quality coding system used in the input FASTQ files, as a prelude to defining the input parameters for
-processing by the Genome Analysis ToolKit (GATK [31]), which performs indel-realignment of the BAM files, removing spurious
+processing by the Genome Analysis ToolKit (GATK [31]), which performs indel-realignment of the BAM files, removing spurious
 apparent SNPs around true indels in the primary alignment.
 
 The third step in the sequence data processing component of the pipeline is to convert the BAM file into a simpler text file
 containing limited data for each coordinate across the genome, which simplifies later processing. The SAMtools function mpileup
 first processes the BAM file into a ‘pileup’ file, which contains information about all of the mapped reads at each chromosome
 coordinate in a simple format that facilitates subsequent processing by custom Python scripts. The Python scripts extract base
-call counts for each coordinate, discarding indel and read start/end information. The raw read-depth data per coordinate is saved
-to a text file that is input into the CNV analysis section of the pipeline. Any coordinates with more than one base call have
-that information saved to a separate text file that is input into the SNP and LOH analysis section of the pipeline. 
+call counts for each coordinate, discarding indel and read start/end information. The raw read-depth data per coordinate is saved to a text file that is input into the CNV analysis section of the pipeline. Any coordinates with more than one base call have that information saved to a separate text file that is input into the SNP and LOH analysis section of the pipeline. 
 
 =================================================================================================================================
 CNV Analysis
@@ -67,10 +65,10 @@ can be deselected by the user, for each of these biases to correct the data befo
 of bona fide CNVs. The final presentation of the corrected copy number data is in the form of a histogram drawn vertically from
 the figure centerline (Figs. 2-4, A-B).
 
-The chromosome-end bias is normalized using locally weighted scatterplot smoothing (LOWESS) normalization [32]
+The chromosome-end bias is normalized using locally weighted scatterplot smoothing (LOWESS) normalization [32]
 of average read depth vs. distance to the nearest chromosome end, for 5000 bp windows tiled along each chromosome (Fig. 2C). The
 LOWESS fitting is performed with a smoothing window size determined for each dataset as that which produces the least error
-between the fit and the raw data, using 10-fold cross-validation [33]. Dividing the raw data by the fit curve normalizes the
+between the fit and the raw data, using 10-fold cross-validation [33]. Dividing the raw data by the fit curve normalizes the
 bias (Fig. 2D), allowing an unimpeded view of the mapped genome (Fig. 2B, a diploid with no significant CNVs). Because this bias
 is sporadically present, the correction is optional and is not performed by default.
 
