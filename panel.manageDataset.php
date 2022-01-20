@@ -10,6 +10,14 @@
 <font size='3'>
 	Install SNP/CGH microarray and next generation sequence datasets to, or delete datasets from, your user account.
 	<font size='2'>
+        <p>
+            <b>IMPORTANT:</b>
+            <ol>
+                <li>Filenames should only have alphanumeric characters (letters, numbers, underscores and dashes) in their names (no spaces or other special characters!).</li>
+                <li>.fq and .fq.gz file extensions are not supported - rename them to .fastq or .fastq.gz (respectively).</li>
+                <li>Use Chrome for uploads (this will allow resuming them if they are interrupted).</li>
+            </ol>
+        </p>
 		<p>
 			Is your upload stuck? To resume it, do the following:
 			<ol>
