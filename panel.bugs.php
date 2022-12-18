@@ -4,4 +4,4 @@
 	}
 </style>
 
-To report bugs, request features, ask for assistance, or otherwise get in touch, please e-mail us at <a href="mailto:ymapsupport@post.tau.ac.il">ymapsupport@post.tau.ac.il</a>.
+To report bugs, request features, ask for assistance, or otherwise get in touch, please e-mail us at <a href="mailto:ymapsupport@tauex.tau.ac.il">ymapsupport@tauex.tau.ac.il</a>.
