@@ -7,7 +7,7 @@
 
 	$user   = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING);
 
-	if($user == $_SESSION['user']){
+	if(isset($_SESSION['logged_on']) && $user == $_SESSION['user']){
 		// User confirmed, can delete user.
 		$dir = "users/".$user."/";
 		rrmdir($dir);
