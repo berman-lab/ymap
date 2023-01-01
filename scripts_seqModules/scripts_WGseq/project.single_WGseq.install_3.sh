@@ -101,9 +101,9 @@ echo "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
 datafile=$(head -n 1 $projectDirectory"datafiles.txt");
 echo "\tdatafile = '"$datafile"'" >> $logName;
 
-# Define temporary directory for FASTQC files.
-fastqcTempDirectory=$projectDirectory"fastqc_temp/";
-echo "\tfastqcTempDirectory = '"$fastqcTempDirectory"'" >> $logName;
+## Define temporary directory for FASTQC files.
+#fastqcTempDirectory=$projectDirectory"fastqc_temp/";
+#echo "\tfastqcTempDirectory = '"$fastqcTempDirectory"'" >> $logName;
 
 # Get ploidy estimate from "ploidy.txt" in project directory.
 ploidyEstimate=$(head -n 1 $projectDirectory"ploidy.txt");
@@ -116,6 +116,10 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 # Get parent name from "parent.txt" in project directory.
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
+
+# Define temporary directory for abra2C files.
+abra2TempDirectory=$projectDirectory"abra2_temp/";
+echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
 
 echo "#============================================================================== 2" >> $logName;
 
@@ -280,15 +284,28 @@ else
 #		rm $GATKlog1;
 #		rm $GATKlog2;
 
-#================================
-# Added abra2.
-#--------------------------------
+                #================================
+                # Abra2: indel realignment.
+                #--------------------------------
+                echo "[[=- ABRA2 analysis, indel-realignment -=]]" >> $logName;
+                echo "Indel realignment with ABRA2." >> $condensedLog;
+                echo "\nRunning abra2.\n";
+                ABRA2inputFile=$projectDirectory"data_sorted.bam";
+                ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
+                referenceFile=$genomeDirectory$genomeFASTA;
+                mkdir $abra2TempDirectory;
+                $java7Directory"java" -Xmx2g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
+                # example command-line from abra2 readme.
+                # java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
+                # From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
 
 		echo "#============================================================================== 3" >> $logName;
 
 		echo "[[=- In-house SNP/CNV/INDEL analysis -=]]" >> $logName;
-#		usedFile=$projectDirectory"data_indelRealigned.bam";
-                usedFile=$projectDirectory"data_sorted.bam";
+
+                # data_sorted.bam is to be used if no indel-realignment is done. data_indelRealigned.bam if indel-realignment done.
+		usedFile=$projectDirectory"data_indelRealigned.bam";
+#               usedFile=$projectDirectory"data_sorted.bam";
 
 		echo "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
 		echo "Generating pileup file." >> $condensedLog;
