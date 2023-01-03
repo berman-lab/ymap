@@ -182,7 +182,6 @@ else
 		echo "\tPicard : Headers added to Bowtie-BAM file." >> $logName;
 
 		echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
-
 		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo "Sorting BAM file." >> $condensedLog;
 		echo "\nRunning samtools:sort.\n";
@@ -287,7 +286,7 @@ else
                 #================================
                 # Abra2: indel realignment.
                 #--------------------------------
-                echo "[[=- ABRA2 analysis, indel-realignment -=]]" >> $logName;
+                echo "[[=- Indel realignment with ABRA2 analysis -=]]" >> $logName;
                 echo "Indel realignment with ABRA2." >> $condensedLog;
                 echo "\nRunning abra2.\n";
                 ABRA2inputFile=$projectDirectory"data_sorted.bam";
@@ -300,14 +299,23 @@ else
                 # java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
                 # From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
 
+                #================================
+                # Sorting BAM file after Abra2.
+                #--------------------------------
+                echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
+                echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
+                echo "Sorting BAM file." >> $condensedLog;
+                echo "\nRunning samtools:sort.\n";
+                $samtools_exec sort -@ $cores $projectDirectory"data_indelRealigned.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
+                echo "Indexing BAM file." >> $condensedLog;
+                echo "\nRunning samtools:index.\n";
+                $samtools_exec index $projectDirectory"data_sorted.bam";
+                echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
+
 		echo "#============================================================================== 3" >> $logName;
 
 		echo "[[=- In-house SNP/CNV/INDEL analysis -=]]" >> $logName;
-
-                # data_sorted.bam is to be used if no indel-realignment is done. data_indelRealigned.bam if indel-realignment done.
-		usedFile=$projectDirectory"data_indelRealigned.bam";
-#               usedFile=$projectDirectory"data_sorted.bam";
-
+                usedFile=$projectDirectory"data_sorted.bam";
 		echo "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
 		echo "Generating pileup file." >> $condensedLog;
 		echo "\nRunning samtools:mpileup.\n";
