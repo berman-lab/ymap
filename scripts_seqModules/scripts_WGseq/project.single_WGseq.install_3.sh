@@ -294,7 +294,11 @@ else
                 ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
                 referenceFile=$genomeDirectory$genomeFASTA;
                 mkdir $abra2TempDirectory;
+                echo "__";
+                echo $java7Directory"java -Xmx2g -jar "$abra2_exec" --in "$ABRA2inputFile" --out "$ABRA2outputFile" --ref "$referenceFile" --threads "$cores" --tmpdir "$abra2TempDirectory" > "$projectDirectory"abra2.log" >> $logName;
+                echo "__";
                 $java7Directory"java" -Xmx2g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
+                # abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
                 # example command-line from abra2 readme.
                 # java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
                 # From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
