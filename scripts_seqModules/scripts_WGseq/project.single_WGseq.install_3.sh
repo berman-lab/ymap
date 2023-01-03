@@ -287,6 +287,7 @@ else
                 # Abra2: indel realignment.
                 #--------------------------------
                 echo "[[=- Indel realignment with ABRA2 analysis -=]]" >> $logName;
+                echo "\tAbra2 : indel-realignment in process." >> $logName;
                 echo "Indel realignment with ABRA2." >> $condensedLog;
                 echo "\nRunning abra2.\n";
                 ABRA2inputFile=$projectDirectory"data_sorted.bam";
