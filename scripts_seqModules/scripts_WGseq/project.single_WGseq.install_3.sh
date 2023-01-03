@@ -192,35 +192,35 @@ else
 	then
 		echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
 	else
-                #================================
-                # Abra2: indel realignment.
-                #--------------------------------
-                echo "[[=- Indel realignment with ABRA2 analysis -=]]" >> $logName;
-                echo "\tAbra2 : indel-realignment in process." >> $logName;
-                echo "Indel realignment with ABRA2." >> $condensedLog;
-                echo "\nRunning abra2.\n";
-                ABRA2inputFile=$projectDirectory"data_sorted.bam";
-                ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
-                referenceFile=$genomeDirectory$genomeFASTA;
-                mkdir $abra2TempDirectory;
-                $java7Directory"java" -Xmx2g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
-                # abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
-                # example command-line from abra2 readme.
-                # java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
-                # From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
+		#================================
+		# Abra2: indel realignment.
+		#--------------------------------
+		echo "[[=- Indel realignment with ABRA2 analysis -=]]" >> $logName;
+		echo "\tAbra2 : indel-realignment in process." >> $logName;
+		echo "Indel realignment with ABRA2." >> $condensedLog;
+		echo "\nRunning abra2.\n";
+		ABRA2inputFile=$projectDirectory"data_sorted.bam";
+		ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
+		referenceFile=$genomeDirectory$genomeFASTA;
+		mkdir $abra2TempDirectory;
+		$java7Directory"java" -Xmx2g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
+		# abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
+		# example command-line from abra2 readme.
+		# java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
+		# From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
 
-                #================================
-                # Sorting BAM file after Abra2.
-                #--------------------------------
-                echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
-                echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
-                echo "Sorting BAM file." >> $condensedLog;
-                echo "\nRunning samtools:sort.\n";
-                $samtools_exec sort -@ $cores $projectDirectory"data_indelRealigned.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
-                echo "Indexing BAM file." >> $condensedLog;
-                echo "\nRunning samtools:index.\n";
-                $samtools_exec index $projectDirectory"data_sorted.bam";
-                echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
+		#================================
+		# Sorting BAM file after Abra2.
+		#--------------------------------
+		echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
+		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
+		echo "Sorting BAM file." >> $condensedLog;
+		echo "\nRunning samtools:sort.\n";
+		$samtools_exec sort -@ $cores $projectDirectory"data_indelRealigned.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
+		echo "Indexing BAM file." >> $condensedLog;
+		echo "\nRunning samtools:index.\n";
+		$samtools_exec index $projectDirectory"data_sorted.bam";
+		echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 
 		echo "#============================================================================== 3" >> $logName;
 
