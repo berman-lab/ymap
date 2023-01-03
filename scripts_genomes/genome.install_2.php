@@ -11,7 +11,7 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-    require_once '../constants.php';
+	require_once '../constants.php';
 
 	$user             = $_SESSION['user'];
 	$key              = filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING);
@@ -26,9 +26,9 @@
 	$chr_count_used   = 0;
 
 // Open 'process_log.txt' file.
-    $logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
-    $logOutput     = fopen($logOutputName, 'a');
-    fwrite($logOutput, "Running 'scripts_genomes/genome.install_2.php'.\n");
+	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
+	$logOutput     = fopen($logOutputName, 'a');
+	fwrite($logOutput, "Running 'scripts_genomes/genome.install_2.php'.\n");
 
 	$sizeFile_1   = "../users/".$user."/genomes/".$genome."/upload_size_1.txt";
 	$handle       = fopen($sizeFile_1,'r');
@@ -72,7 +72,7 @@
 		$rDNA_chr = "null";
 	}
 
-	// Generate 'chromosome_sizes.txt' :
+// Generate 'chromosome_sizes.txt' :
 	fwrite($logOutput, "\tGenerating 'chromosome_sizes.txt' file.\n");
 	$outputName       = "../users/".$user."/genomes/".$genome."/chromosome_sizes.txt";
 	if (file_exists($outputName)) {
@@ -82,7 +82,7 @@
 		fwrite($output, $fileContents);
 	} else {
 		$output       = fopen($outputName, 'w');
-		fwrite($output, "# Chr\tsize(bp)\tname\n");		
+		fwrite($output, "# Chr\tsize(bp)\tname\n");
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
 			$chrID = $chr + 1;
 			if ($chr_draws[$chr] == 1) {
@@ -92,15 +92,15 @@
 		fclose($output);
 	}
 
-	// Generate 'centromere_locations.txt' :
+// Generate 'centromere_locations.txt' :
 	fwrite($logOutput, "\tGenerating 'centromere_locations.txt' file.\n");
 	$outputName       = "../users/".$user."/genomes/".$genome."/centromere_locations.txt";
 	if (file_exists($outputName)) {
-        $fileContents = file_get_contents($outputName);
-        unlink($outputName);
-        $output       = fopen($outputName, 'w');
-        fwrite($output, $fileContents);
-    } else {
+		$fileContents = file_get_contents($outputName);
+		unlink($outputName);
+		$output       = fopen($outputName, 'w');
+		fwrite($output, $fileContents);
+	} else {
 		$output       = fopen($outputName, 'w');
 		fwrite($output, "# Chr\tCEN-start\tCEN-end\n");
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
@@ -112,7 +112,7 @@
 	}
 	fclose($output);
 
-	// Generate 'figure_definitions.txt' :
+// Generate 'figure_definitions.txt' :
 	fwrite($logOutput, "\tGenerating 'figure_definitions.txt' file.\n");
 	$max_length       = max($chr_lengths);
 	$outputName       = "../users/".$user."/genomes/".$genome."/figure_definitions.txt";
@@ -125,19 +125,19 @@
 		$output       = fopen($outputName, 'w');
 		fwrite($output, "# Chr\tUse\tLabel\tName\tposX\tposY\twidth\theight\n");
 		if ($chr_count != 0) {
-			$usedChrID = 0; // used to count the number of used chromosomes that will be drawn for positioning of the stacked figure   
+			$usedChrID = 0; // used to count the number of used chromosomes that will be drawn for positioning of the stacked figure
 			// setting figure height to be the same for all figures making them ocuppy 50 precent of the maximum height (50 precent for gap)
-			$fig_height = 0.5*(0.97/($chr_count_used + 0.5));						
+			$fig_height = 0.5*(0.97/($chr_count_used + 0.5));
 			for ($chr=0; $chr<$chr_count; $chr += 1) {
-				$chrID = $chr + 1; 
-				if ($chr_draws[$chr] == 1) {// if this chromosome should be drawn incrementing  
-				  $usedChrID += 1; 
-				} 
+				$chrID = $chr + 1;
+				if ($chr_draws[$chr] == 1) {// if this chromosome should be drawn incrementing
+				  $usedChrID += 1;
+				}
 				$fig_posX   = 0.15;
 				// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end)
 				$fig_posY   = 0.97-(0.97/($chr_count_used + 0.5))*$usedChrID;
 				if ($chr_lengths[$chr] == $max_length) {
-					$fig_width = "0.8"; 
+					$fig_width = "0.8";
 				} else {
 					$fig_width = "*";
 				}
@@ -151,7 +151,31 @@
 	}
 	fclose($output);
 
-	// Generate "ploidy.txt" :
+// Generate "genome.bed" :
+	fwrite($logOutput, "\tGenerating 'genome.bed' file.\n");
+	$max_length       = max($chr_lengths);
+	$outputName       = "../users/".$user."/genomes/".$genome."/genome.bed";
+	if (file_exists($outputName)) {
+		$fileContents = file_get_contents($outputName);
+		unlink($outputName);
+		$output       = fopen($outputName, 'w');
+		fwrite($output, $fileContents);
+	} else {
+		$output       = fopen($outputName, 'w');
+		fwrite($output, "# BED file to limit Abr2 to only indel-realigning used chromosomes.\n");
+		fwrite($output, "# [chr name]\t0\t[chr length]\n");
+		if ($chr_count != 0) {
+			for ($chr=0; $chr<$chr_count; $chr += 1) {
+				$chrID = $chr + 1;
+				if ($chr_draws[$chr] == 1) {
+					fwrite($output, $chr_names[$chr]."\t0\t".$chr_lengths[$chr]."\n");
+				}
+			}
+		}
+	}
+	fclose($output);
+
+// Generate "ploidy.txt" :
 	fwrite($logOutput, "\tGenerating 'ploidy.txt' file.\n");
 	$outputName       = "../users/".$user."/genomes/".$genome."/ploidy.txt";
 	if (file_exists($outputName)) {
@@ -166,7 +190,7 @@
 	fclose($output);
 
 	// Save important variables to $_SESSION.
-	fwrite($logOutput, "\tStoring PHP session variables.\n");	
+	fwrite($logOutput, "\tStoring PHP session variables.\n");
 	$_SESSION['rDNA_chr_'.$key]         = $rDNA_chr;
 	$_SESSION['rDNA_start_'.$key]       = $rDNA_start;
 	$_SESSION['rDNA_end_'.$key]         = $rDNA_end;
