@@ -113,7 +113,7 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
 
-# Define temporary directory for abra2C files.
+# Define temporary directory for abra2 files.
 abra2TempDirectory=$projectDirectory"abra2_temp/";
 echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
 

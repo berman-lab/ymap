@@ -116,7 +116,7 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
 
-# Define temporary directory for abra2C files.
+# Define temporary directory for abra2 files.
 abra2TempDirectory=$projectDirectory"abra2_temp/";
 echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
 
@@ -195,99 +195,6 @@ else
 	then
 		echo "\tBAM.indelrealignment done; Samtools.pileup generated.." >> $logName;
 	else
-#		echo "[[=- GATK analysis, indel-realignment -=]]" >> $logName;
-#		GATKinputFile=$projectDirectory"data_sorted.bam";
-#		GATKoutputFile1=$projectDirectory"data_forIndelRealigner.intervals";
-#		GATKoutputFile2=$projectDirectory"data_indelRealigned.bam";
-#		GATKreference=$genomeDirectory$genomeFASTA;
-#
-#		# 'LENIENT' should allow GATK to ignore problem reads.
-#		GATKoptions="-S LENIENT -filterMBQ";
-#
-#		## FASTQC : determine read quality format in use.
-#		echo "\tFASTQC : Read quality coding is required." >> $logName;
-#		## FASTQC analysis of FASTQ input files to determine read quality coding.
-#		## This is needed for determining GATK command option to deal with alternate coding.
-#		#		S - Sanger        Phred+33,  raw reads typically (0, 40)
-#		#		X - Solexa        Solexa+64, raw reads typically (-5, 40)
-#		#		I - Illumina 1.3+ Phred+64,  raw reads typically (0, 40)
-#		#		J - Illumina 1.5+ Phred+64,  raw reads typically (3, 40)
-#		#		L - Illumina 1.8+ Phred+33,  raw reads typically (0, 41)
-#		echo "\tWorking directory : '"$fastqcTempDirectory"'" >> $logName;
-#
-#		mkdir $fastqcTempDirectory;
-#
-#		# -o : points to standardized ouptut temp directory.
-#		echo "Identifying quality coding used in FASTA." >> $condensedLog;
-#		FASTQClog1=$projectDirectory"fastqc.process.log";
-#		echo "\nRunning fastqc.\n";
-#		$fastqcDirectory"fastqc" -t $cores -o $fastqcTempDirectory $projectDirectory$datafile1 > $FASTQClog1;
-#		echo "\tFASTQC log output :" >> $logName;
-#		sed 's/^/\t\t|/;' $FASTQClog1 >> $logName;
-#		rm $FASTQClog1;
-#
-#		echo "fastQC_1" >> $logName;
-#
-#		# get file extension.
-#		fileExt=${datafile1#*.};
-#
-#		echo "fastQC_2" >> $logName;
-#
-#		# generate file name with extension removed and '_fastqc' appended, to match FASTQC output files.
-#		findStr="."$fileExt;
-#		replaceStr="_fastqc";
-#		FASTQC_temp_file=$(echo $datafile1 | sed -e "s/$findStr/$replaceStr/g");
-#
-#		echo "fastQC_3" >> $logName;
-#
-#		# parse read quality encoding format from FASTQC output.
-#		qualityCodingLine=`sed -n 6,6'p' $fastqcTempDirectory$FASTQC_temp_file"/fastqc_data.txt"`;
-#		qualityCoding=$(echo $qualityCodingLine | cut -c9-);
-#
-#		echo "fastQC_4" >> $logName;
-#
-#		# cleanup extraneous FASTQC files.
-#		rm $fastqcTempDirectory$FASTQC_temp_file".zip";
-#		rm -rf $fastqcTempDirectory$FASTQC_temp_file;
-#
-#		echo "fastQC_5" >> $logName;
-#
-#		# Trim starting and ending whitespace from quality coding string.
-#		trimmedQualityCoding="${qualityCoding#"${qualityCoding%%[![:space:]]*}"}";                # remove leading whitespace characters
-#		trimmedQualityCoding="${trimmedQualityCoding%"${trimmedQualityCoding##*[![:space:]]}"}";  # remove trailing whitespace characters
-#		echo "\t\tQuality coding method = '"$trimmedQualityCoding"'." >> $logName;
-#
-#		# Expected output:
-#		#       "Illumina 1.5"          : starting with 64.
-#		#       "Sanger / Illumina 1.9" : normal, starting with 33.   [MiSeq]
-#
-#		# If quality coding string matches a type known to start with 64, update GATK option string.
-#		if [ "$trimmedQualityCoding" = "Illumina 1.5" ]
-#		then
-#			GATKoptions=$GATKoptions" -fixMisencodedQuals";
-#			echo "\t\tGATK option to deal with quality coding = ' -fixMisencodedQuals'." >> $logName;
-#		fi
-#
-#		GATKlog1=$projectDirectory"gatk.RealignerTargetCreator.log";
-#		GATKlog2=$projectDirectory"gatk.IndelRealigner.log";
-#
-#		echo "\tGATK options = '"$GATKoptions"'" >> $logName;
-#		echo "\tGATK : preparing for IndelRealignment." >> $logName;
-#		echo "Preparing for indel realignment." >> $condensedLog;
-#		echo "\nRunning gatk:RealignerTargetCreator.\n";
-#		$java7Directory"java" -jar $gatkDirectory"GenomeAnalysisTK.jar" -T RealignerTargetCreator -nt $cores -I $GATKinputFile -R $GATKreference -o $GATKoutputFile1 $GATKoptions > $GATKlog1;
-#		sed 's/^/\t\t|/;' $GATKlog1 >> $logName;
-#		echo "\tGATK : prepared for IndelRealignment." >> $logName;
-#		echo "\tGATK : performing IndelRealignment." >> $logName;
-#		echo "Realigning indels." >> $condensedLog;
-#		echo "\nRunning gatk:IndelRealigner.\n";
-#		$java7Directory"java" -jar $gatkDirectory"GenomeAnalysisTK.jar" -T IndelRealigner -I $GATKinputFile -R $GATKreference -targetIntervals $GATKoutputFile1 -o $GATKoutputFile2 $GATKoptions > $GATKlog2;
-#		sed 's/^/\t\t|/;' $GATKlog2 >> $logName;
-#		echo "\tGATK : performed IndelRealignment." >> $logName;
-#
-#		rm $GATKlog1;
-#		rm $GATKlog2;
-
 		#================================
 		# Abra2: indel realignment.
 		#--------------------------------
@@ -321,8 +228,7 @@ else
 		echo "#============================================================================== 3" >> $logName;
 
 		echo "[[=- In-house SNP/CNV/INDEL analysis -=]]" >> $logName;
-		usedFile=$projectDirectory"data_indelRealigned.bam";
-
+		usedFile=$projectDirectory"data_sorted.bam";
 		echo "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
 		echo "Generating pileup file." >> $condensedLog;
 		echo "\nRunning samtools:mpileup.\n";
