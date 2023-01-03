@@ -285,16 +285,16 @@ echo   "========================================================================
 if [ $hapmapInUse = 0 ]
 then
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh "$user" "$project" "$main_dir >> $logName;
+	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh "$user" "$project >> $logName;
 	echo "Script executed from: ${PWD}" >> $logName;
 
 	echo   "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project;
 else
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$hapmap" "$main_dir >> $logName;
+	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$hapmap >> $logName;
 	echo "Script executed from: ${PWD}" >> $logName;
 
 	echo "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap;
 fi

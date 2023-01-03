@@ -289,9 +289,9 @@ if [ $hapmapInUse = 0 ]
 then
 	echo "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project;
 else
 	echo "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "================================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap;
 fi

@@ -10,7 +10,7 @@ umask 007;
 user=$1;
 project=$2;
 hapmap=$3
-main_dir=$(pwd)"/";
+main_dir=$(pwd)"/../../";
 
 # load local installed program location variables.
 . $main_dir/local_installed_programs.sh;

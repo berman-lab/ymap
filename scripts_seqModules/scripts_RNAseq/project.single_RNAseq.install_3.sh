@@ -9,7 +9,7 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$(pwd)"/";
+main_dir=$(pwd)"/../../";
 
 #user='darren'
 #project='Meleah_SC5314'
@@ -245,9 +245,9 @@ if [ $hapmapInUse = 0 ]
 then
 	echo "\nPassing processing on to 'project.RNAseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "============================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_RNAseq/project.RNAseq.install_4.sh" $user $project $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_RNAseq/project.RNAseq.install_4.sh" $user $project;
 else
 	echo "\nPassing processing on to 'project.RNAseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "===================================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_RNAseq/project.RNAseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_RNAseq/project.RNAseq.hapmap.install_4.sh" $user $project $hapmap;
 fi
