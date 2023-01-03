@@ -178,11 +178,15 @@ else
 		echo "\tAbra2 : indel-realignment in process." >> $logName;
 		echo "Indel realignment with ABRA2." >> $condensedLog;
 		echo "\nRunning abra2.\n";
+		ABRA2bedFile=$genomeDirectory"genome.bed";
 		ABRA2inputFile=$projectDirectory"data_sorted.bam";
 		ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
 		referenceFile=$genomeDirectory$genomeFASTA;
 		mkdir $abra2TempDirectory;
-		$java7Directory"java" -Xmx2g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
+		echo ""  >> $logName;
+		echo "command: "$java7Directory"java -Xmx16g -jar "$abra2_exec" --in "$ABRA2inputFile" --out "$ABRA2outputFile" --ref "$referenceFile" --threads "$cores" --targets "$ABRA2bedFile" --tmpdir "$abra2TempDirectory" > "$projectDirectory"abra2.log"  >> $logName;
+		echo ""  >> $logName;
+		$java7Directory"java" -Xmx16g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --targets $ABRA2bedFile --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
 		echo "\tAbra2 : indel-realignment done." >> $logName;
 		# abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
 		# example command-line from abra2 readme.
