@@ -78,22 +78,22 @@
 					$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 					$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
-					// Go through each $projectFolder and look at 'genome.txt' and 'dataType.txt'; build javascript array of prejectName:genome:datatype triplets.
+					// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of prejectName:genome:dataformat triplets.
 					?>
 					Next strain : <select id="selectNext" name="selectNext"><option>[choose]</option></select>
 					<script type="text/javascript">
-					var nextGenomeDatatype_entries = [['next','genome','dataType']<?php
+					var nextGenomeDataFormat_entries = [['next','genome','dataFormat']<?php
 					foreach ($projectFolders_raw as $key=>$folder) {
-						$handle2         = fopen($folder."/dataType.txt", "r");
-						$dataType_string = trim(fgets($handle2));
-						$dataType_string = explode(":",$dataType_string);
-						$dataType_string = $dataType_string[0];
+						$handle2         = fopen($folder."/dataFormat.txt", "r");
+						$dataFormat_string = trim(fgets($handle2));
+						$dataFormat_string = explode(":",$dataFormat_string);
+						$dataFormat_string = $dataFormat_string[0];
 						fclose($handle2);
 
 						// Exclude projects from unusable data types.
-						if ($dataType_string == '0') {
+						if ($dataFormat_string == '0') {
 							// 0 : array data is excluded from options.
-						} elseif ($dataType_string == '1') {
+						} elseif ($dataFormat_string == '1') {
 							// 1 : WGseq data is usable.
 							$handle1         = fopen($folder."/genome.txt", "r");
 							$genome_string   = trim(fgets($handle1));
@@ -102,7 +102,7 @@
 							$nextName        = $folder;
 							$nextName        = str_replace($projectsDir1,"",$nextName);
 							$nextName        = str_replace($projectsDir2,"",$nextName);
-							echo ",['{$nextName}','{$genome_string}',{$dataType_string}]";
+							echo ",['{$nextName}','{$genome_string}',{$dataFormat_string}]";
 						} else {
 							// 2 : ddRADseq data is unusable.
 							// 3 : IonExpressSeq data is unusable.
@@ -112,13 +112,13 @@
 					?>];
 
 					UpdateNextList=function() {
-						var selectedGenome   = "<?php echo $genome; ?>";
-						var selectedDatatype = 1
-						var select           = document.getElementById("selectNext");     // grab select list.
-						select.innerHTML     = '';
-						for (var i = 1; i < nextGenomeDatatype_entries.length; i++) {
-							var item = nextGenomeDatatype_entries[i];
-							if (selectedGenome == item[1] && selectedDatatype == item[2]) {
+						var selectedGenome     = "<?php echo $genome; ?>";
+						var selectedDataFormat = 1
+						var select             = document.getElementById("selectNext");     // grab select list.
+						select.innerHTML       = '';
+						for (var i = 1; i < nextGenomeDataFormat_entries.length; i++) {
+							var item = nextGenomeDataFormat_entries[i];
+							if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
 								var el         = document.createElement("option");
 								el.textContent = item[0];
 								el.value       = item[0];

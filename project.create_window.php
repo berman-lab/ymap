@@ -42,7 +42,7 @@
 					Genome annotations, such as rDNA locus, can be drawn at bottom of figures.
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
-					<label for="dataType">Data type : </label><select name="dataType" id="dataType" onchange="UpdateForm(); UpdateHapmap(); UpdateParentList()">
+					<label for="dataFormat">Data type : </label><select name="dataFormat" id="dataFormat" onchange="UpdateForm(); UpdateHapmap(); UpdateParentList()">
 						<option value="0">SnpCgh microarray        </option>
 						<option value="1">Whole genome NGS         </option>
 						<option value="2">ddRADseq                 </option>
@@ -174,12 +174,12 @@
 					$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 					$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
-					// Go through each $projectFolder and look at 'genome.txt' and 'dataType.txt'; build javascript array of prejectName:genome:datatype triplets.
+					// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of prejectName:genome:dataFormat triplets.
 					?>
 					<div id="hiddenFormSection7" style="display:none">
 						Parental strain : <select id="selectParent" name="selectParent"><option>[choose]</option></select>
 						<script type="text/javascript">
-						var parentGenomeDatatype_entries = [['parent','genome','dataType']<?php
+						var parentGenomeDataFormat_entries = [['parent','genome','dataFormat']<?php
 						foreach ($projectFolders_raw as $key=>$folder) {
 							// display project only if processing finished
 							if (file_exists($folder . "/complete.txt")) {
@@ -191,10 +191,10 @@
 									$genome_string   = trim(fgets($handle1));
 									fclose($handle1);
 								}
-						 		$handle2         = fopen($folder."/dataType.txt", "r");
-								$dataType_string = trim(fgets($handle2));
-								$dataType_string = explode(":",$dataType_string);
-								$dataType_string = $dataType_string[0];
+						 		$handle2         = fopen($folder."/dataFormat.txt", "r");
+								$dataFormat_string = trim(fgets($handle2));
+								$dataFormat_string = explode(":",$dataFormat_string);
+								$dataFormat_string = $dataFormat_string[0];
 								fclose($handle2);
 								$parentName      = $folder;
 								// reading name according to the folder the parent exist
@@ -206,7 +206,7 @@
 								}
 								$parentName      = str_replace($projectsDir1,"",$parentName);
 								$parentName      = str_replace($projectsDir2,"",$parentName);
-								echo ",['{$parentName}','{$genome_string}',{$dataType_string}, '{$projectNameString}']";
+								echo ",['{$parentName}','{$genome_string}',{$dataFormat_string}, '{$projectNameString}']";
 							}
 						}
 						?>];
@@ -263,7 +263,7 @@
 					document.getElementById("hiddenFormSection8a").style.display  = 'none';
 					document.getElementById("hiddenFormSection8b").style.display  = 'inline';
 				} else {
-					if (document.getElementById("dataType").value == 2) {    // ddRADseq.
+					if (document.getElementById("dataFormat").value == 2) {    // ddRADseq.
 						document.getElementById("hiddenFormSection7" ).style.display  = 'inline';
 						document.getElementById("hiddenFormSection8a").style.display  = 'none';
 						document.getElementById("hiddenFormSection8b").style.display  = 'inline';
@@ -294,16 +294,16 @@
 			}
 			UpdateParentList=function() {
 				var selectedGenome   = document.getElementById("genome").value;   // grab genome name.
-				var selectedDatatype = document.getElementById("dataType").value; // grab dataset type.
+				var selectedDataFormat = document.getElementById("dataFormat").value; // grab dataset type.
 				var select           = document.getElementById("selectParent");   // grab select list.
 				select.innerHTML     = '';
 				var el               = document.createElement("option");
 				el.textContent       = '[This strain is parental type.]';
 				el.value             = 'none';
 				select.appendChild(el);
-				for (var i = 1; i < parentGenomeDatatype_entries.length; i++) {
-					var item = parentGenomeDatatype_entries[i];
-					if (selectedGenome == item[1] && selectedDatatype == item[2]) {
+				for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
+					var item = parentGenomeDataFormat_entries[i];
+					if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
 						var el         = document.createElement("option");
 						el.textContent = item[3];
 						el.value       = item[0];
@@ -313,7 +313,7 @@
 			}
 			UpdateForm=function() {
 				// Manages hiding and displaying form sections during user interaction.
-				if (document.getElementById("dataType").value == 0) {			// SnpCgh Microarray.
+				if (document.getElementById("dataFormat").value == 0) {			// SnpCgh Microarray.
 					document.getElementById("hiddenFormSection1").style.display  = 'none';
 					document.getElementById("hiddenFormSection2").style.display  = 'none';
 					document.getElementById("hiddenFormSection2a").style.display = 'none';
@@ -342,13 +342,13 @@
 					document.getElementById("hiddenFormSection7").style.display  = 'inline';
 					document.getElementById("hiddenFormSection10").style.display = 'none';
 					document.getElementById("hiddenFormSection11").style.display = 'none';
-					if (document.getElementById("dataType").value == 1) { // WGseq
+					if (document.getElementById("dataFormat").value == 1) { // WGseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'inline';
 						document.getElementById("hiddenFormSection9c").style.display = 'none';
 						document.getElementById("hiddenFormSection9d").style.display = 'none';
 						document.getElementById("hiddenFormSection9e").style.display = 'none';
-					} else if (document.getElementById("dataType").value == 2) { // ddRADseq
+					} else if (document.getElementById("dataFormat").value == 2) { // ddRADseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'none';
 						document.getElementById("hiddenFormSection9c").style.display = 'inline';
@@ -356,7 +356,7 @@
 						document.getElementById("hiddenFormSection9e").style.display = 'none';
 						document.getElementById("hiddenFormSection10").style.display = 'inline';
 						document.getElementById("hiddenFormSection11").style.display = 'inline';
-					} else if (document.getElementById("dataType").value == 3) { // RNAseq (tsting)
+					} else if (document.getElementById("dataFormat").value == 3) { // RNAseq (tsting)
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'none';
 						document.getElementById("hiddenFormSection9c").style.display = 'none';
@@ -372,10 +372,10 @@
 				}
 			}
 			UpdateHapmap=function() {
-				if (document.getElementById("dataType").value == 0) {			// SnpCgh microarray.
+				if (document.getElementById("dataFormat").value == 0) {			// SnpCgh microarray.
 					document.getElementById("hiddenFormSection8a").style.display = 'none';
 					document.getElementById("hiddenFormSection8b").style.display = 'none';
-				} else if (document.getElementById("dataType").value == 2) {	// ddRADseq.
+				} else if (document.getElementById("dataFormat").value == 2) {	// ddRADseq.
 					document.getElementById("hiddenFormSection8a").style.display = 'none';
 					document.getElementById("hiddenFormSection8b").style.display = 'inline';
 				} else {								// WGseq

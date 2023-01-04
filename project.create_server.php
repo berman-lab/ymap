@@ -18,9 +18,9 @@
 	$projectNameTrimmed     = str_replace(" ","_",$projectNameTrimmed);
 	$ploidy                 = filter_input(INPUT_POST, "ploidy",                   FILTER_SANITIZE_STRING);
 	$ploidyBase             = filter_input(INPUT_POST, "ploidyBase",               FILTER_SANITIZE_STRING);
-	$dataType               = filter_input(INPUT_POST, "dataType",                 FILTER_SANITIZE_STRING);
+	$dataFormat             = filter_input(INPUT_POST, "dataFormat",               FILTER_SANITIZE_STRING);
 	$showAnnotations        = filter_input(INPUT_POST, "showAnnotations",          FILTER_SANITIZE_STRING);
-	if ($dataType != "0") {		// we're dealing with ddRADseq, WGseq, or RNAseq.
+	if ($dataFormat != "0") {		// we're dealing with ddRADseq, WGseq, or RNAseq.
 		$readType            = filter_input(INPUT_POST, "readType",                 FILTER_SANITIZE_STRING);
 		$performIndelRealign = filter_input(INPUT_POST, "indelrealign",             FILTER_SANITIZE_STRING);
 		if ($performIndelRealign == "True") {
@@ -105,7 +105,7 @@
 		// Generate 'parent.txt' file.
 		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/parent.txt";
 		$file     = fopen($fileName, 'w');
-		if ($dataType == "0") {
+		if ($dataFormat == "0") {
 			fwrite($file, "none");
 		} else {
 			fwrite($file, $parent);
@@ -113,38 +113,38 @@
 		fclose($file);
 		chmod($fileName,0644);
 
-		// Generate 'dataType.txt' and 'dataBiases.txt' files.
-		// dataType.txt file: #:#:# where 1st # indicates type of data, 2nd # indicates format of input data, & 3rd # indicates if indel-realignment should be done.
+		// Generate 'dataFormat.txt' and 'dataBiases.txt' files.
+		// dataFormat.txt file: #:#:# where 1st # indicates type of data, 2nd # indicates format of input data, & 3rd # indicates if indel-realignment should be done.
 		// 1st #: 0=SnpCghArray; 1=WGseq; 2=ddRADseq; 3=RNAseq; 4=IonExpressSeq.
 		// 2nd #: 0=single-end-reads FASTQ/ZIP/GZ; 1=paired-end-reads FASTQ/ZIP/GZ; 2=SAM/BAM; 3=TXT.
 		// 3rd #: 0=False, no indel-realignment; 1=True, performe indel-realignment.
-		$fileName1 = "users/".$user."/projects/".$projectNameTrimmed."/dataType.txt";
+		$fileName1 = "users/".$user."/projects/".$projectNameTrimmed."/dataFormat.txt";
 		$file1     = fopen($fileName1, 'w');
 		$fileName2 = "users/".$user."/projects/".$projectNameTrimmed."/dataBiases.txt";
 		$file2     = fopen($fileName2, 'w');
-		if ($dataType == "0") { // SnpCghArray
-			fwrite($file1, $dataType);
+		if ($dataFormat == "0") { // SnpCghArray
+			fwrite($file1, $dataFormat);
 			$bias_GC     = filter_input(INPUT_POST, "0_bias2", FILTER_SANITIZE_STRING);
 			$bias_end    = filter_input(INPUT_POST, "0_bias4", FILTER_SANITIZE_STRING);
 			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
 			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; }
 			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
-		} else if ($dataType == "1") { // WGseq
-			fwrite($file1, $dataType.":".$readType.":".$indelRealign);
+		} else if ($dataFormat == "1") { // WGseq
+			fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
 			$bias_GC     = filter_input(INPUT_POST, "1_bias2", FILTER_SANITIZE_STRING);
 			$bias_end    = filter_input(INPUT_POST, "1_bias4", FILTER_SANITIZE_STRING);
 			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
 			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; } else {$bias_GC  = "True"; }
 			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
-		} else if ($dataType == "4") { // IonExpressSeq
-			fwrite($file1, $dataType.":".$readType.":".$indelRealign);
+		} else if ($dataFormat == "4") { // IonExpressSeq
+			fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
 			$bias_GC     = filter_input(INPUT_POST, "4_bias2", FILTER_SANITIZE_STRING);
 			$bias_end    = filter_input(INPUT_POST, "4_bias4", FILTER_SANITIZE_STRING);
 			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
 			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; }
 			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
-		} else if ($dataType == "2") { // ddRADseq
-			fwrite($file1, $dataType.":".$readType.":".$indelRealign);
+		} else if ($dataFormat == "2") { // ddRADseq
+			fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
 			$bias_length = filter_input(INPUT_POST, "2_bias1", FILTER_SANITIZE_STRING);
 			$bias_GC     = filter_input(INPUT_POST, "2_bias2", FILTER_SANITIZE_STRING);
 			$bias_end    = filter_input(INPUT_POST, "2_bias4", FILTER_SANITIZE_STRING);
@@ -152,8 +152,8 @@
 			if (strcmp($bias_GC    ,"") == 0) { $bias_GC     = "False"; }
 			if (strcmp($bias_end   ,"") == 0) { $bias_end    = "False"; }
 			fwrite($file2,$bias_length."\n".$bias_GC."\nFalse\n".$bias_end);
-		} else if ($dataType == "3") { // RNAseq
-			fwrite($file1, $dataType.":".$readType.":".$indelRealign);
+		} else if ($dataFormat == "3") { // RNAseq
+			fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
 			$bias_length = filter_input(INPUT_POST, "3_bias1", FILTER_SANITIZE_STRING);
 			$bias_GC     = filter_input(INPUT_POST, "3_bias2", FILTER_SANITIZE_STRING);
 			$bias_end    = filter_input(INPUT_POST, "3_bias4", FILTER_SANITIZE_STRING);
@@ -168,7 +168,7 @@
 		chmod($fileName1,0644);
 
 		// Generate 'restrictionEnzymes.txt' file, only for ddRADseq projects.
-		if ($dataType == "2") { // ddRADseq
+		if ($dataFormat == "2") { // ddRADseq
 			$fileName = "users/".$user."/projects/".$projectNameTrimmed."/restrictionEnzymes.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $restrictionEnzymes);

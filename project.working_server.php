@@ -42,9 +42,9 @@ body {font-family: arial;}
 
 	$dirFigureBase = "users/".$user."/projects/".$project."/";
 
-	// Load 'dataType' from project folder.
-	$handle   = fopen($dirFigureBase."dataType.txt", "r");
-	$dataType = trim(fgets($handle));
+	// Load 'dataFormat' from project folder.
+	$handle   = fopen($dirFigureBase."dataFormat.txt", "r");
+	$dataFormat = trim(fgets($handle));
 	fclose($handle);
 
 	// Load 'parent' from project folder.
@@ -107,7 +107,7 @@ body {font-family: arial;}
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
-		if (strcmp($dataType,"0") == 0) {
+		if (strcmp($dataFormat,"0") == 0) {
 			$timeLimit  = 60*60;   // 1 hour minutes for array analysis.
 		} else {
 			$timeLimit  = 60*60*6; // 6 hours
@@ -169,7 +169,7 @@ body {font-family: arial;}
 			<div style='color: red; display: inline-block; font-size: 10px;'><b>[Processing uploaded data.]</b></div>
 			<?php
 			echo $clock."<br>";
-			if (strcmp($dataType,"0") == 0) {
+			if (strcmp($dataFormat,"0") == 0) {
 				echo "<div style='font-size: 10px;'>";
 				echo "SnpCgh microarray analysis usually completes in less than an hour, depending on system load.";
 				echo "</div>";

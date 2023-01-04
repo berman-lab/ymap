@@ -22,16 +22,22 @@
 <!---------- Main section of User interface ----------!>
 	<form id="fileupload" class="HTML5Uploader" method="POST" action="uploader/" enctype="multipart/form-data">
 		<div class="upload-wrapper">
+
 			<table><tr>
 			<!---------- Add file to upload button. ----------!>
 			<td valign="top">
 				<div id="select-wrapper" class="info-wrapper">
 					<div id="browsebutton" class="fileinput-button button gray" href="">
 						<script type="text/javascript">
-							console.log("uploader.1.php : display_string    = '"+display_string[0]+"'");
-					                console.log("uploader.1.php : currentDir        = '<?php echo getcwd(); ?>'");
-							console.log("uploader.1.php : target_dir        = '"+target_dir+"'");
-							console.log("uploader.1.php : conclusion_script = '"+conclusion_script+"'");
+							console.log(        "uploader.1.php : display_string = '"+display_string[0]+"'");
+							console.log(        "uploader.1.php : user           = '"+user+"'");
+							if (typeof genome !== 'undefined') {
+								console.log("uploader.1.php : genome         = '"+genome+"'");
+							} else {
+								console.log("uploader.1.php : project        = '"+project+"'");
+								console.log("uploader.1.php : dataFormat     = '"+dataFormat+"'");
+							}
+							console.log(        "uploader.1.php : key            = '"+key+"'");
 							document.write(display_string[0]);
 						</script>
 						<input type="file" id="fileinput" name="files[]" class="fileinput" single onchange="Finalize()">
@@ -62,12 +68,17 @@
 			<!---------- Pass along the script to be run once all files are loaded. ----------!>
 			<input type="hidden" id="hidden_field" name="target_dir" value="123">
 			<script type="text/javascript">
+				if (typeof genome !== 'undefined') {
+					target_dir = '../../users/'+user+'/genomes/'+genome+'/';
+				} else {
+					target_dir = '../../users/'+user+'/projects/'+project+'/';
+				}
 				document.getElementById('hidden_field').value = target_dir;
 
-			Finalize=function() {
-				// show upload button once input file is selected.
-				document.getElementById("info-wrapper-1").style.display = 'inline';
-			}
+				Finalize=function() {
+					// show upload button once input file is selected.
+					document.getElementById("info-wrapper-1").style.display = 'inline';
+				}
 			</script>
 		</div>
 	</form>

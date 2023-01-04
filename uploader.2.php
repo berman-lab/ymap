@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	$user = $_SESSION['user'];
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -28,10 +29,15 @@
 				<div id="select-wrapper" class="info-wrapper">
 					<div id="browsebutton" class="fileinput-button button gray" href="">
 						<script type="text/javascript">
-							console.log("uploader.2.php : display_string    = '"+display_string[0]+"'");
-							console.log("uploader.2.php : currentDir        = '<?php echo getcwd(); ?>'");
-							console.log("uploader.2.php : target_dir        = '"+target_dir+"'");
-							console.log("uploader.2.php : conclusion_script = '"+conclusion_script+"'");
+							console.log(        "uploader.2.php : display_string = '"+display_string[0]+"'");
+							console.log(        "uploader.2.php : user           = '"+user+"'");
+							if (typeof genome !== 'undefined') {
+								console.log("uploader.2.php : genome         = '"+genome+"'");
+							} else {
+								console.log("uploader.2.php : project        = '"+project+"'");
+								console.log("uploader.2.php : dataFormat     = '"+dataFormat+"'");
+							}
+							console.log(        "uploader.2.php : key            = '"+key+"'");
 							document.write(display_string[0]);
 						</script>
 						<input type="file" id="fileinput" name="files[]" class="fileinput" single onchange="Show2()">
@@ -96,20 +102,25 @@
 			<!---------- Pass along the script to be run once all files are loaded. ----------!>
 			<input type="hidden" id="hidden_field" name="target_dir" value="123">
 			<script type="text/javascript">
+				if (typeof genome !== 'undefined') {
+					target_dir = '../../users/'+user+'/genomes/'+genome+'/';
+				} else {
+					target_dir = '../../users/'+user+'/projects/'+project+'/';
+				}
 				document.getElementById('hidden_field').value = target_dir;
 
-			Show2=function() {
-				document.getElementById("2-wrapper").style.display = 'inline';
+				Show2=function() {
+					document.getElementById("2-wrapper").style.display = 'inline';
 
-				// hide upload buttons before all files are selected.
-				document.getElementById("info-wrapper-1").style.display = 'none';
-            }
-			Show3=function() {
-				document.getElementById("2-wrapper").style.display = 'none';
+					// hide upload buttons before all files are selected.
+					document.getElementById("info-wrapper-1").style.display = 'none';
+				}
+				Show3=function() {
+					document.getElementById("2-wrapper").style.display = 'none';
 
-				// show upload button once all files are selected.
-				document.getElementById("info-wrapper-1").style.display = 'inline';
-			}
+					// show upload button once all files are selected.
+					document.getElementById("info-wrapper-1").style.display = 'inline';
+				}
 			</script>
 		</div>
 	</form>
@@ -144,7 +155,9 @@
 	</script>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script>window.jQuery || document.write('<script src="js/jquery-1.9.1.min.js"><\/script>')</script>
+	<script>
+		window.jQuery || document.write('<script src="js/jquery-1.9.1.min.js"><\/script>')
+	</script>
 
 	<!-- handlebars -->
 	<script src="js/handlebars.min.js"></script>

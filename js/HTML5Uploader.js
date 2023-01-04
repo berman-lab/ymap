@@ -115,21 +115,37 @@ var allFiles = new Array;
 								$('#info-wrapper-1').fadeOut(0);
 								$('#info-wrapper-3').fadeOut(0);
 
+								//==================================================================
 								// Generate and submit a form to POST data to the concluding script.
+								//------------------------------------------------------------------
+								// Script to run at conclusion of data upload.
 								var conclusion = document.createElement("form");
 									conclusion.setAttribute("method","post");
-									conclusion.setAttribute("action",conclusion_script);
+									//conclusion.setAttribute("action","upload_processer.php");
+									conclusion.setAttribute("action","scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php");
+								// add dataFormat to form, if defined.
+								if ("project" in window) {
+								//	console.log("[]"+);
+									var input0 = document.createElement("input");
+										input0.setAttribute("type","hidden");
+										input0.setAttribute("name","dataFormat");
+										input0.setAttribute("value",dataFormat);
+										conclusion.appendChild(input0);
+								}
+								// add uploaded filename to form.
 								var input1 = document.createElement("input");
 									input1.setAttribute("type","hidden");
 									input1.setAttribute("name","fileName");
 									var outputFileNames = allFiles;
 									input1.setAttribute("value",outputFileNames);
 									conclusion.appendChild(input1);
+								// add user to form.
 								var input2 = document.createElement("input");
 									input2.setAttribute("type","hidden");
 									input2.setAttribute("name","user");
 									input2.setAttribute("value",user);
 									conclusion.appendChild(input2);
+								// add genome or project to form.
 								var input3 = document.createElement("input");
 									input3.setAttribute("type","hidden");
 									if ("genome" in window) {
@@ -140,6 +156,7 @@ var allFiles = new Array;
 										input3.setAttribute("value",project);
 									}
 									conclusion.appendChild(input3);
+								// add key to form.
 								var input4 = document.createElement("input");
 									input4.setAttribute("type","hidden");
 									input4.setAttribute("name","key");

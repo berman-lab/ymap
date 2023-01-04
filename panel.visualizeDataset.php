@@ -65,15 +65,15 @@
 			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 			$projectNameString = trim($projectNameString);
 
-			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
-			if (file_exists($dataType_file)) {
-				$handle       = fopen($dataType_file,'r');
-				$dataType     = trim(fgets($handle));
+			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+			if (file_exists($dataFormat_file)) {
+				$handle       = fopen($dataFormat_file,'r');
+				$dataFormat     = trim(fgets($handle));
 				fclose($handle);
 			} else {
-				$dataType     = 'null';
+				$dataFormat     = 'null';
 			}
-			if (strcmp($dataType,"0") == 0) {
+			if (strcmp($dataFormat,"0") == 0) {
 				$colorString1 = "cyan";
 				$colorString2 = "magenta";
 			}
@@ -108,15 +108,15 @@
 			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 			$projectNameString = trim($projectNameString);
 
-			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
-			if (file_exists($dataType_file)) {
-				$handle       = fopen($dataType_file,'r');
-				$dataType     = trim(fgets($handle));
+			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+			if (file_exists($dataFormat_file)) {
+				$handle       = fopen($dataFormat_file,'r');
+				$dataFormat     = trim(fgets($handle));
 				fclose($handle);
 			} else {
-				$dataType     = 'null';
+				$dataFormat     = 'null';
 			}
-			if (strcmp($dataType,"0") == 0) {
+			if (strcmp($dataFormat,"0") == 0) {
 				$colorString1 = "cyan";
 				$colorString2 = "magenta";
 			}
@@ -151,15 +151,15 @@
 			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 			$projectNameString = trim($projectNameString);
 
-			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
-			if (file_exists($dataType_file)) {
-				$handle       = fopen($dataType_file,'r');
-				$dataType     = trim(fgets($handle));
+			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+			if (file_exists($dataFormat_file)) {
+				$handle       = fopen($dataFormat_file,'r');
+				$dataFormat     = trim(fgets($handle));
 				fclose($handle);
 			} else {
-				$dataType     = 'null';
+				$dataFormat     = 'null';
 			}
-			if (strcmp($dataType,"0") == 0) {
+			if (strcmp($dataFormat,"0") == 0) {
 				$colorString1 = "cyan";
 				$colorString2 = "magenta";
 			}
