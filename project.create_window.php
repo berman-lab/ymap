@@ -174,12 +174,14 @@
 					$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 					$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
-					// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of prejectName:genome:dataFormat triplets.
+					// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of [parent:genome:dataFormat:projectName]s.
 					?>
-					<div id="hiddenFormSection7" style="display:none">
+<div id="hiddenFormSection7" style="display:none">
 						Parental strain : <select id="selectParent" name="selectParent"><option>[choose]</option></select>
 						<script type="text/javascript">
-						var parentGenomeDataFormat_entries = [['parent','genome','dataFormat']<?php
+						var parentGenomeDataFormat_entries = [
+							['parent', 'genome', 'dataFormat', 'projectName'],
+<?php
 						foreach ($projectFolders_raw as $key=>$folder) {
 							// display project only if processing finished
 							if (file_exists($folder . "/complete.txt")) {
@@ -191,25 +193,27 @@
 									$genome_string   = trim(fgets($handle1));
 									fclose($handle1);
 								}
-						 		$handle2         = fopen($folder."/dataFormat.txt", "r");
+						 		$handle2           = fopen($folder."/dataFormat.txt", "r");
 								$dataFormat_string = trim(fgets($handle2));
 								$dataFormat_string = explode(":",$dataFormat_string);
 								$dataFormat_string = $dataFormat_string[0];
 								fclose($handle2);
-								$parentName      = $folder;
-								// reading name according to the folder the parent exist
+								$parentName        = $folder;
+								// read name according to the folder the parent exist
 								if (file_exists($folder."/name.txt")) {
-									$projectNameString = file_get_contents($folder."/name.txt");
-									$parentName      = str_replace($projectsDir1,"",$parentName);
+									$projectNameString = trim(file_get_contents($folder."/name.txt"));
+									$parentName        = trim(str_replace($projectsDir1,"",$parentName));
 								} else {
-									$projectNameString = file_get_contents($folder."/name.txt");
+									$projectNameString = trim(file_get_contents($folder."/name.txt"));
 								}
-								$parentName      = str_replace($projectsDir1,"",$parentName);
-								$parentName      = str_replace($projectsDir2,"",$parentName);
-								echo ",['{$parentName}','{$genome_string}',{$dataFormat_string}, '{$projectNameString}']";
+								$parentName      = trim(str_replace($projectsDir1,"",$parentName));
+								$parentName      = trim(str_replace($projectsDir2,"",$parentName));
+								echo "\t\t\t\t\t\t\t";
+								echo "['{$parentName}', '{$genome_string}', {$dataFormat_string}, '{$projectNameString}']";
+								echo ",\n";
 							}
 						}
-						?>];
+?>						];
 						</script>
 					</div>
 				</td><td valign="top">
