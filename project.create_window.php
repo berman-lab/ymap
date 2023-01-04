@@ -22,22 +22,26 @@
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project">
 				</td><td>
 					Unique name for this dataset.
-				</td></tr><tr bgcolor="#CCCCFF"><td>
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
 					<label for="ploidy">Ploidy of experiment : </label><input type="text" name="ploidy"  id="ploidy" value="2.0"><br>
 				</td><td>
 					A ploidy estimate for the strain being analyzed.
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<label for="ploidy">Baseline ploidy : </label><input type="text" name="ploidyBase"  id="ploidyBase" value="2.0"><br>
 				</td><td>
 					The copy number to use as a baseline in drawing copy number variations.
-				</td></tr><tr bgcolor="#CCCCFF"><td>
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
 					<label for="showAnnotations">Generate figure with annotations?</label><select name="showAnnotations" id="showAnnotations">
 						<option value="1">Yes</option>
 						<option value="0">No</option>
 					</select>
 				</td><td>
 					Genome annotations, such as rDNA locus, can be drawn at bottom of figures.
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<label for="dataType">Data type : </label><select name="dataType" id="dataType" onchange="UpdateForm(); UpdateHapmap(); UpdateParentList()">
 						<option value="0">SnpCgh microarray        </option>
 						<option value="1">Whole genome NGS         </option>
@@ -48,7 +52,8 @@
 					</select>
 				</td><td>
 					The type of data to be processed.
-				</td></tr><tr bgcolor="#CCCCFF"><td valign="top">
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td valign="top">
 					<div id="hiddenFormSection1" style="display:none">
 						<label for="readType">Read type : </label><select name="readType" id="readType">
 							<option value="0">single-end reads; FASTQ/ZIP/GZ file.</option>
@@ -62,7 +67,18 @@
 						Single-end or paired-end reads in FASTQ format can be compressed into ZIP or GZ archives or in SAM/BAM alignment files.<br>
 						Tab-delimted TXT column format is described in 'About' tab of main page.
 					</div>
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
+                                        <div id="hiddenFormSection2a" style="display:none">
+                                                <input type="checkbox" name="indelrealign" value="True">Perform Indel-realignment<br>
+                                        </div>
+				</td><td>
+					<div id="hiddenFormSection2b" style="display:none">
+						Enable if you're going to be examining specific SNPs later. Disable otherwise.<br>
+						Disabled resulted in 1% spurious SNPs in test case, with no visual impact, but shortened analysis by ~3 hours.
+					</div>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection3" style="display:none">
 						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
 							<?php
@@ -78,7 +94,7 @@
                                         }
                                     }
                                 }
-                                
+
                                 ksort($genomesMap);
                                 foreach ($genomesMap as $genomeDirName => $genomeDisplayName) {
                                     echo "\n\t\t\t\t\t<option value='" . $genomeDirName . "'>" . $genomeDisplayName . "</option>";
@@ -89,7 +105,8 @@
 				</td><td valign="top">
 					<div id="hiddenFormSection4" style="display:none">
 					</div>
-				</td></tr><tr bgcolor="#CCCCFF"><td>
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
 					$hapmapsDir1       = "users/default/hapmaps/";
@@ -112,7 +129,8 @@
 						Analysis of ddRADseq data is limited to restriction fragments bound by both restriction enzymes.<br>
 						If your restriction enzyme pair is not listed, you can contact the system administrators about developing the option as a collaboration.
 					</div>
-				</td></tr><tr bgcolor="#CCCCFF"><td>
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
 					$hapmapsDir1       = "users/default/hapmaps/";
@@ -147,7 +165,8 @@
 						A haplotype map defines the phasing of heterozygous SNPs across the genome and must be matched to the background of the experiment for informative results.
 						SNP information from the hapmap will be used for SNP/LOH analsyses.
 					</div>
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
 					$projectsDir1       = "users/default/projects/";
@@ -200,7 +219,8 @@
 					<div id="hiddenFormSection8b" style="display:none">
 						This strain will act as the CNV normalization control.
 					</div>
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection9a" style="display:inline">
 						<!-- SnpCgh array --!>
 						<input type="checkbox"      name="0_bias2" value="True" checked>GC-content bias<br>
@@ -292,9 +312,12 @@
 				}
 			}
 			UpdateForm=function() {
+				// Manages hiding and displaying form sections during user interaction.
 				if (document.getElementById("dataType").value == 0) {			// SnpCgh Microarray.
 					document.getElementById("hiddenFormSection1").style.display  = 'none';
 					document.getElementById("hiddenFormSection2").style.display  = 'none';
+					document.getElementById("hiddenFormSection2a").style.display = 'none';
+					document.getElementById("hiddenFormSection2b").style.display = 'none';
 					document.getElementById("hiddenFormSection3").style.display  = 'none';
 					document.getElementById("hiddenFormSection4").style.display  = 'none';
 					document.getElementById("hiddenFormSection5").style.display  = 'none';
@@ -310,6 +333,8 @@
 				} else {														// WGseq or ddRADseq.
 					document.getElementById("hiddenFormSection1").style.display  = 'inline';
 					document.getElementById("hiddenFormSection2").style.display  = 'inline';
+					document.getElementById("hiddenFormSection2a").style.display = 'inline';
+					document.getElementById("hiddenFormSection2b").style.display = 'inline';
 					document.getElementById("hiddenFormSection3").style.display  = 'inline';
 					document.getElementById("hiddenFormSection4").style.display  = 'inline';
 					document.getElementById("hiddenFormSection5").style.display  = 'inline';
@@ -353,7 +378,7 @@
 				} else if (document.getElementById("dataType").value == 2) {	// ddRADseq.
 					document.getElementById("hiddenFormSection8a").style.display = 'none';
 					document.getElementById("hiddenFormSection8b").style.display = 'inline';
-				} else {														// WGseq
+				} else {								// WGseq
 					document.getElementById("hiddenFormSection8a").style.display = 'inline';
 					document.getElementById("hiddenFormSection8b").style.display = 'none';
 				}
@@ -364,12 +389,11 @@
 					document.getElementById("1_bias2").disabled = true;
 					document.getElementById("1_bias2").checked = true;
 				}
-				else 
+				else
 				{
 					document.getElementById("1_bias2").disabled = false;
 					document.getElementById("1_bias2").checked = true;
 				}
-			
 			}
 			</script>
 		</p></div>
