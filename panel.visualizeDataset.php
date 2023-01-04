@@ -146,7 +146,7 @@
 				$colorString1 = 'null';
 				$colorString2 = 'null';
 			}
-			
+
 			// getting project name
 			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 			$projectNameString = trim($projectNameString);
@@ -163,7 +163,7 @@
 				$colorString1 = "cyan";
 				$colorString2 = "magenta";
 			}
-			
+
 			$json_file_list = json_encode(scandir("users/$user/projects/$project"));
 			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
 			$handle               = fopen($parent_file,'r');
@@ -230,22 +230,20 @@
 if(localStorage.getItem("projectsShown")){
 	var projectsShown = localStorage.getItem("projectsShown");
 }
-
-function Display_sample_figures() {
-	localStorage.setItem("projectsShown","");
 <?php
-	if (isset($_SESSION['logged_on'])) {
-		foreach ($systemProjectFolders as $key=>$project) {
-			if ($key < 2) {
-				$new_key = $key+$userProjectCount; // offset example datasets by number of user projects.
-				echo "\tvar show_button_element = document.getElementById('show_".$key."_sys');\n";
-				echo "\tshow_button_element.checked = true;\n";
-				echo "\tparent.openProject('default','".$project."','".$new_key."_sys','null','null','null');\n";
-			}
-		}
-	}
-	?>
-}
-Display_sample_figures();
-
+//	echo "function Display_sample_figures() {\n";
+//	echo "\tlocalStorage.setItem('projectsShown','');\n";
+//	if (isset($_SESSION['logged_on'])) {
+//		foreach ($systemProjectFolders as $key=>$project) {
+//			if ($key < 2) {
+//				$new_key = $key+$userProjectCount; // offset example datasets by number of user projects.
+//				echo "\tvar show_button_element = document.getElementById('show_".$key."_sys');\n";
+//				echo "\tshow_button_element.checked = true;\n";
+//				echo "\tparent.openProject('default','".$project."','".$new_key."_sys','null','null','null');\n";
+//			}
+//		}
+//	}
+//	echo "}\n";
+//	echo "Display_sample_figures();\n";
+?>
 </script>
