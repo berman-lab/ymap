@@ -121,8 +121,7 @@ var allFiles = new Array;
 								// Script to run at conclusion of data upload.
 								var conclusion = document.createElement("form");
 									conclusion.setAttribute("method","post");
-									//conclusion.setAttribute("action","upload_processer.php");
-									conclusion.setAttribute("action","scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php");
+									conclusion.setAttribute("action","upload_processer.php");
 								// add dataFormat to form, if defined.
 								if ("project" in window) {
 								//	console.log("[]"+);

@@ -47,11 +47,18 @@ if (project != "") {
 	// initiate genome.
 	$conclusion_script = "scripts_genomes/genome.install_1.php";
 }
-print "[upload_processer.php]\n";
-print "data format: ".$dataFormat."\n";
-print "filename:    ".$fileName."\n";
-print "genome:      ".$genome."\n";
-print "project:     ".$project."\n";
-print "key:         ".$key."\n";
-print "script:      ".$conclusion_script."\n";
+//print "[upload_processer.php]\n";
+//print "user:        ".$user."\n";
+//print "project:     ".$project."\n";
+//print "genome:      ".$genome."\n";
+//print "data format: ".$dataFormat."\n";
+//print "script:      ".$conclusion_script."\n";
+//print "filename:    ".$fileName."\n";
+//print "key:         ".$key."\n";
+
+// Move to user directory
+chdir("users/".$user);
+
+// Open processing script.
+header("Location: ".$conclusion_script);
 ?>
