@@ -268,7 +268,7 @@ timestamp=$(date +%T);
 	if [ -f $timesLogFile ]
 	then
 		echo -n $user"("$project")[RNAseq " >> $timesLogFile;
-		cat $projectDirectory"dataType.txt" >> $timesLogFile;
+		cat $projectDirectory"dataFormat.txt" >> $timesLogFile;
 		echo -n "]\t" >> $timesLogFile;
 		cat $projectDirectory"working.txt" >> $timesLogFile;
 		echo " -> "$timestamp >> $timesLogFile;

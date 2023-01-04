@@ -46,11 +46,11 @@ echo "Setting up for processing." >> $condensedLog;
 # "genome.txt"
 #    first line  => genome
 #    second line => hapmap
-# "dataType.txt"
+# "dataFormat.txt"
 #    5th character, 0=no indel-realignment, 1= indel-realignment.
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
-dataType=$(head -n 1 $projectDirectory"dataType.txt");
+dataFormat=$(head -n 1 $projectDirectory"dataFormat.txt");
 echo "\t'genome.txt' file entry." >> $logName;
 echo "\t\tgenome = '"$genome"'" >> $logName;
 if [ "$genome" = "$hapmap" ]
@@ -75,7 +75,7 @@ else
 	fi
 	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
-indelrealign_bool=$(echo $dataType | cut -c5-5);  # 0=no indel-realignment; 1=indel-realignment.
+indelrealign_bool=$(echo $dataFormat | cut -c5-5);  # 0=no indel-realignment; 1=indel-realignment.
 
 # Determine location of genome being used.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]

@@ -1,5 +1,9 @@
 <?php
 	session_start();
+	$user     = $_SESSION['user'];
+	$fileName = $_SESSION['fileName'];
+	$project  = $_SESSION['project'];
+	$key      = $_SESSION['key'];
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -28,16 +32,16 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-    require_once '../constants.php';
-	$fileName        = filter_input(INPUT_POST, "fileName",        FILTER_SANITIZE_STRING);
-	$user            = filter_input(INPUT_POST, "user",            FILTER_SANITIZE_STRING);
-	$project         = filter_input(INPUT_POST, "project",         FILTER_SANITIZE_STRING);
-	$key             = filter_input(INPUT_POST, "key",             FILTER_SANITIZE_STRING);
+	require_once '../constants.php';
+
+//	$fileName        = filter_input(INPUT_POST, "fileName",        FILTER_SANITIZE_STRING);
+//	$project         = filter_input(INPUT_POST, "project",         FILTER_SANITIZE_STRING);
+//	$key             = filter_input(INPUT_POST, "key",             FILTER_SANITIZE_STRING);
 
 // Initialize 'process_log.txt' file.
-	$outputLogName = "../users/".$user."/projects/".$project."/process_log.txt";
-	$outputLog     = fopen($outputLogName, 'w');
-    fwrite($outputLog, "Process_log.txt initialized.\n");
+	$outputLogName   = "../users/".$user."/projects/".$project."/process_log.txt";
+	$outputLog       = fopen($outputLogName, 'w');
+	fwrite($outputLog, "Process_log.txt initialized.\n");
 
 // Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = "../users/".$user."/projects/".$project."/working.txt";
@@ -119,17 +123,17 @@
 	fclose($output);
 	chmod($outputName,0644);
 	fwrite($outputLog, "Matlab running script 'processing.m' generated.\n");
-	
+
 	// Running pre-processing for Matlab script, because running it within Matlab doesn't work well:
 	// http://stackoverflow.com/questions/29451735/matlab-system-function-not-running-the-command-and-not-returning-any-values
-	
+
 	// Standardize end-of-line characters to '\n':
 	system('perl -pi -e "s/\r\n/\n/g" ' . $inputFile); // \r\n => \n
 	system('perl -pi -e "s/\r/\n/g" ' . $inputFile); // \r   => \n
-	 
+
 	/*
 	Make CGH/SNP/MLST probe data subfiles.
-	
+
 	CGH probes  : "CGHv1_Ca_..."
 	SNP probes  : "SNPv1_Ca_..."
 	MLST probes : "MLSTv1_..."
@@ -140,10 +144,10 @@
 	system('grep "CGHv1_Ca_\|CGH_Ca_" ' . $inputFile . ' > ' . $cghRowsFile);
 	system('grep "SNPv1_Ca_\|SNP_Ca_" ' . $inputFile . ' > ' . $snpRowsFile);
 	system('grep "MLSTv1_" ' . $inputFile . ' > ' . $mlstRowsFile);
-	
+
 	/*
 	Sort subfiles by probe name
-	
+
 	-b    : ignore leading spaces in column entries.
 	-k1,1 : sort on columns from 1 to 1.
 	-o    : output file.

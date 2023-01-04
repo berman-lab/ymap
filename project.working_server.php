@@ -1,5 +1,6 @@
 <?php
-    session_start();
+	session_start();
+	$user = $_SESSION['user'];
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 		"http://www.w3.org/TR/html4/loose.dtd">
@@ -18,7 +19,6 @@ body {font-family: arial;}
 <?php
 	require_once 'constants.php';
 
-	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
 	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
 	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
 	$status   = filter_input(INPUT_POST, "status",   FILTER_SANITIZE_STRING);
@@ -57,21 +57,21 @@ body {font-family: arial;}
 
 	$sizeString_1 = "";
 	$sizeString_2 = "";
-	
+
 	$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
 	$handle       = @fopen($sizeFile_1,'r');
 	if ($handle) {
 		$sizeString_1 = trim(fgets($handle));
 		fclose($handle);
 	}
-	
+
 	$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
 	$handle       = @fopen($sizeFile_2,'r');
 	if ($handle) {
 		$sizeString_2 = trim(fgets($handle));
 		fclose($handle);
 	}
-	
+
 	if (($sizeString_1 !== "") || ($sizeString_2 !== "")) {
 		echo "\n<script type='text/javascript'>\n";
 		echo "parent.parent.update_project_file_size('".$key."','".$sizeString_1."','".$sizeString_2."');";

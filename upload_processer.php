@@ -11,11 +11,17 @@ $genome      = filter_input(INPUT_POST, "genome",     FILTER_SANITIZE_STRING);
 $project     = filter_input(INPUT_POST, "project",    FILTER_SANITIZE_STRING);
 $key         = filter_input(INPUT_POST, "key",        FILTER_SANITIZE_STRING);
 
+$_SESSION['dataFormat'] = $dataFormat;
+$_SESSION['fileName']   = $fileName;
+$_SESSION['genome']     = $genome;
+$_SESSION['project']    = $project;
+$_SESSION['key']        = $key;
+
 if (project != "") {
 	// initiate project.
 	$conclusion_script = "";
 	switch ($dataFormat) {
-		case "SnpSghArray":
+		case "SnpCghArray":
 			$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.install.php";
 			break;
 		case "WGseq_single":
@@ -47,14 +53,9 @@ if (project != "") {
 	// initiate genome.
 	$conclusion_script = "scripts_genomes/genome.install_1.php";
 }
-//print "[upload_processer.php]\n";
-//print "user:        ".$user."\n";
-//print "project:     ".$project."\n";
-//print "genome:      ".$genome."\n";
-//print "data format: ".$dataFormat."\n";
-//print "script:      ".$conclusion_script."\n";
-//print "filename:    ".$fileName."\n";
-//print "key:         ".$key."\n";
+// troubleshooting output
+//print "[upload_processer.php]\n";       print "user:        ".$user."\n";              print "project:     ".$project."\n";  print "genome:      ".$genome."\n";
+//print "data format: ".$dataFormat."\n"; print "script:      ".$conclusion_script."\n"; print "filename:    ".$fileName."\n"; print "key:         ".$key."\n";
 
 // Move to user directory
 chdir("users/".$user);

@@ -246,8 +246,9 @@ else
 		echo "\nRunning samtools:mpileup.\n";
 		$python_exec $main_dir"scripts_seqModules/parallel_mpileup.py" $samtools_exec $genomeDirectory$genomeFASTA $usedFile $logName $cores $genomeDirectory data.pileup 2>> $logName;
 		echo "\tSamtools : Pileup generated." >> $logName;
-		echo "Processing pileup for CNVs, SNPs, & INDELs." >> $condensedLog;
 	fi
+
+	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
 	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
 	# $python_exec $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
