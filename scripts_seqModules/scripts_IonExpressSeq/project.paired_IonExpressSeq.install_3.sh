@@ -203,9 +203,9 @@ else
 			ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
 			referenceFile=$genomeDirectory$genomeFASTA;
 			mkdir $abra2TempDirectory;
-			echo ""  >> $logName;
-			echo "command: "$java7Directory"java -Xmx16g -jar "$abra2_exec" --in "$ABRA2inputFile" --out "$ABRA2outputFile" --ref "$referenceFile" --threads "$cores" --targets "$ABRA2bedFile" --tmpdir "$abra2TempDirectory" > "$projectDirectory"abra2.log"  >> $logName;
-			echo ""  >> $logName;
+			#echo ""  >> $logName;
+			#echo "command: "$java7Directory"java -Xmx16g -jar "$abra2_exec" --in "$ABRA2inputFile" --out "$ABRA2outputFile" --ref "$referenceFile" --threads "$cores" --targets "$ABRA2bedFile" --tmpdir "$abra2TempDirectory" > "$projectDirectory"abra2.log"  >> $logName;
+			#echo ""  >> $logName;
 			$java7Directory"java" -Xmx16g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --targets $ABRA2bedFile --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
 			echo "\tAbra2 : indel-realignment done." >> $logName;
 			# abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
