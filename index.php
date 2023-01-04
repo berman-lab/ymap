@@ -466,7 +466,7 @@ function blank_and_content_tab() {
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_SNP+"eps\")'>";
 				string1 = string1 + ")";
 			}
-	
+
 			// Show allelic ratio plot version for ddRADseq and WGseq.
 			if ((file_list.indexOf(fig_linear_SNPratio_histogram) != -1) || (file_list.indexOf(fig_linear_SNPratio_fireplot) != -1)) {
 				string1 = string1 + " : SNP ratios ";
@@ -477,12 +477,12 @@ function blank_and_content_tab() {
 					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"\",\"100\")'>fire plot</button>";
 				}
 			}
-			
+
 			if (file_list.indexOf(CGD_SNP_track) != -1) {
 				string1 += "<a href=\"" + CGD_SNP_track + "\">GBrowse allele ratio track</a>";
 				CGD_tracks_present = true;
 			}
-			
+
 			if (CGD_tracks_present)
 			{
 				string1 += "<br><a href=\"https://github.com/berman-lab/ymap/wiki/How-to-import-Ymap-generated-tracks-into-CGD's-GBrowse\">(help on importing tracks into GBrowse)</a>";
@@ -513,7 +513,7 @@ function blank_and_content_tab() {
 			if (projectsShown != null) {
 				projectsShown = projectsShown.replace(user+":"+project+":"+key+":null:null:null");
 			} else {
-				projectsShown - projectsShown.replace("null ","");
+				projectsShown = "";
 			}
 			projectsShown = projectsShown+" "+user+":"+project+":"+key+":null:null:null";
 			projectsShown = projectsShown.replace("  "," ");   // remove duplicate " " characters.
