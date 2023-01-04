@@ -42,11 +42,15 @@ echo "#=====================================#" >> $logName;
 echo "\tprojectDirectory = '$projectDirectory'" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 
-# Get genome and hapmap names in use from project's "genome.txt" file.
+# Get setup information from project files.
+# "genome.txt"
 #    first line  => genome
 #    second line => hapmap
+# "dataType.txt"
+#    5th character, 0=no indel-realignment, 1= indel-realignment.
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
+dataType=$(head -n 1 $projectDirectory"dataType.txt");
 echo "\t'genome.txt' file entry." >> $logName;
 echo "\t\tgenome = '"$genome"'" >> $logName;
 if [ "$genome" = "$hapmap" ]
@@ -71,6 +75,7 @@ else
 	fi
 	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
+indelrealign_bool=$(echo $dataType | cut -c5-5);  # 0=no indel-realignment; 1=indel-realignment.
 
 # Determine location of genome being used.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
@@ -108,9 +113,12 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
 
-# Define temporary directory for abra2 files.
-abra2TempDirectory=$projectDirectory"abra2_temp/";
-echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
+if [ $indelrealign_bool = 1 ]
+then
+	# Define temporary directory for abra2 files.
+	abra2TempDirectory=$projectDirectory"abra2_temp/";
+	echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
+fi
 
 # Determine location of parent being used.
 if [ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]
@@ -208,40 +216,45 @@ else
 	then
 		echo "\tBAM.indelrealignment done; Samtools.pileup generated.." >> $logName;
 	else
-		#================================
-		# Abra2: indel realignment.
-		#--------------------------------
-		echo "[[=- Indel realignment with ABRA2 analysis -=]]" >> $logName;
-		echo "\tAbra2 : indel-realignment in process." >> $logName;
-		echo "Indel realignment with ABRA2." >> $condensedLog;
-		echo "\nRunning abra2.\n";
-		ABRA2bedFile=$genomeDirectory"genome.bed";
-		ABRA2inputFile=$projectDirectory"data_sorted.bam";
-		ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
-		referenceFile=$genomeDirectory$genomeFASTA;
-		mkdir $abra2TempDirectory;
-		echo ""  >> $logName;
-		echo "command: "$java7Directory"java -Xmx16g -jar "$abra2_exec" --in "$ABRA2inputFile" --out "$ABRA2outputFile" --ref "$referenceFile" --threads "$cores" --targets "$ABRA2bedFile" --tmpdir "$abra2TempDirectory" > "$projectDirectory"abra2.log"  >> $logName;
-		echo ""  >> $logName;
-		$java7Directory"java" -Xmx16g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --targets $ABRA2bedFile --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
-		echo "\tAbra2 : indel-realignment done." >> $logName;
-		# abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
-		# example command-line from abra2 readme.
-		# java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
-		# From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
+		if [ $indelrealign_bool = 1 ]
+		then
+			#================================
+			# Abra2: indel realignment.
+			#--------------------------------
+			echo "[[=- Indel realignment with ABRA2 -=]]" >> $logName;
+			echo "\tAbra2 : indel-realignment in process." >> $logName;
+			echo "Indel realignment with ABRA2." >> $condensedLog;
+			echo "\nRunning abra2.\n";
+			ABRA2bedFile=$genomeDirectory"genome.bed";
+			ABRA2inputFile=$projectDirectory"data_sorted.bam";
+			ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
+			referenceFile=$genomeDirectory$genomeFASTA;
+			mkdir $abra2TempDirectory;
+			echo ""  >> $logName;
+			echo "command: "$java7Directory"java -Xmx16g -jar "$abra2_exec" --in "$ABRA2inputFile" --out "$ABRA2outputFile" --ref "$referenceFile" --threads "$cores" --targets "$ABRA2bedFile" --tmpdir "$abra2TempDirectory" > "$projectDirectory"abra2.log"  >> $logName;
+			echo ""  >> $logName;
+			$java7Directory"java" -Xmx16g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --targets $ABRA2bedFile --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
+			echo "\tAbra2 : indel-realignment done." >> $logName;
+			# abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
+			# example command-line from abra2 readme.
+			# java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
+			# From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
 
-		#================================
-		# Sorting BAM file after Abra2.
-		#--------------------------------
-		echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
-		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
-		echo "Sorting BAM file." >> $condensedLog;
-		echo "\nRunning samtools:sort.\n";
-		$samtools_exec sort -@ $cores $projectDirectory"data_indelRealigned.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
-		echo "Indexing BAM file." >> $condensedLog;
-		echo "\nRunning samtools:index.\n";
-		$samtools_exec index $projectDirectory"data_sorted.bam";
-		echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
+			#================================
+			# Sorting BAM file after Abra2.
+			#--------------------------------
+			echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
+			echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
+			echo "Sorting BAM file." >> $condensedLog;
+			echo "\nRunning samtools:sort.\n";
+			$samtools_exec sort -@ $cores $projectDirectory"data_indelRealigned.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
+			echo "Indexing BAM file." >> $condensedLog;
+			echo "\nRunning samtools:index.\n";
+			$samtools_exec index $projectDirectory"data_sorted.bam";
+			echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
+		else
+			echo "[[=- Indel realignment not being done -=]]" >> $logName;
+		fi
 
 		echo "#============================================================================== 3" >> $logName;
 
