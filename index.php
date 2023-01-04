@@ -117,7 +117,7 @@
 	function resize_genome(genome_key, pixels) {
 		document.getElementById('panel_genome_iframe').contentDocument.getElementById(genome_key).style.height = pixels+"px";
 	}
-	
+
 <?php
 	if (isset($_SESSION['logged_on'])) {
 		$user = $_SESSION['user'];
@@ -315,20 +315,20 @@ function blank_and_content_tab() {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
 		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		closeProject_viewOnly(key);
-		console.log('# parent.openProject : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
-		console.log(show_button_element);
+		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
+		//console.log(show_button_element);
 
 		if (show_button_element.checked == false) {
 			closeProject(user,project,key,color1,color2,parent);
 		} else {
-			var file_list = JSON.parse(show_button_element.getAttribute('data-file-list'));
+			var file_list   = JSON.parse(show_button_element.getAttribute('data-file-list'));
 			var file_prefix = "users/"+user+"/projects/"+project+"/";
 			// Prefix all files with their folder path, so that we won't have to
 			// manually add it in in every URL during HTML construction:
 			for (fileIx = 0; fileIx < file_list.length; fileIx++) {
 				file_list[fileIx] = file_prefix + file_list[fileIx];
 			}
-			
+
 			var fig_linear_CNV_SNP               = file_prefix + "fig.CNV-SNP-map.2.";
 			var fig_linear_CNV_SNP_RedGreen      = file_prefix + "fig.CNV-SNP-map.RedGreen.2.";
 			var fig_standard_CNV_SNP             = file_prefix + "fig.CNV-SNP-map.1.";
@@ -372,7 +372,7 @@ function blank_and_content_tab() {
 			string1     = string1 + "<div id='userProjectHOM_"+key+"' style='display:inline'></div>";
 			string1     = string1 + "</td></tr></table>";
 			string1     = string1 + "</td><td width='60%' align='left'><font size='-1'>";
-			
+
 			if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
 				mainFigure1 = fig_linear_CNV_SNP;
 			} else if (file_list.indexOf(fig_linear_CNV+"png") != -1) {
@@ -415,7 +415,7 @@ function blank_and_content_tab() {
 					string1 = string1 + " ";
 				}
 			}
-			
+
 			var CGD_tracks_present = false;
 
 			// Show CNV bias figure for SnpCghArray, WGseq, and ddRADseq.
@@ -509,7 +509,7 @@ function blank_and_content_tab() {
 				}
 			}
 			var projectsShown = localStorage.getItem("projectsShown");
-			console.log("'"+projectsShown+"'");
+			//console.log("'"+projectsShown+"'");
 			if (projectsShown != null) {
 				projectsShown = projectsShown.replace(user+":"+project+":"+key+":null:null:null");
 			} else {
@@ -520,8 +520,8 @@ function blank_and_content_tab() {
 			while (projectsShown.charAt(0) == " ")
 				projectsShown = projectsShown.slice( 1 );      // remove leading " " character.
 			localStorage.setItem("projectsShown", projectsShown);
-			console.log('# add to projectsShown : "'+user+':'+project+':'+key+':null:null:null"');
-			console.log('# projectsShown = "'+projectsShown+'"');
+			console.log('#     Add to projectsShown : "'+user+':'+project+':'+key+':null:null:null"');
+			console.log('#         projectsShown = "'+projectsShown+'"');
 		}
 	}
 	function closeProject(user,project,key,color1,color2,parent) {
@@ -540,8 +540,8 @@ function blank_and_content_tab() {
 		while (projectsShown.charAt(0) == " ")
 			projectsShown = projectsShown.slice( 1 );     // remove leading " " characater.
 		localStorage.setItem("projectsShown", projectsShown);
-		console.log('# remove from projectsShown : "'+user+':'+project+':'+key+':null:null:null"');
-		console.log('# projectsShown = "'+projectsShown+'"');
+		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+':null:null:null"');
+		console.log('#         projectsShown = "'+projectsShown+'"');
 	}
 	function closeProject_viewOnly(key) {
 		var figure_element = document.getElementById("figure_"+key);
@@ -745,24 +745,29 @@ function restore_shown_figures() {
 	if (projectsShown) {
 		var projectsShown_entries = projectsShown.split(' ');
 		localStorage.setItem("projectsShown","");
-		for (var i=0;i<projectsShown_entries.length; i++) {
-			var currentProject = projectsShown_entries[i];
-			console.log('#:3 currentProject = '+currentProject);
-			if (currentProject != '') {
-				var entry_parts    = currentProject.split(':');
 
-				// select checkBoxes for previously viewed datasets.
-				key = entry_parts[2];
-				var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
-				console.log('#:4 elementID = show_'+key);
+		var visualize_iframe = document.getElementById('panel_visualizeDataset_iframe');
+		visualize_iframe.onload = function () {
+			console.log("#: Opening projects shown before page reload.");
+			for (var i=0;i<projectsShown_entries.length; i++) {
+				var currentProject = projectsShown_entries[i];
+				console.log('#:    currentProject = '+currentProject);
+				if (currentProject != '') {
+					var entry_parts    = currentProject.split(':');
 
-				var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
-				show_button_element.checked = true;
+					// select checkBoxes for previously viewed datasets.
+					key = entry_parts[2];
+					//console.log('#:    4 elementID = show_'+key);
 
-				// Open projects previously shown.
-				console.log('#:5 entry to show = "'+currentProject+'"');
-				var entry_parts    = currentProject.split(':');
-				openProject(entry_parts[0], entry_parts[1], entry_parts[2], 'null', 'null', 'null');
+					var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+					//console.log(show_button_element);
+					show_button_element.checked = true;
+
+					// Open projects previously shown.
+					//console.log('#:5 entry to show = "'+currentProject+'"');
+					var entry_parts    = currentProject.split(':');
+					openProject(entry_parts[0], entry_parts[1], entry_parts[2], 'null', 'null', 'null');
+				}
 			}
 		}
 	}

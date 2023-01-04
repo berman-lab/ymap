@@ -164,7 +164,8 @@
 				$colorString2 = "magenta";
 			}
 
-			$json_file_list = json_encode(scandir("users/$user/projects/$project"));
+			$json_file_list       = json_encode(scandir("users/$user/projects/$project"));
+			$JSONproject          = json_encode("$project");
 			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
 			$handle               = fopen($parent_file,'r');
 			$parentString         = trim(fgets($handle));
@@ -173,6 +174,7 @@
 			echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<input  id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$colorString1','$colorString2','$parentString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+//			echo "<input  id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$colorString1','$colorString2','$parentString'); window.top.hide_combined_fig_menu();\" project='$JSONproject' >";
 			echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
 			echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
 			echo "<br>\n\t\t";
