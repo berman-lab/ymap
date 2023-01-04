@@ -1,7 +1,24 @@
 # ymap
 YMAP - Yeast Mapping Analysis Pipeline : An online pipeline for the analysis of yeast genomic datasets.
 
-Text below copied from "YMAP_User_Manual.docx". Download and open that file for detailed descriptions of the Ymap user interface and instructions for use.
+As I am no longer a member of the Berman lab, due to completing my PhD degree there and moving on to other things, I don't have direct access to the repo I used while there. I made this fork so that I could more easily work on the project when I feel inclinced to do so. Major changes will be communicated to the berman-lab and potentially incorporated into their repo. 
+
+The berman-lab/ymap repo (https://github.com/berman-lab/ymap) supports the tool running live at http://lovelace.cs.umn.edu/Ymap/ for use by the yeast research community. Availability and time to process datasets may vary depending on server availability issues outside my control.
+
+The pipeline can help you analyze your genomic datasets for non-yeast species, but the user interface and figures produced were designed with relatively small genome sizes in mind. (Candida albicans is about 14.7 Mbase in size.) If you want to experiment with using Ymap with larger genomes, I advise you to set up a local installation (https://github.com/darrenabbey/ymap/wiki/Setting-up-Ymap-locally). Genomes that are very small will also likely not produce very useful output.
+
+The paper introducing the project can be found at: https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-014-0100-8
+
+If your find the tool useful in your work, please cite the above paper. Also, it is really cool to hear what people have been doing with the tool, so feel free to reach out to me in any of the several public spaces I can be found.
+
+-- Darren Abbey, PhD
+
+[thebiologistisn@twitter] [thebiologistisn@mastadon(redwombat.social)] [thebiologistisn@TikTok] [thebiologistisn@reddit] [thebiologistisn@instagram] [darrenabbeydesigns@instagram] [http://the-biologist-is-in.blogspot.com/]
+
+======================================================================================
+
+Text below copied from "YMAP_User_Manual.docx". Download and open that file for detailed desciptions of the Ymap user interface and instructions for use. Do note, the specific details of the current version are likely to sometimes change without this document being updated.
+
 ======================================================================================
 
 Introduction
