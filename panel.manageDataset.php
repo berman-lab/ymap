@@ -132,7 +132,7 @@
 			echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			
+
 			echo $projectNameString;
 			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
@@ -228,7 +228,7 @@
 			}
 			// printing total size
 			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
-			
+
 			echo "</span>";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p1_".$key."'></div>\n";
@@ -289,44 +289,44 @@ if (isset($_SESSION['logged_on'])) {
 		if ($dataType == '0') {                                      // SnpCgh microarray
 			echo "p_js.display_string[0] = 'Add : SnpCgh array data...';\n";
 			echo "p_js.conclusion_script = '".$script_SnpCghArray."';\n";
-		} else if ($dataType == '1:0') {                             // WGseq : single-end [FASTQ/ZIP/GZ]
+		} else if (($dataType == '1:0:0') || ($dataType == '1:0:1')) { // WGseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read WGseq data (FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.conclusion_script = '".$script_WGseq_single."';\n";
-		} else if ($dataType == '1:1') {                             // WGseq : paired-end [FASTQ/ZIP/GZ]
+		} else if (($dataType == '1:1:0') || ($dataType == '1:1:1')) {                             // WGseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read WGseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read WGseq data (2/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.conclusion_script = '".$script_WGseq_paired."';\n";
-		} else if (($dataType == '1:2') || ($dataType == '1:3')) {   // WGseq : [SAM/BAM/TXT]
+		} else if (($dataType == '1:2:0') || ($dataType == '1:2:1') || ($dataType == '1:3:0') || ($dataType == '1:3:1')) {   // WGseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : WGseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.conclusion_script = '".$script_WGseq_single."';\n";
-		} else if ($dataType == '2:0') {                             // ddRADseq : single-end [FASTQ/ZIP/GZ]
+		} else if (($dataType == '2:0:0') || ($dataType == '2:0:1')) {                             // ddRADseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read ddRADseq data (FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.conclusion_script = '".$script_ddRADseq_single."';\n";
-		} else if ($dataType == '2:1') {                             // ddRADseq : paired-end [FASTQ/ZIP/GZ]
+		} else if (($dataType == '2:1:0') || ($dataType == '2:1:1')) {                             // ddRADseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.conclusion_script = '".$script_ddRADseq_paired."';\n";
-		} else if (($dataType == '2:2') || ($dataType == '2:3')) {   // ddRADseq : [SAM/BAM/TXT]
+		} else if (($dataType == '2:2:0') || ($dataType == '2:2:1') || ($dataType == '2:3:0') || ($dataType == '2:3:1')) {   // ddRADseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : ddRADseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.conclusion_script = '".$script_ddRADseq_single."';\n";
-		} else if ($dataType == '3:0') {                             // RNAseq : single-end [FASTQ/ZIP/GZ]
+		} else if (($dataType == '3:0:0') || ($dataType == '3:0:1')) {                             // RNAseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read RNAseq data (FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.conclusion_script = '".$script_RNAseq_single."';\n";
-		} else if ($dataType == '3:1') {                             // RNAseq : paired-end [FASTQ/ZIP/GZ]
+		} else if (($dataType == '3:1:0') || ($dataType == '3:1:1')) {                             // RNAseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read RNAseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read RNAseq data (2/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.conclusion_script = '".$script_RNAseq_paired."';\n";
-		} else if (($dataType == '3:2') || ($dataType == '3:3')) {   // RNAseq : [SAM/BAM/TXT]
+		} else if (($dataType == '3:2:0') || ($dataType == '3:2:1') || ($dataType == '3:3:0') || ($dataType == '3:3:1')) {   // RNAseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : RNAseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.conclusion_script = '".$script_RNAseq_single."';\n";
-		} else if ($dataType == '4:0') {                             // IonExpressSeq : single-end [FASTQ/ZIP/GZ]
+		} else if (($dataType == '4:0:0') || ($dataType == '4:0:1')) {                             // IonExpressSeq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read IonExpress data (FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.conclusion_script = '".$script_IonExpressSeq_single."';\n";
-		} else if ($dataType == '4:1') {                             // IonExpressSeq : paired-end [FASTQ/ZIP/GZ]
+		} else if (($dataType == '4:1:0') || ($dataType == '4:1:1')) {                             // IonExpressSeq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read IonExpress data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read IonExpress data (2/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.conclusion_script = '".$script_IonExpressSeq_paired."';\n";
-		} else if (($dataType == '4:2') || ($dataType == '4:3')) {   // IonExpressSeq : [SAM/BAM/TXT]
+		} else if (($dataType == '4:2:0') || ($dataType == '4:2:1') || ($dataType == '4:3:0') || ($dataType == '4:3:1')) {   // IonExpressSeq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : IonExpress data (SAM/BAM/TXT)...';\n";
 			echo "p_js.conclusion_script = '".$script_IonExpressSeq_single."';\n";
 		}
