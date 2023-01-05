@@ -66,7 +66,7 @@ foreach ($projectFolders_raw as $key=>$folder) {
 	if (file_exists($genome_filename)) {
 		// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
 		$handle1         = fopen($genome_filename, "r");
-		$genome_string   = trim(fgets($handle1));	
+		$genome_string   = trim(fgets($handle1));
 		fclose($handle1);
 	}
 	$handle2         = fopen($folder."/dataFormat.txt", "r");

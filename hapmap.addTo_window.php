@@ -126,27 +126,3 @@
 		</p></div>
 	</body>
 </html>
-
-<script type="text/javascript">
-UpdateForm=function() {
-	if (document.getElementById("referencePloidy").value == 2) {
-		document.getElementById("hiddenFormSection1").style.display  = 'inline';
-		document.getElementById("hiddenFormSection2").style.display  = 'inline';
-		document.getElementById("hiddenFormSection3").style.display  = 'inline';
-		document.getElementById("hiddenFormSection4").style.display  = 'inline';
-		document.getElementById("hiddenFormSection5").style.display  = 'none';
-		document.getElementById("hiddenFormSection6").style.display  = 'none';
-		document.getElementById("hiddenFormSection7").style.display  = 'none';
-		document.getElementById("hiddenFormSection8").style.display  = 'none';
-	} else { // haploid.
-		document.getElementById("hiddenFormSection1").style.display  = 'none';
-		document.getElementById("hiddenFormSection2").style.display  = 'none';
-		document.getElementById("hiddenFormSection3").style.display  = 'none';
-		document.getElementById("hiddenFormSection4").style.display  = 'none';
-		document.getElementById("hiddenFormSection5").style.display  = 'inline';
-		document.getElementById("hiddenFormSection6").style.display  = 'inline';
-		document.getElementById("hiddenFormSection7").style.display  = 'inline';
-		document.getElementById("hiddenFormSection8").style.display  = 'inline';
-	}
-}
-</script>
