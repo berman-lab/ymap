@@ -15,13 +15,9 @@
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
 
+	$user            = $_SESSION['user'];
 	$bad_chars       = array(".", ",", "\\", "/", " ", "'", '"', "(", ")", "[", "]");
 	$hapmap          = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
-	$user            = $_SESSION['user'];
-
-	$dir1            = "../../users/".$user."/hapmaps";
-	$dir2            = "../../users/".$user."/hapmaps/".$hapmap;
-	$dir3            = "../../users/default/hapmaps/".$hapmap;
 
 	$genome          = filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING);
 	$referencePloidy = filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING);
@@ -31,6 +27,11 @@
 	// If ($referencePloidy == 1) use the following two variables.
 	$parentHaploid1  = filter_input(INPUT_POST, "parentHaploid1",  FILTER_SANITIZE_STRING);
 	$parentHaploid2  = filter_input(INPUT_POST, "parentHaploid2",  FILTER_SANITIZE_STRING);
+
+	// defines some directories for later use.
+	$dir1            = "../../users/".$user."/hapmaps";
+	$dir2            = "../../users/".$user."/hapmaps/".$hapmap;
+	$dir3            = "../../users/default/hapmaps/".$hapmap;
 
 	// Deals with accidental deletion of hapmaps dir.
 	if (!file_exists($dir1)){

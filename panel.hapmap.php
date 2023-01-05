@@ -33,7 +33,7 @@ function showColors(colorName,targetToChange,contentString) {
 	}
 }
 </script>
-<?php 	
+<?php
 	if (isset($_SESSION['logged_on']))
 	{
 		require_once 'sharedFunctions.php';
@@ -41,7 +41,7 @@ function showColors(colorName,targetToChange,contentString) {
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
 		$quota = getUserQuota($user);
-		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 		if ($exceededSpace)
 			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to generate new hapmap</span><br><br>";
@@ -93,9 +93,9 @@ function showColors(colorName,targetToChange,contentString) {
 			echo "<script type='text/javascript'>\n\t\t\t\t";
 			echo "var el_h_".$key." = document.getElementById('frameContainer.h_".$key."');\n\t\t\t\t";
 			echo "function hapmap_UI_refresh_1_".$key."() {\n\t\t\t\t";
-			echo "    var frameString3 = '<iframe id=\"h_".$key."\" name=\"h_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.addTo.php\"';\n\t\t\t\t";
+			echo "    var frameString3 = '<iframe id=\"h_".$key."\" name=\"h_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.addTo.php?k=".$key."\"';\n\t\t\t\t";
 			echo "    var frameString4 = ' marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t\t\t\t";
-			echo "    var frameString5 = '<iframe id=\"h2_".$key."\" name=\"h2_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.finalize.php\"';\n\t\t\t\t";
+			echo "    var frameString5 = '<iframe id=\"h2_".$key."\" name=\"h2_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.finalize.php?k=".$key."\"';\n\t\t\t\t";
 			echo "    var frameString6 = '  marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t\t\t\t";
 			echo "    el_h_".$key.".innerHTML = frameString3.concat(frameString4,frameString5,frameString6);\n\t\t\t\t";
 			echo "var h_iframe           = document.getElementById('h_".$key."');\n\t\t\t\t";

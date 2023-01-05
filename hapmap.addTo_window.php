@@ -1,40 +1,35 @@
 <?php
 	session_start();
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<?php
-	//session_start();
-	error_reporting(E_ALL);
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
+	else {
+		$user      = $_SESSION['user'];
+		$key       = preg_replace('/\D/', '', $_GET['k']);  //Strip all non-numerical characters from string.
+	}
 	require_once 'constants.php';
-	ini_set('display_errors', 1);
+	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
-	// If the user is not logged on, redirect to login page.
-	if(!isset($_SESSION['logged_on'])){
-		header('Location: user.login.php');
+	//============================================
+	// Determine hapmap involved from $key value.
+	//............................................
+	$hapmapsDir    = "users/".$user."/hapmaps/";
+	$hapmapFolders = array_diff(glob($hapmapsDir."*"), array('..', '.'));
+	// Sort directories by date, newest first.
+	array_multisort(array_map('filemtime', $hapmapFolders), SORT_DESC, $hapmapFolders);
+	// Trim path from each folder string; find hapmap that matches the key received above.
+	foreach($hapmapFolders as $key2=>$folder) {
+		$hapmapFolders[$key2] = str_replace($hapmapsDir,"",$folder);
+		if ($key2 == $key) { $hapmap = $hapmapFolders[$key2]; }
 	}
 
-	$bad_chars = array(".", ",", "\\", "/", " ");
-	$hapmap    = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
-	$user      = filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING);
-	$key       = filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING);
-
-
-	// Re-initialize 'process_log.txt' file.
-	$logOutputName = "users/".$user."/hapmaps/".$hapmap."/process_log.txt";
-	$logOutput     = fopen($logOutputName, 'a');
-	fwrite($logOutput, "\n================================================\n");
-	fwrite($logOutput, "Log file restarted for hapmap addition\n");
-	fwrite($logOutput, "Running 'hapmap.addTo_1.php'.\n");
-
+	//=====================================
+	// Load genome and parent from hapmap.
+	//.....................................
 	// Defining directory location for later use.
 	$folder = "users/".$user."/hapmaps/".$hapmap."/";
-
 	// Load genome from 'hapmap/genome.txt'.
 	$handle1 = fopen($folder."genome.txt", "r");
 	$genome  = trim(fgets($handle1));
 	fclose($handle1);
-
 	// Load parent from 'hapmap/parent.txt'.
 	$handle2 = fopen($folder."parent.txt", "r");
 	$parent  = trim(fgets($handle2));
@@ -50,28 +45,22 @@
 		<title>[Needs Title]</title>
 	</HEAD>
 	<BODY onload="UpdateNextList()">
-		<?php
-		if (isset($_SESSION['logged_on'])) {
-			$user = $_SESSION['user'];
-		}
-		?>
-		<b>Add to user defined hapmap.</b>
 		<div id="hapmapCreationInformation"><p>
-			<form action="hapmap.addTo_2.php" method="post">
+			<form action="scripts_seqModules/scripts_hapmaps/hapmap.update_1.php" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
-					<label for="hapmap">Hapmap Name : </label><input type="text" name="hapmap" id="hapmap" value="<?php echo $hapmap; ?>" readonly>
+					<label for="hapmap">Hapmap Name : </label><input type="text" name="hapmap" id="hapmap" value="<?php echo $hapmap; ?>" readonly style="background-color: #EEFFEE;">
 				</td><td>
 					Unique name for this hapmap.
 				</td></tr><tr bgcolor="#CCCCFF"><td>
-					<label for="genome">Reference genome : </label><input type="text" name="genome" id="genome" value="<?php echo $genome; ?>" size="60" readonly>
+					<label for="genome">Reference genome : </label><input type="text" name="genome" id="genome" value="<?php echo $genome; ?>" size="60" readonly style="background-color: #EEEEFF;">
 				</td><td valign="top">
 					Reference genome used to construct hapmap.
 				</td></tr><tr bgcolor="#CCFFCC"><td>
-					<label for="parent">Parental strain : </label><input type="text" name="parent" id="parent" value="<?php echo $parent; ?>" readonly>
+					<label for="parent">Parental strain : </label><input type="text" name="parent" id="parent" value="<?php echo $parent; ?>" readonly style="background-color: #EEFFEE;">
 				</td><td valign="top">
-					Only whole genome sequence datasets are used in constructing hapmaps.
+					Parent genome sequence used in the selected haplotype map.
 				</td></tr><tr bgcolor="#CCCCFF"><td valign="top">
-					<?php
+<?php
 					// figure out which hapmaps have been defined for this species, if any.
 					$projectsDir1       = "users/default/projects/";
 					$projectsDir2       = "users/".$user."/projects/";
@@ -111,6 +100,7 @@
 					}
 					?>];
 
+					// This function is run at time of page load, to update the list selection for the next strain to be added to hapmap.
 					UpdateNextList=function() {
 						var selectedGenome     = "<?php echo $genome; ?>";
 						var selectedDataFormat = 1
@@ -131,12 +121,32 @@
 					The dataset being used to extend the previously defined hapmap. (Others can be added later...)<br>
 					Each strain used to construct the hapmap should have large loss of heterozygosity regions.
 				</td></tr></table><br>
-				<input type="submit" value="Add hapmap entry">
+				<input type="submit" value="Add entry to hapmap">
 			</form>
 		</p></div>
 	</body>
 </html>
-<?php
-	fwrite($logOutput, "'hapmap.addTo_1.php' completed.\n");
-	fclose($logOutput);
-?>
+
+<script type="text/javascript">
+UpdateForm=function() {
+	if (document.getElementById("referencePloidy").value == 2) {
+		document.getElementById("hiddenFormSection1").style.display  = 'inline';
+		document.getElementById("hiddenFormSection2").style.display  = 'inline';
+		document.getElementById("hiddenFormSection3").style.display  = 'inline';
+		document.getElementById("hiddenFormSection4").style.display  = 'inline';
+		document.getElementById("hiddenFormSection5").style.display  = 'none';
+		document.getElementById("hiddenFormSection6").style.display  = 'none';
+		document.getElementById("hiddenFormSection7").style.display  = 'none';
+		document.getElementById("hiddenFormSection8").style.display  = 'none';
+	} else { // haploid.
+		document.getElementById("hiddenFormSection1").style.display  = 'none';
+		document.getElementById("hiddenFormSection2").style.display  = 'none';
+		document.getElementById("hiddenFormSection3").style.display  = 'none';
+		document.getElementById("hiddenFormSection4").style.display  = 'none';
+		document.getElementById("hiddenFormSection5").style.display  = 'inline';
+		document.getElementById("hiddenFormSection6").style.display  = 'inline';
+		document.getElementById("hiddenFormSection7").style.display  = 'inline';
+		document.getElementById("hiddenFormSection8").style.display  = 'inline';
+	}
+}
+</script>
