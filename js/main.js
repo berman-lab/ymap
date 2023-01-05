@@ -1,10 +1,11 @@
 $(function () {
 	'use strict';
 
-	// Set up our file upload script.
+	// Set up our file upload script on server.
+	// defines some variables in dom element "fileupload" (form defined in uploader.1.php).
 	$("#fileupload").html5Uploader({
-		url: 'php/uploader/',
-		maxFileSize: 1024*1024*20 // 20MB   
+		url: 'php/uploader/index.php',
+		maxFileSize: 1024*1024*20 // 20MB
 	});
 
 	// Load existing files and set user direcory.

@@ -12,6 +12,7 @@
 /*jslint nomen: true, regexp: true */
 /*global define, window, URL, webkitURL, FileReader */
 
+
 var allFiles = new Array;
 
 (function (factory) {
@@ -27,7 +28,10 @@ var allFiles = new Array;
 	'use strict';
 	$.blueimp.fileupload.prototype._specialOptions.push( 'filesContainer', 'uploadTemplateId', 'downloadTemplateId' );
 
+//	$('#hidden_field').val("../../users/darren/projects/"); // redirects target_dir, still on client.
+
 	// The UI version extends the file upload widget and adds complete user interface interaction:
+	// Make widgit filkor.html5Uploader as extension of blueimp.fileupload.
 	$.widget('filkor.html5Uploader', $.blueimp.fileupload, {
 		options: {	autoUpload:		false,			// true = load on selection; false = load on upload button.
 				maxChunkSize:		1024*512,		// break uploads into 0.5Mb fragments.
@@ -46,12 +50,13 @@ var allFiles = new Array;
 								addmore       = $("#add-more-button"),
 								existingFiles = options.existingFiles || [];
 
-								$.getJSON('php/uploader', {file: target_dir + data.files[0].name}, function (result) {
+								// target_project+data.files[0].name] isn't exactly meaningful here.
+								$.getJSON('php/uploader/index.php', {file: target_project+data.files[0].name}, function (result) {
 									var file = result.file;
 									data.uploadedBytes = file && file.size;
 
-									// Add file names to global scope variable 'allFiles'...   replacing comma characters with something not allowed in file names, to allow PHP to
-									// split names by commas added by javascript.   PHP will replace the "\\" with "," later.
+									// Add file names to global scope variable 'allFiles'... replacing comma characters with something not allowed in file names, to
+									// allow PHP to split names by commas added by javascript.   PHP will replace the "\\" with "," later.
 									allFiles.push(files[0].name.replace(",","\\"));
 
 									data.process(function () {
@@ -180,7 +185,6 @@ var allFiles = new Array;
 										.attr('aria-valuenow', progress)
 										.find('.bar').css('width',progress + '%');
 								}
-
 								// Hides "Start Upload" buttons during progress.
 								$('#info-wrapper-1').fadeOut(0);
 							},
@@ -189,14 +193,14 @@ var allFiles = new Array;
 								timeInfo    = $this.find('.time-info'),
 								bitrateInfo = $this.find('.speed-info');
 								timeInfo.find('span').html(	$this.data('filkor-html5Uploader')._renderTimeInfo(data)	);
-								bitrateInfo.html(			$this.data('filkor-html5Uploader')._renderBitrateInfo(data)	);
+								bitrateInfo.html(		$this.data('filkor-html5Uploader')._renderBitrateInfo(data)	);
 							},
 				processstart:		function () {
 								//console.log('processstart..');
 							},
 				destroy:		function (e, data) {
 								//destroy file.
-								//By default when you click on the cancel buttonn you only abort the jqXHR, it doesn't delete the file.
+								//By default when you click on the cancel button you only abort the jqXHR, it doesn't delete the file.
 								//(If you want to deletion  you can implement it here)
 							},
 				getFileList:		function (data) {	// CALLBACK : retrieve list of files from the server response.
@@ -221,7 +225,7 @@ var allFiles = new Array;
 								files
 							);
 						},
-			_forceReflow:		function (node) {			// http://stackoverflow.com/questions/9016307/force-reflow-in-css-transitions-in-bootstrap
+			_forceReflow:		function (node) {	// http://stackoverflow.com/questions/9016307/force-reflow-in-css-transitions-in-bootstrap
 							return $.support.transition && node.length && node[0].offsetWidth;
 						},
 			_transition:		function (node) {

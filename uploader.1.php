@@ -20,9 +20,8 @@
 </head>
 <BODY class="tab">
 <!---------- Main section of User interface ----------!>
-	<form id="fileupload" class="HTML5Uploader" method="POST" action="uploader/" enctype="multipart/form-data">
+	<form id="fileupload" class="HTML5Uploader" method="POST" action="placeholder/" enctype="multipart/form-data">
 		<div class="upload-wrapper">
-
 			<table><tr>
 			<!---------- Add file to upload button. ----------!>
 			<td valign="top">
@@ -66,17 +65,22 @@
 			</tr></table>
 
 			<!---------- Pass along the script to be run once all files are loaded. ----------!>
-			<input type="hidden" id="hidden_field" name="target_dir" value="123">
+			<input type="hidden" id="hidden_field1" name="target_user"    value="">
+			<input type="hidden" id="hidden_field2" name="target_genome"  value="">
+			<input type="hidden" id="hidden_field3" name="target_project" value="">
 			<script type="text/javascript">
+				target_user            = user;
 				if (typeof genome !== 'undefined') {
-					target_dir = '../../users/'+user+'/genomes/'+genome+'/';
+					target_genome  = genome;
+					target_project = "";
 				} else {
-					target_dir = '../../users/'+user+'/projects/'+project+'/';
+					target_genome  = "";
+					target_project = project;
 				}
-				document.getElementById('hidden_field').value = target_dir;
-
-				Finalize=function() {
-					// show upload button once input file is selected.
+				document.getElementById('hidden_field1').value = target_user;
+				document.getElementById('hidden_field2').value = target_genome;
+				document.getElementById('hidden_field3').value = target_project;
+				Finalize=function() { // show upload button once input file is selected.
 					document.getElementById("info-wrapper-1").style.display = 'inline';
 				}
 			</script>
