@@ -5,7 +5,8 @@
 
 	ini_set('display_errors', 1);
 
-	$user   = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING);
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$user      = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
 
 	if(isset($_SESSION['logged_on']) && $user == $_SESSION['user']){
 		// User confirmed, can delete user.

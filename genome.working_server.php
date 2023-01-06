@@ -17,10 +17,11 @@
 </head>
 <?php
 	require_once 'constants.php';
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$user     = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
+	$genome   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING)));
+	$key      = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING)));
 
-	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
-	$genome   = filter_input(INPUT_POST, "genome",   FILTER_SANITIZE_STRING);
-	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
 	$status   = filter_input(INPUT_POST, "status",   FILTER_SANITIZE_STRING);
 
 	// increment clock animation...

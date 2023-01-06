@@ -5,11 +5,15 @@
 	// This script is intended to take information from file uploaders and then initiate the pipeline scripts to start processing.
 	// This has been added to remove any server-side location information from being passed through client-side scripting.
 
-$dataFormat  = filter_input(INPUT_POST, "dataFormat", FILTER_SANITIZE_STRING);
-$fileName    = filter_input(INPUT_POST, "fileName",   FILTER_SANITIZE_STRING);
-$genome      = filter_input(INPUT_POST, "genome",     FILTER_SANITIZE_STRING);
-$project     = filter_input(INPUT_POST, "project",    FILTER_SANITIZE_STRING);
-$key         = filter_input(INPUT_POST, "key",        FILTER_SANITIZE_STRING);
+
+$bad_chars  = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+$dataFormat = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "dataFormat", FILTER_SANITIZE_STRING)));
+$genome     = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING)));
+$project    = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING)));
+$key        = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING)));
+
+// filenames can have characters that shouldn't be in above variables.
+$fileName   = filter_input(INPUT_POST, "fileName",   FILTER_SANITIZE_STRING);
 
 $_SESSION['dataFormat'] = $dataFormat;
 $_SESSION['fileName']   = $fileName;

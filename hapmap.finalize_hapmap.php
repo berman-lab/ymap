@@ -10,10 +10,9 @@
 		header('Location: user.login.php');
 	}
 
-	$bad_chars = array(",", "\\", "/", " ");
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
 	$hapmap    = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
-	$user      = filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING);
-	$key       = filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING);
+	$key       = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING)));
 
 	$dir1      = "users/".$user."/hapmaps";
 	$dir2      = "users/".$user."/hapmaps/".$hapmap;

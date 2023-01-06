@@ -19,8 +19,9 @@ body {font-family: arial;}
 <?php
 	require_once 'constants.php';
 
-	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
-	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$project   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING)));
+	$key       = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING)));
 	$status   = filter_input(INPUT_POST, "status",   FILTER_SANITIZE_STRING);
 
 	// increment clock animation...

@@ -5,9 +5,12 @@
 
 	// Only information needed by this script, sent by "js/ajaxfileupload.js" from form defined in "uploader.1.php".
 	// This safe data is used to construct the target file location.
-	$user             = $_POST["target_user"];
-	$genome           = $_POST["target_genome"];
-	$project          = $_POST["target_project"];
+
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$user     = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "target_user",    FILTER_SANITIZE_STRING)));
+	$genome   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "target_genome",  FILTER_SANITIZE_STRING)));
+	$project  = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "target_project", FILTER_SANITIZE_STRING)));
+
 	if ($genome != "") {
 		$target_dir = "../../users/".$user."/genomes/".$genome."/";
 	} else if ($project != "") {

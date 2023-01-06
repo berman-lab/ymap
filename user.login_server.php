@@ -4,7 +4,9 @@
 	require_once 'constants.php';
 	ini_set('display_errors', 1);
 
-	$user_in = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING);
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$user      = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
+
 	$pw_in   = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
 
 	$currentPath = getcwd();

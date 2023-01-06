@@ -3,12 +3,14 @@
 	require_once 'constants.php';
 	ini_set('display_errors', 1);
 
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$userOrig  = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
+
 	$primaryInvestigatorName  = filter_input(INPUT_POST, "primaryInvestigator_name",  FILTER_SANITIZE_STRING);
 	$primaryInvestigatorEmail = filter_input(INPUT_POST, "primaryInvestigator_email", FILTER_SANITIZE_STRING);
 	$researchInstitution      = filter_input(INPUT_POST, "researchInstitution",       FILTER_SANITIZE_STRING);
 	$secondaryName            = filter_input(INPUT_POST, "secondary_name",            FILTER_SANITIZE_STRING);
 	$secondaryEmail           = filter_input(INPUT_POST, "secondary_email",           FILTER_SANITIZE_STRING);
-	$userOrig                 = filter_input(INPUT_POST, "user",                      FILTER_SANITIZE_STRING);
 	$pwOrig                   = filter_input(INPUT_POST, "pwOrig",                    FILTER_SANITIZE_STRING);
 	$pwCopy                   = filter_input(INPUT_POST, "pwCopy",                    FILTER_SANITIZE_STRING);
 
