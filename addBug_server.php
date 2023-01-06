@@ -7,7 +7,7 @@
 	$submitter   = filter_input(INPUT_POST, "submitter",   FILTER_SANITIZE_STRING);
 	$description = filter_input(INPUT_POST, "description", FILTER_SANITIZE_STRING);
 
-	$admin_email = 'abbey007@umn.edu';
+	$admin_email = '';
 
 	if($submitter != "" && $description != ""){
 		// Order of replacement
