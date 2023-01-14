@@ -72,6 +72,7 @@ ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        #
 ##==============================================================================
 ## Preprocess ddRADseq CNV information.
 ##------------------------------------------------------------------------------
+echo "Preprocessing CNV data." >> $condensedLog;
 if [ -f $projectDirectory"preprocessed_CNVs.ddRADseq.txt" ]
 then
 	echo "\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
@@ -85,6 +86,7 @@ fi
 ##==============================================================================
 ## Preprocess ddRADseq SNP information.
 ##------------------------------------------------------------------------------
+echo "Preprocessing SNP data." >> $condensedLog;
 if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]
 then
 	echo "\tParent or hapmap data already preprocessed with python script: 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
@@ -123,7 +125,7 @@ fi
 echo "#==========================#" >> $logName;
 echo "# CGH analysis of dataset. #" >> $logName;
 echo "#==========================#" >> $logName;
-echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
+echo "Performing CGH analysis." >> $condensedLog;
 
 if [ -f $projectDirectory"corrected_CNV.project.mat" ]
 then
@@ -200,12 +202,12 @@ then
 	echo "#============================#" >> $logName;
 	echo "#= LOH analysis of dataset. =#" >> $logName;
 	echo "#============================#" >> $logName;
-	echo "Preprocessing SNP data.   (~4 hrs for LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "Performing LOH analysis." >> $condensedLog;
 else
 	echo "#============================#" >> $logName;
 	echo "#= SNP analysis of dataset. =#" >> $logName;
 	echo "#============================#" >> $logName;
-	echo "Preprocessing SNP data.   (~20 min for SNP analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "Performing LOH analysis." >> $condensedLog;
 fi
 
 echo "Mapping SNPs." >> $condensedLog;
