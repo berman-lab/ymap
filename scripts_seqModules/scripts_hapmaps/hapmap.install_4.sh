@@ -159,8 +159,6 @@ then
 	rm $hapmapDirectory"SNPdata_parent.txt";
 	# Then copy 'SNPdata_parent.temp.txt' to 'SNPdata_parent.txt', as it now contains phasing information from child.
 	mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt";
-	# Then delete 'SNPdata_child.0.txt' file, as no longer needed here.
-	rm $hapmapDirectory"SNPdata_child."$childNum".txt";
 else
 	##==============================================================================
 	## For a haploid reference hapmap : Move parent SNP data to hapmap directory and

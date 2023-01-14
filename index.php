@@ -315,7 +315,7 @@ function blank_and_content_tab() {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
 		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		closeProject_viewOnly(key);
-		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+color1+':'+color2+':'+parent+'"');
+		console.log('#     parent.openProject : "'+user+':'+project+':'+key+'"');
 		//console.log(show_button_element);
 
 		if (show_button_element.checked == false) {
@@ -511,16 +511,16 @@ function blank_and_content_tab() {
 			var projectsShown = localStorage.getItem("projectsShown");
 			//console.log("'"+projectsShown+"'");
 			if (projectsShown != null) {
-				projectsShown = projectsShown.replace(user+":"+project+":"+key+":null:null:null");
+				projectsShown = projectsShown.replace(user+":"+project+":"+key);
 			} else {
 				projectsShown = "";
 			}
-			projectsShown = projectsShown+" "+user+":"+project+":"+key+":null:null:null";
+			projectsShown = projectsShown+" "+user+":"+project+":"+key;
 			projectsShown = projectsShown.replace("  "," ");   // remove duplicate " " characters.
 			while (projectsShown.charAt(0) == " ")
 				projectsShown = projectsShown.slice( 1 );      // remove leading " " character.
 			localStorage.setItem("projectsShown", projectsShown);
-			console.log('#     Add to projectsShown : "'+user+':'+project+':'+key+':null:null:null"');
+			console.log('#     Add to projectsShown : "'+user+':'+project+':'+key+'"');
 			console.log('#         projectsShown = "'+projectsShown+'"');
 		}
 	}
@@ -535,12 +535,12 @@ function blank_and_content_tab() {
 			figure_element.remove();
 		}
 		var projectsShown = localStorage.getItem("projectsShown");
-		projectsShown = projectsShown.replace(user+":"+project+":"+key+":null:null:null","");
+		projectsShown = projectsShown.replace(user+":"+project+":"+key,"");
 		projectsShown = projectsShown.replace("  "," ");  // remove duplicate " " characters.
 		while (projectsShown.charAt(0) == " ")
 			projectsShown = projectsShown.slice( 1 );     // remove leading " " characater.
 		localStorage.setItem("projectsShown", projectsShown);
-		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+':null:null:null"');
+		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+'"');
 		console.log('#         projectsShown = "'+projectsShown+'"');
 	}
 	function closeProject_viewOnly(key) {
@@ -586,8 +586,8 @@ function blank_and_content_tab() {
 </DIV>
 <DIV id="Hidden_AddToHapmap" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
 	<table width="100%"><tr>
-	<td width="95%" align="left">Generate New Hapmap</td>
-	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_GenerateNewHapmap').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
+	<td width="95%" align="left">Add Haplotype Entry</td>
+	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_AddToHapmap').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
 	</tr></table>
 	<br>
 	<iframe id="Hidden_AddToHapmap_Frame"></iframe>
