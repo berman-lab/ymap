@@ -21,12 +21,6 @@
 		if ($key2 == $key) { $hapmap = $hapmapFolders[$key2]; }
 	}
 
-<<<<<<< HEAD:hapmap.addTo_1.php
-	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$user     = str_replace($bad_chars,"",trim(filter_input(INPUT_POST,  "user",   FILTER_SANITIZE_STRING)));
-	$hapmap   = str_replace($bad_chars,"_",trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING)));
-	$key      = str_replace($bad_chars,"",trim(filter_input(INPUT_POST,  "key",    FILTER_SANITIZE_STRING)));
-
 	// Re-initialize 'process_log.txt' file.
 	$logOutputName = "users/".$user."/hapmaps/".$hapmap."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
@@ -34,11 +28,9 @@
 	fwrite($logOutput, "Log file restarted for hapmap addition\n");
 	fwrite($logOutput, "Running 'hapmap.addTo_1.php'.\n");
 
-=======
 	//=====================================
 	// Load genome and parent from hapmap.
 	//.....................................
->>>>>>> minor-fixes:hapmap.addTo_window.php
 	// Defining directory location for later use.
 	$folder = "users/".$user."/hapmaps/".$hapmap."/";
 	// Load genome from 'hapmap/genome.txt'.
