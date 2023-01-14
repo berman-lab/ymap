@@ -81,7 +81,7 @@ cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
 echo "#==========================#" >> $logName;
 echo "# CGH analysis of dataset. #" >> $logName;
 echo "#==========================#" >> $logName;
-echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
+echo "Preprocessing CNV data." >> $condensedLog;
 
 if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
 then
@@ -162,12 +162,12 @@ then
 	echo "#===========================================#" >> $logName;
 	echo "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
 	echo "#===========================================#" >> $logName;
-	echo "Preprocessing SNP data, with hapmap.   (~1 hr for SNP/LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "Preprocessing SNP data, with hapmap." >> $condensedLog;
 else
 	echo "#==============================================#" >> $logName;
 	echo "# SNP/LOH analysis of dataset, with reference. #" >> $logName;
 	echo "#==============================================#" >> $logName;
-	echo "Preprocessing SNP data, with hapmap.   (~2 hrs for SNP/LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "Preprocessing SNP data, with reference." >> $condensedLog;
 fi;
 
 
