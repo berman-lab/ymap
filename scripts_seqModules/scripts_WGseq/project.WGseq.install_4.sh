@@ -157,12 +157,12 @@ then
 	echo "#==========================#" >> $logName;
 	echo "# SNP analysis of dataset. #" >> $logName;
 	echo "#==========================#" >> $logName;
-	echo "Preprocessing SNP data.   (~20 min for SNP analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "Preprocessing SNP data." >> $condensedLog;
 else
 	echo "#==========================#" >> $logName;
 	echo "# LOH analysis of dataset. #" >> $logName;
 	echo "#==========================#" >> $logName;
-	echo "Preprocessing SNP data.   (~4 hrs for LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "Preprocessing SNP data, with reference." >> $condensedLog;
 fi
 
 if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
@@ -199,9 +199,9 @@ outputName=$projectDirectory"processing3.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing3()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo "    diary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
+echo "    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+echo "    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing3()" >> $logName;
