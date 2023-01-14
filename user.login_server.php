@@ -5,9 +5,8 @@
 	ini_set('display_errors', 1);
 
 	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$user      = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
-
-	$pw_in   = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
+	$user_in   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
+	$pw_in     = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
 
 	$currentPath = getcwd();
 	$user        = validateUser($user_in);
