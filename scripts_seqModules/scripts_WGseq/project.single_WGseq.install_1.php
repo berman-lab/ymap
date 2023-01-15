@@ -31,18 +31,13 @@
 <?php
 	require_once '../../constants.php';
 
-//	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
-//	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
-//	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
-//	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
-
-// Initialize log file.
+// Initialize log files.
 	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
 	fwrite($logOutput, "#..............................................................................\n");
 	fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php'.\n");
-	fwrite($logOutput, "Variables passed via POST :\n");
+	fwrite($logOutput, "Variables passed :\n");
 	fwrite($logOutput, "\tfileName = '".$fileName."'\n");
 	fwrite($logOutput, "\tuser     = '".$user."'\n");
 	fwrite($logOutput, "\tproject  = '".$project."'\n");

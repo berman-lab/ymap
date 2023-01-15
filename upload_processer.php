@@ -21,7 +21,7 @@ $_SESSION['genome']     = $genome;
 $_SESSION['project']    = $project;
 $_SESSION['key']        = $key;
 
-if (project != "") {
+if ($project != "") {
 	// initiate project.
 	$conclusion_script = "";
 	switch ($dataFormat) {
@@ -53,8 +53,9 @@ if (project != "") {
 			$conclusion_script = "scripts_seqModules/scripts_IonExpressSeq/project.paired_IonExpressSeq.install_1.php";
 			break;
 	}
-} else if (genome != "") {
+} else if ($genome != "") {
 	// initiate genome.
+	// ideally loaded into iframe id="Hidden_InstallNewGenome_Frame" defined in index.php
 	$conclusion_script = "scripts_genomes/genome.install_1.php";
 }
 // troubleshooting output
