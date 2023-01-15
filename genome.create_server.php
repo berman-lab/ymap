@@ -12,7 +12,7 @@
 	}
 
 	$bad_chars      = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$genomeName = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING)); 
+	$genomeName = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));
 	// removing unwanted characters
 	$genomeNameTrimmed     = str_replace($bad_chars,"",$genomeName);
 	// changing spaces to underlines
