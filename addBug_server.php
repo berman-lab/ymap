@@ -9,8 +9,7 @@
                 header('Location: user.login.php');
         }
 
-	$user = $_SESSION['user'];
-//	$submitter   = filter_input(INPUT_POST, "submitter",   FILTER_SANITIZE_STRING);
+	$user        = $_SESSION['user'];
 	$description = filter_input(INPUT_POST, "description", FILTER_SANITIZE_STRING);
 
 	$admin_email = '';
