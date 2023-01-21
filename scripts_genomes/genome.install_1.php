@@ -250,7 +250,9 @@
 	// The following section defines a form for collecting the information needed to build the last of the genome setup files.
 	fwrite($logOutput, "\n\tGenerating form to request centromere location and other genome specific data from the user.\n");
 
+//============================================================================================================
 // The following section should be loaded into iframe ID="Hidden_InstallNewGenome_Frame" defined in index.php
+//------------------------------------------------------------------------------------------------------------
 // dragon
 ?>
 
