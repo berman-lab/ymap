@@ -1,7 +1,10 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-	require_once '../../constants.php';
+	error_reporting(E_ALL);
+        require_once '../../constants.php';
+        ini_set('display_errors', 1);
+
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
 	error_reporting(E_ALL);
@@ -11,10 +14,10 @@
 	$hapmap          = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
 	$user            = $_SESSION['user'];
 
-	$genome          = filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING);
-	$referencePloidy = filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING);
-	$project1        = filter_input(INPUT_POST, "project1",        FILTER_SANITIZE_STRING);
-	$project2        = filter_input(INPUT_POST, "project2",        FILTER_SANITIZE_STRING);
+	$genome          = trim(filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING));
+	$referencePloidy = trim(filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING));
+	$project1        = trim(filter_input(INPUT_POST, "project1",        FILTER_SANITIZE_STRING));
+	$project2        = trim(filter_input(INPUT_POST, "project2",        FILTER_SANITIZE_STRING));
 
 // Load the number of chromosomes from "chromosome_sizes.txt"
 	$file1 = "../../users/default/genomes/".$genome."/chromosome_sizes.txt";
