@@ -26,7 +26,7 @@
 <?php
 	require_once 'constants.php';
 	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$user     = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
+	$user          = $_SESSION['user'];
 	$genome   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING)));
 	$key      = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING)));
 
