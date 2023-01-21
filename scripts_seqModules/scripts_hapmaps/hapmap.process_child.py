@@ -3,11 +3,13 @@
 ### "SNPdata_child.{entryNum}.txt".   Final format only has data lines for loci which are found
 ### in "SNPdata_hapmap.txt" file, and only data lines for fragments of the genome defined in the
 ### corresponding "haplotypeFragments.{entryNum}.txt" file.
+###
 ### Output collumns:
 ###     0) chr_name      : Chromosome name string.
 ###     1) bp_coordinate : bp coordinate along chromosome.
 ###     2) baseCall_1    : majority allele base call.
 ###     3) baseCall_2    : secondary allele base call.
+###     4) phasing       :
 ###
 
 import string, sys, time;
@@ -51,7 +53,7 @@ haplotypeMapEntry_data = open(haplotypeMapEntry_file,'r');
 fragments        = [];
 fragment_counter = 0;
 ## Process fragment file, line by line.
-print '### Fragments found in haplotype entry:'
+print '### Fragments found in haplotype entry:';
 while True:
 	# Line pairs have the following structure.
 	#    >Ca_a.chr1 (9638..10115) (478bp) [*] a
@@ -78,7 +80,7 @@ while True:
 		bp_start     = int(float(coordinates[0]));
 		bp_end       = int(float(coordinates[1]));
 		fragments.append([chr_num,bp_start,bp_end,homologID]);
-		print '###\tfragment[' + str(fragment_counter) + '] = [' + str(chr_num) + ', ' + str(bp_start) + ', ' + str(bp_end) + ', ' + homologID + ']'
+		print '###\tfragment[' + str(fragment_counter) + '] = [' + str(chr_num) + ', ' + str(bp_start) + ', ' + str(bp_end) + ', ' + homologID + ']';
 		fragment_counter += 1;
 haplotypeMapEntry_data.close();
 with open(logName, "a") as myfile:
@@ -197,18 +199,22 @@ searchTarget = open(inputFile2,'r');
 childLine    = chrName[0]+'\t1';
 for line in data:
 	# example lines from SNP pileup file:
-	#   0) chr_name      : Chromosome name string.
-	#   1) bp_coordinate : bp coordinate along chromosome.
-	#   2) baseCall_1    : alphabetical first call of heterozgous locus.
-	#   3) baseCall_2    : alphabetical second call of heterozygous locus.
+	#   0) chr_name                   : Chromosome name string.
+	#   1) bp_coordinate              : bp coordinate along chromosome.
+	#   2) baseCall_1                 : alphabetical first call of heterozgous locus.
+	#   3) baseCall_2                 : alphabetical second call of heterozygous locus.
+	#   4) prior_hapmap entry phasing :
 	if line[0] != "#":
 		count += 1;
-		parentLine = string.strip(line);
-		parentLine = parentLine.split('\t');
-		P_chr_name = parentLine[0];        # chr name of bp.			: Ca21chrR_C_albicans_SC5314
-		P_position = int(parentLine[1]);   # chr position of bp.		: 2286371
-		P_allele1  = parentLine[2];        # alphabetical 1' heterozygous allele.
-		P_allele2  = parentLine[3];        # alphabetical 2' heterozygous allele.
+		parentLine  = string.strip(line);
+		parentLine  = parentLine.split('\t');
+		lineColumns = len(parentLine);
+		P_chr_name  = parentLine[0];        # chr name of bp.			: Ca21chrR_C_albicans_SC5314
+		P_position  = int(parentLine[1]);   # chr position of bp.		: 2286371
+		P_allele1   = parentLine[2];        # alphabetical 1' heterozygous allele.
+		P_allele2   = parentLine[3];        # alphabetical 2' heterozygous allele.
+
+
 		#=====================================
 		# Find fragment bin which holds data.
 		#-------------------------------------
@@ -260,21 +266,17 @@ for line in data:
 				# If current coordinate is at/after end of a fragment, update fragment_found to 0.
 				if P_position >= fragments[current_fragment-1][2]:
 					fragment_found = 0;
+
+
 			#===============================================================================================================
 			# Get line corrosponding to parental het SNP in child 'SNPdata_child.{entryNum}.txt' file.
 			#--------------------------------------------------------------------------------------------------------------- 
 			searchString = P_chr_name + "\t" + str(P_position);
 			result = "";
-			## Barely functional, very slow slow equivalent of GREP, returning only one result line.
-			##    Very slow because it restarts search position for each search.
-			##    This can be improved dramatically if the search target file is already sorted.
-			#for lineChild in open(inputFile2,'r'):
-			#	if searchString in lineChild:
-			#		result = lineChild
-			#		break
+
 			# Fast line search, relies upon presorted search target file.
 			if len(childLine) == 0:
-				childLine       = searchTarget.readline();
+				childLine   = searchTarget.readline();
 			childLine_parts     = childLine.split('\t');
 			C_chr_name          = childLine_parts[0];
 			C_position          = int(childLine_parts[1]);
@@ -334,7 +336,7 @@ for line in data:
 				# Determine phasing of SNP locus by comparing found child allele to haplotype map entry expectation.
 				#     no phase info => 0
 				#     correct phase => 1
-				#     wrong phase   => 2 
+				#     wrong phase   => 2
 				if (fragment_found == 0): # this coordinate was not associated with a LOH fragment.
 					locus_phase = 11;          # no phase information, due to coordinate not matching a LOH fragment in child dataset.
 				else:
@@ -351,8 +353,8 @@ for line in data:
 					else:
 						locus_phase = 12;      # no phase information, due to surprise allele in child dataset.
 			# Output 'SNPdata_hapmap.txt' line with new column containing most recent haplotype entry phase.
-			print string.strip(line) + '\t' + str(locus_phase) #+ '\t(' + str(current_fragment) + ';' + homologID + ')';
-		# Reset old_chr/last_fragment to current coordinate chromosome before moving to next line in pileup. 
+			print string.strip(line)+'\t'+str(locus_phase); # add new phasing information to existing info
+		# Reset old_chr/last_fragment to current coordinate chromosome before moving to next line in pileup.
 		old_chr       = chr;
 		last_fragment = current_fragment;
 data.close();

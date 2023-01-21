@@ -132,7 +132,7 @@
 			echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
 			echo "<font size='2'>".($key+1).".";
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			
+
 			echo $projectNameString;
 			echo "</font></span>\n\t\t\t\t";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
@@ -178,8 +178,8 @@
 <?php
 		foreach($projectFolders_complete as $key_=>$project) {
 			// Load data type for project.
-			$handle   = fopen("users/".$user."/projects/".$project."/dataType.txt", "r");
-			$dataType = fgets($handle);
+			$handle     = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
+			$dataFormat = fgets($handle);
 			fclose($handle);
 
 			// Load colors for project.
@@ -228,7 +228,7 @@
 			}
 			// printing total size
 			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
-			
+
 			echo "</span>";
 			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 			echo "<div id='frameContainer.p1_".$key."'></div>\n";
@@ -260,82 +260,91 @@ if (isset($_SESSION['logged_on'])) {
 	foreach($projectFolders_starting as $key_=>$project) {    // frameContainer.p3_[$key] : starting.
 		$key      = $key_;
 		$project  = $projectFolders[$key];
-		// Read in dataType string for project.
-		$handle   = fopen("users/".$user."/projects/".$project."/dataType.txt", "r");
-		$dataType = fgets($handle);
+		// Read in dataFormat string for project.
+		$handle     = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
+		$dataFormat = fgets($handle);
 		fclose($handle);
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
 		echo "var el_p               = document.getElementById('frameContainer.p3_".$key."');\n";
-		$script_SnpCghArray          = "scripts_SnpCghArray/project.SnpCgh.install.php";
-		$script_WGseq_single         = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
-		$script_WGseq_paired         = "scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php";
-		$script_ddRADseq_single      = "scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_1.php";
-		$script_ddRADseq_paired      = "scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_1.php";
-		$script_RNAseq_single        = "scripts_seqModules/scripts_RNAseq/project.single_RNAseq.install_1.php";
-		$script_RNAseq_paired        = "scripts_seqModules/scripts_RNAseq/project.paired_RNAseq.install_1.php";
-		$script_IonExpressSeq_single = "scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_1.php";
-		$script_IonExpressSeq_paired = "scripts_seqModules/scripts_IonExpressSeq/project.paired_IonExpressSeq.install_1.php";
 		// Javascript to build file load button interface.
 		echo "el_p.innerHTML         = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" ";
-		if ((strlen($dataType) > 1) && ($dataType[2] == '1')) {   echo "style=\"height:76px\" src=\"uploader.2.php\"";   } else {   echo "style=\"height:38px\" src=\"uploader.1.php\"";   }
+		if ((strlen($dataFormat) > 1) && ($dataFormat[2] == '1')) {
+			// paired files to be uploaded.
+			echo "style=\"height:76px\" src=\"uploader.2.php\"";
+		} else {
+			// single file to be uploaded.
+			echo "style=\"height:38px\" src=\"uploader.1.php\"";
+		}
 		echo " marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
 		echo "var p_iframe           = document.getElementById('p_".$key."');\n";
 		echo "var p_js               = p_iframe.contentWindow;\n";
 		echo "p_js.display_string    = new Array();\n";
-		echo "p_js.target_dir        = '../../users/".$user."/projects/".$project."/';\n";
 		echo "p_js.user              = '".$user."';\n";
 		echo "p_js.project           = '".$project."';\n";
 		echo "p_js.key               = 'p_".$key."';\n";
-		if ($dataType == '0') {                                      // SnpCgh microarray
+		if ($dataFormat == '0') {
+			// SnpCgh microarray
 			echo "p_js.display_string[0] = 'Add : SnpCgh array data...';\n";
-			echo "p_js.conclusion_script = '".$script_SnpCghArray."';\n";
-		} else if ($dataType == '1:0') {                             // WGseq : single-end [FASTQ/ZIP/GZ]
+			echo "p_js.dataFormat        = 'SnpCghArray';\n";
+		} else if (($dataFormat == '1:0:0') || ($dataFormat == '1:0:1')) {
+			// WGseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read WGseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = '".$script_WGseq_single."';\n";
-		} else if ($dataType == '1:1') {                             // WGseq : paired-end [FASTQ/ZIP/GZ]
+			echo "p_js.dataFormat        = 'WGseq_single';\n";
+		} else if (($dataFormat == '1:1:0') || ($dataFormat == '1:1:1')) {
+			// WGseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read WGseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read WGseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = '".$script_WGseq_paired."';\n";
-		} else if (($dataType == '1:2') || ($dataType == '1:3')) {   // WGseq : [SAM/BAM/TXT]
+			echo "p_js.dataFormat        = 'WGseq_paired';\n";
+		} else if (($dataFormat == '1:2:0') || ($dataFormat == '1:2:1') || ($dataFormat == '1:3:0') || ($dataFormat == '1:3:1')) {
+			// WGseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : WGseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.conclusion_script = '".$script_WGseq_single."';\n";
-		} else if ($dataType == '2:0') {                             // ddRADseq : single-end [FASTQ/ZIP/GZ]
+			echo "p_js.dataFormat        = 'WGseq_single';\n";
+		} else if (($dataFormat == '2:0:0') || ($dataFormat == '2:0:1')) {
+			// ddRADseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read ddRADseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = '".$script_ddRADseq_single."';\n";
-		} else if ($dataType == '2:1') {                             // ddRADseq : paired-end [FASTQ/ZIP/GZ]
+			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
+		} else if (($dataFormat == '2:1:0') || ($dataFormat == '2:1:1')) {
+			// ddRADseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = '".$script_ddRADseq_paired."';\n";
-		} else if (($dataType == '2:2') || ($dataType == '2:3')) {   // ddRADseq : [SAM/BAM/TXT]
+			echo "p_js.dataFormat        = 'ddRADseq_paired';\n";
+		} else if (($dataFormat == '2:2:0') || ($dataFormat == '2:2:1') || ($dataFormat == '2:3:0') || ($dataFormat == '2:3:1')) {
+			// ddRADseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : ddRADseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.conclusion_script = '".$script_ddRADseq_single."';\n";
-		} else if ($dataType == '3:0') {                             // RNAseq : single-end [FASTQ/ZIP/GZ]
+			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
+		} else if (($dataFormat == '3:0:0') || ($dataFormat == '3:0:1')) {
+			// RNAseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read RNAseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = '".$script_RNAseq_single."';\n";
-		} else if ($dataType == '3:1') {                             // RNAseq : paired-end [FASTQ/ZIP/GZ]
+			echo "p_js.dataFormat        = 'RNAseq_single';\n";
+		} else if (($dataFormat == '3:1:0') || ($dataFormat == '3:1:1')) {
+			// RNAseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read RNAseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read RNAseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = '".$script_RNAseq_paired."';\n";
-		} else if (($dataType == '3:2') || ($dataType == '3:3')) {   // RNAseq : [SAM/BAM/TXT]
+			echo "p_js.dataFormat        = 'RNAseq_paired';\n";
+		} else if (($dataFormat == '3:2:0') || ($dataFormat == '3:2:1') || ($dataFormat == '3:3:0') || ($dataFormat == '3:3:1')) {
+			// RNAseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : RNAseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.conclusion_script = '".$script_RNAseq_single."';\n";
-		} else if ($dataType == '4:0') {                             // IonExpressSeq : single-end [FASTQ/ZIP/GZ]
+			echo "p_js.dataFormat        = 'RNAseq_single';\n";
+		} else if (($dataFormat == '4:0:0') || ($dataFormat == '4:0:1')) {
+			// IonExpressSeq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read IonExpress data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = '".$script_IonExpressSeq_single."';\n";
-		} else if ($dataType == '4:1') {                             // IonExpressSeq : paired-end [FASTQ/ZIP/GZ]
+			echo "p_js.dataFormat        = 'IonExpressSeq_single';\n";
+		} else if (($dataFormat == '4:1:0') || ($dataFormat == '4:1:1')) {
+			// IonExpressSeq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read IonExpress data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read IonExpress data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.conclusion_script = '".$script_IonExpressSeq_paired."';\n";
-		} else if (($dataType == '4:2') || ($dataType == '4:3')) {   // IonExpressSeq : [SAM/BAM/TXT]
+			echo "p_js.dataFormat        = 'IonExpressSeq_paired';\n";
+		} else if (($dataFormat == '4:2:0') || ($dataFormat == '4:2:1') || ($dataFormat == '4:3:0') || ($dataFormat == '4:3:1')) {
+			// IonExpressSeq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : IonExpress data (SAM/BAM/TXT)...';\n";
-			echo "p_js.conclusion_script = '".$script_IonExpressSeq_single."';\n";
+			echo "p_js.dataFormat        = 'IonExpressSeq_single';\n";
 		}
 	}
 	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
 		$key      = $key_ + $userProjectCount_starting;
 		$project  = $projectFolders[$key];
-		$handle   = fopen("users/".$user."/projects/".$project."/dataType.txt", "r");
-		$dataType = fgets($handle);
+		$handle   = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
+		$dataFormat = fgets($handle);
 		fclose($handle);
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
 		echo "var el_p            = document.getElementById('frameContainer.p2_".$key."');\n";

@@ -1,5 +1,15 @@
 <?php
 	session_start();
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
+        else {
+                $user      = $_SESSION['user'];
+                $key       = preg_replace('/\D/', '', $_GET['k']);  //Strip all non-numerical characters from string.
+        }
+        require_once 'constants.php';
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -21,38 +31,9 @@
 <BODY class="tab">
 <!---------- Main section of User interface ----------!>
 	<div class="upload-wrapper">
-		<table><tr>
+		<table><tr><td>
 		<!--- Button to add haplotype entry to hapmap ---!>
-		<button onclick="AddHaplotypeEntry();">Add haplotype entry...</button>
-
-		<script type="text/javascript">
-
-// parent.show_hidden("Hidden_AddToHapmap");
-// parent.reload_hidden("Hidden_AddToHapmap","hapmap..php");
-
-			AddHaplotypeEntry=function() {
-			var autoSubmitForm = document.createElement('form');
-			autoSubmitForm.setAttribute('method','post');
-			autoSubmitForm.setAttribute('action','hapmap.addTo_1.php');
-			var input1 = document.createElement('input');
-				input1.setAttribute('type','hidden');
-				input1.setAttribute('name','user');
-				input1.setAttribute('value',user);
-				autoSubmitForm.appendChild(input1);
-			var input2 = document.createElement('input');
-				input2.setAttribute('type','hidden');
-				input2.setAttribute('name','hapmap');
-				input2.setAttribute('value',hapmap);
-				autoSubmitForm.appendChild(input2);
-			var input3 = document.createElement('input');
-				input3.setAttribute('type','hidden');
-				input3.setAttribute('name','key');
-				input3.setAttribute('value',key);
-				autoSubmitForm.appendChild(input3);
-			document.body.appendChild(autoSubmitForm);
-			autoSubmitForm.submit();
-			}
-		</script>
+		<button onclick="parent.parent.show_hidden('Hidden_AddToHapmap'); parent.parent.reload_hidden('Hidden_AddToHapmap','hapmap.addTo_window.php?k=<?php echo $key; ?>');">Add haplotype entry...</button>
 	</div>
 </BODY>
 </html>

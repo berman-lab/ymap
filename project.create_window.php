@@ -22,23 +22,27 @@
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project">
 				</td><td>
 					Unique name for this dataset.
-				</td></tr><tr bgcolor="#CCCCFF"><td>
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
 					<label for="ploidy">Ploidy of experiment : </label><input type="text" name="ploidy"  id="ploidy" value="2.0"><br>
 				</td><td>
 					A ploidy estimate for the strain being analyzed.
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<label for="ploidy">Baseline ploidy : </label><input type="text" name="ploidyBase"  id="ploidyBase" value="2.0"><br>
 				</td><td>
 					The copy number to use as a baseline in drawing copy number variations.
-				</td></tr><tr bgcolor="#CCCCFF"><td>
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
 					<label for="showAnnotations">Generate figure with annotations?</label><select name="showAnnotations" id="showAnnotations">
 						<option value="1">Yes</option>
 						<option value="0">No</option>
 					</select>
 				</td><td>
 					Genome annotations, such as rDNA locus, can be drawn at bottom of figures.
-				</td></tr><tr bgcolor="#CCFFCC"><td>
-					<label for="dataType">Data type : </label><select name="dataType" id="dataType" onchange="UpdateForm(); UpdateHapmap(); UpdateParentList()">
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
+					<label for="dataFormat">Data type : </label><select name="dataFormat" id="dataFormat" onchange="UpdateForm(); UpdateHapmap(); UpdateParentList()">
 						<option value="0">SnpCgh microarray        </option>
 						<option value="1">Whole genome NGS         </option>
 						<option value="2">ddRADseq                 </option>
@@ -48,7 +52,8 @@
 					</select>
 				</td><td>
 					The type of data to be processed.
-				</td></tr><tr bgcolor="#CCCCFF"><td valign="top">
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td valign="top">
 					<div id="hiddenFormSection1" style="display:none">
 						<label for="readType">Read type : </label><select name="readType" id="readType">
 							<option value="0">single-end reads; FASTQ/ZIP/GZ file.</option>
@@ -62,7 +67,18 @@
 						Single-end or paired-end reads in FASTQ format can be compressed into ZIP or GZ archives or in SAM/BAM alignment files.<br>
 						Tab-delimted TXT column format is described in 'About' tab of main page.
 					</div>
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
+                                        <div id="hiddenFormSection2a" style="display:none">
+                                                <input type="checkbox" name="indelrealign" value="True">Perform Indel-realignment<br>
+                                        </div>
+				</td><td>
+					<div id="hiddenFormSection2b" style="display:none">
+						Enable if you're going to be examining specific SNPs later. Disable otherwise.<br>
+						Disabled resulted in 1% spurious SNPs in test case, with no visual impact, but shortened analysis by ~3 hours.
+					</div>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection3" style="display:none">
 						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
 							<?php
@@ -78,7 +94,7 @@
                                         }
                                     }
                                 }
-                                
+
                                 ksort($genomesMap);
                                 foreach ($genomesMap as $genomeDirName => $genomeDisplayName) {
                                     echo "\n\t\t\t\t\t<option value='" . $genomeDirName . "'>" . $genomeDisplayName . "</option>";
@@ -89,7 +105,8 @@
 				</td><td valign="top">
 					<div id="hiddenFormSection4" style="display:none">
 					</div>
-				</td></tr><tr bgcolor="#CCCCFF"><td>
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
 					$hapmapsDir1       = "users/default/hapmaps/";
@@ -112,7 +129,8 @@
 						Analysis of ddRADseq data is limited to restriction fragments bound by both restriction enzymes.<br>
 						If your restriction enzyme pair is not listed, you can contact the system administrators about developing the option as a collaboration.
 					</div>
-				</td></tr><tr bgcolor="#CCCCFF"><td>
+				</td></tr>
+				<tr bgcolor="#CCCCFF"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
 					$hapmapsDir1       = "users/default/hapmaps/";
@@ -147,7 +165,8 @@
 						A haplotype map defines the phasing of heterozygous SNPs across the genome and must be matched to the background of the experiment for informative results.
 						SNP information from the hapmap will be used for SNP/LOH analsyses.
 					</div>
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<?php
 					// figure out which hapmaps have been defined for this species, if any.
 					$projectsDir1       = "users/default/projects/";
@@ -155,12 +174,14 @@
 					$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 					$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
-					// Go through each $projectFolder and look at 'genome.txt' and 'dataType.txt'; build javascript array of prejectName:genome:datatype triplets.
+					// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of [parent:genome:dataFormat:projectName]s.
 					?>
-					<div id="hiddenFormSection7" style="display:none">
+<div id="hiddenFormSection7" style="display:none">
 						Parental strain : <select id="selectParent" name="selectParent"><option>[choose]</option></select>
 						<script type="text/javascript">
-						var parentGenomeDatatype_entries = [['parent','genome','dataType']<?php
+						var parentGenomeDataFormat_entries = [
+							['parent', 'genome', 'dataFormat', 'projectName'],
+<?php
 						foreach ($projectFolders_raw as $key=>$folder) {
 							// display project only if processing finished
 							if (file_exists($folder . "/complete.txt")) {
@@ -172,25 +193,27 @@
 									$genome_string   = trim(fgets($handle1));
 									fclose($handle1);
 								}
-						 		$handle2         = fopen($folder."/dataType.txt", "r");
-								$dataType_string = trim(fgets($handle2));
-								$dataType_string = explode(":",$dataType_string);
-								$dataType_string = $dataType_string[0];
+						 		$handle2           = fopen($folder."/dataFormat.txt", "r");
+								$dataFormat_string = trim(fgets($handle2));
+								$dataFormat_string = explode(":",$dataFormat_string);
+								$dataFormat_string = $dataFormat_string[0];
 								fclose($handle2);
-								$parentName      = $folder;
-								// reading name according to the folder the parent exist
+								$parentName        = $folder;
+								// read name according to the folder the parent exist
 								if (file_exists($folder."/name.txt")) {
-									$projectNameString = file_get_contents($folder."/name.txt");
-									$parentName      = str_replace($projectsDir1,"",$parentName);
+									$projectNameString = trim(file_get_contents($folder."/name.txt"));
+									$parentName        = trim(str_replace($projectsDir1,"",$parentName));
 								} else {
-									$projectNameString = file_get_contents($folder."/name.txt");
+									$projectNameString = trim(file_get_contents($folder."/name.txt"));
 								}
-								$parentName      = str_replace($projectsDir1,"",$parentName);
-								$parentName      = str_replace($projectsDir2,"",$parentName);
-								echo ",['{$parentName}','{$genome_string}',{$dataType_string}, '{$projectNameString}']";
+								$parentName      = trim(str_replace($projectsDir1,"",$parentName));
+								$parentName      = trim(str_replace($projectsDir2,"",$parentName));
+								echo "\t\t\t\t\t\t\t";
+								echo "['{$parentName}', '{$genome_string}', {$dataFormat_string}, '{$projectNameString}']";
+								echo ",\n";
 							}
 						}
-						?>];
+?>						];
 						</script>
 					</div>
 				</td><td valign="top">
@@ -200,7 +223,8 @@
 					<div id="hiddenFormSection8b" style="display:none">
 						This strain will act as the CNV normalization control.
 					</div>
-				</td></tr><tr bgcolor="#CCFFCC"><td>
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection9a" style="display:inline">
 						<!-- SnpCgh array --!>
 						<input type="checkbox"      name="0_bias2" value="True" checked>GC-content bias<br>
@@ -243,7 +267,7 @@
 					document.getElementById("hiddenFormSection8a").style.display  = 'none';
 					document.getElementById("hiddenFormSection8b").style.display  = 'inline';
 				} else {
-					if (document.getElementById("dataType").value == 2) {    // ddRADseq.
+					if (document.getElementById("dataFormat").value == 2) {    // ddRADseq.
 						document.getElementById("hiddenFormSection7" ).style.display  = 'inline';
 						document.getElementById("hiddenFormSection8a").style.display  = 'none';
 						document.getElementById("hiddenFormSection8b").style.display  = 'inline';
@@ -273,28 +297,33 @@
 				}
 			}
 			UpdateParentList=function() {
-				var selectedGenome   = document.getElementById("genome").value;   // grab genome name.
-				var selectedDatatype = document.getElementById("dataType").value; // grab dataset type.
-				var select           = document.getElementById("selectParent");   // grab select list.
-				select.innerHTML     = '';
-				var el               = document.createElement("option");
-				el.textContent       = '[This strain is parental type.]';
-				el.value             = 'none';
+				var selectedGenome     = document.getElementById("genome").value;     // grab genome name.
+				var selectedDataFormat = document.getElementById("dataFormat").value; // grab dataset type.
+				var select             = document.getElementById("selectParent");     // grab select list.
+				select.innerHTML       = '';
+				var el                 = document.createElement("option");
+				el.textContent         = '[This strain is parental type.]';
+				el.value               = 'none';
 				select.appendChild(el);
-				for (var i = 1; i < parentGenomeDatatype_entries.length; i++) {
-					var item = parentGenomeDatatype_entries[i];
-					if (selectedGenome == item[1] && selectedDatatype == item[2]) {
-						var el         = document.createElement("option");
-						el.textContent = item[3];
-						el.value       = item[0];
-						select.appendChild(el);
+				for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
+					var item = parentGenomeDataFormat_entries[i];
+					if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
+						if (item[3] != "") {
+							var el         = document.createElement("option");
+							el.textContent = item[3];
+							el.value       = item[0];
+							select.appendChild(el);
+						}
 					}
 				}
 			}
 			UpdateForm=function() {
-				if (document.getElementById("dataType").value == 0) {			// SnpCgh Microarray.
+				// Manages hiding and displaying form sections during user interaction.
+				if (document.getElementById("dataFormat").value == 0) {			// SnpCgh Microarray.
 					document.getElementById("hiddenFormSection1").style.display  = 'none';
 					document.getElementById("hiddenFormSection2").style.display  = 'none';
+					document.getElementById("hiddenFormSection2a").style.display = 'none';
+					document.getElementById("hiddenFormSection2b").style.display = 'none';
 					document.getElementById("hiddenFormSection3").style.display  = 'none';
 					document.getElementById("hiddenFormSection4").style.display  = 'none';
 					document.getElementById("hiddenFormSection5").style.display  = 'none';
@@ -310,6 +339,8 @@
 				} else {														// WGseq or ddRADseq.
 					document.getElementById("hiddenFormSection1").style.display  = 'inline';
 					document.getElementById("hiddenFormSection2").style.display  = 'inline';
+					document.getElementById("hiddenFormSection2a").style.display = 'inline';
+					document.getElementById("hiddenFormSection2b").style.display = 'inline';
 					document.getElementById("hiddenFormSection3").style.display  = 'inline';
 					document.getElementById("hiddenFormSection4").style.display  = 'inline';
 					document.getElementById("hiddenFormSection5").style.display  = 'inline';
@@ -317,13 +348,13 @@
 					document.getElementById("hiddenFormSection7").style.display  = 'inline';
 					document.getElementById("hiddenFormSection10").style.display = 'none';
 					document.getElementById("hiddenFormSection11").style.display = 'none';
-					if (document.getElementById("dataType").value == 1) { // WGseq
+					if (document.getElementById("dataFormat").value == 1) { // WGseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'inline';
 						document.getElementById("hiddenFormSection9c").style.display = 'none';
 						document.getElementById("hiddenFormSection9d").style.display = 'none';
 						document.getElementById("hiddenFormSection9e").style.display = 'none';
-					} else if (document.getElementById("dataType").value == 2) { // ddRADseq
+					} else if (document.getElementById("dataFormat").value == 2) { // ddRADseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'none';
 						document.getElementById("hiddenFormSection9c").style.display = 'inline';
@@ -331,7 +362,7 @@
 						document.getElementById("hiddenFormSection9e").style.display = 'none';
 						document.getElementById("hiddenFormSection10").style.display = 'inline';
 						document.getElementById("hiddenFormSection11").style.display = 'inline';
-					} else if (document.getElementById("dataType").value == 3) { // RNAseq (tsting)
+					} else if (document.getElementById("dataFormat").value == 3) { // RNAseq (tsting)
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'none';
 						document.getElementById("hiddenFormSection9c").style.display = 'none';
@@ -347,13 +378,13 @@
 				}
 			}
 			UpdateHapmap=function() {
-				if (document.getElementById("dataType").value == 0) {			// SnpCgh microarray.
+				if (document.getElementById("dataFormat").value == 0) {			// SnpCgh microarray.
 					document.getElementById("hiddenFormSection8a").style.display = 'none';
 					document.getElementById("hiddenFormSection8b").style.display = 'none';
-				} else if (document.getElementById("dataType").value == 2) {	// ddRADseq.
+				} else if (document.getElementById("dataFormat").value == 2) {	// ddRADseq.
 					document.getElementById("hiddenFormSection8a").style.display = 'none';
 					document.getElementById("hiddenFormSection8b").style.display = 'inline';
-				} else {														// WGseq
+				} else {								// WGseq
 					document.getElementById("hiddenFormSection8a").style.display = 'inline';
 					document.getElementById("hiddenFormSection8b").style.display = 'none';
 				}
@@ -364,12 +395,11 @@
 					document.getElementById("1_bias2").disabled = true;
 					document.getElementById("1_bias2").checked = true;
 				}
-				else 
+				else
 				{
 					document.getElementById("1_bias2").disabled = false;
 					document.getElementById("1_bias2").checked = true;
 				}
-			
 			}
 			</script>
 		</p></div>

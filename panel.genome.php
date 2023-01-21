@@ -27,7 +27,7 @@
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 		if ($exceededSpace)
 			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to install new genome</span><br><br>";
-		
+
 	}
 ?>
 <table width="100%" cellpadding="0"><tr>
@@ -101,7 +101,7 @@
 			printGenomeInfo("1", $key_ + $userGenomeCount_starting + $userGenomeCount_working, "00AA00", $user, $genome);
 		}
 	}
-	
+
 	function printGenomeInfo($frameContainerIx, $key, $labelRgbColor, $user, $genome) {
 		$genomeNameString = file_get_contents("users/".$user."/genomes/".$genome."/name.txt");
 		$genomeNameString = trim($genomeNameString);
@@ -175,15 +175,12 @@ if (isset($_SESSION['logged_on'])) {
 		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:38px\" ";
 		echo     "src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
 		echo "var g_iframe           = document.getElementById('g_".$key."');\n\t";
-	    echo "var g_js               = g_iframe.contentWindow;\n\t";
+		echo "var g_js               = g_iframe.contentWindow;\n\t";
 		echo "g_js.display_string    = new Array();\n\t";
 		echo "g_js.display_string[0] = \"Add : Genome reference FASTA file...\";\n\t";
-		echo "g_js.target_dir        = \"../../users/".$user."/genomes/".$genome."/\";\n\t";
-		echo "g_js.conclusion_script = \"scripts_genomes/genome.install_1.php\";\n\t";
-
-	    echo "g_js.user              = \"".$user."\";\n\t";
-	    echo "g_js.genome            = \"".$genome."\";\n\t";
-	    echo "g_js.key               = \"g_".$key."\";\n";
+		echo "g_js.user              = \"".$user."\";\n\t";
+		echo "g_js.genome            = \"".$genome."\";\n\t";
+		echo "g_js.key               = \"g_".$key."\";\n";
 	}
 	foreach($genomeFolders_working as $key_=>$genome) {
 		$key      = $key_ + $userGenomeCount_starting;
@@ -191,7 +188,7 @@ if (isset($_SESSION['logged_on'])) {
 		echo "\n\t// javascript for genome #".$key.", '".$genome."'\n\t";
 		echo "var el_g               = document.getElementById('frameContainer.g2_".$key."');\n\t";
 		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:76px\" ";
-	    echo     "src=\"genome.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
+		echo     "src=\"genome.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
 		echo "var g_iframe           = document.getElementById('g_".$key."');\n\t";
 		echo "var g_js               = g_iframe.contentWindow;\n\t";
 		echo "g_js.user              = \"".$user."\";\n\t";

@@ -55,40 +55,40 @@ $projectsDir2       = "users/".$user."/projects/";
 $projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 $projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 $projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
-// Go through each $projectFolder and look at 'genome.txt' and 'dataType.txt'; build javascript array of prejectName:genome:datatype triplets.
+// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of prejectName:genome:dataFormat triplets.
 ?>
 						Parental strain : <select id="parent" name="parent"><option>[choose]</option></select>
 <script type="text/javascript">
-var projectGenomeDatatype_entries = [['project','genome','dataType']<?php
+var projectGenomeDataFormat_entries = [['project','genome','dataFormat']<?php
 foreach ($projectFolders_raw as $key=>$folder) {
 	$genome_filename = $folder."/genome.txt";
 	$genome_string = "";
 	if (file_exists($genome_filename)) {
 		// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
 		$handle1         = fopen($genome_filename, "r");
-		$genome_string   = trim(fgets($handle1));	
+		$genome_string   = trim(fgets($handle1));
 		fclose($handle1);
 	}
-	$handle2         = fopen($folder."/dataType.txt", "r");
-	$dataType_string = trim(fgets($handle2));
-	$dataType_string = explode(":",$dataType_string);
-	$dataType_string = $dataType_string[0];
+	$handle2         = fopen($folder."/dataFormat.txt", "r");
+	$dataFormat_string = trim(fgets($handle2));
+	$dataFormat_string = explode(":",$dataFormat_string);
+	$dataFormat_string = $dataFormat_string[0];
 	fclose($handle2);
 	$projectName     = $folder;
 	$projectName     = str_replace($projectsDir1,"",$projectName);
 	$projectName     = str_replace($projectsDir2,"",$projectName);
-	echo ",['{$projectName}','{$genome_string}',{$dataType_string}]";
+	echo ",['{$projectName}','{$genome_string}',{$dataFormat_string}]";
 }
 ?>];
 
 UpdateProjectList=function() {
 	var selectedGenome   = document.getElementById("genome").value;     // grab genome.
-	var selectedDatatype = 1
+	var selectedDataFormat = 1
 	var select           = document.getElementById("parent");     // grab select list.
 	select.innerHTML     = '';
-	for (var i = 1; i < projectGenomeDatatype_entries.length; i++) {
-		var item = projectGenomeDatatype_entries[i];
-		if (selectedGenome == item[1] && selectedDatatype == item[2]) {
+	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
+		var item = projectGenomeDataFormat_entries[i];
+		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
 			var el         = document.createElement("option");
 			el.textContent = item[0];
 			el.value       = item[0];
@@ -98,9 +98,9 @@ UpdateProjectList=function() {
 
 	var select           = document.getElementById("child");
 	select.innerHTML     = '';
-	for (var i = 1; i < projectGenomeDatatype_entries.length; i++) {
-		var item = projectGenomeDatatype_entries[i];
-		if (selectedGenome == item[1] && selectedDatatype == item[2]) {
+	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
+		var item = projectGenomeDataFormat_entries[i];
+		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
 			var el         = document.createElement("option");
 			el.textContent = item[0];
 			el.value       = item[0];
@@ -110,9 +110,9 @@ UpdateProjectList=function() {
 
 	var select           = document.getElementById("parentHaploid1");
 	select.innerHTML     = '';
-	for (var i = 1; i < projectGenomeDatatype_entries.length; i++) {
-		var item = projectGenomeDatatype_entries[i];
-		if (selectedGenome == item[1] && selectedDatatype == item[2]) {
+	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
+		var item = projectGenomeDataFormat_entries[i];
+		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
 			var el         = document.createElement("option");
 			el.textContent = item[0];
 			el.value       = item[0];
@@ -122,9 +122,9 @@ UpdateProjectList=function() {
 
 	var select           = document.getElementById("parentHaploid2");
 	select.innerHTML     = '';
-	for (var i = 1; i < projectGenomeDatatype_entries.length; i++) {
-		var item = projectGenomeDatatype_entries[i];
-		if (selectedGenome == item[1] && selectedDatatype == item[2]) {
+	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
+		var item = projectGenomeDataFormat_entries[i];
+		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
 			var el         = document.createElement("option");
 			el.textContent = item[0];
 			el.value       = item[0];

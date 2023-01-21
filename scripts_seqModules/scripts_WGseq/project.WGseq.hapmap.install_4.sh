@@ -81,7 +81,7 @@ cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
 echo "#==========================#" >> $logName;
 echo "# CGH analysis of dataset. #" >> $logName;
 echo "#==========================#" >> $logName;
-echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
+echo "Preprocessing CNV data." >> $condensedLog;
 
 if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
 then
@@ -162,12 +162,12 @@ then
 	echo "#===========================================#" >> $logName;
 	echo "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
 	echo "#===========================================#" >> $logName;
-	echo "Preprocessing SNP data, with hapmap.   (~1 hr for SNP/LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "Preprocessing SNP data, with hapmap." >> $condensedLog;
 else
 	echo "#==============================================#" >> $logName;
 	echo "# SNP/LOH analysis of dataset, with reference. #" >> $logName;
 	echo "#==============================================#" >> $logName;
-	echo "Preprocessing SNP data, with hapmap.   (~2 hrs for SNP/LOH analysis of 1.6 Gbase genome dataset.)" >> $condensedLog;
+	echo "Preprocessing SNP data, with reference." >> $condensedLog;
 fi;
 
 
@@ -186,15 +186,15 @@ outputName=$projectDirectory"processing3.m";
 echo "\t\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing3()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo "    diary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
+echo "    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+echo "    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing3()" >> $logName;
-echo "\t|\t\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
-echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
-echo "\t|\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo "\t|\t    diary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
+echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
+echo "\t|\t    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
 echo "\t\tCalling MATLAB." >> $logName;

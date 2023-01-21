@@ -1,5 +1,13 @@
 <?php
-    session_start();
+	session_start();
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 		"http://www.w3.org/TR/html4/loose.dtd">
@@ -16,11 +24,10 @@ body {font-family: arial;}
 </style>
 </head>
 <?php
-	require_once 'constants.php';
-
-	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
-	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
-	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
+	$user = $_SESSION['user'];
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$project   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING)));
+	$key       = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING)));
 	$status   = filter_input(INPUT_POST, "status",   FILTER_SANITIZE_STRING);
 
 	// increment clock animation...
@@ -42,9 +49,9 @@ body {font-family: arial;}
 
 	$dirFigureBase = "users/".$user."/projects/".$project."/";
 
-	// Load 'dataType' from project folder.
-	$handle   = fopen($dirFigureBase."dataType.txt", "r");
-	$dataType = trim(fgets($handle));
+	// Load 'dataFormat' from project folder.
+	$handle   = fopen($dirFigureBase."dataFormat.txt", "r");
+	$dataFormat = trim(fgets($handle));
 	fclose($handle);
 
 	// Load 'parent' from project folder.
@@ -57,21 +64,21 @@ body {font-family: arial;}
 
 	$sizeString_1 = "";
 	$sizeString_2 = "";
-	
+
 	$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
 	$handle       = @fopen($sizeFile_1,'r');
 	if ($handle) {
 		$sizeString_1 = trim(fgets($handle));
 		fclose($handle);
 	}
-	
+
 	$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
 	$handle       = @fopen($sizeFile_2,'r');
 	if ($handle) {
 		$sizeString_2 = trim(fgets($handle));
 		fclose($handle);
 	}
-	
+
 	if (($sizeString_1 !== "") || ($sizeString_2 !== "")) {
 		echo "\n<script type='text/javascript'>\n";
 		echo "parent.parent.update_project_file_size('".$key."','".$sizeString_1."','".$sizeString_2."');";
@@ -107,7 +114,7 @@ body {font-family: arial;}
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
-		if (strcmp($dataType,"0") == 0) {
+		if (strcmp($dataFormat,"0") == 0) {
 			$timeLimit  = 60*60;   // 1 hour minutes for array analysis.
 		} else {
 			$timeLimit  = 60*60*6; // 6 hours
@@ -169,7 +176,7 @@ body {font-family: arial;}
 			<div style='color: red; display: inline-block; font-size: 10px;'><b>[Processing uploaded data.]</b></div>
 			<?php
 			echo $clock."<br>";
-			if (strcmp($dataType,"0") == 0) {
+			if (strcmp($dataFormat,"0") == 0) {
 				echo "<div style='font-size: 10px;'>";
 				echo "SnpCgh microarray analysis usually completes in less than an hour, depending on system load.";
 				echo "</div>";

@@ -1,5 +1,18 @@
 <?php
 	session_start();
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+	// If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
+
+	$user     = $_SESSION['user'];
+	$fileName = $_SESSION['fileName'];
+	$project  = $_SESSION['project'];
+	$key      = $_SESSION['key'];
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -25,11 +38,10 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-    require_once 'constants.php';
-	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
-	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
-	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
-	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
+//	$fileName = filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING);
+//	$user     = filter_input(INPUT_POST, "user",     FILTER_SANITIZE_STRING);
+//	$project  = filter_input(INPUT_POST, "project",  FILTER_SANITIZE_STRING);
+//	$key      = filter_input(INPUT_POST, "key",      FILTER_SANITIZE_STRING);
 
 // Initialize log file.
 	$logOutputName = "../users/".$user."/projects/".$project."/process_log.txt";

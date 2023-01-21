@@ -10,41 +10,46 @@
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
 
-	$bad_chars       = array(".", ",", "\\", "/", " ");
-	$hapmap          = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
+	// define some characters which shouldn't be in strings.
+	$bad_chars       = array(".", ",", "\\", "/", " ", "'", '"', "(", ")", "[", "]");
+
 	$user            = $_SESSION['user'];
+	$hapmap          = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "hapmap",   FILTER_SANITIZE_STRING) ));
+	$genome          = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "genome",   FILTER_SANITIZE_STRING) ));
+	$project1        = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "project1", FILTER_SANITIZE_STRING) ));
+	$project2        = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "project2", FILTER_SANITIZE_STRING) ));
 
-	$genome          = trim(filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING));
-	$referencePloidy = trim(filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING));
-	$project1        = trim(filter_input(INPUT_POST, "project1",        FILTER_SANITIZE_STRING));
-	$project2        = trim(filter_input(INPUT_POST, "project2",        FILTER_SANITIZE_STRING));
-
-// Load the number of chromosomes from "chromosome_sizes.txt"
+	// Load "chromosome_sizes.txt" file from in-use genome.
 	$file1 = "../../users/default/genomes/".$genome."/chromosome_sizes.txt";
 	$file2 = "../../users/".$user."/genomes/".$genome."/chromosome_sizes.txt";
 	if (file_exists($file1)) {
 		$handle     = fopen($file1,'r');
 		$fileString = fread($handle, filesize($file1));
-	} else {
+	} else if (file_exists($file2)) {
 		$handle     = fopen($file2,'r');
 		$fileString = fread($handle, filesize($file2));
+	} else {
+		exit;
 	}
 	fclose($handle);
+
+	// Determine number of chromosomes.
 	$chrLinesArray  = explode("\n", trim($fileString));
 	array_shift($chrLinesArray);
 	$chr_count      = count($chrLinesArray);
 
+	// Build array of chromosome information.
 	$chrNumID       = array();
 	$chrNameShort   = array();
 	$chrSize        = array();
 	$newTags        = array();
-	for ($chr=0; $chr<$chr_count; $chr+=1) {
+	for ($chr=0; $chr<$chr_count; $chr+=1) { // Build out arrays with empty values.
 		array_push($chrNumID,"");
 		array_push($chrNameShort,"");
 		array_push($chrSize,"");
 		array_push($newTags,"");
 	}
-	foreach ($chrLinesArray as $key=>$chrLine) {
+	foreach ($chrLinesArray as $key=>$chrLine) { // Populate arrays with data.
 		$chrLineParts       = preg_split('/\s+/', $chrLine);
 		$oneChrNum          = $chrLineParts[0];
 		$oneChrSize         = $chrLineParts[1];
@@ -54,6 +59,7 @@
 		$chrSize[$key]      = $oneChrSize;
 	}
 
+	// dragon
 	for ($chr=0; $chr<$chr_count; $chr+=1) {
 		$newTags[$chr] = filter_input(INPUT_POST, "newTag_{$chr}", FILTER_SANITIZE_STRING);
 	}
@@ -78,11 +84,8 @@
 <div class="tab">
 	Genome : <?php echo $genome; ?><br>
 	<?php
-	if ($referencePloidy == 2) {
-		echo "Reference dataset : ".$project1."<br>";
-	} else {
-		echo "Reference dataset 1 : ".$project1."<br>";
-	}
+	// Find and display parent strain figure.
+	echo "Reference dataset : ".$project1."<br>";
 	if (file_exists("../../users/".$user."/projects/".$project1)) {
 	    if (file_exists("../../users/".$user."/projects/".$project1."/fig.CNV-LOH-map.2.png")) {
 	        $imageUrl = "../../users/".$user."/projects/".$project1."/fig.CNV-LOH-map.2.png";
@@ -90,21 +93,19 @@
 	        $imageUrl = "../../users/".$user."/projects/".$project1."/fig.CNV-SNP-map.2.png";
 	    }
 	    echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
-	} else {
+	} else if (file_exists("../../users/default/projects/".$project1)) {
 		if (file_exists("../../users/default/projects/".$project1."/fig.CNV-LOH-map.2.png")) {
 			$imageUrl = "../../users/default/projects/".$project1."/fig.CNV-LOH-map.2.png";
 		} else {
 			$imageUrl = "../../users/default/projects/".$project1."/fig.CNV-SNP-map.2.png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
-	}
-    ?><br>
-	<?php
-	if ($referencePloidy == 2) {
-		echo "Experimental dataset : ".$project2."<br>";
 	} else {
-		echo "Reference dataset 2 : ".$project2."<br>";
+		exit;
 	}
+	echo "<br>";
+	// Find and display secondary strain figure.
+	echo "Experimental dataset : ".$project2."<br>";
 	if (file_exists("../../users/".$user."/projects/".$project2)) {
 		if (file_exists("../../users/".$user."/projects/".$project2."/fig.CNV-LOH-map.2.png")) {
 			$imageUrl = "../../users/".$user."/projects/".$project2."/fig.CNV-LOH-map.2.png";
@@ -114,11 +115,9 @@
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = "../../users/".$user."/projects/".$project2."/CGD_annotations.".$project2.".txt";
 		if (file_exists("../../users/".$user."/projects/".$project2."/CGD_annotations.".$project2.".txt")) {
-			if ($referencePloidy == 2) {
-				echo "<br><div class='tab'>Examine <button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse annotation track</button> to determine precise breakpoints.</div><br>";
-			}
+			echo "<br><div class='tab'>Examine <button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse annotation track</button> to determine precise breakpoints.</div><br>";
 		}
-	} else {
+	} else if (file_exists("../../users/default/projects/".$project2)) {
 		if (file_exists("../../users/default/projects/".$project2."/fig.CNV-LOH-map.2.png")) {
 			$imageUrl = "../../users/default/projects/".$project2."/fig.CNV-LOH-map.2.png";
 		} else {
@@ -127,18 +126,15 @@
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = "../../users/default/projects/".$project2."/CGD_annotations.".$project2.".txt";
 		if (file_exists("../../users/default/projects/".$project2."/CGD_annotations.".$project2.".txt")) {
-			if ($referencePloidy == 2) {
-				echo "<button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse</button><br>";
-			}
+			echo "<button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse</button><br>";
 		}
+	} else {
+		exit;
 	}
 	?>
 	<br>
 </div>
 <table><tr><td>
-<?php
-if ($referencePloidy == 2) {
-?>
 	<div class="tab">
 		<table border="0">
 		<tr>
@@ -151,6 +147,7 @@ if ($referencePloidy == 2) {
 			<th bgcolor=\"#CCFFCC\"></th>
 		</tr>
 		<?php
+		// generate line in table for each chromosome.
 		for ($chr=0; $chr<$chr_count; $chr+=1) {
 			$chrID = $chr+1;
 			echo "\t\t<tr>\n";
@@ -168,6 +165,7 @@ if ($referencePloidy == 2) {
 		</table>
 		<script type="text/javascript">
 		<?php
+		// Generate javascript for each chromosome.
 		for ($chr=0; $chr<$chr_count; $chr+=1) {
 			echo "updateTag_{$chr} = function() {\n";
 			echo "\tchr_id        = document.getElementById(\"chr_{$chr}\"    ).value;\n";
@@ -187,13 +185,7 @@ if ($referencePloidy == 2) {
 		}
 		</script>
 	</div>
-<?php
-}
-?>
 </td><td valign="top">
-<?php
-if ($referencePloidy == 2) {
-?>
     <div class="tab">
         <br>
         If the experimental dataset was analyzed using the reference dataset, any regions of loss of heterozygosity (LOH) would appear in red.<br>
@@ -209,65 +201,27 @@ if ($referencePloidy == 2) {
 		annotation file can be loaded into GBrowse at <a href="http://Candidagenome.org">Candida Genome Database</a>, for supported genomes.   This
 		can be useful in determining the end-coordinates of LOH regions.
     </div>
-<?php
-}
-?>
 </td></tr>
 <tr><td>
 <div class="tab">
 	<?php
-		$colorsFile = "../../users/".$user."/hapmaps/".$hapmap."/colors.txt";
-		if (file_exists($colorsFile)) {
-			$handle       = fopen($colorsFile,'r');
-			$colorString1 = trim(fgets($handle));
-			$colorString2 = trim(fgets($handle));
-			?>
-			<br>
-			Homolog 'a' color : <input type="text" id="homolog_a_color" name="homolog_a_color" value="<?php echo $colorString1; ?>" readonly>
-			<div id="colorBar1"></div>
-			<br>
-			Homolog 'b' color : <input type="text" id="homolog_b_color" name="homolog_b_color" value="<?php echo $colorString2; ?>" readonly>
-			<div id="colorBar2"></div>
-			<br><br>
-			<?php
-		} else {
-			?>
-			<br>
-			Choose homolog 'a' color :
-			<select id="homolog_a_color" name="homolog_a_color" onchange="showColors('homolog_a_color','colorBar1')">
-				<option value="deep pink">deep pink</option>
-				<option value="magenta">magenta</option>
-				<option value="electric indigo">electric indigo</option>
-				<option value="blue">blue</option>
-				<option value="dodger blue">dodger blue</option>
-				<option value="cyan" selected>cyan</option>
-				<option value="spring green">spring green</option>
-				<option value="green">green</option>
-				<option value="chartreuse">chartreuse</option>
-				<option value="yellow">yellow</option>
-				<option value="dark orange">dark orange</option>
-			</select><div id="colorBar1"><div class="tab" style="background-color:rgb(0  ,255,255)"> &nbsp;</div></div>
-			<br>
-			Choose homolog 'b' color :
-			<select id="homolog_b_color" name="homolog_b_color" onchange="showColors('homolog_b_color','colorBar2')">
-				<option value="deep pink">deep pink</option>
-				<option value="magenta" selected>magenta</option>
-				<option value="electric indigo">electric indigo</option>
-				<option value="blue">blue</option>
-				<option value="dodger blue">dodger blue</option>
-				<option value="cyan">cyan</option>
-				<option value="spring green">spring green</option>
-				<option value="green">green</option>
-				<option value="chartreuse">chartreuse</option>
-				<option value="yellow">yellow</option>
-				<option value="dark orange">dark orange</option>
-			</select><div id="colorBar2"><div class="tab" style="background-color:rgb(255,0  ,255)"> &nbsp;</div></div>
-			<br><br>
-		<?php
-		}
+	// Load the colors defined for this hapmap.
+	$colorsFile = "../../users/".$user."/hapmaps/".$hapmap."/colors.txt";
+	$handle       = fopen($colorsFile,'r');
+	$colorString1 = trim(fgets($handle));
+	$colorString2 = trim(fgets($handle));
 	?>
+	<br>
+	Homolog 'a' color : <input type="text" id="homolog_a_color" name="homolog_a_color" value="<?php echo $colorString1; ?>" readonly>
+	<div id="colorBar1"></div>
+	<br>
+	Homolog 'b' color : <input type="text" id="homolog_b_color" name="homolog_b_color" value="<?php echo $colorString2; ?>" readonly>
+	<div id="colorBar2"></div>
+	<br><br>
 <div>
 <script type="text/javascript">
+	// Show the user the colors that are defined for this hapmap.
+	// Script run on page load.
 	showColors=function(listToLookAt, targetToChange) {
 		var selectedColor = document.getElementById(listToLookAt).value;
 		var select        = document.getElementById(targetToChange);
@@ -287,6 +241,7 @@ if ($referencePloidy == 2) {
 		}
 	}
 </script>
+
 </td><td valign="top">
 <?php
 	if (file_exists($colorsFile)) {
@@ -308,9 +263,6 @@ if ($referencePloidy == 2) {
 	<button onclick="GatherAndSubmitData();">Process haplotype entry...</button>
 	<script type="text/javascript">
 		GatherAndSubmitData=function() {
-<?php
-if ($referencePloidy == 2) {
-?>
 			var string_allData = "";
 			for (var chr=0;chr<chr_count; chr++) {
 				var string_start   = String(chr)+"(";
@@ -322,26 +274,17 @@ if ($referencePloidy == 2) {
 				}
 			}
 			var string_final = trim(string_allData);
-<?php
-}
-?>
 			var colorA = document.getElementById("homolog_a_color").value;
 			var colorB = document.getElementById("homolog_b_color").value;
 
 			var autoSubmitForm = document.createElement('form');
 			autoSubmitForm.setAttribute('method','post');
-			autoSubmitForm.setAttribute('action','hapmap.install_3.php');
-<?php
-if ($referencePloidy == 2) {
-?>
+			autoSubmitForm.setAttribute('action','hapmap.update_3.php');
 			var input1 = document.createElement('input');
 			    input1.setAttribute('type','hidden');
 			    input1.setAttribute('name','hapmap_description');
-			    input1.setAttribute('value',string_final);
+			    input1.setAttribute('value',string_final);  // String containing the hapmap entries defined by the user.
 			    autoSubmitForm.appendChild(input1);
-<?php
-}
-?>
 			var input2 = document.createElement('input');
 			    input2.setAttribute('type','hidden');
 			    input2.setAttribute('name','hapmap');
@@ -352,11 +295,6 @@ if ($referencePloidy == 2) {
 			    input3.setAttribute('name','genome');
 			    input3.setAttribute('value','<?php echo $genome; ?>');
 			    autoSubmitForm.appendChild(input3);
-			var input4 = document.createElement('input');
-			    input4.setAttribute('type','hidden');
-			    input4.setAttribute('name','referencePloidy');
-			    input4.setAttribute('value','<?php echo $referencePloidy; ?>');
-			    autoSubmitForm.appendChild(input4);
 			var input5 = document.createElement('input');
 			    input5.setAttribute('type','hidden');
 			    input5.setAttribute('name','project1');
@@ -387,15 +325,7 @@ if ($referencePloidy == 2) {
 </div>
 </td><td valign="top">
 	<div class="tab">
-		<?php
-		if ($referencePloidy == 2) {
-			echo "Once you've described any LOH regions for this experimental dataset, click the ";
-			echo "'<i><b>Process haplotype entry...</b></i>' button to process this entry into the haplotype map.";
-		} else {
-			echo "Once you've chosen the colors to use for this haplotype map, click the ";
-			echo "'<i><b>Process haplotype entry...</b></i>' button to process these datasets into the haplotype map.";
-		}
-		?>
+		Once you've described any LOH regions for this experimental dataset, click the '<i><b>Process haplotype entry...</b></i>' button to process this entry into the haplotype map.";
 	</div>
 </td><tr></table>
 </BODY>

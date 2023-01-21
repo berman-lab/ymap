@@ -49,11 +49,15 @@ echo "#=====================================#" >> $logName;
 echo "\tprojectDirectory = '$projectDirectory'" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 
-# Get genome and hapmap names in use from project's "genome.txt" file.
+# Get setup information from project files.
+# "genome.txt"
 #    first line  => genome
 #    second line => hapmap
+# "dataFormat.txt"
+#    5th character, 0=no indel-realignment, 1= indel-realignment.
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
+dataFormat=$(head -n 1 $projectDirectory"dataFormat.txt");
 echo "Location variables from 'genome.txt' file entry." >> $logName;
 echo "\tgenome   = '"$genome"'" >> $logName;
 if [ "$genome" = "$hapmap" ]
@@ -63,8 +67,6 @@ else
 	echo "\thapmap   = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
 fi
-
-
 if [ $hapmapInUse = 1 ]
 then
 	# Determine location of hapmap being used.
@@ -79,7 +81,7 @@ then
 	fi
 	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
-
+indelrealign_bool=$(echo $dataFormat | cut -c5-5);  # 0=no indel-realignment; 1=indel-realignment.
 
 # Determine location of genome being used.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
@@ -101,10 +103,6 @@ echo "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
 datafile=$(head -n 1 $projectDirectory"datafiles.txt");
 echo "\tdatafile = '"$datafile"'" >> $logName;
 
-# Define temporary directory for FASTQC files.
-fastqcTempDirectory=$projectDirectory"fastqc_temp/";
-echo "\tfastqcTempDirectory = '"$fastqcTempDirectory"'" >> $logName;
-
 # Get ploidy estimate from "ploidy.txt" in project directory.
 ploidyEstimate=$(head -n 1 $projectDirectory"ploidy.txt");
 echo "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
@@ -116,6 +114,13 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 # Get parent name from "parent.txt" in project directory.
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
+
+if [ $indelrealign_bool = 1 ]
+then
+	# Define temporary directory for abra2 files.
+	abra2TempDirectory=$projectDirectory"abra2_temp/";
+	echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
+fi
 
 echo "#============================================================================== 2" >> $logName;
 
@@ -178,7 +183,6 @@ else
 		echo "\tPicard : Headers added to Bowtie-BAM file." >> $logName;
 
 		echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
-
 		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo "Sorting BAM file." >> $condensedLog;
 		echo "\nRunning samtools:sort.\n";
@@ -193,101 +197,58 @@ else
 	then
 		echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
 	else
-		echo "[[=- GATK analysis, indel-realignment -=]]" >> $logName;
-		GATKinputFile=$projectDirectory"data_sorted.bam";
-		GATKoutputFile1=$projectDirectory"data_forIndelRealigner.intervals";
-		GATKoutputFile2=$projectDirectory"data_indelRealigned.bam";
-		GATKreference=$genomeDirectory$genomeFASTA;
-
-		# 'LENIENT' should allow GATK to ignore problem reads.
-		GATKoptions="-S LENIENT -filterMBQ";
-
-		## FASTQC : determine read quality format in use.
-		echo "\tFASTQC : Read quality coding is required." >> $logName;
-		## FASTQC analysis of FASTQ input files to determine read quality coding.
-		## This is needed for determining GATK command option to deal with alternate coding.
-		#		S - Sanger        Phred+33,  raw reads typically (0, 40)
-		#		X - Solexa        Solexa+64, raw reads typically (-5, 40)
-		#		I - Illumina 1.3+ Phred+64,  raw reads typically (0, 40)
-		#		J - Illumina 1.5+ Phred+64,  raw reads typically (3, 40)
-		#		L - Illumina 1.8+ Phred+33,  raw reads typically (0, 41)
-		echo "\tWorking directory : '"$fastqcTempDirectory"'" >> $logName;
-
-		mkdir $fastqcTempDirectory;
-
-		# -o : points to standardized ouptut temp directory.
-		echo "Identifying quality coding used in FASTA." >> $condensedLog;
-		FASTQClog1=$projectDirectory"fastqc.process.log";
-		echo "\nRunning fastqc.\n";
-		$fastqcDirectory"fastqc" -t $cores -o $fastqcTempDirectory $projectDirectory$datafile > $FASTQClog1;
-		echo "\tFASTQC log output :" >> $logName;
-		sed 's/^/\t\t|/;' $FASTQClog1 >> $logName;
-		rm $FASTQClog1;
-
-		# get file extension.
-		fileExt=${datafile#*.};
-
-		# generate file name with extension removed and '_fastqc' appended, to match FASTQC output files.
-		findStr="."$fileExt;
-		replaceStr="_fastqc";
-		FASTQC_temp_file=$(echo $datafile | sed -e "s/$findStr/$replaceStr/g");
-
-		# parse read quality encoding format from FASTQC output.
-		qualityCodingLine=`sed -n 6,6'p' $fastqcTempDirectory$FASTQC_temp_file"/fastqc_data.txt"`;
-		qualityCoding=$(echo $qualityCodingLine | cut -c9-);
-
-		# cleanup extraneous FASTQC files.
-		rm $fastqcTempDirectory$FASTQC_temp_file".zip";
-		rm -rf $fastqcTempDirectory$FASTQC_temp_file;
-
-		# Trim starting and ending whitespace from quality coding string.
-		trimmedQualityCoding="${qualityCoding#"${qualityCoding%%[![:space:]]*}"}";                # remove leading whitespace characters
-		trimmedQualityCoding="${trimmedQualityCoding%"${trimmedQualityCoding##*[![:space:]]}"}";  # remove trailing whitespace characters
-		echo "\t\tQuality coding method = '"$trimmedQualityCoding"'." >> $logName;
-
-		# Expected output:
-		#       "Illumina 1.5"          : starting with 64.
-		#       "Sanger / Illumina 1.9" : normal, starting with 33.   [MiSeq]
-
-		# If quality coding string matches a type known to start with 64, update GATK option string.
-		if [ "$trimmedQualityCoding" = "Illumina 1.5" ]
+		if [ $indelrealign_bool = 1 ]
 		then
-			GATKoptions=$GATKoptions" -fixMisencodedQuals";
-			echo "\t\tGATK option to deal with quality coding = ' -fixMisencodedQuals'." >> $logName;
+			#================================
+			# Abra2: indel realignment.
+			#--------------------------------
+			echo "[[=- Indel realignment with ABRA2 -=]]" >> $logName;
+			echo "\tAbra2 : indel-realignment in process." >> $logName;
+			echo "Indel realignment with ABRA2." >> $condensedLog;
+			echo "\nRunning abra2.\n";
+			ABRA2bedFile=$genomeDirectory"genome.bed";
+			ABRA2inputFile=$projectDirectory"data_sorted.bam";
+			ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
+			referenceFile=$genomeDirectory$genomeFASTA;
+			mkdir $abra2TempDirectory;
+			#echo ""  >> $logName;
+			#echo "command: "$java7Directory"java -Xmx16g -jar "$abra2_exec" --in "$ABRA2inputFile" --out "$ABRA2outputFile" --ref "$referenceFile" --threads "$cores" --targets "$ABRA2bedFile" --tmpdir "$abra2TempDirectory" > "$projectDirectory"abra2.log"  >> $logName;
+			#echo ""  >> $logName;
+			$java7Directory"java" -Xmx16g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --targets $ABRA2bedFile --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
+			echo "\tAbra2 : indel-realignment done." >> $logName;
+			# abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
+			# example command-line from abra2 readme.
+			# java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
+			# From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
+
+			#================================
+			# Sorting BAM file after Abra2.
+			#--------------------------------
+			echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
+			echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
+			echo "Sorting BAM file." >> $condensedLog;
+			echo "\nRunning samtools:sort.\n";
+			$samtools_exec sort -@ $cores $projectDirectory"data_indelRealigned.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
+			echo "Indexing BAM file." >> $condensedLog;
+			echo "\nRunning samtools:index.\n";
+			$samtools_exec index $projectDirectory"data_sorted.bam";
+			echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
+		else
+			echo "[[=- Indel realignment not being done -=]]" >> $logName;
 		fi
-
-		GATKlog1=$projectDirectory"gatk.RealignerTargetCreator.log";
-		GATKlog2=$projectDirectory"gatk.IndelRealigner.log";
-
-		echo "\tGATK options = '"$GATKoptions"'" >> $logName;
-		echo "\tGATK : preparing for IndelRealignment." >> $logName;
-		echo "Preparing for indel realignment." >> $condensedLog;
-		echo "\nRunning gatk:RealignerTargetCreator.\n";
-		$java7Directory"java" -Xmx2g -jar $gatkDirectory"GenomeAnalysisTK.jar" -T RealignerTargetCreator -nt $cores -I $GATKinputFile -R $GATKreference -o $GATKoutputFile1 $GATKoptions > $GATKlog1;
-		sed 's/^/\t\t|/;' $GATKlog1 >> $logName;
-		echo "\tGATK : prepared for IndelRealignment." >> $logName;
-		echo "\tGATK : performing IndelRealignment." >> $logName;
-		echo "Realigning indels." >> $condensedLog;
-		echo "\nRunning gatk:IndelRealigner.\n";
-		$java7Directory"java" -Xmx2g -jar $gatkDirectory"GenomeAnalysisTK.jar" -T IndelRealigner -I $GATKinputFile -R $GATKreference -targetIntervals $GATKoutputFile1 -o $GATKoutputFile2 $GATKoptions > $GATKlog2;
-		sed 's/^/\t\t|/;' $GATKlog2 >> $logName;
-		echo "\tGATK : performed IndelRealignment." >> $logName;
-
-		rm $GATKlog1;
-		rm $GATKlog2;
 
 		echo "#============================================================================== 3" >> $logName;
 
 		echo "[[=- In-house SNP/CNV/INDEL analysis -=]]" >> $logName;
-		usedFile=$projectDirectory"data_indelRealigned.bam";
-
+                usedFile=$projectDirectory"data_sorted.bam";
 		echo "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
 		echo "Generating pileup file." >> $condensedLog;
 		echo "\nRunning samtools:mpileup.\n";
 		$python_exec $main_dir"scripts_seqModules/parallel_mpileup.py" $samtools_exec $genomeDirectory$genomeFASTA $usedFile $logName $cores $genomeDirectory data.pileup 2>> $logName;
 		echo "\tSamtools : Pileup generated." >> $logName;
-		echo "Processing pileup for CNVs, SNPs, & INDELs." >> $condensedLog;
 	fi
+
+	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
 	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
 	# $python_exec $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt";
@@ -335,16 +296,16 @@ echo   "========================================================================
 if [ $hapmapInUse = 0 ]
 then
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh "$user" "$project" "$main_dir >> $logName;
+	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh "$user" "$project >> $logName;
 	echo "Script executed from: ${PWD}" >> $logName;
 
 	echo   "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project;
 else
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$hapmap" "$main_dir >> $logName;
+	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$hapmap >> $logName;
 	echo "Script executed from: ${PWD}" >> $logName;
 
 	echo "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap $main_dir;
+	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap;
 fi

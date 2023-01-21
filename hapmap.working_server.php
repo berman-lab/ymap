@@ -1,5 +1,13 @@
 <?php
-    session_start();
+	session_start();
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 	"http://www.w3.org/TR/html4/loose.dtd">
@@ -14,12 +22,11 @@
 </style>
 </head>
 <?php
-	require_once 'constants.php';
-
-	$user    = filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING);
-	$hapmap  = filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING);
-	$key     = filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING);
-	$status  = filter_input(INPUT_POST, "status", FILTER_SANITIZE_STRING);
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$user          = $_SESSION['user'];
+	$hapmap    = str_replace($bad_chars,"_",trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING)));
+        $key       = str_replace($bad_chars,"",trim(filter_input(INPUT_POST,  "key",    FILTER_SANITIZE_STRING)));
+	$status    = str_replace($bad_chars,"",trim(filter_input(INPUT_POST,  "status", FILTER_SANITIZE_STRING)));
 
 	// increment clock animation...
 	$status   = ($status + 1) % 12;

@@ -1,22 +1,26 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+        // If the user is not logged on, redirect to login page.
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
+
 	require_once '../../constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-	error_reporting(E_ALL);
-	ini_set('display_errors', 1);
 
 	$bad_chars       = array(".", ",", "\\", "/", " ");
 	$hapmap          = str_replace($bad_chars,"_",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
 	$user            = $_SESSION['user'];
-	$genome          =        filter_input(INPUT_POST, "genome",             FILTER_SANITIZE_STRING);
-	$referencePloidy = (float)filter_input(INPUT_POST, "referencePloidy",    FILTER_SANITIZE_NUMBER_FLOAT);
-	$project1        =        filter_input(INPUT_POST, "project1",           FILTER_SANITIZE_STRING);
-	$project2        =        filter_input(INPUT_POST, "project2",           FILTER_SANITIZE_STRING);
-	$colorA          =        filter_input(INPUT_POST, "homolog_a_color",    FILTER_SANITIZE_STRING);
-	$colorB          =        filter_input(INPUT_POST, "homolog_b_color",    FILTER_SANITIZE_STRING);
+	$genome          =        trim(filter_input(INPUT_POST, "genome",             FILTER_SANITIZE_STRING));
+	$referencePloidy = (float)trim(filter_input(INPUT_POST, "referencePloidy",    FILTER_SANITIZE_NUMBER_FLOAT));
+	$project1        =        trim(filter_input(INPUT_POST, "project1",           FILTER_SANITIZE_STRING));
+	$project2        =        trim(filter_input(INPUT_POST, "project2",           FILTER_SANITIZE_STRING));
+	$colorA          =        trim(filter_input(INPUT_POST, "homolog_a_color",    FILTER_SANITIZE_STRING));
+	$colorB          =        trim(filter_input(INPUT_POST, "homolog_b_color",    FILTER_SANITIZE_STRING));
 	if ($referencePloidy == 2) {
-		$hapmap_description = filter_input(INPUT_POST, "hapmap_description", FILTER_SANITIZE_STRING);
+		$hapmap_description = trim(filter_input(INPUT_POST, "hapmap_description", FILTER_SANITIZE_STRING));
 	}
 
 	$dir1      = "../../users/".$user."/hapmaps";

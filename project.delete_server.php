@@ -4,8 +4,13 @@
 	require_once 'constants.php';
 	ini_set('display_errors', 1);
 
-	$user    = $_POST["user"];
-	$project = $_POST["project"];
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
+
+	$user    = $_SESSION['user'];
+        $project = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING));  // removing unwanted characters
 
 	if($user == $_SESSION['user']){
 		// User confirmed, can delete project

@@ -5,22 +5,25 @@
 	ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
-
-
 	if(!isset($_SESSION['logged_on'])){
 		header('Location: user.login.php');
 	}
 
+//	// If the user is not logged on, redirect to login page.
+//	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
+
+//      $user          = $_SESSION['user'];
+//      $genome        = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));  // removing unwanted characters
+
 	$bad_chars      = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$genomeName = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING)); 
-	// removing unwanted characters
-	$genomeNameTrimmed     = str_replace($bad_chars,"",$genomeName);
-	// changing spaces to underlines
+	$genomeName = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// removing unwanted characters
+	$genomeNameTrimmed     = str_replace($bad_chars,"",$genomeName);			// changing spaces to underlines
 	$genomeNameTrimmed     = str_replace(" ","_",$genomeNameTrimmed);
 	$user           = $_SESSION['user'];
 	$dir1           = "users/".$user."/genomes";
 	$dir2           = "users/".$user."/genomes/".$genomeNameTrimmed;
 	$dir3           = "users/default/genomes/".$genomeNameTrimmed;
+
 
 	// Deals with accidental deletion of genomes dir.
 	if (!file_exists($dir1)){

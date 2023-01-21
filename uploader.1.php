@@ -1,5 +1,13 @@
 <?php
 	session_start();
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
 	$user = $_SESSION['user'];
 ?>
 <!DOCTYPE html>
@@ -20,7 +28,7 @@
 </head>
 <BODY class="tab">
 <!---------- Main section of User interface ----------!>
-	<form id="fileupload" class="HTML5Uploader" method="POST" action="uploader/" enctype="multipart/form-data">
+	<form id="fileupload" class="HTML5Uploader" method="POST" action="placeholder/" enctype="multipart/form-data">
 		<div class="upload-wrapper">
 			<table><tr>
 			<!---------- Add file to upload button. ----------!>
@@ -28,10 +36,15 @@
 				<div id="select-wrapper" class="info-wrapper">
 					<div id="browsebutton" class="fileinput-button button gray" href="">
 						<script type="text/javascript">
-							console.log("uploader.1.php : display_string    = '"+display_string[0]+"'");
-					                console.log("uploader.1.php : currentDir        = '<?php echo getcwd(); ?>'");
-							console.log("uploader.1.php : target_dir        = '"+target_dir+"'");
-							console.log("uploader.1.php : conclusion_script = '"+conclusion_script+"'");
+							//console.log(        "uploader.1.php : display_string = '"+display_string[0]+"'");
+							console.log(        "uploader.1.php : user       = '"+user+"'");
+							if (typeof genome !== 'undefined') {
+								console.log("uploader.1.php : genome     = '"+genome+"'");
+							} else {
+								console.log("uploader.1.php : project    = '"+project+"'");
+								console.log("uploader.1.php : dataFormat = '"+dataFormat+"'");
+							}
+							console.log(        "uploader.1.php : key        = '"+key+"'");
 							document.write(display_string[0]);
 						</script>
 						<input type="file" id="fileinput" name="files[]" class="fileinput" single onchange="Finalize()">
@@ -60,14 +73,24 @@
 			</tr></table>
 
 			<!---------- Pass along the script to be run once all files are loaded. ----------!>
-			<input type="hidden" id="hidden_field" name="target_dir" value="123">
+			<input type="hidden" id="hidden_field1" name="target_user"    value="">
+			<input type="hidden" id="hidden_field2" name="target_genome"  value="">
+			<input type="hidden" id="hidden_field3" name="target_project" value="">
 			<script type="text/javascript">
-				document.getElementById('hidden_field').value = target_dir;
-
-			Finalize=function() {
-				// show upload button once input file is selected.
-				document.getElementById("info-wrapper-1").style.display = 'inline';
-			}
+				target_user            = user;
+				if (typeof genome !== 'undefined') {
+					target_genome  = genome;
+					target_project = "";
+				} else {
+					target_genome  = "";
+					target_project = project;
+				}
+				document.getElementById('hidden_field1').value = target_user;
+				document.getElementById('hidden_field2').value = target_genome;
+				document.getElementById('hidden_field3').value = target_project;
+				Finalize=function() { // show upload button once input file is selected.
+					document.getElementById("info-wrapper-1").style.display = 'inline';
+				}
 			</script>
 		</div>
 	</form>

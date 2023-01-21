@@ -65,15 +65,15 @@
 			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 			$projectNameString = trim($projectNameString);
 
-			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
-			if (file_exists($dataType_file)) {
-				$handle       = fopen($dataType_file,'r');
-				$dataType     = trim(fgets($handle));
+			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+			if (file_exists($dataFormat_file)) {
+				$handle       = fopen($dataFormat_file,'r');
+				$dataFormat     = trim(fgets($handle));
 				fclose($handle);
 			} else {
-				$dataType     = 'null';
+				$dataFormat     = 'null';
 			}
-			if (strcmp($dataType,"0") == 0) {
+			if (strcmp($dataFormat,"0") == 0) {
 				$colorString1 = "cyan";
 				$colorString2 = "magenta";
 			}
@@ -108,15 +108,15 @@
 			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 			$projectNameString = trim($projectNameString);
 
-			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
-			if (file_exists($dataType_file)) {
-				$handle       = fopen($dataType_file,'r');
-				$dataType     = trim(fgets($handle));
+			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+			if (file_exists($dataFormat_file)) {
+				$handle       = fopen($dataFormat_file,'r');
+				$dataFormat     = trim(fgets($handle));
 				fclose($handle);
 			} else {
-				$dataType     = 'null';
+				$dataFormat     = 'null';
 			}
-			if (strcmp($dataType,"0") == 0) {
+			if (strcmp($dataFormat,"0") == 0) {
 				$colorString1 = "cyan";
 				$colorString2 = "magenta";
 			}
@@ -146,25 +146,26 @@
 				$colorString1 = 'null';
 				$colorString2 = 'null';
 			}
-			
+
 			// getting project name
 			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 			$projectNameString = trim($projectNameString);
 
-			$dataType_file        = "users/".$user."/projects/".$project."/dataType.txt";
-			if (file_exists($dataType_file)) {
-				$handle       = fopen($dataType_file,'r');
-				$dataType     = trim(fgets($handle));
+			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+			if (file_exists($dataFormat_file)) {
+				$handle       = fopen($dataFormat_file,'r');
+				$dataFormat     = trim(fgets($handle));
 				fclose($handle);
 			} else {
-				$dataType     = 'null';
+				$dataFormat     = 'null';
 			}
-			if (strcmp($dataType,"0") == 0) {
+			if (strcmp($dataFormat,"0") == 0) {
 				$colorString1 = "cyan";
 				$colorString2 = "magenta";
 			}
-			
-			$json_file_list = json_encode(scandir("users/$user/projects/$project"));
+
+			$json_file_list       = json_encode(scandir("users/$user/projects/$project"));
+			$JSONproject          = json_encode("$project");
 			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
 			$handle               = fopen($parent_file,'r');
 			$parentString         = trim(fgets($handle));
@@ -230,22 +231,20 @@
 if(localStorage.getItem("projectsShown")){
 	var projectsShown = localStorage.getItem("projectsShown");
 }
-
-function Display_sample_figures() {
-	localStorage.setItem("projectsShown","");
 <?php
-	if (isset($_SESSION['logged_on'])) {
-		foreach ($systemProjectFolders as $key=>$project) {
-			if ($key < 2) {
-				$new_key = $key+$userProjectCount; // offset example datasets by number of user projects.
-				echo "\tvar show_button_element = document.getElementById('show_".$key."_sys');\n";
-				echo "\tshow_button_element.checked = true;\n";
-				echo "\tparent.openProject('default','".$project."','".$new_key."_sys','null','null','null');\n";
-			}
-		}
-	}
-	?>
-}
-Display_sample_figures();
-
+//	echo "function Display_sample_figures() {\n";
+//	echo "\tlocalStorage.setItem('projectsShown','');\n";
+//	if (isset($_SESSION['logged_on'])) {
+//		foreach ($systemProjectFolders as $key=>$project) {
+//			if ($key < 2) {
+//				$new_key = $key+$userProjectCount; // offset example datasets by number of user projects.
+//				echo "\tvar show_button_element = document.getElementById('show_".$key."_sys');\n";
+//				echo "\tshow_button_element.checked = true;\n";
+//				echo "\tparent.openProject('default','".$project."','".$new_key."_sys','null','null','null');\n";
+//			}
+//		}
+//	}
+//	echo "}\n";
+//	echo "Display_sample_figures();\n";
+?>
 </script>
