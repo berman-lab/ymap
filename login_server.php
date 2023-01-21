@@ -6,11 +6,9 @@
 
 	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
 	$user_in   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
-
-//	$user_in = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING);
-	$pw_in   = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
-	$user    = validateUser($user_in);
-	$pw      = validatePassword($pw_in);
+	$pw_in     = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
+	$user      = validateUser($user_in);
+	$pw        = validatePassword($pw_in);
 
 	validateLogin($user, $pw);
 
