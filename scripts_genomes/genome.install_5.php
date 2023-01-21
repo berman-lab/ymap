@@ -6,7 +6,7 @@
 
 	session_start();
 	error_reporting(E_ALL);
-        require_once 'constants.php';
+        require_once '../constants.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
@@ -38,7 +38,6 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-	require_once '../constants.php';
 	include_once 'process_input_files.genome.php';
 
 	$user     = $_SESSION['user'];

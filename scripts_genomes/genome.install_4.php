@@ -6,7 +6,7 @@
 
 	session_start();
 	error_reporting(E_ALL);
-        require_once 'constants.php';
+        require_once '../constants.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
