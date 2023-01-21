@@ -1,7 +1,10 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-	require_once '../../constants.php';
+	error_reporting(E_ALL);
+        require_once '../../constants.php';
+        ini_set('display_errors', 1);
+
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
 	error_reporting(E_ALL);
