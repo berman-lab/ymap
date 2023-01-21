@@ -9,8 +9,8 @@
                 header('Location: user.login.php');
         }
 
-	$user   = $_POST["user"];
-	$genome = $_POST["genome"];
+	$user          = $_SESSION['user'];
+        $genome        = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));  // removing unwanted characters
 
 	if($user == $_SESSION['user']){
 		// User confirmed, can delete genome
