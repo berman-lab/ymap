@@ -1,5 +1,13 @@
 <?php
 	session_start();
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
 	$user = $_SESSION['user'];
 
 	// This script is intended to take information from file uploaders and then initiate the pipeline scripts to start processing.
@@ -13,7 +21,7 @@ $project    = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "project",
 $key        = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING)));
 
 // filenames can have characters that shouldn't be in above variables.
-$fileName   = filter_input(INPUT_POST, "fileName",   FILTER_SANITIZE_STRING);
+$fileName   = trim(filter_input(INPUT_POST, "fileName",   FILTER_SANITIZE_STRING));
 
 $_SESSION['dataFormat'] = $dataFormat;
 $_SESSION['fileName']   = $fileName;
