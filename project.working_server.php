@@ -1,6 +1,13 @@
 <?php
 	session_start();
-	$user = $_SESSION['user'];
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 		"http://www.w3.org/TR/html4/loose.dtd">
@@ -17,8 +24,7 @@ body {font-family: arial;}
 </style>
 </head>
 <?php
-	require_once 'constants.php';
-
+	$user = $_SESSION['user'];
 	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
 	$project   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING)));
 	$key       = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING)));
