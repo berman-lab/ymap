@@ -10,11 +10,10 @@
 	}
 
 	// Process POST data.
+	$user                   = $_SESSION['user'];
 	$bad_chars              = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$projectName = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING));
-	// removing unwanted characters
-	$projectNameTrimmed     = str_replace($bad_chars,"",$projectName);
-	// changing spaces to underlines
+	$projectName            = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING)); // removing unwanted characters
+	$projectNameTrimmed     = str_replace($bad_chars,"",$projectName);                // changing spaces to underlines
 	$projectNameTrimmed     = str_replace(" ","_",$projectNameTrimmed);
 	$ploidy                 = filter_input(INPUT_POST, "ploidy",                   FILTER_SANITIZE_STRING);
 	$ploidyBase             = filter_input(INPUT_POST, "ploidyBase",               FILTER_SANITIZE_STRING);
@@ -38,7 +37,6 @@
 	}
 	$manualLOH         = filter_input(INPUT_POST, "manualLOH",                    FILTER_SANITIZE_STRING);
 
-	$user              = $_SESSION["user"];
 	$dir1              = "users/".$user."/projects";
 	$dir2              = "users/".$user."/projects/".$projectNameTrimmed;
 	$dir3              = "users/default/projects/".$projectNameTrimmed;
