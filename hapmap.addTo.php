@@ -1,8 +1,15 @@
 <?php
 	session_start();
-	$user      = $_SESSION['user'];
-	$key       = preg_replace('/\D/', '', $_GET['k']);  //strip out all non-numerical characters from string.
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
 
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
+        else {
+                $user      = $_SESSION['user'];
+                $key       = preg_replace('/\D/', '', $_GET['k']);  //Strip all non-numerical characters from string.
+        }
+        require_once 'constants.php';
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
