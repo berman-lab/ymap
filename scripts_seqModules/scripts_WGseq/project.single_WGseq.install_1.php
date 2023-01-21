@@ -1,5 +1,14 @@
 <?php
 	session_start();
+	error_reporting(E_ALL);
+        require_once '../../constants.php';
+        ini_set('display_errors', 1);
+
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
+
 	$user     = $_SESSION['user'];
 	$fileName = $_SESSION['fileName'];
 	$project  = $_SESSION['project'];
@@ -29,8 +38,6 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-	require_once '../../constants.php';
-
 // Initialize log files.
 	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
