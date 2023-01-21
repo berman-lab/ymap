@@ -8,10 +8,13 @@
 </HEAD>
 <BODY>
 <?php
-    session_start();
-    if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
-    require_once '../../constants.php';
-    echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+	session_start();
+	error_reporting(E_ALL);
+        require_once '../../constants.php';
+        ini_set('display_errors', 1);
+
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
+	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
 
@@ -19,14 +22,14 @@
 	$bad_chars       = array(".", ",", "\\", "/", " ", "'", '"', "(", ")", "[", "]");
 	$hapmap          = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
 
-	$genome          = filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING);
-	$referencePloidy = filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING);
+	$genome          = trim(filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING));
+	$referencePloidy = trim(filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING));
 	// If ($referencePloidy == 2) use the following two variables.
-	$parent          = filter_input(INPUT_POST, "parent",          FILTER_SANITIZE_STRING);
-	$child           = filter_input(INPUT_POST, "child",           FILTER_SANITIZE_STRING);
+	$parent          = trim(filter_input(INPUT_POST, "parent",          FILTER_SANITIZE_STRING));
+	$child           = trim(filter_input(INPUT_POST, "child",           FILTER_SANITIZE_STRING));
 	// If ($referencePloidy == 1) use the following two variables.
-	$parentHaploid1  = filter_input(INPUT_POST, "parentHaploid1",  FILTER_SANITIZE_STRING);
-	$parentHaploid2  = filter_input(INPUT_POST, "parentHaploid2",  FILTER_SANITIZE_STRING);
+	$parentHaploid1  = trim(filter_input(INPUT_POST, "parentHaploid1",  FILTER_SANITIZE_STRING));
+	$parentHaploid2  = trim(filter_input(INPUT_POST, "parentHaploid2",  FILTER_SANITIZE_STRING));
 
 	// defines some directories for later use.
 	$dir1            = "../../users/".$user."/hapmaps";
