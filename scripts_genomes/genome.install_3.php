@@ -1,5 +1,13 @@
 <?php
 	session_start();
+	error_reporting(E_ALL);
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
+
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -25,11 +33,9 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-    require_once '../constants.php';
-
 	$user               = $_SESSION['user'];
-	$key                = filter_input(INPUT_POST, "key",                FILTER_SANITIZE_STRING);
-	$expression_regions = filter_input(INPUT_POST, "expression_regions", FILTER_SANITIZE_STRING);
+	$key                = trim(filter_input(INPUT_POST, "key",                FILTER_SANITIZE_STRING));
+	$expression_regions = trim(filter_input(INPUT_POST, "expression_regions", FILTER_SANITIZE_STRING));
 	$genome             = $_SESSION['genome_'.$key];
 	$rDNA_chr           = $_SESSION['rDNA_chr_'.$key];
 	$rDNA_start         = $_SESSION['rDNA_start_'.$key];
