@@ -1,12 +1,15 @@
 <?php
 	session_start();
 	error_reporting(E_ALL);
-	require_once 'constants.php';
+        require_once 'constants.php';
+        ini_set('display_errors', 1);
 
-	ini_set('display_errors', 1);
+        // If the user is not logged on, redirect to login page.
+        if(!isset($_SESSION['logged_on'])){
+                header('Location: user.login.php');
+        }
 
-	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$user      = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
+	$user          = $_SESSION['user'];
 
 	if(isset($_SESSION['logged_on']) && $user == $_SESSION['user']){
 		// User confirmed, can delete user.
