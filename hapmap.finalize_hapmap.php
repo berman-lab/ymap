@@ -10,7 +10,6 @@
 		header('Location: user.login.php');
 	}
 
-
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
@@ -33,12 +32,12 @@
         }
 
 	// Re-initialize 'process_log.txt' file.
-	$logOutputName = $hapmap_dir"/process_log.txt";
+	$logOutputName = $hapmap_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "Log file restarted for hapmap finalization.\n");
 
 	// Generate 'complete.txt' file to let the pipeline know that the haplotype map has been finalized.
-	$handleName = $hapmap_dir"/complete.txt";
+	$handleName = $hapmap_dir."/complete.txt";
 	$handle     = fopen($handleName, 'w');
 	fwrite($handle, "complete");
 	fclose($handle);
