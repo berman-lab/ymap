@@ -6,12 +6,17 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
 
+	// Load user string from session.
 	$user        = $_SESSION['user'];
-	$description = filter_input(INPUT_POST, "description", FILTER_SANITIZE_STRING);
 
+	// Sanitize input strings.
+	$description = filter_input(INPUT_POST, "description", FILTER_SANITIZE_STRING);	// strip out any html tags.
+
+	// This prevents any emails being sent.
 	$admin_email = '';
 
 	if($user != "" && $description != ""){
