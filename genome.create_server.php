@@ -9,16 +9,18 @@
 		header('Location: user.login.php');
 	}
 
-	// Sanitize user input string.
+	// Load user string from session.
+	$user              = $_SESSION['user'];
+
+	// Sanitize input string.
 	$genomeName        = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// strip out any html tags.
 	$genomeNameTrimmed = str_replace(" ","_",$genomeName);						// convert any spaces to underlines.
 	$genomeNameTrimmed = preg_replace("/[^a-zA-Z0-9_]/", "", $genomeNameTrimmed);			// remove everything but alphanumeric characters and underlines.
 
-	$user              = $_SESSION['user'];
+	// construct directory locations.
 	$dir1              = "users/".$user."/genomes";
 	$dir2              = "users/".$user."/genomes/".$genomeNameTrimmed;
 	$dir3              = "users/default/genomes/".$genomeNameTrimmed;
-
 
 	// Deals with accidental deletion of genomes dir.
 	if (!file_exists($dir1)){
