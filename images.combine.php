@@ -1,13 +1,28 @@
 <?php
-session_start();
+	session_start();
         error_reporting(E_ALL);
         require_once 'constants.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
+
+	// Load user string from session.
+	$user   = $_SESSION['user'];
+
+	// Sanitize input strings.
+	$projectsShown = trim(filter_input(INPUT_POST, "projectsShown", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$projectsShown = str_replace(" ","_",$projectsShown);						// convert any spaces to underlines.
+	$projectsShown = preg_replace("/[\s\W]+/", "", $projectsShown);					// remove everything but alphanumeric characters and underlines.
+	$projectsShown = str_replace("_"," ",$projectsShown);						// converts underlines back to spaces for later processing.
+
+
+	// Script does not securely process received input from client.
+	// It also doesn't produce intended output, so exiting now.
+	exit();
 
 	// auxillary functions
 	// sets image background to white and init default image parameters
@@ -19,14 +34,8 @@ session_start();
 		imagesavealpha($image, true);
 	}
 
-	session_start();
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script><?php echo "\n"; } else { $user = $_SESSION['user']; }
 	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-
-	$user          = $_SESSION['user'];
-	$projectsShown = filter_input(INPUT_POST, "projectsShown", FILTER_SANITIZE_STRING);
-
 	echo "projectsShown = '".$projectsShown."'<br><br>\n";
 	// general variables
 	$linearCartoonHeight = 140; // the height in px of the cartoon without labels 136 valid so 4px
