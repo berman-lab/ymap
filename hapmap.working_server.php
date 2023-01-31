@@ -6,8 +6,32 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
+
+	// Load user string from session.
+	$user   = $_SESSION['user'];
+
+	// Sanitize input strings.
+	$hapmap = trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$hapmap = str_replace(" ","_",$hapmap);						// convert any spaces to underlines.
+	$hapmap = preg_replace("/[\s\W]+/", "", $hapmap);				// remove everything but alphanumeric characters and underlines.
+	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
+	$key    = str_replace(" ","_",$key);
+	$key    = preg_replace("/[\s\W]+/", "", $key);
+	$status = trim(filter_input(INPUT_POST, "status", FILTER_SANITIZE_STRING));
+	$status = str_replace(" ","_",$status);
+	$status = preg_replace("/[\s\W]+/", "", $status);
+
+	// Confirm if requested genome exists.
+	$hapmap_dir = "users/".$user."/hapmaps/".$hapmap;
+	if (!is_dir($hapmap_dir)) {
+		// Hapmap doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 	"http://www.w3.org/TR/html4/loose.dtd">
@@ -22,12 +46,6 @@
 </style>
 </head>
 <?php
-	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$user          = $_SESSION['user'];
-	$hapmap    = str_replace($bad_chars,"_",trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING)));
-        $key       = str_replace($bad_chars,"",trim(filter_input(INPUT_POST,  "key",    FILTER_SANITIZE_STRING)));
-	$status    = str_replace($bad_chars,"",trim(filter_input(INPUT_POST,  "status", FILTER_SANITIZE_STRING)));
-
 	// increment clock animation...
 	$status   = ($status + 1) % 12;
 	if ($status == 0) {          $clock = "<img src=\"images/12.png\" alt-text=\"12\" class=\"clock\" >";
@@ -45,16 +63,16 @@
 	} else {                     $clock = "[ * ]";
 	}
 
-	if (file_exists("users/".$user."/hapmaps/".$hapmap."/complete.txt")) {
+	if (file_exists($hapmap_dir."/complete.txt")) {
 		?>
 		<html>
 		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_hapmap('<?php echo $key; ?>', 0);" >
 		</body>
 		</html>
 		<?php
-	} else if (file_exists("users/".$user."/hapmaps/".$hapmap."/error.txt")) {
+	} else if (file_exists($hapmap_dir."/error.txt")) {
 		// Load error.txt from hapmap folder.
-        $handle = fopen("users/".$user."/hapmaps/".$hapmap."/error.txt", "r");
+        $handle = fopen($hapmap_dir."/error.txt", "r");
         $error = fgets($handle);
         fclose($handle);
 		?>
@@ -65,9 +83,9 @@
 		</body>
 		</html>
 		<?php
-	} else if (file_exists("users/".$user."/hapmaps/".$hapmap."/working.txt")) {
+	} else if (file_exists($hapmap_dir."/working.txt")) {
 		// Load start time from 'working.txt'
-		$startTimeStamp = file_get_contents("users/".$user."/hapmaps/".$hapmap."/working.txt");
+		$startTimeStamp = file_get_contents($hapmap_dir."/working.txt");
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
@@ -81,7 +99,7 @@
 			<?php
 		} else {
 			// Load last line from "condensed_log.txt" file.
-			$condensedLog      = explode("\n", trim(file_get_contents("users/".$user."/hapmaps/".$hapmap."/condensed_log.txt")));
+			$condensedLog      = explode("\n", trim(file_get_contents($hapmap_dir."/condensed_log.txt")));
 			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
 			?>
 			<script type="text/javascript">
