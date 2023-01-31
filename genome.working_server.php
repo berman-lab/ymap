@@ -65,7 +65,7 @@
 	} else {                     $clock = "[ * ]";
 	}
 
-	$sizeFile_1   = "users/".$user."/genomes/".$genome."/upload_size_1.txt";
+	$sizeFile_1   = $genome_dir."/upload_size_1.txt";
 	$handle       = fopen($sizeFile_1,'r');
 	$sizeString_1 = trim(fgets($handle));
 	fclose($handle);
@@ -75,16 +75,16 @@
 		echo "\n</script>\n";
 	}
 
-	if (file_exists("users/".$user."/genomes/".$genome."/complete.txt")) {
+	if (file_exists($genome_dir."/complete.txt")) {
 		?>
 		<html>
 		<body onload = "parent.parent.update_genome_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.update_genome_remove_iframe('<?php echo $key; ?>');">
 		</body>
 		</html>
 		<?php
-	} else if (file_exists("users/".$user."/genomes/".$genome."/working.txt")) {
+	} else if (file_exists($genome_dir."/working.txt")) {
 		// Load start time from 'working.txt'
-		$startTimeStamp = file_get_contents("users/".$user."/genomes/".$genome."/working.txt");
+		$startTimeStamp = file_get_contents($genome_dir."/working.txt");
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
@@ -98,7 +98,7 @@
 			<?php
 		} else {
 			// Load last line from "condensed_log.txt" file.
-			$condensedLog      = explode("\n", trim(file_get_contents("users/".$user."/genomes/".$genome."/condensed_log.txt")));
+			$condensedLog      = explode("\n", trim(file_get_contents($genome_dir."/condensed_log.txt")));
 			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
 			?>
 			<script type="text/javascript">
