@@ -18,18 +18,18 @@
 	$genome = str_replace(" ","_",$genome);							// convert any spaces to underlines.
 	$genome = preg_replace("/[\s\W]+/", "", $genome);					// remove everything but alphanumeric characters and underlines.
 
-
 	// construct directory locations.
 	$dir1   = "users/".$user."/genomes";
 	$dir2   = "users/".$user."/genomes/".$genome;
 	$dir3   = "users/default/genomes/".$genome;
 
-	// Deals with accidental deletion of genomes dir.
+	// Deals with accidental deletion of user/genomes dir.
 	if (!file_exists($dir1)){
 		mkdir($dir1);
 		chmod($dir1,0777);
 	}
 
+	// Checks if existing genome shares requested name.
 	if (file_exists($dir2) || file_exists($dir3)) {
 		// Directory already exists
 		echo "Genome '".$genome."' directory already exists.";
