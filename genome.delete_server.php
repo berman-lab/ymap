@@ -6,21 +6,31 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
 
-	$user          = $_SESSION['user'];
-        $genome        = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));  // removing unwanted characters
+	// Load user string from session.
+	$user              = $_SESSION['user'];
 
-	if($user == $_SESSION['user']){
-		// User confirmed, can delete genome
-		$dir = "users/".$user."/genomes/".$genome;
+	// Sanitize input string.
+	$genomeName        = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$genomeNameTrimmed = str_replace(" ","_",$genomeName);						// convert any spaces to underlines.
+	$genomeNameTrimmed = preg_replace("/[\s\W]+/", "", $genomeNameTrimmed);				// remove everything but alphanumeric characters and underlines.
+
+
+	// Confirm if requested genome exists.
+	$dir = "users/".$user."/genomes/".$genome;
+	if (is_dir($dir)) {
+		// Requested genome dir does exist for logged in user: Delete installed genome.
 		rrmdir($dir);
-		echo "COMPLETE";
 	} else {
-		echo "ERROR";
+		// Genome doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
 	}
 
+	// Function for recursive rmdir, to clean out full genome directory.
 	function rrmdir($dir) {
 		if (is_dir($dir)) {
 			$objects = scandir($dir);

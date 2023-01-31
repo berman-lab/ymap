@@ -1,6 +1,5 @@
 function deleteGenomeConfirmation(user,genome,key){
-	console.log("$ user      = '"+user+"'");
-	console.log("$ project   = '"+genome+"'");
+	console.log("$ genome    = '"+genome+"'");
 	console.log("$ key       = '"+key+"'");
 	panel_iframe             = document.getElementById('panel_genome_iframe');
 	dom_object               = panel_iframe.contentDocument.getElementById('g_delete_'+key);
@@ -17,7 +16,6 @@ function deleteGenome_yes(user,genome,key){
 		url : 'genome.delete_server.php',
 		type : 'post',
 		data : {
-			user: user,
 			genome: genome
 		},
 		success : function(answer){
