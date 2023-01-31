@@ -6,6 +6,7 @@
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
+		session_destroy();
 		header('Location: user.login.php');
 	}
 
