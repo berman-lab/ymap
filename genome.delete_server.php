@@ -18,7 +18,6 @@
 	$genome = str_replace(" ","_",$genome);							// convert any spaces to underlines.
 	$genome = preg_replace("/[\s\W]+/", "", $genome);					// remove everything but alphanumeric characters and underlines.
 
-
 	// Confirm if requested genome exists.
 	$dir = "users/".$user."/genomes/".$genome;
 	if (is_dir($dir)) {
