@@ -4,12 +4,17 @@
 	require_once 'constants.php';
 	ini_set('display_errors', 1);
 
-	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$user_in   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
-	$pw_in     = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
-	$user      = validateUser($user_in);
-	$pw        = validatePassword($pw_in);
+	// Sanitize input strings.
+	$user_in = trim(filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$user_in = str_replace(" ","_",$genome);					// convert any spaces to underlines.
+	$user_in = preg_replace("/[\s\W]+/", "", $genome);				// remove everything but alphanumeric characters and underlines.
+	$pw_in   = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
 
+	// Validate user and password inputs.
+	$user    = validateUser($user_in);
+	$pw      = validatePassword($pw_in);
+
+	// Validate login.
 	validateLogin($user, $pw);
 
 //=========================================================
