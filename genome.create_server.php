@@ -11,18 +11,18 @@
 	}
 
 	// Load user string from session.
-	$user              = $_SESSION['user'];
+	$user   = $_SESSION['user'];
 
 	// Sanitize input string.
-	$genomeName        = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$genomeNameTrimmed = str_replace(" ","_",$genomeName);						// convert any spaces to underlines.
-	$genomeNameTrimmed = preg_replace("/[\s\W]+/", "", $genomeNameTrimmed);				// remove everything but alphanumeric characters and underlines.
+	$genome = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$genome = str_replace(" ","_",$genome);							// convert any spaces to underlines.
+	$genome = preg_replace("/[\s\W]+/", "", $genome);					// remove everything but alphanumeric characters and underlines.
 
 
 	// construct directory locations.
-	$dir1              = "users/".$user."/genomes";
-	$dir2              = "users/".$user."/genomes/".$genomeNameTrimmed;
-	$dir3              = "users/default/genomes/".$genomeNameTrimmed;
+	$dir1   = "users/".$user."/genomes";
+	$dir2   = "users/".$user."/genomes/".$genome;
+	$dir3   = "users/default/genomes/".$genome;
 
 	// Deals with accidental deletion of genomes dir.
 	if (!file_exists($dir1)){
@@ -32,7 +32,7 @@
 
 	if (file_exists($dir2) || file_exists($dir3)) {
 		// Directory already exists
-		echo "Genome '".$genomeName."' directory already exists.";
+		echo "Genome '".$genome."' directory already exists.";
 ?>
 	<html>
 	<body>
@@ -55,9 +55,9 @@
 
 		// Generate 'name.txt' file containing:
 		//      one line; name of genome.
-		$outputName   = "users/".$user."/genomes/".$genomeNameTrimmed."/name.txt";
+		$outputName   = "users/".$user."/genomes/".$genome."/name.txt";
 		$output       = fopen($outputName, 'w');
-		fwrite($output, $genomeName);
+		fwrite($output, $genome);
 		fclose($output);
 
 		$_SESSION['pending_install_genome_count'] += 1;
@@ -66,7 +66,7 @@
 	<body>
 	<script type="text/javascript">
 	var el1 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('newly_installed_list');
-	el1.innerHTML += "<?php echo $_SESSION['pending_install_genome_count']; ?>. <?php echo $genomeName; ?><br>";
+	el1.innerHTML += "<?php echo $_SESSION['pending_install_genome_count']; ?>. <?php echo $genome; ?><br>";
 
 	var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('pending_comment');
 	el2.style.visibility = 'visible';
