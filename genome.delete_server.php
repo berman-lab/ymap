@@ -11,12 +11,12 @@
         }
 
 	// Load user string from session.
-	$user              = $_SESSION['user'];
+	$user   = $_SESSION['user'];
 
 	// Sanitize input string.
-	$genomeName        = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$genomeNameTrimmed = str_replace(" ","_",$genomeName);						// convert any spaces to underlines.
-	$genomeNameTrimmed = preg_replace("/[\s\W]+/", "", $genomeNameTrimmed);				// remove everything but alphanumeric characters and underlines.
+	$genome = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$genome = str_replace(" ","_",$genome);							// convert any spaces to underlines.
+	$genome = preg_replace("/[\s\W]+/", "", $genome);					// remove everything but alphanumeric characters and underlines.
 
 
 	// Confirm if requested genome exists.
