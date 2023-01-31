@@ -20,13 +20,11 @@
 		<script type="text/javascript" src="js/jquery.form.js"></script>
 		<script>
 				function submitBug(project){
-					submitter = $('#submitter').val();
 					description = $('#description').val();
 					$.ajax({
 						url : 'addBug_server.php',
 						type : 'post',
 						data : {
-							submitter: submitter,
 							description: description
 						},
 						success : function(answer){
@@ -39,8 +37,7 @@
 	<body>
 		<div id="bugSubmit">
 			<button type="button" onclick="window.location.href='index.php'">Back to Home</button><b>User: <?php echo $user?></b>
-			<input type="hidden" id="submitter" name="submitter" value="<?php echo $user?>"><br>
-			Describe your bug or feature request below.<br>
+			<br>Describe your bug or feature request below.<br>
 			If you are having a problem with a specific project, make sure to include the project name in your comment.<br>
 			If you are responding to a previous comment, make sure to include the comment number from the first collumn.<br>
 			Once an admin has responded, the comment entries will be colored <font style='background-color: #AAFFAA'>green to

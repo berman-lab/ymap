@@ -15,13 +15,11 @@
 		<script type="text/javascript" src="js/jquery.form.js"></script>
 		<script>
 				function submitBug(project){
-					submitter = $('#submitter').val();
 					description = $('#description').val();
 					$.ajax({
 						url : 'addBug_server.php',
 						type : 'post',
 						data : {
-							submitter: submitter,
 							description: description
 						},
 						success : function(answer){
@@ -33,7 +31,6 @@
 	</head>
 	<body>
 		<div id="bugSubmit">
-			<input type="hidden" id="submitter" name="submitter" value="<?php echo $user?>">
 			Describe your bug or feature request below.<br>
 			If you are having a problem with a specific project, make sure to include the project name in your comment.<br>
 			If you are responding to a previous comment, make sure to include the comment number from the first collumn.<br>
@@ -48,7 +45,7 @@
 			<table id="bugTable" border="1">
 				<tr bgcolor="#DDDDDD">
 					<th>#</th>
-					<th>Submitter</th>
+					<th>User</th>
 					<th colspan=80>Description</th>
 					<th>Type</th>
 					<th colspan=80>Admin Notes</th>
@@ -60,7 +57,7 @@
 						$comment_count = 0;
 						while (($buffer = fgets($bugFileHandle, 4096)) !== false) {
 							if (strcmp($buffer,"") <> 1) {   $comment_count = $comment_count + 1;   }
-							list ($submitter, $description, $type, $notes, $status) = explode("|", $buffer);
+							list ($user, $description, $type, $notes, $status) = explode("|", $buffer);
 							$super_user_flag_file = "users/".$user."/super.txt";
 							if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
 								if ($status == 1) {              echo "<tr bgcolor='FFAAAA'>";
@@ -71,10 +68,10 @@
 								if (strcmp($buffer,"") == 1) {   echo "<td align='center'></td>";
 								} else {                         echo "<td align='center'>".$comment_count."</td>";
 								}
-								echo "<td align='center'>".$submitter."</td>\n<td colspan=80>".$description."</td>\n<td align='center'>".$type."</td>\n<td colspan=80>".$notes."</td>\n";
+								echo "<td align='center'>".$user."</td>\n<td colspan=80>".$description."</td>\n<td align='center'>".$type."</td>\n<td colspan=80>".$notes."</td>\n";
 								echo "</tr>";
 							} else {
-								if (($submitter == $user) || ($submitter == 'admin')) {
+								if ($user == 'admin') {
 									if ($status == 1) {              echo "<tr bgcolor='FFAAAA'>";
 									} else if ($status == 2) {       echo "<tr bgcolor='FFFFAA'>";
 									} else if ($status == 3) {       echo "<tr bgcolor='AAFFAA'>";
@@ -83,7 +80,7 @@
 									if (strcmp($buffer,"") == 1) {   echo "<td align='center'></td>";
 									} else {                         echo "<td align='center'>".$comment_count."</td>";
 									}
-									echo "<td align='center'>".$submitter."</td>\n<td colspan=80>".$description."</td>\n<td align='center'>".$type."</td>\n<td colspan=80>".$notes."</td>\n";
+									echo "<td align='center'>".$user."</td>\n<td colspan=80>".$description."</td>\n<td align='center'>".$type."</td>\n<td colspan=80>".$notes."</td>\n";
 									echo "</tr>";
 								}
 							}
