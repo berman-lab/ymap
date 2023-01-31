@@ -15,7 +15,8 @@
 	// Sanitize input string.
 	$genomeName        = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// strip out any html tags.
 	$genomeNameTrimmed = str_replace(" ","_",$genomeName);						// convert any spaces to underlines.
-	$genomeNameTrimmed = preg_replace("/[^a-zA-Z0-9_]/", "", $genomeNameTrimmed);			// remove everything but alphanumeric characters and underlines.
+	$genomeNameTrimmed = preg_replace("/[\s\W]+/", "", $genomeNameTrimmed);				// remove everything but alphanumeric characters and underlines.
+
 
 	// construct directory locations.
 	$dir1              = "users/".$user."/genomes";
