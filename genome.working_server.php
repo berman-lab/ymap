@@ -6,8 +6,32 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
+
+	// Load user string from session.
+	$user   = $_SESSION['user'];
+
+	// Sanitize input strings.
+	$genome = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$genome = str_replace(" ","_",$genome);						// convert any spaces to underlines.
+	$genome = preg_replace("/[\s\W]+/", "", $genome);				// remove everything but alphanumeric characters and underlines.
+	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
+        $key    = str_replace(" ","_",$key);
+        $key    = preg_replace("/[\s\W]+/", "", $key);
+	$status = trim(filter_input(INPUT_POST, "status", FILTER_SANITIZE_STRING));
+        $status = str_replace(" ","_",$status);
+        $status = preg_replace("/[\s\W]+/", "", $status);
+
+	// Confirm if requested genome exists.
+	$genome_dir = "users/".$user."/genomes/".$genome;
+	if (!is_dir($genome_dir)) {
+		// Genome doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
@@ -24,12 +48,6 @@
 </style>
 </head>
 <?php
-	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$user      = $_SESSION['user'];
-	$genome    = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING)));
-	$key       = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key",    FILTER_SANITIZE_STRING)));
-	$status    = filter_input(INPUT_POST, "status",   FILTER_SANITIZE_STRING);
-
 	// increment clock animation...
 	$status   = ($status + 1) % 12;
 	if ($status == 0) {          $clock = "<img src=\"images/12.png\" alt-text=\"12\" class=\"clock\" >";
