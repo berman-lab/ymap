@@ -2,21 +2,20 @@
 	session_start();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
+	require_once 'POST_validation.php';
 	ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: user.login.php');
+                header('Location: .');
         }
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
 	// Sanitize input string.
-	$hapmap = trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$hapmap = str_replace(" ","_",$hapmap);						// convert any spaces to underlines.
-	$hapmap = preg_replace("/[\s\W]+/", "", $hapmap);				// remove everything but alphanumeric characters and underlines.
+	$hapmap = sanitize_POST("hapmap");
 
 	// Confirm if requested hapmap exists.
 	$dir = "users/".$user."/hapmaps/".$hapmap;

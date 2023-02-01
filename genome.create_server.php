@@ -2,21 +2,20 @@
 	session_start();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
+	require_once 'POST_validation.php';
 	ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: .');
 	}
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
 	// Sanitize input string.
-	$genome = trim(filter_input(INPUT_POST, "newGenomeName", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$genome = str_replace(" ","_",$genome);							// convert any spaces to underlines.
-	$genome = preg_replace("/[\s\W]+/", "", $genome);					// remove everything but alphanumeric characters and underlines.
+	$genome = sanitize_POST("newGenomeName");
 
 	// construct directory locations.
 	$dir1   = "users/".$user."/genomes";

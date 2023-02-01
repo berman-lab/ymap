@@ -7,34 +7,18 @@
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: .');
 	}
 
 	// Load user string from session.
 	$user            = $_SESSION['user'];
 
-	// Validate project input string.
-	$project         = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING));			// strip out any html tags.
-	$project         = str_replace(" ","_",$project);							// convert any spaces to underlines.
-	$project         = preg_replace("/[\s\W]+/", "", $project);						// remove everything but alphanumeric characters and underlines.
-
-	// Validate ploidy input string.
-	$ploidy          = trim(filter_input(INPUT_POST, "ploidy", FILTER_SANITIZE_STRING));			// strip out any html tags.
-	$ploidy          = preg_replace("/[^\d\.]+/", "", $ploidy);						// remove everything but numerals and period.
-
-	// Validate ploidy base input string.
-	$ploidyBase      = trim(filter_input(INPUT_POST, "ploidyBase", FILTER_SANITIZE_STRING));		// strip out any html tags.
-	$ploidyBase      = preg_replace("/[^\d\.]+/", "", $ploidyBase);						// remove everything but numerals and period.
-
-	// Validate data format input string.
-	$dataFormat      = trim(filter_input(INPUT_POST, "dataFormat", FILTER_SANITIZE_STRING));		// strip out any html tags.
-        $dataFormat      = preg_replace("/[^\d]+/", "", $dataFormat);						// remove everything but numerals.
-	$dataFormat      = $dataFormat[0];									// only use first numeral of input.
-
-	// Validate show annotations input string.
-	$showAnnotations = trim(filter_input(INPUT_POST, "dataFormat", FILTER_SANITIZE_STRING));		// strip out any html tags.
-	$showAnnotations = preg_replace("/[^\d]+/", "", $showAnnotations);					// remove everything but numerals.
-	$showAnnotations = $showAnnotations[0];									// only use first numeral of input.
+	// Validate input strings.
+	$project         = sanitize_POST("project");
+	$ploidy          = sanitizeFloat_POST("ploidy");
+	$ploidyBase      = sanitizeFloat_POST("ploidyBase");
+	$dataFormat      = sanitizeIntChar_POST("dataFormat");
+	$showAnnotations = sanitizeIntChar_POST("showAnnotations");
 
 	// Validate additional inputs found when dealing with ddRADseq, WGseq, or RNAseq data types.
 	if ($dataFormat != "0") {

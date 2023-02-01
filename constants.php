@@ -15,7 +15,7 @@
 	$bugNumFile   = "numBugs.txt";
 
 	$directory = ".";
-	
+
 	// hardcoded quota (used in case no globalquota.txt in users folder or no quota.txt exits in user folder)
 	$quota = 25;
 ?>

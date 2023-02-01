@@ -2,22 +2,21 @@
 	session_start();
         error_reporting(E_ALL);
         require_once 'constants.php';
+	require_once 'POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: user.login.php');
+                header('Location: .');
         }
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$projectsShown = trim(filter_input(INPUT_POST, "projectsShown", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$projectsShown = str_replace(" ","_",$projectsShown);						// convert any spaces to underlines.
-	$projectsShown = preg_replace("/[\s\W]+/", "", $projectsShown);					// remove everything but alphanumeric characters and underlines.
-	$projectsShown = str_replace("_"," ",$projectsShown);						// converts underlines back to spaces for later processing.
+	$projectsShown = sanitize_POST("projectsShown");
+	$projectsShown = str_replace("_"," ",$projectsShown);	// converts underlines back to spaces for later processing.
 
 
 	// Script does not securely process received input from client.

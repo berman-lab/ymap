@@ -2,27 +2,22 @@
 	session_start();
         error_reporting(E_ALL);
         require_once 'constants.php';
+	require_once 'POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: user.login.php');
+                header('Location: .');
         }
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$genome = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$genome = str_replace(" ","_",$genome);						// convert any spaces to underlines.
-	$genome = preg_replace("/[\s\W]+/", "", $genome);				// remove everything but alphanumeric characters and underlines.
-	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
-        $key    = str_replace(" ","_",$key);
-        $key    = preg_replace("/[\s\W]+/", "", $key);
-	$status = trim(filter_input(INPUT_POST, "status", FILTER_SANITIZE_STRING));
-        $status = str_replace(" ","_",$status);
-        $status = preg_replace("/[\s\W]+/", "", $status);
+	$genome = sanitize_POST("genome");
+	$key    = sanitize_POST("key");
+	$status = sanitize_POST("status");
 
 	// Confirm if requested genome exists.
 	$genome_dir = "users/".$user."/genomes/".$genome;

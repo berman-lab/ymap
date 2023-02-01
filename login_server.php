@@ -2,13 +2,12 @@
 	session_start();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
+	require_once 'POST_validation.php';
 	ini_set('display_errors', 1);
 
 	// Sanitize input strings.
-	$user_in = trim(filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$user_in = str_replace(" ","_",$genome);					// convert any spaces to underlines.
-	$user_in = preg_replace("/[\s\W]+/", "", $genome);				// remove everything but alphanumeric characters and underlines.
-	$pw_in   = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
+	$user_in = sanitize_POST("user");
+	$pw_in   = stripHTML_POST("pw");
 
 	// Validate user and password inputs.
 	$user    = validateUser($user_in);
