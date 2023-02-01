@@ -111,7 +111,7 @@
 
 		// Generate 'name.txt' file containing:
 		//      one line; name of genome.
-		$outputName   = $project_dirw."/name.txt";
+		$outputName   = $project_dir1."/name.txt";
 		$output       = fopen($outputName, 'w');
 		fwrite($output, $project);
 		fclose($output);
