@@ -14,24 +14,24 @@ my_file = file(sys.argv[1],'r').xreadlines()
 #	'\+[0-9]+[ATCGNatcgn]+' : indicates an insertion.
 #	'\-[0-9]+[ATCGNatcgn]+' : indicates a deletion.
 def dump_indels(astr):
-        result = ""
-        blackout = 0
-        for i in range(0, len(astr)):
-                if astr[i] == "+" or astr[i] == "-":
-                        start = i+1
-                        val = ""
-                        while astr[start] > '0' and astr[start] <= '9':
-                                val += astr[start]
-                                start += 1
-                        if val == "":
-                                blackout = 1
-                        else:
-                                blackout = int(val) + 1
-                else:
-                        if blackout != 0:
-                                blackout -= 1
-                        else:
-                                if astr[i] == "A" or astr[i] == "T" or astr[i] == "G" or astr[i] == "C" or astr[i] == "." or astr[i] == ",": result += astr[i]
+	result = ""
+	blackout = 0
+	for i in range(0, len(astr)):
+		if astr[i] == "+" or astr[i] == "-":
+			start = i+1
+			val = ""
+			while astr[start] > '0' and astr[start] <= '9':
+				val += astr[start]
+				start += 1
+			if val == "":
+				blackout = 1
+			else:
+				blackout = int(val) + 1
+		else:
+			if blackout != 0:
+				blackout -= 1
+			else:
+				if astr[i] == "A" or astr[i] == "T" or astr[i] == "G" or astr[i] == "C" or astr[i] == "." or astr[i] == ",": result += astr[i]
 	return result
 
 #------------------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ def dump_startend(astr):
 		else:
 			result += newchar
 			oldchar = newchar
-	return result        
+	return result
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
