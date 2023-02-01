@@ -40,14 +40,14 @@ function sanitizeInt_POST($POST_name) {
 	// strip out any html tags.
 	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_SANITIZE_STRING));
 	// remove everything but numerals.
-	$cleanString = preg_replace("/[^\d\]+/", "", $cleanString);
+	$cleanString = preg_replace("/[^\d]+/", "", $cleanString);
 	return $cleanString;
 }
 function sanitizeIntChar_POST($POST_name) {
 	// strip out any html tags.
 	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_SANITIZE_STRING));
 	// remove everything but numerals.
-	$cleanString = preg_replace("/[^\d\]+/", "", $cleanString);
+	$cleanString = preg_replace("/[^\d]+/", "", $cleanString);
 	// only use first numeral of input.
 	$cleanString = $cleanString[0];
 	return $cleanString;
