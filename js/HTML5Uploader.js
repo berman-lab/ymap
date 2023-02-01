@@ -238,10 +238,10 @@ var allFiles = new Array;
 						},
 			_formatBitrate:		function (bits) {
 							if (typeof bits !== 'number') {	return ''; }
-							if (bits >= 8589934592) {		return (bits / 1073741824 / 8).toFixed(2) + ' GB/s'; }
-							if (bits >= 12388608) {			return (bits / 1048576 / 8).toFixed(1) + ' MB/s'; }
-							if (bits >= 8192) {				return (bits / 1024 / 8).toFixed(0) + ' KB/s'; }
-							if (bits < 0) {					return 0; }
+							if (bits >= 8589934592) {	return (bits / 1073741824 / 8).toFixed(2) + ' GB/s'; }
+							if (bits >= 12388608) {		return (bits / 1048576 / 8).toFixed(1) + ' MB/s'; }
+							if (bits >= 8192) {		return (bits / 1024 / 8).toFixed(0) + ' KB/s'; }
+							if (bits < 0) {			return 0; }
 							return (bits / 8).toFixed(2) + ' byte/s';
 						},
 			_formatTime:		function (seconds) {
