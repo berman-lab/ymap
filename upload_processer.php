@@ -28,7 +28,7 @@
 		if (!is_dir($project_dir)) {
 			// Project doesn't exist, should never happen: Force logout.
 			session_destroy();
-			header('Location: .');
+			parent.location.reload();
 		}
 	} else if ($genome != "") {
 		// Confirm if requested project exists.
@@ -36,12 +36,12 @@
 		if (!is_dir($project_dir)) {
 			// Project doesn't exist, should never happen: Force logout.
 			session_destroy();
-			header('Location: .');
+			parent.location.reload();
 		}
 	} else {
 		// No genome or project, should never happen: Force logout.
 		session_destroy();
-		header('Location: .');
+		parent.location.reload();
 	}
 
 	// set session variables.
