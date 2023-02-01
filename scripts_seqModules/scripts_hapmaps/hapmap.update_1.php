@@ -22,7 +22,6 @@
 	// Load user string from session.
 	$user       = $_SESSION['user'];
 
-
 	// Validate hapmap input string.
 	$hapmap     = trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
 	$hapmap     = str_replace(" ","_",$hapmap);					// convert any spaces to underlines.
