@@ -256,6 +256,9 @@
 var userProjectCount   = "<?php echo $userProjectCount; ?>";
 var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 <?php
+//.----------------.
+//| Uploading data |
+//'----------------'
 if (isset($_SESSION['logged_on'])) {
 	foreach($projectFolders_starting as $key_=>$project) {    // frameContainer.p3_[$key] : starting.
 		$key      = $key_;
