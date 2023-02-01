@@ -33,13 +33,12 @@
 	<form id="fileupload" class="HTML5Uploader" method="POST" action="placeholder/" enctype="multipart/form-data">
 		<div class="upload-wrapper">
 			<table><tr>
+			<!========= Initially visible UI element =========!>
 			<!---------- Add file to upload button. ----------!>
 			<td valign="top">
 				<div id="select-wrapper" class="info-wrapper">
 					<div id="browsebutton" class="fileinput-button button gray" href="">
 						<script type="text/javascript">
-							//console.log(        "uploader.1.php : display_string = '"+display_string[0]+"'");
-							//console.log(        "uploader.1.php : user       = '"+user+"'");
 							if (typeof genome !== 'undefined') {
 								console.log("uploader.1.php : genome     = '"+genome+"'");
 							} else {
@@ -53,6 +52,7 @@
 					</div>
 				</div>
 			</td>
+			<!====== Initially hidden UI elements ======!>
 			<!---------- Start upload button. ----------!>
 			<td valign="top">
 				<div id="info-wrapper-1" class="info-wrapper" style="display: none; font-size: 10px;">
