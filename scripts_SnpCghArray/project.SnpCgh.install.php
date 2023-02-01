@@ -50,7 +50,7 @@
 	$condensedLogOutputName = $project_dir."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Microarray data processing.\n");
-	chmod($condensedLogOutputName,0755);
+	fclose($condensedLogOutputName);
 
 // Initialize 'process_log.txt' file.
 	$outputLogName   = $project_dir."/process_log.txt";
