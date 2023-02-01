@@ -69,7 +69,7 @@
 		$hapmap              = trim(filter_input(INPUT_POST, "selectHapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
 		$hapmap              = str_replace(" ","_",$hapmap);						// convert any spaces to underlines.
 		$hapmap              = preg_replace("/[\s\W]+/", "", $hapmap);					// remove everything but alphanumeric characters and underlines.
-		if (($parent == "none") || ($parent == "")) {
+		if (($hapmap == "none") || ($hapmap == "")) {
 			// no hapmap is used.
 		} else {
 			// Confirm if requested hapmap exists.
