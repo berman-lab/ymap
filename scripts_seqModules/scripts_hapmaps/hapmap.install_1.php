@@ -13,36 +13,101 @@
         require_once '../../constants.php';
         ini_set('display_errors', 1);
 
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
+	// If the user is not logged on, redirect to login page.
+	if(!isset($_SESSION['logged_on'])){
+		session_destroy();
+		?> <script type="text/javascript"> parent.reload(); </script> <?php
+	}
+
+	// Load user string from session.
+	$user       = $_SESSION['user'];
+
+	// Validate hapmap input string.
+	$hapmap      = trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$hapmap      = str_replace(" ","_",$hapmap);					// convert any spaces to underlines.
+	$hapmap      = preg_replace("/[\s\W]+/", "", $hapmap);				// remove everything but alphanumeric characters and underlines.
+	$hapmap_dir1 = "../../users/".$user."/hapmaps/".$hapmap;
+	$hapmap_dir2 = "../../users/default/hapmaps/".$hapmap;
+
+	// Validate genome input string.
+	$genome     = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));
+	$genome     = str_replace(" ","_",$genome);
+	$genome     = preg_replace("/[\s\W]+/", "", $genome);
+	// Confirm if requested genome exists.
+	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
+	$genome_dir2 = "../../users/default/genomes/".$genome;
+	if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
+		// Genome doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
+	// Validate ploidy input string.
+	$referencePloidy = trim(filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$referencePloidy = preg_replace("/[^\d\.]+/", "", $ploidy);					// remove everything but numerals and period.
+
+	// Validate parent input string.
+	$parent      = trim(filter_input(INPUT_POST, "parent", FILTER_SANITIZE_STRING));
+	$parent      = str_replace(" ","_",$parent);
+	$parent      = preg_replace("/[\s\W]+/", "", $parent);
+	// Confirm if requested project1 project exists.
+	$parent_dir1 = "../../users/".$user."/projects/".$parent;
+	$parent_dir2 = "../../users/default/projects/".$parent;
+	if !(is_dir($parent_dir1) || is_dir($parent_dir2)) {
+		// Parent project doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
+	// Validate child input string.
+	$child      = trim(filter_input(INPUT_POST, "child", FILTER_SANITIZE_STRING));
+	$child      = str_replace(" ","_",$child);
+	$child      = preg_replace("/[\s\W]+/", "", $child);
+	// Confirm if requested project1 project exists.
+	$child_dir1 = "../../users/".$user."/projects/".$child;
+	$child_dir2 = "../../users/default/projects/".$child;
+	if !(is_dir($child_dir1) || is_dir($child_dir2)) {
+		// Child project doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
+	// Validate parentHaploid1 input string.
+	$parentHaploid1      = trim(filter_input(INPUT_POST, "parentHaploid1", FILTER_SANITIZE_STRING));
+	$parentHaploid1      = str_replace(" ","_",$parentHaploid1);
+	$parentHaploid1      = preg_replace("/[\s\W]+/", "", $parentHaploid1);
+	// Confirm if requested project1 project exists.
+	$parentHaploid1_dir1 = "../../users/".$user."/projects/".$parentHaploid1;
+	$parentHaploid1_dir2 = "../../users/default/projects/".$parentHaploid1;
+	if !(is_dir($parentHaploid1_dir1) || is_dir($parentHaploid1_dir2)) {
+		// parentHaploid1 project doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
+	// Validate parentHaploid2 input string.
+	$parentHaploid2      = trim(filter_input(INPUT_POST, "parentHaploid2", FILTER_SANITIZE_STRING));
+	$parentHaploid2      = str_replace(" ","_",$parentHaploid2);
+	$parentHaploid2      = preg_replace("/[\s\W]+/", "", $parentHaploid2);
+	// Confirm if requested project1 project exists.
+	$parentHaploid2_dir1 = "../../users/".$user."/projects/".$parentHaploid2;
+	$parentHaploid2_dir2 = "../../users/default/projects/".$parentHaploid2;
+	if !(is_dir($parentHaploid2_dir1) || is_dir($parentHaploid2_dir2)) {
+		// parentHaploid1 project doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-	error_reporting(E_ALL);
-	ini_set('display_errors', 1);
 
-	$user            = $_SESSION['user'];
-	$bad_chars       = array(".", ",", "\\", "/", " ", "'", '"', "(", ")", "[", "]");
-	$hapmap          = str_replace($bad_chars,"",trim( filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING) ));
-
-	$genome          = trim(filter_input(INPUT_POST, "genome",          FILTER_SANITIZE_STRING));
-	$referencePloidy = trim(filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING));
-	// If ($referencePloidy == 2) use the following two variables.
-	$parent          = trim(filter_input(INPUT_POST, "parent",          FILTER_SANITIZE_STRING));
-	$child           = trim(filter_input(INPUT_POST, "child",           FILTER_SANITIZE_STRING));
-	// If ($referencePloidy == 1) use the following two variables.
-	$parentHaploid1  = trim(filter_input(INPUT_POST, "parentHaploid1",  FILTER_SANITIZE_STRING));
-	$parentHaploid2  = trim(filter_input(INPUT_POST, "parentHaploid2",  FILTER_SANITIZE_STRING));
-
-	// defines some directories for later use.
+	// Deals with accidental deletion of user/hapmaps dir.
 	$dir1            = "../../users/".$user."/hapmaps";
-	$dir2            = "../../users/".$user."/hapmaps/".$hapmap;
-	$dir3            = "../../users/default/hapmaps/".$hapmap;
-
-	// Deals with accidental deletion of hapmaps dir.
 	if (!file_exists($dir1)){
 		mkdir($dir1);
 		chmod($dir1,0777);
 	}
 
-	if (file_exists($dir2) || file_exists($dir3)) {
+	if (file_exists($hapmap_dir1) || file_exists($hapmap_dir2)) {
 		// Directory already exists
 		echo "Hapmap '".$hapmap."' directory already exists.";
 		exit;
