@@ -266,6 +266,9 @@
 	el4.style.display = 'none';
 
 	window.location = "project.create_window.php";
+
+	// Refresh "projectsShown" string;
+	parent.update_projectsShown_after_new_project();
 	</script>
 	</body>
 	</html>
