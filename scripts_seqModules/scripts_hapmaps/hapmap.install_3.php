@@ -7,9 +7,7 @@
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		header('Location: user.login.php');
-
-		//?> <script type="text/javascript"> parent.reload(); </script> <?php
+		?> <script type="text/javascript"> parent.reload(); </script> <?php
 	}
 
 	// Load user string from session.
