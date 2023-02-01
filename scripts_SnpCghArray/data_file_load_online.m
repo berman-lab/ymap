@@ -48,13 +48,13 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 	    i              = i+1;
 	    lineData       = fgetl(fid);
 	    lines_analyzed = lines_analyzed+1;
-    
+
 	    % take of interest data fields from each line.
 	    ProbeID              = sscanf(lineData, '%s',1);
 	    % add data fields into structure.
 	    probeset1(i).probe_ID = ProbeID;
 	    IDset1{i}             = char(ProbeID);
-    
+
 	    % interpret probeID to determine probe chromosome number and location.
 	    probeset1(i).probe_chromosome           = str2double(ProbeID(9));
 	    probeset1(i).probe_location             = str2double(ProbeID(11:length(ProbeID)-2));
@@ -71,13 +71,13 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 	    i              = i+1;
 	    lineData       = fgetl(fid);
 	    lines_analyzed = lines_analyzed+1;
-    
+
 	    % take of interest data fields from each line.
 	    ProbeID               = sscanf(lineData, '%s',1);
 	    % add data fields into structure.
 	    probeset2(i).probe_ID = ProbeID;
 	    IDset2{i}             = char(ProbeID);
-    
+
 	    % interpret probeID to determine probe chromosome number and location.
 	    probeset2(i).probe_chromosome           = str2double(ProbeID(9));
 	    probeset2(i).probe_location             = str2double(ProbeID(11:length(ProbeID)));
