@@ -6,8 +6,24 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
+
+	// Load user string from session.
+	$user   = $_SESSION['user'];
+
+	// Sanitize input strings.
+        $key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));	// strip out any html tags.
+        $key    = str_replace(" ","_",$key);						// convert any spaces to underlines.
+        $key    = preg_replace("/[\s\W]+/", "", $key);					// remove everything but alphanumeric characters and underlines.
+
+	// Load strings from session.
+	$genome     = $_SESSION['genome_'.$key];
+	$chr_count  = $_SESSION['chr_count_'.$key];
+
+	$genome_dir = "../users/".$user."/genomes/".$genome;
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"
 <HTML>
@@ -19,12 +35,8 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-	$user             = $_SESSION['user'];
-	$key              = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
-	$genome           = $_SESSION['genome_'.$key];
-	$chr_count        = $_SESSION['chr_count_'.$key];
-	$chr_names        = json_decode(file_get_contents("../users/".$user."/genomes/".$genome."/chr_names.json"), true);
-	$chr_lengths      = json_decode(file_get_contents("../users/".$user."/genomes/".$genome."/chr_lengths.json"), true);;
+	$chr_names        = json_decode(file_get_contents($genome_dir."/chr_names.json"), true);
+	$chr_lengths      = json_decode(file_get_contents($genome_dir."/chr_lengths.json"), true);;
 	$chr_draws        = array();
 	$chr_shortNames   = array();
 	$chr_cenStarts    = array();
@@ -32,11 +44,11 @@
 	$chr_count_used   = 0;
 
 // Open 'process_log.txt' file.
-	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
+	$logOutputName = $genome_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "Running 'scripts_genomes/genome.install_2.php'.\n");
 
-	$sizeFile_1   = "../users/".$user."/genomes/".$genome."/upload_size_1.txt";
+	$sizeFile_1   = $genome_dir."/upload_size_1.txt";
 	$handle       = fopen($sizeFile_1,'r');
 	$sizeString_1 = trim(fgets($handle));
 	fclose($handle);
@@ -80,7 +92,7 @@
 
 // Generate 'chromosome_sizes.txt' :
 	fwrite($logOutput, "\tGenerating 'chromosome_sizes.txt' file.\n");
-	$outputName       = "../users/".$user."/genomes/".$genome."/chromosome_sizes.txt";
+	$outputName       = $genome_dir."/chromosome_sizes.txt";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
@@ -100,7 +112,7 @@
 
 // Generate 'centromere_locations.txt' :
 	fwrite($logOutput, "\tGenerating 'centromere_locations.txt' file.\n");
-	$outputName       = "../users/".$user."/genomes/".$genome."/centromere_locations.txt";
+	$outputName       = $genome_dir."/centromere_locations.txt";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
@@ -121,7 +133,7 @@
 // Generate 'figure_definitions.txt' :
 	fwrite($logOutput, "\tGenerating 'figure_definitions.txt' file.\n");
 	$max_length       = max($chr_lengths);
-	$outputName       = "../users/".$user."/genomes/".$genome."/figure_definitions.txt";
+	$outputName       = $genome_dir."/figure_definitions.txt";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
@@ -160,7 +172,7 @@
 // Generate "genome.bed" :
 	fwrite($logOutput, "\tGenerating 'genome.bed' file.\n");
 	$max_length       = max($chr_lengths);
-	$outputName       = "../users/".$user."/genomes/".$genome."/genome.bed";
+	$outputName       = $genome_dir."/genome.bed";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
@@ -183,7 +195,7 @@
 
 // Generate "ploidy.txt" :
 	fwrite($logOutput, "\tGenerating 'ploidy.txt' file.\n");
-	$outputName       = "../users/".$user."/genomes/".$genome."/ploidy.txt";
+	$outputName       = $genome_dir."/ploidy.txt";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
