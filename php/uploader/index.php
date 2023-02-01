@@ -15,8 +15,8 @@
 	$user    = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$genome = sanitize_POST("target_genome");
-	$peojct = sanitize_POST("target_project");
+	$genome  = sanitize_POST("target_genome");
+	$project = sanitize_POST("target_project");
 
 	// Either a genome or project string should be present as something other than "".
 	if ($genome != "") {
