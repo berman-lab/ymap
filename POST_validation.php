@@ -14,8 +14,10 @@ function sanitize_POST($POST_name) {
 	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_SANITIZE_STRING));
 	// convert any spaces to underlines.
 	$cleanString = str_replace(" ","_", $cleanString);
-	// remove everything but alphanumeric characters and underlines.
-	$cleanString = preg_replace("/[\s\W]+/", "", $cleanString);
+	// remove whitespace.
+	$cleanString = preg_replace("/[\s]+/", "", $cleanString);
+	// remove everything but alphanumeric characters, underlines, dashes.
+	$cleanString = preg_replace("/[^\w-_]+/", "", $cleanString);
 	return $cleanString;
 }
 function sanitizeFile_POST($POST_name) {

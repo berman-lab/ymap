@@ -12,20 +12,20 @@
         }
 
 	// Load user string from session.
-	$user   = $_SESSION['user'];
+	$user    = $_SESSION['user'];
 
 	// Sanitize input string.
-	$genome = sanitize_POST("newGenomeName");
+	$genome  = sanitize_POST("newGenomeName");
+	$dir     = "users/".$user."/genomes/".$genome;
 
-	// Confirm if requested genome exists.
-	$dir = "users/".$user."/genomes/".$genome;
-	if (is_dir($dir)) {
-		// Requested genome dir does exist for logged in user: Delete installed genome.
+	// Confirm if requested project exists.
+	if (is_dir($project_dir)) {
+		// Requested project dir does exist for logged in user: Delete installed project.
 		rrmdir($dir);
+		echo "COMPLETE";
 	} else {
-		// Genome doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: .');
+		// Project doesn't exist, should never happen. 
+		echo "ERROR:".$user." doesn't own project.";
 	}
 
 	// Function for recursive rmdir, to clean out full genome directory.

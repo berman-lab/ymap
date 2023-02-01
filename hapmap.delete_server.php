@@ -12,20 +12,20 @@
         }
 
 	// Load user string from session.
-	$user   = $_SESSION['user'];
+	$user    = $_SESSION['user'];
 
 	// Sanitize input string.
-	$hapmap = sanitize_POST("hapmap");
+	$hapmap  = sanitize_POST("hapmap");
+	$dir     = "users/".$user."/hapmaps/".$hapmap;
 
-	// Confirm if requested hapmap exists.
-	$dir = "users/".$user."/hapmaps/".$hapmap;
-	if (is_dir($dir)) {
-		// Requested hapmap dir does exist for logged in user: Delete installed hapmap.
+	// Confirm if requested project exists.
+	if (is_dir($project_dir)) {
+		// Requested project dir does exist for logged in user: Delete installed project.
 		rrmdir($dir);
+		echo "COMPLETE";
 	} else {
-		// Hapmap doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: .');
+		// Project doesn't exist, should never happen.
+		echo "ERROR:".$user." doesn't own project.";
 	}
 
 	// Function for recursive rmdir, to clean out full hapmap directory.

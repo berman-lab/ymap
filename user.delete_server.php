@@ -11,19 +11,18 @@
                 header('Location: .');
         }
 
-	$user          = $_SESSION['user'];
+	// Load user string from session.
+	$user    = $_SESSION['user'];
+	$dir     = "users/".$user."/";
 
-	$user_dir = "users/".$user."/";
-	if (is_dir($user_dir)) {
-		// Requested user dir does exist: Delete user.
-		rrmdir($user_dir);
-		// Force logout.
-		session_destroy();
-		header('Location: .');
+	// Confirm if requested project exists.
+	if (is_dir($project_dir)) {
+		// Requested user does exist: Delete installed user.
+		rrmdir($dir);
+		echo "COMPLETE";
 	} else {
-		// User doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: .');
+		// Project doesn't exist, should never happen.
+		echo "ERROR:".$user." doesn't exist.";
 	}
 
 	// recursive rmdir function.

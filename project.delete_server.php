@@ -16,16 +16,16 @@
 
 	// Sanitize input strings.
 	$project = sanitize_POST("project");
+	$dir     = "users/".$user."/projects/".$project;
 
 	// Confirm if requested project exists.
-	$project_dir = "users/".$user."/projects/".$project;
 	if (is_dir($project_dir)) {
 		// Requested project dir does exist for logged in user: Delete installed project.
-		rrmdir($project_dir);
+		rrmdir($dir);
+		echo "COMPLETE";
 	} else {
-		// Project doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: .');
+		// Project doesn't exist, should never happen.
+		echo "ERROR:".$user." doesn't own project.";
 	}
 
 	// Function for recursive rmdir, to clean out full genome directory.
