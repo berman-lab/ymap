@@ -11,8 +11,28 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
+
+	// Load user string from session.
+	$user   = $_SESSION['user'];
+
+	// Sanitize input strings.
+	$genome = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$genome = str_replace(" ","_",$genome);						// convert any spaces to underlines.
+	$genome = preg_replace("/[\s\W]+/", "", $genome);				// remove everything but alphanumeric characters and underlines.
+	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
+	$key    = str_replace(" ","_",$key);
+	$key    = preg_replace("/[\s\W]+/", "", $key);
+
+	// Confirm if requested genome exists.
+	$genome_dir = "../users/".$user."/genomes/".$genome;
+	if (!is_dir($genome_dir)) {
+		// Genome doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -38,12 +58,8 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-	$user   = $_SESSION['user'];
-	$genome = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
-	$genome = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));
-
 // Open 'process_log.txt' file.
-	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
+	$logOutputName = $genome_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "Running 'scripts_genomes/genome.install_4.php'.\n");
 
@@ -56,7 +72,7 @@
 
 // Generate 'expression.txt' to tell main page that genome expression analysis installation is in process.
 	fwrite($logOutput, "\tGenerating 'expresison.txt' file.\n");
-	$outputName = "../users/".$user."/genomes/".$genome."/expression.txt";
+	$outputName = $genome_dir."/expression.txt";
 	$output     = fopen($outputName, 'w');
 	fwrite($output, $headerLineCount."\n");
 	fwrite($output, $col_chrID."\n");
@@ -76,7 +92,7 @@
 		echo "el_g.innerHTML='<iframe id=\"g_new\" name=\"g_new\" class=\"upload\" style=\"height:38px\" src=\"../uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>';\n\t\t";
 		echo "frames['g_new'].display_string    = new Array();\n\t\t";
 		echo "frames['g_new'].display_string[0] = \"Add : chromosome feature TAB file...\";\n\t\t";
-		echo "frames['g_new'].target_dir        = \"../../users/".$user."/genomes/".$genome."/\";\n\t\t";
+		echo "frames['g_new'].target_dir        = \"../".$genome_dir."/\";\n\t\t";
 		echo "frames['g_new'].conclusion_script = \"scripts_genomes/genome.install_5.php\";\n\t\t";
 		echo "frames['g_new'].user              = \"".$user."\";\n\t\t";
 		echo "frames['g_new'].genome            = \"".$genome."\";\n\t\t";
