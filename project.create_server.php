@@ -6,49 +6,125 @@
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
+		session_destroy();
 		header('Location: user.login.php');
 	}
 
-	// Process POST data.
-	$user                   = $_SESSION['user'];
-	$bad_chars              = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$projectName            = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING)); // removing unwanted characters
-	$projectNameTrimmed     = str_replace($bad_chars,"",$projectName);                // changing spaces to underlines
-	$projectNameTrimmed     = str_replace(" ","_",$projectNameTrimmed);
-	$ploidy                 = filter_input(INPUT_POST, "ploidy",                   FILTER_SANITIZE_STRING);
-	$ploidyBase             = filter_input(INPUT_POST, "ploidyBase",               FILTER_SANITIZE_STRING);
-	$dataFormat             = filter_input(INPUT_POST, "dataFormat",               FILTER_SANITIZE_STRING);
-	$showAnnotations        = filter_input(INPUT_POST, "showAnnotations",          FILTER_SANITIZE_STRING);
-	if ($dataFormat != "0") {		// we're dealing with ddRADseq, WGseq, or RNAseq.
-		$readType            = filter_input(INPUT_POST, "readType",                 FILTER_SANITIZE_STRING);
-		$performIndelRealign = filter_input(INPUT_POST, "indelrealign",             FILTER_SANITIZE_STRING);
+	// Load user string from session.
+	$user            = $_SESSION['user'];
+
+	// Validate project input string.
+	$project         = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING));			// strip out any html tags.
+	$project         = str_replace(" ","_",$project);							// convert any spaces to underlines.
+	$project         = preg_replace("/[\s\W]+/", "", $project);						// remove everything but alphanumeric characters and underlines.
+
+	// Validate ploidy input string.
+	$ploidy          = trim(filter_input(INPUT_POST, "ploidy", FILTER_SANITIZE_STRING));			// strip out any html tags.
+	$ploidy          = preg_replace("/[^\d\.]+/", "", $ploidy);						// remove everything but numerals and period.
+
+	// Validate ploidy base input string.
+	$ploidyBase      = trim(filter_input(INPUT_POST, "ploidyBase", FILTER_SANITIZE_STRING));		// strip out any html tags.
+	$ploidyBase      = preg_replace("/[^\d\.]+/", "", $ploidyBase);						// remove everything but numerals and period.
+
+	// Validate data format input string.
+	$dataFormat      = trim(filter_input(INPUT_POST, "dataFormat", FILTER_SANITIZE_STRING));		// strip out any html tags.
+        $dataFormat      = preg_replace("/[^\d]+/", "", $dataFormat);						// remove everything but numerals.
+	$dataFormat      = $dataFormat[0];									// only use first numeral of input.
+
+	// Validate show annotations input string.
+	$showAnnotations = trim(filter_input(INPUT_POST, "dataFormat", FILTER_SANITIZE_STRING));		// strip out any html tags.
+	$showAnnotations = preg_replace("/[^\d]+/", "", $showAnnotations);					// remove everything but numerals.
+	$showAnnotations = $showAnnotations[0];									// only use first numeral of input.
+
+	// Validate additional inputs found when dealing with ddRADseq, WGseq, or RNAseq data types.
+	if ($dataFormat != "0") {
+		// Validate read type input string.
+		$readType            = trim(filter_input(INPUT_POST, "readType", FILTER_SANITIZE_STRING));	// strip out any html tags.
+		$readType            = preg_replace("/[^\d]+/", "", $readType);					// remove everything but numerals.
+		$readType            = $readType[0];								// only use first numeral of input.
+
+		// Validate perfrom realignment input string.
+		$performIndelRealign = trim(filter_input(INPUT_POST, "readType", FILTER_SANITIZE_STRING));	// strip out any html tags.
+		$performIndelRealign = preg_replace("/[\s\W]+/", "", $performIndelRealign);			// remove everything but alphanumeric characters and underlines.
 		if ($performIndelRealign == "True") {
 			$indelRealign = "1";
 		} else {
 			$indelRealign = "0";
 		}
-		$genome              = filter_input(INPUT_POST, "genome",                   FILTER_SANITIZE_STRING);
-		$restrictionEnzymes  = filter_input(INPUT_POST, "selectRestrictionEnzymes", FILTER_SANITIZE_STRING);
-		$hapmap              = filter_input(INPUT_POST, "selectHapmap",             FILTER_SANITIZE_STRING);
-		$parent              = filter_input(INPUT_POST, "selectParent",             FILTER_SANITIZE_STRING);
+
+		// Validate genome input string.
+		$genome              = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));	// strip out any html tags.
+		$genome              = str_replace(" ","_",$genome);						// convert any spaces to underlines.
+		$genome              = preg_replace("/[\s\W]+/", "", $genome);					// remove everything but alphanumeric characters and underlines.
+		// Confirm if requested genome exists.
+		$genome_dir1 = "users/".$user."/genomes/".$genome;
+		$genome_dir2 = "users/default/genomes/".$genome;
+		if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
+			// Genome doesn't exist, should never happen: Force logout.
+			session_destroy();
+			header('Location: user.login.php');
+		}
+
+		// Validate hapmap input string.
+		$hapmap              = trim(filter_input(INPUT_POST, "selectHapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
+		$hapmap              = str_replace(" ","_",$hapmap);						// convert any spaces to underlines.
+		$hapmap              = preg_replace("/[\s\W]+/", "", $hapmap);					// remove everything but alphanumeric characters and underlines.
 		if (($parent == "none") || ($parent == "")) {
-			$parent      = $projectNameTrimmed;  // no parent is used, so all calculations use the current project name as the parent.
+			// no hapmap is used.
+		} else {
+			// Confirm if requested hapmap exists.
+			$hapmap_dir1 = "users/".$user."/hapmaps/".$hapmap;
+			$hapmap_dir2 = "users/default/hapmaps/".$hapmap;
+			if !(is_dir($hapmap_dir1) || is_dir($hapmap_dir2)) {
+				// Hapmap doesn't exist, should never happen: Force logout.
+				session_destroy();
+				header('Location: user.login.php');
+			}
+		}
+
+		// Validate restriction enzymes input string (only of use for ddRADseq data processing).
+		$restrictionEnzymes  = trim(filter_input(INPUT_POST, "selectRestrictionEnzymes", FILTER_SANITIZE_STRING));	// strip out any html tags.
+		$restrictionEnzymes  = str_replace(" ","_",$restrictionEnzymes);						// convert any spaces to underlines.
+		$restrictionEnzymes  = preg_replace("/[\s\W]+/", "", $restrictionEnzymes);					// remove everything but alphanumeric characters and underlines.
+
+		// Validate parent input string.
+		$parent              = trim(filter_input(INPUT_POST, "selectParent", FILTER_SANITIZE_STRING));	// strip out any html tags.
+		$parent              = str_replace(" ","_",$parent);						// convert any spaces to underlines.
+		$parent              = preg_replace("/[\s\W]+/", "", $parent);					// remove everything but alphanumeric characters and underlines.
+		if (($parent == "none") || ($parent == "")) {
+			// no parent is used, so all calculations use the current project name as the parent.
+			$parent      = $project;
+		} else {
+			// Confirm if requested parent project exists.
+			$parent_dir1 = "users/".$user."/projects/".$parent;
+			$parent_dir2 = "users/default/projects/".$parent;
+			if !(is_dir($parent_dir1) || is_dir($parent_dir2)) {
+				// Parent project doesn't exist, should never happen: Force logout.
+				session_destroy();
+				header('Location: user.login.php');
+			}
 		}
 	}
-	$manualLOH         = filter_input(INPUT_POST, "manualLOH",                    FILTER_SANITIZE_STRING);
 
-	$dir1              = "users/".$user."/projects";
-	$dir2              = "users/".$user."/projects/".$projectNameTrimmed;
-	$dir3              = "users/default/projects/".$projectNameTrimmed;
+	// Validate manual LOH annotation string.
+	$manualLOH         = trim(filter_input(INPUT_POST, "manualLOH", FILTER_SANITIZE_STRING));		// strip out any html tags.
+	$manualLOH         = preg_replace("/[^\w\t]+/", "", $manualLOH);					// remove everything but word characters and tabs.
 
-	// Deals with accidental deletion of projects dir.
-	if (!file_exists($dir1)){
-		mkdir($dir1);
-		chmod($dir1,0777);
+	// Define some directories for later use.
+	$projects_dir        = "users/".$user."/projects";
+	$project_dir         = "users/".$user."/projects/".$project;
+	$default_project_dir = "users/default/projects/".$project;
+
+	// Deals with accidental deletion of user/projects dir.
+	if (!file_exists($projects_dir)){
+		mkdir($projects_dir);
+		chmod($projects_dir,0777);
 	}
 
-	if (file_exists($dir2) || file_exists($dir3)) {
-		// Directory already exists
+	if (file_exists($project_dir) || file_exists($default_project_dir)) {
+		//============================================
+		// Project directory already exists, so exit.
+		//--------------------------------------------
 		echo "Project '".$projectName."' directory already exists.";
 ?>
 	<html>
@@ -66,13 +142,17 @@
 	</html>
 <?php
 	} else {
+		//========================================================
+		// Project directory doesn't exist, go about creating it.
+		//--------------------------------------------------------
+
 		// Create the project folder inside the user's projects directory
-		mkdir($dir2);
-		chmod($dir2,0777);
+		mkdir($project_dir);
+		chmod($project_dir,0777);
 
 		// Generate 'name.txt' file containing:
 		//      one line; name of genome.
-		$outputName   = "users/".$user."/projects/".$projectNameTrimmed."/name.txt";
+		$outputName   = $project_dir."/name.txt";
 		$output       = fopen($outputName, 'w');
 		fwrite($output, $projectName);
 		fclose($output);
@@ -80,7 +160,7 @@
 		$_SESSION['pending_install_project_count'] += 1;
 
 		// Generate 'ploidy.txt' file.
-		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/ploidy.txt";
+		$fileName = $project_dir."/ploidy.txt";
 		$file     = fopen($fileName, 'w');
 		if (is_numeric($ploidy)) {
 			fwrite($file, $ploidy."\n");
@@ -101,7 +181,7 @@
 		chmod($fileName,0644);
 
 		// Generate 'parent.txt' file.
-		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/parent.txt";
+		$fileName = $project_dir."/parent.txt";
 		$file     = fopen($fileName, 'w');
 		if ($dataFormat == "0") {
 			fwrite($file, "none");
@@ -116,9 +196,9 @@
 		// 1st #: 0=SnpCghArray; 1=WGseq; 2=ddRADseq; 3=RNAseq; 4=IonExpressSeq.
 		// 2nd #: 0=single-end-reads FASTQ/ZIP/GZ; 1=paired-end-reads FASTQ/ZIP/GZ; 2=SAM/BAM; 3=TXT.
 		// 3rd #: 0=False, no indel-realignment; 1=True, performe indel-realignment.
-		$fileName1 = "users/".$user."/projects/".$projectNameTrimmed."/dataFormat.txt";
+		$fileName1 = $project_dir."/dataFormat.txt";
 		$file1     = fopen($fileName1, 'w');
-		$fileName2 = "users/".$user."/projects/".$projectNameTrimmed."/dataBiases.txt";
+		$fileName2 = $project_dir."/dataBiases.txt";
 		$file2     = fopen($fileName2, 'w');
 		if ($dataFormat == "0") { // SnpCghArray
 			fwrite($file1, $dataFormat);
@@ -167,7 +247,7 @@
 
 		// Generate 'restrictionEnzymes.txt' file, only for ddRADseq projects.
 		if ($dataFormat == "2") { // ddRADseq
-			$fileName = "users/".$user."/projects/".$projectNameTrimmed."/restrictionEnzymes.txt";
+			$fileName = $project_dir."/restrictionEnzymes.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $restrictionEnzymes);
 			fclose($file);
@@ -175,7 +255,7 @@
 		}
 
 		// Generate 'snowAnnotations.txt' file.
-		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/showAnnotations.txt";
+		$fileName = $project_dir."/showAnnotations.txt";
 		$file     = fopen($fileName, 'w');
 		fwrite($file, $showAnnotations);
 		fclose($file);
@@ -184,7 +264,7 @@
 		// Generate 'genome.txt' file : containing genome used.
 		//	1st line : (String) genome name.
 		//	2nd line : (String) hapmap name.
-		$fileName = "users/".$user."/projects/".$projectNameTrimmed."/genome.txt";
+		$fileName = $project_dir."/genome.txt";
 		$file     = fopen($fileName, 'w');
 		if ($hapmap == "none") {
 			fwrite($file, $genome);
@@ -195,7 +275,7 @@
 		chmod($fileName,0644);
 
 		// Generate 'manualLOH.txt' file : contains manual LOH annotation information.
-		// one entry per pline...  if input was provided.
+		// one entry per line...  if input was provided.
 		// tab-delimited channels.
 		//    1. chrID
 		//    2. startbp
@@ -204,7 +284,7 @@
 		//    5. G
 		//    6. B
 		if (strlen($manualLOH) > 0) {
-			$fileName = "users/".$user."/projects/".$projectNameTrimmed."/manualLOH.txt";
+			$fileName = $project_dir."/manualLOH.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $manualLOH);
 			fclose($file);
