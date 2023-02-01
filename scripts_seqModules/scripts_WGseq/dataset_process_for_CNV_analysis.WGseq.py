@@ -86,7 +86,7 @@ while True:
 	first_char = line1[:1]
 	if first_char == ">":
 		# Line is header to FASTA entry.
-		line_parts             = string.split(string.strip(line1))
+		line_parts             = line.strip().split()
 		chrGenomeAndNum_string = line_parts[0]
 		bp_coordinate_string   = line_parts[1]
 		fragment_size_string   = line_parts[2]
