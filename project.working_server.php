@@ -6,8 +6,32 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
-                header('Location: user.login.php');
-        }
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
+	// Load user string from session.
+	$user    = $_SESSION['user'];
+
+	// Sanitize input string.
+	$project = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$project = str_replace(" ","_",$project);					// convert any spaces to underlines.
+	$project = preg_replace("/[\s\W]+/", "", $project);				// remove everything but alphanumeric characters and underlines.
+	$key     = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
+	$key     = str_replace(" ","_",$key);
+	$key     = preg_replace("/[\s\W]+/", "", $key);
+	$status  = trim(filter_input(INPUT_POST, "status", FILTER_SANITIZE_STRING));
+	$status  = str_replace(" ","_",$status);
+	$status  = preg_replace("/[\s\W]+/", "", $status);
+
+	// Confirm if requested genome exists.
+	$project_dir = "users/".$user."/projects/".$project;
+	if (!is_dir($project_dir)) {
+		// Project doesn't exist, should never happen: Force logout.
+		session_destroy();
+		header('Location: user.login.php');
+	}
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 		"http://www.w3.org/TR/html4/loose.dtd">
@@ -24,12 +48,6 @@ body {font-family: arial;}
 </style>
 </head>
 <?php
-	$user = $_SESSION['user'];
-	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$project   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING)));
-	$key       = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING)));
-	$status   = filter_input(INPUT_POST, "status",   FILTER_SANITIZE_STRING);
-
 	// increment clock animation...
 	$status   = ($status + 1) % 12;
 	if ($status == 0) {          $clock = "<img src=\"images/12.png\" alt-text=\"12\" class=\"clock\" >";
@@ -47,7 +65,7 @@ body {font-family: arial;}
 	} else {                     $clock = "[ * ]";
 	}
 
-	$dirFigureBase = "users/".$user."/projects/".$project."/";
+	$dirFigureBase = $project_dir."/";
 
 	// Load 'dataFormat' from project folder.
 	$handle   = fopen($dirFigureBase."dataFormat.txt", "r");
@@ -65,14 +83,14 @@ body {font-family: arial;}
 	$sizeString_1 = "";
 	$sizeString_2 = "";
 
-	$sizeFile_1   = "users/".$user."/projects/".$project."/upload_size_1.txt";
+	$sizeFile_1   = $project_dir."/upload_size_1.txt";
 	$handle       = @fopen($sizeFile_1,'r');
 	if ($handle) {
 		$sizeString_1 = trim(fgets($handle));
 		fclose($handle);
 	}
 
-	$sizeFile_2   = "users/".$user."/projects/".$project."/upload_size_2.txt";
+	$sizeFile_2   = $project_dir."/upload_size_2.txt";
 	$handle       = @fopen($sizeFile_2,'r');
 	if ($handle) {
 		$sizeString_2 = trim(fgets($handle));
@@ -110,7 +128,7 @@ body {font-family: arial;}
 		<?php
 	} else if (file_exists($dirFigureBase."working.txt")) {
 		// Load start time from 'working.txt'
-		$startTimeStamp = file_get_contents("users/".$user."/projects/".$project."/working.txt");
+		$startTimeStamp = file_get_contents($project_dir."/working.txt");
 		$startTime      = strtotime($startTimeStamp);
 		$currentTime    = time();
 		$intervalTime   = $currentTime - $startTime;
