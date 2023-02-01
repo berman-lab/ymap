@@ -1,15 +1,15 @@
 <?php
 	session_start();
 	error_reporting(E_ALL);
-        require_once '../constants.php';
+	require_once '../constants.php';
 	require_once '../POST_validation.php';
-        ini_set('display_errors', 1);
+	ini_set('display_errors', 1);
 
-        // If the user is not logged on, redirect to login page.
-        if(!isset($_SESSION['logged_on'])){
+	// If the user is not logged on, redirect to login page.
+	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: ../');
-        }
+		header('Location: ../');
+	}
 
 	// pull strings from session.
 	$user     = $_SESSION['user'];
@@ -105,7 +105,7 @@
 	$outputString      .= "\tcd ../../../../scripts_SnpCghArray;\n";
 
 	// Log status to process_log.txt file in project directory.
-	$outputString      .= "\tnew_fid = fopen($project_dir."/process_log.txt','a');\n";
+	$outputString      .= "\tnew_fid = fopen(".$project_dir."/process_log.txt','a');\n";
 	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main.m\".\\n');\n";
 
 	$outputString      .= "\tprocess_main('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','".$colLog2ratio."','";
@@ -170,7 +170,7 @@
 
 	fwrite($outputLog, "Current Path = '".getcwd()."'\n");
 	fwrite($outputLog, "Calling Matlab :\n");
-	$system_call_string_2 = '. ../local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run $project_dir.'/processing.m\' > /dev/null &';
+	$system_call_string_2 = ". ../local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run ".$project_dir."/processing.m\' > /dev/null &";
 	fwrite($outputLog, "\t\"".$system_call_string_2."\"\n\n");
 	fclose($outputLog);
 	system($system_call_string_2);
