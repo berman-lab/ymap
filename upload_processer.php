@@ -22,12 +22,14 @@
 	$project    = sanitize_POST("project");
 	$key        = sanitize_POST("key");
 
-	// Confirm if requested genome exists.
-	$genome_dir = "users/".$user."/genomes/".$genome;
-	if (!is_dir($genome_dir)) {
-		// Genome doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: .');
+	if ($dataFormat != "SnpCghArray") {
+		// Confirm if requested genome exists.
+		$genome_dir = "users/".$user."/genomes/".$genome;
+		if (!is_dir($genome_dir)) {
+			// Genome doesn't exist, should never happen: Force logout.
+			session_destroy();
+			header('Location: .');
+		}
 	}
 
 	// Confirm if requested project exists.
