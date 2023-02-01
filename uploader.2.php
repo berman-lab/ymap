@@ -39,8 +39,8 @@
 				<div id="select-wrapper" class="info-wrapper">
 					<div id="browsebutton" class="fileinput-button button gray" href="">
 						<script type="text/javascript">
-							console.log(        "uploader.2.php : display_string = '"+display_string[0]+"'");
-							console.log(        "uploader.2.php : user           = '"+user+"'");
+							//console.log(        "uploader.2.php : display_string = '"+display_string[0]+"'");
+							//console.log(        "uploader.2.php : user           = '"+user+"'");
 							if (typeof genome !== 'undefined') {
 								console.log("uploader.2.php : genome         = '"+genome+"'");
 							} else {
