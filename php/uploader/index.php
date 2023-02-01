@@ -1,48 +1,20 @@
 <?php
 	session_start();
-	error_reporting(E_ALL);  // | E_STRICT
-	require_once '../../constants.php';
-	require_once '../../POST_validation.php';
-	ini_set('display_errors', 1);
+	error_reporting(E_ALL | E_STRICT);
 
-	// If the user is not logged on, redirect to login page.
-	if(!isset($_SESSION['logged_on'])){
-		session_destroy();
-		header('Location: ../../');
-	}
+	// Only information needed by this script, sent by "js/ajaxfileupload.js" from form defined in "uploader.1.php".
+	// This safe data is used to construct the target file location.
 
-	// Load user string from session.
-	$user    = $_SESSION['user'];
+	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
+	$user     = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "target_user",    FILTER_SANITIZE_STRING)));
+	$genome   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "target_genome",  FILTER_SANITIZE_STRING)));
+	$project  = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "target_project", FILTER_SANITIZE_STRING)));
 
-	// Sanitize input strings.
-	$genome  = sanitize_POST("target_genome");
-	$project = sanitize_POST("target_project");
-
-	// Either a genome or project string should be present as something other than "".
 	if ($genome != "") {
-		// Confirm if requested genome exists.
-		$genome_dir = "../../users/".$user."/genomes/".$genome;
-		if (!is_dir($genome_dir)) {
-			// Genome doesn't exist, should never happen: Force logout.
-			session_destroy();
-			header('Location: ../../');
-		} else {
-			$target_dir = $genome_dir."/";
-		}
+		$target_dir = "../../users/".$user."/genomes/".$genome."/";
 	} else if ($project != "") {
-		// Confirm if requested project exists.
-		$project_dir = "../../users/".$user."/projects/".$project;
-		if (!is_dir($project_dir)) {
-			// Project doesn't exist, should never happen: Force logout.
-			session_destroy();
-			header('Location: ../../');
-		} else {
-			$target_dir = $project_dir."/";
-		}
+		$target_dir = "../../users/".$user."/projects/".$project."/";
 	}
-
-	// Data received from: "js/ajaxfileupload.js" from form defined in "uploader.1.php".
-
 
 	//============================================================================
 	// HTML5Uploader ::  Adam Filkor : http://filkor.org
