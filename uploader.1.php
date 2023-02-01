@@ -1,15 +1,15 @@
 <?php
 	session_start();
 	error_reporting(E_ALL);
-        require_once 'constants.php';
+	require_once 'constants.php';
 	require_once 'POST_validation.php';
-        ini_set('display_errors', 1);
+	ini_set('display_errors', 1);
 
-        // If the user is not logged on, redirect to login page.
-        if(!isset($_SESSION['logged_on'])){
+	// If the user is not logged on, redirect to login page.
+	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: .');
-        }
+		header('Location: .');
+	}
 	$user = $_SESSION['user'];
 ?>
 <!DOCTYPE html>
