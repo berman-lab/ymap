@@ -11,8 +11,29 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
+
+	// Load user string from session.
+	$user   = $_SESSION['user'];
+
+	// Sanitize input strings.
+	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
+	$key    = str_replace(" ","_",$key);
+	$key    = preg_replace("/[\s\W]+/", "", $key);
+
+	// Load genome string from session.
+	$genome   = $_SESSION['genome_'.$key];
+	$genome_dir = "../users/".$user."/genomes/".$genome;
+
+	// Sanitize input strings.
+	$fileName = trim(filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$fileName = str_replace(" ","_",$fileName);					// convert any spaces to underlines.
+	$fileName = preg_replace("/[\s\W]+/", "", $fileName);				// remove everything but alphanumeric characters and underlines.
+
+	// load PHP function to process input files.
+	include_once 'process_input_files.genome.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -38,15 +59,8 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-	include_once 'process_input_files.genome.php';
-
-	$user     = $_SESSION['user'];
-	$key      = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
-	$fileName = trim(filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING));
-	$genome   = $_SESSION['genome_'.$key];
-
 	// Open 'process_log.txt' file.
-	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
+	$logOutputName = $genome_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "Running 'scripts_genomes/genome.install_5.php'.\n");
 	fwrite($logOutput, "\tkey     :'".$key."'\n");
@@ -58,7 +72,7 @@
 
 	// Generate 'working.txt' to tell main page that genome installation is in process.
 	fwrite($logOutput, "\tGenerating 'working.txt' file.\n");
-	$outputName      = "../users/".$user."/genomes/".$genome."/working.txt";
+	$outputName      = $genome_dir."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
@@ -69,7 +83,7 @@
 		fwrite($logOutput, "\tNo chromosome features file uploaded.\n");
 	} else {
 		// Process uploaded file.
-		$genomePath  = "../users/".$user."/genomes/".$genome."/";
+		$genomePath  = $genome_dir."/";
 		$name        = str_replace("\\", ",", $fileName);
 		rename($genomePath.$name,$genomePath.strtolower($name));
 		$name        = strtolower($name);
@@ -146,7 +160,7 @@
 	fclose($logOutput);
 
 // Initialize 'condensed_log.txt' file.
-	$condensedLogOutputName = "../users/".$user."/genomes/".$genome."/condensed_log.txt";
+	$condensedLogOutputName = $genome_dir."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Process started.\n");
 	fclose($condensedLogOutput);
