@@ -104,5 +104,5 @@ for i in my_file:	# process pileup file line by line.
 	if C != 0: isC = 1
 
 	if isA+isT+isG+isC > 1:		# Only deal with loci where more than one base is seen.
-		print chrom + '\t' + pos + '\t' + ref_base + '\t' + str(A) + '\t' + str(T) + '\t' +  str(G) + '\t' +  str(C)
+		print(chrom + '\t' + pos + '\t' + ref_base + '\t' + str(A) + '\t' + str(T) + '\t' +  str(G) + '\t' +  str(C))
 
