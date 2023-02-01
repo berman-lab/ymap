@@ -2,11 +2,13 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once 'constants.php';
+	require_once 'POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
-                header('Location: user.login.php');
+		session_destroy();
+                header('Location: .');
         }
 	$user = $_SESSION['user'];
 ?>

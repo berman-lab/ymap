@@ -2,49 +2,40 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once '../../constants.php';
+	require_once '../../POST_validation.php';
         ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		?> <script type="text/javascript"> parent.reload(); </script> <?php
+		header('Location: ../../');
 	}
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
-	// Validate hapmap input string.
-	$hapmap = trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$hapmap = str_replace(" ","_",$hapmap);						// convert any spaces to underlines.
-	$hapmap = preg_replace("/[\s\W]+/", "", $hapmap);				// remove everything but alphanumeric characters and underlines.
-	// Confirm if requested genome exists.
-	$hapmap_dir         = "../../users/".$user."/hapmaps/".$hapmap;
-	$default_hapmap_dir = "../../users/default/hapmaps/".$hapmap;
-	if (!is_dir($hapmap_dir)) {
-		// Hapmap doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: user.login.php');
+	// Validate input strings.
+	$hapmap          = sanitize_POST("hapmap");
+	$genome          = sanitize_POST("genome");
+	$project1        = sanitize_POST("project1");
+	$project2        = sanitize_POST("project2");
+	$colorA          = sanitize_POST("homolog_a_color");
+	$colorB          = sanitize_POST("homolog_b_color");
+	$referencePloidy = (float)sanitizeFloat_POST("referencePloidy");
+	if ($referencePloidy == 2) {
+		// Validate hapmap description string.
+		$hapmap_description = sanitize_POST("hapmap_description");
 	}
 
-	// Validate genome input string.
-	$genome = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));
-	$genome = str_replace(" ","_",$genome);
-	$genome = preg_replace("/[\s\W]+/", "", $genome);
 	// Confirm if requested genome exists.
-	$genome_dir = "../../users/".$user."/genomes/".$genome;
-	if (!is_dir($genome_dir)) {
+	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
+	$genome_dir2 = "../../users/default/genomes/".$genome;
+	if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: ../../');
 	}
 
-	// Validate project input string.
-	$project1        = trim(filter_input(INPUT_POST, "project1", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$project1        = str_replace(" ","_",$project1);					// convert any spaces to underlines.
-	$project1        = preg_replace("/[\s\W]+/", "", $project1);				// remove everything but alphanumeric characters and underlines.
-	$project2        = trim(filter_input(INPUT_POST, "project2", FILTER_SANITIZE_STRING));
-	$project2        = str_replace(" ","_",$project2);
-	$project2        = preg_replace("/[\s\W]+/", "", $project2);
 	// Confirm if requested projects exists.
 	$project1_dir1   = "users/".$user."/projects/".$project1;
 	$project1_dir2   = "users/default/projects/".$project1;
@@ -53,28 +44,14 @@
 	if !(is_dir($project1_dir1) || is_dir($project1_dir2) || is_dir($project2_dir1) || is_dir($project2_dir2)) {
 		// A project doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
-	}
-
-	// Validate color input strings
-	$colorA          = trim(filter_input(INPUT_POST, "homolog_a_color", FILTER_SANITIZE_STRING));
-	$colorA          = str_replace(" ","_",$colorA);
-	$colorA          = preg_replace("/[\s\W]+/", "", $colorA);
-	$colorB          = trim(filter_input(INPUT_POST, "homolog_b_color", FILTER_SANITIZE_STRING));
-	$colorB          = str_replace(" ","_",$colorB);
-	$colorB          = preg_replace("/[\s\W]+/", "", $colorB);
-
-	// Validate reference ploidy input string.
-        $referencePloidy = trim(filter_input(INPUT_POST, "referencePloidy", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$referencePloidy = (float)preg_replace("/[^\d\.]+/", "", $referencePloidy);			// remove everything but numerals and period.
-	if ($referencePloidy == 2) {
-		// Validate hapmap description string.
-		$hapmap_description = trim(filter_input(INPUT_POST, "hapmap_description", FILTER_SANITIZE_STRING));
+		header('Location: ../../');
 	}
 
 	$currentPath = getcwd();
+	$hapmap_dir1  = "../../users/".$user."/hapmaps/".$hapmap;
+	$hapmap_dir2  = "../../users/".$user."/hapmaps/".$hapmap;
 
-        if (file_exists($project_dir) || file_exists($default_project_dir)) {
+        if (file_exists($hapmap_dir1) || file_exists($hapmap_dir2)) {
 		//============================================
 		// Hapmap directory already exists, so exit.
 		//--------------------------------------------
@@ -100,11 +77,11 @@
 		//--------------------------------------------------------
 
 		// Create the hapmap folder inside the user's hapmaps directory
-		mkdir($hapmap_dir);
-		chmod($hapmap_dir,0777);
+		mkdir($hapmap_dir1);
+		chmod($hapmap_dir1,0777);
 
 		// Initialize 'process_log.txt' file.
-		$logOutputName = $hapmap_dir."/process_log.txt";
+		$logOutputName = $hapmap_dir1."/process_log.txt";
 		$logOutput     = fopen($logOutputName, 'a');
 		fwrite($logOutput, "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php'.\n");
 		fwrite($logOutput, "\tuser            = ".$user."\n");
@@ -117,7 +94,7 @@
 		fwrite($logOutput, "\tcolorB          = ".$colorB."\n");
 
 		// Create 'colors.txt' file to contain colors used in haplotype figures.
-		$handleName = $hapmap_dir."/colors.txt";
+		$handleName = $hapmap_dir1."/colors.txt";
 		if (file_exists($handleName)) {
 		} else {
 			$handle     = fopen($handleName, 'w');
@@ -126,7 +103,7 @@
 		}
 
 		// Create 'genome.txt' file to contain genome used in haplotype.
-		$handleName = $hapmap_dir."/genome.txt";
+		$handleName = $hapmap_dir1."/genome.txt";
 		if (file_exists($handleName)) {
 		} else {
 			$handle     = fopen($handleName, 'w');
@@ -135,7 +112,7 @@
 		}
 
 		// Create 'parent.txt' file to contain parent genome used in haplotype.
-		$handleName = $hapmap_dir."/parent.txt";
+		$handleName = $hapmap_dir1."/parent.txt";
 		if (file_exists($handleName)) {
 		} else {
 			$handle     = fopen($handleName, 'w');
@@ -149,7 +126,7 @@
 
 		// Initialize 'haplotype.txt' file to hold haplotype entry descriptions.
 		if ($referencePloidy == 2) {
-			$haplotypeFileName = $hapmap_dir."/haplotypeMap.txt";
+			$haplotypeFileName = $hapmap_dir1."/haplotypeMap.txt";
 			$haplotypeFile     = fopen($haplotypeFileName, 'a');
 			fwrite($haplotypeFile, $project1."\n".$project2."\n".$hapmap_description."\n");
 			fclose($haplotypeFile);
@@ -159,7 +136,7 @@
 		}
 
 		// Generate 'working.txt' file to let pipeline know that processing is underway.
-		$handleName      = $hapmap_dir."/working.txt";
+		$handleName      = $hapmap_dir1."/working.txt";
 		$handle          = fopen($handleName, 'w');
 		$startTimeString = date("Y-m-d H:i:s");
 		fwrite($handle, $startTimeString);

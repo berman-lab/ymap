@@ -2,17 +2,22 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once '../constants.php';
+	require_once '../POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
-                header('Location: user.login.php');
+		session_destroy();
+                header('Location: ../');
         }
 
+	// pull strings from session.
 	$user     = $_SESSION['user'];
 	$fileName = $_SESSION['fileName'];
 	$project  = $_SESSION['project'];
 	$key      = $_SESSION['key'];
+
+	$project_dir = "../users/".$user."/projects/".$project;
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -41,17 +46,13 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-//	$fileName        = filter_input(INPUT_POST, "fileName",        FILTER_SANITIZE_STRING);
-//	$project         = filter_input(INPUT_POST, "project",         FILTER_SANITIZE_STRING);
-//	$key             = filter_input(INPUT_POST, "key",             FILTER_SANITIZE_STRING);
-
 // Initialize 'process_log.txt' file.
-	$outputLogName   = "../users/".$user."/projects/".$project."/process_log.txt";
+	$outputLogName   = $project_dir."/process_log.txt";
 	$outputLog       = fopen($outputLogName, 'w');
 	fwrite($outputLog, "Process_log.txt initialized.\n");
 
 // Generate 'working.txt' file to let pipeline know processing is started.
-	$outputName      = "../users/".$user."/projects/".$project."/working.txt";
+	$outputName      = $project_dir."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
@@ -60,16 +61,16 @@
 	fwrite($outputLog, "'working.txt' file generated.\n");
 
 // Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
-	$outputName      = "../users/".$user."/projects/".$project."/upload_size_1.txt";
+	$outputName      = $project_dir."/upload_size_1.txt";
 	$output          = fopen($outputName, 'w');
-	$fileSizeString  = filesize("../users/".$user."/projects/".$project."/".$fileName);
+	$fileSizeString  = filesize($project_dir."/".$fileName);
 	fwrite($output, $fileSizeString);
 	fclose($output);
 	chmod($outputName,0644);
 	fwrite($outputLog, "\tGenerated 'upload_size_1.txt' file.\n");
 
 // Generate 'datafile1.txt' file containing: name of first data file.
-	$outputName = "../users/".$user."/projects/".$project."/datafile1.txt";
+	$outputName = $project_dir."/datafile1.txt";
 	$output     = fopen($outputName, 'w');
 	fwrite($output, $fileName);
 	fclose($output);
@@ -78,7 +79,7 @@
 
 // Call Matlab to process SnpCgh data file into final figure.
 	$designDefinition   = "design1";
-	$inputFile          = "../users/".$user."/projects/".$project."/".$fileName;
+	$inputFile          = $project_dir."/".$fileName;
 	$headerRows         = 46;
 	$colNames           = 1;
 	$colCh1             = 4;
@@ -86,25 +87,25 @@
 	$colRatio           = 6;
 	$colLog2ratio       = 7;
 	$phasingData        = "cal_paper";
-	$ploidyFileContents = file_get_contents("../users/".$user."/projects/".$project."/ploidy.txt");
+	$ploidyFileContents = file_get_contents($project_dir."/ploidy.txt");
 		$ploidyStrings  = explode("\n", $ploidyFileContents);
 		$ploidyEstimate = $ploidyStrings[0];
 		$ploidyBase     = $ploidyStrings[1];
 
 	$imageFormat        = "png";
 	$projectName        = $project;
-	$workingDir         = "../users/".$user."/projects/".$project."/";
-	$show_MRS           = file_get_contents("../users/".$user."/projects/".$project."/showAnnotations.txt");
+	$workingDir         = $project_dir."/";
+	$show_MRS           = file_get_contents($project_dir."/showAnnotations.txt");
 
-	$outputName         = "../users/".$user."/projects/".$project."/processing.m";
-	$dirBase            = "../users/".$user."/projects/".$project."/";
+	$outputName         = $project_dir."/processing.m";
+	$dirBase            = $project_dir."/";
 	$output             = fopen($outputName, 'w');
 	$outputString       =  "function [] = processing()\n";
 	$outputString      .= "\tdiary('matlab.process_log.txt');\n";
 	$outputString      .= "\tcd ../../../../scripts_SnpCghArray;\n";
 
 	// Log status to process_log.txt file in project directory.
-	$outputString      .= "\tnew_fid = fopen('../users/".$user."/projects/".$project."/process_log.txt','a');\n";
+	$outputString      .= "\tnew_fid = fopen($project_dir."/process_log.txt','a');\n";
 	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main.m\".\\n');\n";
 
 	$outputString      .= "\tprocess_main('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','".$colLog2ratio."','";
@@ -169,7 +170,7 @@
 
 	fwrite($outputLog, "Current Path = '".getcwd()."'\n");
 	fwrite($outputLog, "Calling Matlab :\n");
-	$system_call_string_2 = '. ../local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run ../users/'.$user.'/projects/'.$project.'/processing.m\' > /dev/null &';
+	$system_call_string_2 = '. ../local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run $project_dir.'/processing.m\' > /dev/null &';
 	fwrite($outputLog, "\t\"".$system_call_string_2."\"\n\n");
 	fclose($outputLog);
 	system($system_call_string_2);

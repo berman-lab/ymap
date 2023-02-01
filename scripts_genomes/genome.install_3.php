@@ -2,24 +2,21 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once '../constants.php';
+	require_once '../POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: user.login.php');
+                header('Location: ../');
         }
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$key    = str_replace(" ","_",$key);						// convert any spaces to underlines.
-	$key    = preg_replace("/[\s\W]+/", "", $key);					// remove everything but alphanumeric characters and underlines.
-	$expression_regions = trim(filter_input(INPUT_POST, "expression_regions", FILTER_SANITIZE_STRING));
-	$expression_regions = str_replace(" ","_", $expression_regions);
-	$expression_regions = preg_replace("/[\s\W]+/", "", $expression_regions);
+	$key                = sanitize_POST("key");
+	$expression_regions = sanitize_POST("expression_regions");
 
 	$genome             = $_SESSION['genome_'.$key];
 	$rDNA_chr           = $_SESSION['rDNA_chr_'.$key];
@@ -63,22 +60,21 @@
 	$annotation_sizes      = array();
 
 // Open 'process_log.txt' file.
-    $logOutputName = $genome_dir."/process_log.txt";
-    $logOutput     = fopen($logOutputName, 'a');
-    fwrite($logOutput, "Running 'scripts_genomes/genome.install_3.php'.\n");
+	$logOutputName = $genome_dir."/process_log.txt";
+	$logOutput     = fopen($logOutputName, 'a');
+	fwrite($logOutput, "Running 'scripts_genomes/genome.install_3.php'.\n");
 
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing annotation specifications.\n");
-    for ($annotation=0; $annotation<$annotation_count; $annotation += 1) {
-		$annotation_chr       = $_POST['annotation_chr_'.$annotation];
-		$annotation_shape     = $_POST['annotation_shape_'.$annotation];
-		$annotation_start     = $_POST['annotation_start_'.$annotation];
-		$annotation_end       = $_POST['annotation_end_'.$annotation];
-		$annotation_name      = $_POST['annotation_name_'.$annotation];
-		$annotation_fillColor = $_POST['annotation_fillColor_'.$annotation];
-		$annotation_edgeColor = $_POST['annotation_edgeColor_'.$annotation];
-		$annotation_size      = $_POST['annotation_size_'.$annotation];
-
+	for ($annotation=0; $annotation<$annotation_count; $annotation += 1) {
+		$annotation_chr       = sanitize_POST("annotation_chr_".$annotation);
+                $annotation_shape     = sanitize_POST("annotation_shape_".$annotation);
+                $annotation_start     = sanitizeInt_POST("annotation_start_".$annotation);
+                $annotation_end       = sanitizeInt_POST("annotation_end_".$annotation);
+                $annotation_name      = sanitize_POST("annotation_name_".$annotation);
+                $annotation_fillColor = sanitize_POST("annotation_fillColor_".$annotation);
+                $annotation_edgeColor = sanitize_POST("annotation_edgeColor_".$annotation);
+                $annotation_size      = sanitizeInt_POST("annotation_size_".$annotation);
 		$annotation_chrs[$annotation]       = $annotation_chr;
 		$annotation_shapes[$annotation]     = $annotation_shape;
 		$annotation_starts[$annotation]     = $annotation_start;
@@ -87,7 +83,7 @@
 		$annotation_fillColors[$annotation] = $annotation_fillColor;
 		$annotation_edgeColors[$annotation] = $annotation_edgeColor;
 		$annotation_sizes[$annotation]      = $annotation_size;
-    }
+	}
 
 	// Generate 'annotations.txt' :
 	fwrite($logOutput, "\tGenerating 'annotations.txt' file.\n");

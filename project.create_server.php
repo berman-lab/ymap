@@ -19,84 +19,59 @@
 	$ploidyBase      = sanitizeFloat_POST("ploidyBase");
 	$dataFormat      = sanitizeIntChar_POST("dataFormat");
 	$showAnnotations = sanitizeIntChar_POST("showAnnotations");
+	$manualLOH       = sanitizeTabbed_POST("manualLOH");
 
 	// Validate additional inputs found when dealing with ddRADseq, WGseq, or RNAseq data types.
 	if ($dataFormat != "0") {
 		// Validate input strings.
 		$readType            = sanitizeIntChar_POST("readType");
-		$performIndelRealign = sanitize_POST("");
-
-		// Validate perfrom realignment input string.
-		$performIndelRealign = trim(filter_input(INPUT_POST, "readType", FILTER_SANITIZE_STRING));	// strip out any html tags.
-		$performIndelRealign = preg_replace("/[\s\W]+/", "", $performIndelRealign);			// remove everything but alphanumeric characters and underlines.
-		if ($performIndelRealign == "True") {
-			$indelRealign = "1";
-		} else {
-			$indelRealign = "0";
-		}
-
-		// Validate genome input string.
-		$genome              = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));	// strip out any html tags.
-		$genome              = str_replace(" ","_",$genome);						// convert any spaces to underlines.
-		$genome              = preg_replace("/[\s\W]+/", "", $genome);					// remove everything but alphanumeric characters and underlines.
-		// Confirm if requested genome exists.
-		$genome_dir1 = "users/".$user."/genomes/".$genome;
-		$genome_dir2 = "users/default/genomes/".$genome;
-		if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
-			// Genome doesn't exist, should never happen: Force logout.
-			session_destroy();
-			header('Location: user.login.php');
-		}
-
-		// Validate hapmap input string.
-		$hapmap              = trim(filter_input(INPUT_POST, "selectHapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
-		$hapmap              = str_replace(" ","_",$hapmap);						// convert any spaces to underlines.
-		$hapmap              = preg_replace("/[\s\W]+/", "", $hapmap);					// remove everything but alphanumeric characters and underlines.
-		if (($hapmap == "none") || ($hapmap == "")) {
-			// no hapmap is used.
-		} else {
-			// Confirm if requested hapmap exists.
-			$hapmap_dir1 = "users/".$user."/hapmaps/".$hapmap;
-			$hapmap_dir2 = "users/default/hapmaps/".$hapmap;
-			if !(is_dir($hapmap_dir1) || is_dir($hapmap_dir2)) {
-				// Hapmap doesn't exist, should never happen: Force logout.
-				session_destroy();
-				header('Location: user.login.php');
+		$performIndelRealign = sanitize_POST("indelrealign");
+			if ($performIndelRealign == "True") {	$indelRealign = "1";
+			} else {				$indelRealign = "0";
 			}
-		}
-
-		// Validate restriction enzymes input string (only of use for ddRADseq data processing).
-		$restrictionEnzymes  = trim(filter_input(INPUT_POST, "selectRestrictionEnzymes", FILTER_SANITIZE_STRING));	// strip out any html tags.
-		$restrictionEnzymes  = str_replace(" ","_",$restrictionEnzymes);						// convert any spaces to underlines.
-		$restrictionEnzymes  = preg_replace("/[\s\W]+/", "", $restrictionEnzymes);					// remove everything but alphanumeric characters and underlines.
-
-		// Validate parent input string.
-		$parent              = trim(filter_input(INPUT_POST, "selectParent", FILTER_SANITIZE_STRING));	// strip out any html tags.
-		$parent              = str_replace(" ","_",$parent);						// convert any spaces to underlines.
-		$parent              = preg_replace("/[\s\W]+/", "", $parent);					// remove everything but alphanumeric characters and underlines.
-		if (($parent == "none") || ($parent == "")) {
-			// no parent is used, so all calculations use the current project name as the parent.
-			$parent      = $project;
-		} else {
-			// Confirm if requested parent project exists.
-			$parent_dir1 = "users/".$user."/projects/".$parent;
-			$parent_dir2 = "users/default/projects/".$parent;
-			if !(is_dir($parent_dir1) || is_dir($parent_dir2)) {
-				// Parent project doesn't exist, should never happen: Force logout.
+		$genome              = sanitize_POST("genome");
+			// Confirm if requested genome exists.
+			$genome_dir1 = "users/".$user."/genomes/".$genome;
+			$genome_dir2 = "users/default/genomes/".$genome;
+			if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
+				// Genome doesn't exist, should never happen: Force logout.
 				session_destroy();
-				header('Location: user.login.php');
+				header('Location: .');
 			}
-		}
+		$hapmap              = sanitize_POST("selectHapmap");
+			if (($hapmap == "none") || ($hapmap == "")) {
+				// no hapmap is used.
+			} else {
+				// Confirm if requested hapmap exists.
+				$hapmap_dir1 = "users/".$user."/hapmaps/".$hapmap;
+				$hapmap_dir2 = "users/default/hapmaps/".$hapmap;
+				if !(is_dir($hapmap_dir1) || is_dir($hapmap_dir2)) {
+					// Hapmap doesn't exist, should never happen: Force logout.
+					session_destroy();
+					header('Location: .');
+				}
+			}
+		$restrictionEnzymes  = validate_POST("selectRestrictionEnzymes");
+		$parent              = validate_POST("selectParent");
+			if (($parent == "none") || ($parent == "")) {
+				// no parent is used, so all calculations use the current project name as the parent.
+				$parent      = $project;
+			} else {
+				// Confirm if requested parent project exists.
+				$parent_dir1 = "users/".$user."/projects/".$parent;
+				$parent_dir2 = "users/default/projects/".$parent;
+				if !(is_dir($parent_dir1) || is_dir($parent_dir2)) {
+					// Parent project doesn't exist, should never happen: Force logout.
+					session_destroy();
+					header('Location: .');
+				}
+			}
 	}
 
-	// Validate manual LOH annotation string.
-	$manualLOH         = trim(filter_input(INPUT_POST, "manualLOH", FILTER_SANITIZE_STRING));		// strip out any html tags.
-	$manualLOH         = preg_replace("/[^\w\t]+/", "", $manualLOH);					// remove everything but word characters and tabs.
-
 	// Define some directories for later use.
-	$projects_dir        = "users/".$user."/projects";
-	$project_dir         = "users/".$user."/projects/".$project;
-	$default_project_dir = "users/default/projects/".$project;
+	$projects_dir  = "users/".$user."/projects";
+	$project_dir1  = "users/".$user."/projects/".$project;
+	$project_dir2  = "users/default/projects/".$project;
 
 	// Deals with accidental deletion of user/projects dir.
 	if (!file_exists($projects_dir)){
@@ -104,11 +79,11 @@
 		chmod($projects_dir,0777);
 	}
 
-	if (file_exists($project_dir) || file_exists($default_project_dir)) {
+	if (file_exists($project_dir1) || file_exists($project_dir2)) {
 		//============================================
 		// Project directory already exists, so exit.
 		//--------------------------------------------
-		echo "Project '".$projectName."' directory already exists.";
+		echo "Project '".$project."' directory already exists.";
 ?>
 	<html>
 	<body>
@@ -130,20 +105,20 @@
 		//--------------------------------------------------------
 
 		// Create the project folder inside the user's projects directory
-		mkdir($project_dir);
-		chmod($project_dir,0777);
+		mkdir($project_dir1);
+		chmod($project_dir1,0777);
 
 		// Generate 'name.txt' file containing:
 		//      one line; name of genome.
-		$outputName   = $project_dir."/name.txt";
+		$outputName   = $project_dirw."/name.txt";
 		$output       = fopen($outputName, 'w');
-		fwrite($output, $projectName);
+		fwrite($output, $project);
 		fclose($output);
 
 		$_SESSION['pending_install_project_count'] += 1;
 
 		// Generate 'ploidy.txt' file.
-		$fileName = $project_dir."/ploidy.txt";
+		$fileName = $project_dir1."/ploidy.txt";
 		$file     = fopen($fileName, 'w');
 		if (is_numeric($ploidy)) {
 			fwrite($file, $ploidy."\n");
@@ -164,7 +139,7 @@
 		chmod($fileName,0644);
 
 		// Generate 'parent.txt' file.
-		$fileName = $project_dir."/parent.txt";
+		$fileName = $project_dir1."/parent.txt";
 		$file     = fopen($fileName, 'w');
 		if ($dataFormat == "0") {
 			fwrite($file, "none");
@@ -179,9 +154,9 @@
 		// 1st #: 0=SnpCghArray; 1=WGseq; 2=ddRADseq; 3=RNAseq; 4=IonExpressSeq.
 		// 2nd #: 0=single-end-reads FASTQ/ZIP/GZ; 1=paired-end-reads FASTQ/ZIP/GZ; 2=SAM/BAM; 3=TXT.
 		// 3rd #: 0=False, no indel-realignment; 1=True, performe indel-realignment.
-		$fileName1 = $project_dir."/dataFormat.txt";
+		$fileName1 = $project_dir1."/dataFormat.txt";
 		$file1     = fopen($fileName1, 'w');
-		$fileName2 = $project_dir."/dataBiases.txt";
+		$fileName2 = $project_dir1."/dataBiases.txt";
 		$file2     = fopen($fileName2, 'w');
 		if ($dataFormat == "0") { // SnpCghArray
 			fwrite($file1, $dataFormat);
@@ -230,7 +205,7 @@
 
 		// Generate 'restrictionEnzymes.txt' file, only for ddRADseq projects.
 		if ($dataFormat == "2") { // ddRADseq
-			$fileName = $project_dir."/restrictionEnzymes.txt";
+			$fileName = $project_dir1."/restrictionEnzymes.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $restrictionEnzymes);
 			fclose($file);
@@ -238,7 +213,7 @@
 		}
 
 		// Generate 'snowAnnotations.txt' file.
-		$fileName = $project_dir."/showAnnotations.txt";
+		$fileName = $project_dir1."/showAnnotations.txt";
 		$file     = fopen($fileName, 'w');
 		fwrite($file, $showAnnotations);
 		fclose($file);
@@ -247,7 +222,7 @@
 		// Generate 'genome.txt' file : containing genome used.
 		//	1st line : (String) genome name.
 		//	2nd line : (String) hapmap name.
-		$fileName = $project_dir."/genome.txt";
+		$fileName = $project_dir1."/genome.txt";
 		$file     = fopen($fileName, 'w');
 		if ($hapmap == "none") {
 			fwrite($file, $genome);
@@ -267,7 +242,7 @@
 		//    5. G
 		//    6. B
 		if (strlen($manualLOH) > 0) {
-			$fileName = $project_dir."/manualLOH.txt";
+			$fileName = $project_dir1."/manualLOH.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $manualLOH);
 			fclose($file);
@@ -278,7 +253,7 @@
 	<body>
 	<script type="text/javascript">
 	var el1 = parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('newly_installed_list');
-	el1.innerHTML += "<?php echo $_SESSION['pending_install_project_count']; ?>. <?php echo $projectName; ?><br>";
+	el1.innerHTML += "<?php echo $_SESSION['pending_install_project_count']; ?>. <?php echo $project; ?><br>";
 
 	var el2 = parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment');
 	el2.style.visibility = 'visible';

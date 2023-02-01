@@ -25,7 +25,7 @@
 	if (!is_dir($hapmap_dir)) {
 		// Hapmap doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: .');
         }
 
 	// Re-initialize 'process_log.txt' file.

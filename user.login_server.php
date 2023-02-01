@@ -2,11 +2,12 @@
 	session_start();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
+	require_once 'POST_validation.php';
 	ini_set('display_errors', 1);
 
-	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$user_in   = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
-	$pw_in     = filter_input(INPUT_POST, "pw", FILTER_SANITIZE_STRING);
+	// validate POST input.
+	$user_in   = sanitize_POST("user");
+	$pw_in     = stripHTML_POST("pw");
 
 	$currentPath = getcwd();
 	$user        = validateUser($user_in);
@@ -33,13 +34,13 @@
 					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 					echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 				} else {
-					echo "<font color=\"red\"><b>ERROR: Input did not match a registed username & password combination.</b></font><br>\n";
+					echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 					echo "(Main page will reload shortly...)<br>\n";
 					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 					echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 				}
 			} else {
-				echo "<font color=\"red\"><b>ERROR: Input did not match a registed username & password combination.</b></font><br>\n";
+				echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 				echo "(Main page will reload shortly...)<br>\n";
 				echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 				echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";

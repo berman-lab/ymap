@@ -7,31 +7,28 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once '../constants.php';
+	require_once '../POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: user.login.php');
+                header('Location: ../');
         }
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$genome = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$genome = str_replace(" ","_",$genome);						// convert any spaces to underlines.
-	$genome = preg_replace("/[\s\W]+/", "", $genome);				// remove everything but alphanumeric characters and underlines.
-	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
-	$key    = str_replace(" ","_",$key);
-	$key    = preg_replace("/[\s\W]+/", "", $key);
+	$genome = sanitize_POST("genome");
+	$key    = sanitize_POST("key");
 
 	// Confirm if requested genome exists.
 	$genome_dir = "../users/".$user."/genomes/".$genome;
 	if (!is_dir($genome_dir)) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: ../');
 	}
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -65,10 +62,10 @@
 
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing genome specific information.\n");
-	$headerLineCount = filter_input(INPUT_POST, "headerLineCount", FILTER_SANITIZE_STRING);
-	$col_chrID       = filter_input(INPUT_POST, "col_chrID",       FILTER_SANITIZE_STRING);
-	$col_startBP     = filter_input(INPUT_POST, "col_startBP",     FILTER_SANITIZE_STRING);
-	$col_endBP       = filter_input(INPUT_POST, "col_endBP",       FILTER_SANITIZE_STRING);
+	$headerLineCount = sanitizeInt_POST("headerLineCount");
+	$col_chrID       = sanitizeInt_POST("col_chrID");
+	$col_startBP     = sanitizeInt_POST("col_startBP");
+	$col_endBP       = sanitizeInt_POST("col_endBP");
 
 // Generate 'expression.txt' to tell main page that genome expression analysis installation is in process.
 	fwrite($logOutput, "\tGenerating 'expresison.txt' file.\n");

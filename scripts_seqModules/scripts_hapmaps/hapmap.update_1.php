@@ -11,66 +11,57 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once '../../constants.php';
+	require_once '../../POST_validation.php';
         ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		?> <script type="text/javascript"> parent.reload(); </script> <?php
+		header('Location: ../../');
 	}
 
 	// Load user string from session.
 	$user       = $_SESSION['user'];
 
-	// Validate hapmap input string.
-	$hapmap     = trim(filter_input(INPUT_POST, "hapmap", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$hapmap     = str_replace(" ","_",$hapmap);					// convert any spaces to underlines.
-	$hapmap     = preg_replace("/[\s\W]+/", "", $hapmap);				// remove everything but alphanumeric characters and underlines.
+	// Validate input strings.
+	$hapmap     = sanitize_POST("hapmap");
+	$genome     = sanitize_POST("genome");
+	$parent     = sanitize_POST("parent");
+	$selectNext = sanitize_POST("selectNext");
+
 	// Confirm if requested hapmap exists.
 	$hapmap_dir = "users/".$user."/hapmaps/".$hapmap;
 	if !(is_dir($hapmap_dir)) {
 		// Hapmap doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: ../../');
 	}
 
-	// Validate genome input string.
-	$genome     = trim(filter_input(INPUT_POST, "genome", FILTER_SANITIZE_STRING));
-	$genome     = str_replace(" ","_",$genome);
-	$genome     = preg_replace("/[\s\W]+/", "", $genome);
 	// Confirm if requested genome exists.
 	$genome_dir1 = "users/".$user."/genomes/".$genome;
 	$genome_dir2 = "users/default/genomes/".$genome;
 	if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: ../../');
 	}
 
-	// Validate parent input string.
-	$parent     = trim(filter_input(INPUT_POST, "parent", FILTER_SANITIZE_STRING));
-	$parent     = str_replace(" ","_",$parent);
-	$parent     = preg_replace("/[\s\W]+/", "", $parent);
 	// Confirm if requested parent project exists.
 	$parent_dir1 = "users/".$user."/projects/".$parent;
 	$parent_dir2 = "users/default/projects/".$parent;
 	if !(is_dir($parent_dir1) || is_dir($parent_dir2)) {
 		// Parent project doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: ../../');
 	}
 
-	// validate select next dataset string.
-	$selectNext = trim(filter_input(INPUT_POST, "selectNext", FILTER_SANITIZE_STRING));
-	$selectNext = str_replace(" ","_",$selectNext);
-	$selectNext = preg_replace("/[\s\W]+/", "", $selectNext);
 	// Confirm if requested next project exists.
 	$selectNext_dir1 = "users/".$user."/projects/".$selectNext;
 	$selectNext_dir2 = "users/default/projects/".$selectNext;
 	if !(is_dir($selectNext_dir1) || is_dir($selectNext_dir2)) {
 		// next project doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: ../../');
 	}
 
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";

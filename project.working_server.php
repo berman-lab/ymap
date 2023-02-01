@@ -2,34 +2,29 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once 'constants.php';
+	require_once 'POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: .');
 	}
 
 	// Load user string from session.
 	$user    = $_SESSION['user'];
 
-	// Sanitize input string.
-	$project = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$project = str_replace(" ","_",$project);					// convert any spaces to underlines.
-	$project = preg_replace("/[\s\W]+/", "", $project);				// remove everything but alphanumeric characters and underlines.
-	$key     = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
-	$key     = str_replace(" ","_",$key);
-	$key     = preg_replace("/[\s\W]+/", "", $key);
-	$status  = trim(filter_input(INPUT_POST, "status", FILTER_SANITIZE_STRING));
-	$status  = str_replace(" ","_",$status);
-	$status  = preg_replace("/[\s\W]+/", "", $status);
+	// Sanitize input strings.
+	$project = sanitize_POST("project");
+	$key     = sanitize_POST("key");
+	$status  = sanitize_POST("status");
 
 	// Confirm if requested genome exists.
 	$project_dir = "users/".$user."/projects/".$project;
 	if (!is_dir($project_dir)) {
 		// Project doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: .');
 	}
 
 ?>

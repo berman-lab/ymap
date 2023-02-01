@@ -2,17 +2,22 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once '../../constants.php';
+	require_once '../../POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
-                header('Location: user.login.php');
+		session_destroy();
+                header('Location: ../../');
         }
 
+	// pull strings from session.
 	$user     = $_SESSION['user'];
 	$fileName = $_SESSION['fileName'];
 	$project  = $_SESSION['project'];
 	$key      = $_SESSION['key'];
+
+	$project_dir = "../../users/".$user."/projects/".$project.
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -39,7 +44,7 @@
 </HEAD>
 <?php
 // Initialize log files.
-	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
+	$logOutputName = $project_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
 	fwrite($logOutput, "#..............................................................................\n");
@@ -51,13 +56,13 @@
 	fwrite($logOutput, "\tkey      = '".$key."'\n");
 	fwrite($logOutput, "#============================================================================== 1\n");
 
-	$condensedLogOutputName = "../../users/".$user."/projects/".$project."/condensed_log.txt";
+	$condensedLogOutputName = $project_dir."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
 
 // Generate 'working.txt' file to let pipeline know processing is started.
-	$outputName      = "../../users/".$user."/projects/".$project."/working.txt";
+	$outputName      = $project_dir."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);

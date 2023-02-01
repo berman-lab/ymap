@@ -2,31 +2,30 @@
 	session_start();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
+	require_once 'POST_validation.php';
 	ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: user.login.php');
+                header('Location: .');
         }
 
 	// Load user string from session.
 	$user    = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$project = trim(filter_input(INPUT_POST, "project", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$project = str_replace(" ","_",$project);					// convert any spaces to underlines.
-	$project = preg_replace("/[\s\W]+/", "", $project);				// remove everything but alphanumeric characters and underlines.
+	$project = sanitize_POST("project");
 
 	// Confirm if requested project exists.
-	$dir = "users/".$user."/projectss/".$project;
-	if (is_dir($dir)) {
+	$project_dir = "users/".$user."/projects/".$project;
+	if (is_dir($project_dir)) {
 		// Requested project dir does exist for logged in user: Delete installed project.
-		rrmdir($dir);
+		rrmdir($project_dir);
 	} else {
 		// Project doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: .');
 	}
 
 	// Function for recursive rmdir, to clean out full genome directory.

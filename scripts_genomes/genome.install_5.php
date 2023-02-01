@@ -7,30 +7,25 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once '../constants.php';
+	require_once '../POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: user.login.php');
+                header('Location: ../');
         }
 
 	// Load user string from session.
-	$user   = $_SESSION['user'];
+	$user     = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));
-	$key    = str_replace(" ","_",$key);
-	$key    = preg_replace("/[\s\W]+/", "", $key);
+	$key      = sanitize_POST("key");
+	$fileName = sanitizeFile_POST("fileName");
 
 	// Load genome string from session.
 	$genome   = $_SESSION['genome_'.$key];
 	$genome_dir = "../users/".$user."/genomes/".$genome;
-
-	// Sanitize input strings.
-	$fileName = trim(filter_input(INPUT_POST, "fileName", FILTER_SANITIZE_STRING));	// strip out any html tags.
-	$fileName = str_replace(" ","_",$fileName);					// convert any spaces to underlines.
-	$fileName = preg_replace("/[\s\W]+/", "", $fileName);				// remove everything but alphanumeric characters and underlines.
 
 	// load PHP function to process input files.
 	include_once 'process_input_files.genome.php';

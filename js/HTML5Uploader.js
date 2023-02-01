@@ -55,9 +55,8 @@ var allFiles = new Array;
 									var file = result.file;
 									data.uploadedBytes = file && file.size;
 
-									// Add file names to global scope variable 'allFiles'... replacing comma characters with something not allowed in file names, to
-									// allow PHP to split names by commas added by javascript.   PHP will replace the "\\" with "," later.
-									allFiles.push(files[0].name.replace(",","\\"));
+									// Add file names to global scope variable 'allFiles'.
+									allFiles.push(files[0].name);
 
 									data.process(function () {
 										return $this.html5Uploader('process', data);
@@ -143,29 +142,23 @@ var allFiles = new Array;
 									var outputFileNames = allFiles;
 									input1.setAttribute("value",outputFileNames);
 									conclusion.appendChild(input1);
-								// add user to form.
+								// add genome or project to form.
 								var input2 = document.createElement("input");
 									input2.setAttribute("type","hidden");
-									input2.setAttribute("name","user");
-									input2.setAttribute("value",user);
+									if ("genome" in window) {
+										input2.setAttribute("name","genome");
+										input2.setAttribute("value",genome);
+									} else if ("project" in window) {
+										input2.setAttribute("name","project");
+										input2.setAttribute("value",project);
+									}
 									conclusion.appendChild(input2);
-								// add genome or project to form.
+								// add key to form.
 								var input3 = document.createElement("input");
 									input3.setAttribute("type","hidden");
-									if ("genome" in window) {
-										input3.setAttribute("name","genome");
-										input3.setAttribute("value",genome);
-									} else if ("project" in window) {
-										input3.setAttribute("name","project");
-										input3.setAttribute("value",project);
-									}
+									input3.setAttribute("name","key");
+									input3.setAttribute("value",key);
 									conclusion.appendChild(input3);
-								// add key to form.
-								var input4 = document.createElement("input");
-									input4.setAttribute("type","hidden");
-									input4.setAttribute("name","key");
-									input4.setAttribute("value",key);
-									conclusion.appendChild(input4);
 								// append form to allow submit
 								document.body.appendChild(conclusion);
 								// Submit generated form : works in Safari, but not Firefox.

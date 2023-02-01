@@ -24,7 +24,7 @@
 	if (!is_dir($genome_dir)) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: user.login.php');
+		header('Location: .');
 	}
 
 ?>

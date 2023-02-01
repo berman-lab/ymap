@@ -2,14 +2,18 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once 'constants.php';
+	require_once 'POST_validation.php';
         ini_set('display_errors', 1);
 
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
-	else {
-		$user      = $_SESSION['user'];
-		$key       = preg_replace('/\D/', '', $_GET['k']);  //Strip all non-numerical characters from string.
+	// If the user is not logged on, redirect to login page.
+	if(!isset($_SESSION['logged_on'])){
+		session_destroy();
+		header('Location: .');
 	}
-	require_once 'constants.php';
+
+	$user      = $_SESSION['user'];
+	$key       = preg_replace('/\D/', '', $_GET['k']);  //Strip all non-numerical characters from string.
+
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
 	//============================================

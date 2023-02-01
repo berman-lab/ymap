@@ -2,21 +2,20 @@
 	session_start();
 	error_reporting(E_ALL);
         require_once '../constants.php';
+	require_once '../POST_validation.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-                header('Location: user.login.php');
+                header('Location: ../');
         }
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
 	// Sanitize input strings.
-        $key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));	// strip out any html tags.
-        $key    = str_replace(" ","_",$key);						// convert any spaces to underlines.
-        $key    = preg_replace("/[\s\W]+/", "", $key);					// remove everything but alphanumeric characters and underlines.
+	$key    = sanitize_POST("key");
 
 	// Load strings from session.
 	$genome     = $_SESSION['genome_'.$key];
@@ -60,11 +59,11 @@
 
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing genome specific information.\n");
-	$rDNA_start         = filter_input(INPUT_POST, "rDNAstart",          FILTER_SANITIZE_STRING);
-	$rDNA_end           = filter_input(INPUT_POST, "rDNAend",            FILTER_SANITIZE_STRING);
-	$ploidyDefault      = filter_input(INPUT_POST, "ploidy",             FILTER_SANITIZE_STRING);
-	$annotation_count   = filter_input(INPUT_POST, "annotation_count",   FILTER_SANITIZE_STRING);
-	$expression_regions = filter_input(INPUT_POST, "expression_regions", FILTER_SANITIZE_STRING);
+	$rDNA_start         = sanitizeInt_POST("rDNAstart");
+	$rDNA_end           = sanitizeInt_POST("rDNAend");
+	$ploidyDefault      = sanitizeFloat_POST("ploidy");
+	$annotation_count   = sanitizeInt_POST("annotation_count");
+	$expression_regions = sanitize_POST("expression_regions");
 
 	if ($chr_count != 0) {
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
@@ -75,9 +74,9 @@
 			} else {
 				$chr_draw = 0;
 			}
-			$chr_shortName        = filter_input(INPUT_POST, "short_".$chrID,    FILTER_SANITIZE_STRING);
-			$chr_cenStart         = filter_input(INPUT_POST, "cenStart_".$chrID, FILTER_SANITIZE_STRING);
-			$chr_cenEnd           = filter_input(INPUT_POST, "cenEnd_".$chrID,   FILTER_SANITIZE_STRING);
+			$chr_shortName        = sanitize_POST("short_".$chrID);
+			$chr_cenStart         = sanitizeInt_POST("cenStart_".$chrID);
+			$chr_cenEnd           = sanitizeInt_POST("cenEnd_".$chrID);
 			$chr_draws[$chr]      = $chr_draw;
 			$chr_shortNames[$chr] = $chr_shortName;
 			$chr_cenStarts[$chr]  = $chr_cenStart;
@@ -85,7 +84,7 @@
 		}
 	}
 	if (isset($_POST['rDNAchr']) && !empty($_POST['rDNAchr'])) {
-		$rDNA_chr = filter_input(INPUT_POST, "rDNAchr", FILTER_SANITIZE_STRING);
+		$rDNA_chr = sanitize_POST("rDNAchr");
 	} else {
 		$rDNA_chr = "null";
 	}

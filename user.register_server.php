@@ -1,24 +1,25 @@
 <?php
 	session_start();
 	require_once 'constants.php';
+	require_once 'POST_validation.php';
 	ini_set('display_errors', 1);
 
-	$bad_chars = array("~","@","#","$","%","^","&","*","(",")","+","=","|","{","}","<",">","?",".",",","\\","/","'",'"',"[","]","!");
-	$userOrig  = str_replace($bad_chars,"",trim(filter_input(INPUT_POST, "user",   FILTER_SANITIZE_STRING)));
+	// validate POST input.
+	$primaryInvestigatorName  = sanitizeName_POST("primaryInvestigator_name");
+	$primaryInvestigatorEmail = sanitizeEmail_POST("primaryInvestigator_email");
+	$researchInstitution      = sanitizeName_POST("researchInstitution");
+	$secondaryName            = sanitizeName_POST("secondary_name");
+	$secondaryEmail           = sanitizeEmail_POST("secondary_email");
 
-	$primaryInvestigatorName  = filter_input(INPUT_POST, "primaryInvestigator_name",  FILTER_SANITIZE_STRING);
-	$primaryInvestigatorEmail = filter_input(INPUT_POST, "primaryInvestigator_email", FILTER_SANITIZE_STRING);
-	$researchInstitution      = filter_input(INPUT_POST, "researchInstitution",       FILTER_SANITIZE_STRING);
-	$secondaryName            = filter_input(INPUT_POST, "secondary_name",            FILTER_SANITIZE_STRING);
-	$secondaryEmail           = filter_input(INPUT_POST, "secondary_email",           FILTER_SANITIZE_STRING);
-	$pwOrig                   = filter_input(INPUT_POST, "pwOrig",                    FILTER_SANITIZE_STRING);
-	$pwCopy                   = filter_input(INPUT_POST, "pwCopy",                    FILTER_SANITIZE_STRING);
+	// user and password strings are validated in remainint code block.
+	$userOrig = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING);
+	$pwOrig   = filter_input(INPUT_POST, "pwOrig", FILTER_SANITIZE_STRING);
+	$pwCopy   = filter_input(INPUT_POST, "pwCopy", FILTER_SANITIZE_STRING);
 
-	$user = validateUser($userOrig);
-	$pw   = validatePassword($pwOrig, $pwCopy);
-
-	// User and Password both validated as correct
+	$user     = validateUser($userOrig);
+	$pw       = validatePassword($pwOrig, $pwCopy);
 	if($user && $pw){
+		// User and Password both validated as correct
 		createNewUser($user, $pw);
 		createSecondaryInformationFile($user, $primaryInvestigatorName, $primaryInvestigatorEmail, $researchInstitution, $secondaryName, $secondaryEmail);
 	}
@@ -41,14 +42,14 @@
 			echo "<font color=\"green\"><b>SUCCESS: User account created.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			return false;
 		} else {
 			// The user directory already exists!
 			echo "<font color=\"red\"><b>ERROR: Invalid user name, try another.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			return false;
 		}
 	}
@@ -87,7 +88,7 @@
 			echo "<font color=\"red\"><b>ERROR: Your user name is too short, minimum is $MIN_USER_LENGTH.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
 			echo "</script>\n";
 			return "";
 		}
@@ -96,7 +97,7 @@
 			echo "<font color=\"red\"><b>ERROR: Your user name is too long, maximum is $MAX_USER_LENGTH.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
 			echo "</script>\n";
 			return "";
 		}
@@ -105,7 +106,7 @@
 			echo "<font color=\"red\"><b>ERROR: You have a non-alphanumeric character in your username.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
 			echo "</script>\n";
 			return "";
 		}
@@ -127,7 +128,7 @@
 			echo "<font color=\"red\"><b>ERROR: Your password is too short, minimum is $MIN_PASSWORD_LENGTH.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
 			echo "</script>\n";
 			return "";
 		}
@@ -136,7 +137,7 @@
 			echo "<font color=\"red\"><b>ERROR: Your password is too long, maximum is $MAX_PASSWORD_LENGTH.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
 			echo "</script>\n";
 			return "";
 		}
@@ -145,7 +146,7 @@
 			echo "<font color=\"red\"><b>ERROR: The passwords that you entered do not match.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
 			echo "</script>\n";
 			return "";
 		}
