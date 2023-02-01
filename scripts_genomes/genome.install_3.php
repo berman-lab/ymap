@@ -6,8 +6,28 @@
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
+		session_destroy();
                 header('Location: user.login.php');
         }
+
+	// Load user string from session.
+	$user   = $_SESSION['user'];
+
+	// Sanitize input strings.
+	$key    = trim(filter_input(INPUT_POST, "key", FILTER_SANITIZE_STRING));	// strip out any html tags.
+	$key    = str_replace(" ","_",$key);						// convert any spaces to underlines.
+	$key    = preg_replace("/[\s\W]+/", "", $key);					// remove everything but alphanumeric characters and underlines.
+	$expression_regions = trim(filter_input(INPUT_POST, "expression_regions", FILTER_SANITIZE_STRING));
+	$expression_regions = str_replace(" ","_", $expression_regions);
+	$expression_regions = preg_replace("/[\s\W]+/", "", $expression_regions);
+
+	$genome             = $_SESSION['genome_'.$key];
+	$rDNA_chr           = $_SESSION['rDNA_chr_'.$key];
+	$rDNA_start         = $_SESSION['rDNA_start_'.$key];
+	$rDNA_end           = $_SESSION['rDNA_end_'.$key];
+	$annotation_count   = $_SESSION['annotation_count_'.$key];
+
+	$genome_dir = "../users/".$user."/genomes/".$genome;
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -33,15 +53,6 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
-	$user               = $_SESSION['user'];
-	$key                = trim(filter_input(INPUT_POST, "key",                FILTER_SANITIZE_STRING));
-	$expression_regions = trim(filter_input(INPUT_POST, "expression_regions", FILTER_SANITIZE_STRING));
-	$genome             = $_SESSION['genome_'.$key];
-	$rDNA_chr           = $_SESSION['rDNA_chr_'.$key];
-	$rDNA_start         = $_SESSION['rDNA_start_'.$key];
-	$rDNA_end           = $_SESSION['rDNA_end_'.$key];
-	$annotation_count   = $_SESSION['annotation_count_'.$key];
-
 	$annotation_chrs       = array();
 	$annotation_shapes     = array();
 	$annotation_starts     = array();
@@ -52,7 +63,7 @@
 	$annotation_sizes      = array();
 
 // Open 'process_log.txt' file.
-    $logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
+    $logOutputName = $genome_dir."/process_log.txt";
     $logOutput     = fopen($logOutputName, 'a');
     fwrite($logOutput, "Running 'scripts_genomes/genome.install_3.php'.\n");
 
@@ -80,7 +91,7 @@
 
 	// Generate 'annotations.txt' :
 	fwrite($logOutput, "\tGenerating 'annotations.txt' file.\n");
-    $outputName       = "../users/".$user."/genomes/".$genome."/annotations.txt";
+    $outputName       = $genome_dir."/annotations.txt";
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
