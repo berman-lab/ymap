@@ -22,10 +22,9 @@
 
 	// Validate additional inputs found when dealing with ddRADseq, WGseq, or RNAseq data types.
 	if ($dataFormat != "0") {
-		// Validate read type input string.
-		$readType            = trim(filter_input(INPUT_POST, "readType", FILTER_SANITIZE_STRING));	// strip out any html tags.
-		$readType            = preg_replace("/[^\d]+/", "", $readType);					// remove everything but numerals.
-		$readType            = $readType[0];								// only use first numeral of input.
+		// Validate input strings.
+		$readType            = sanitizeIntChar_POST("readType");
+		$performIndelRealign = sanitize_POST("");
 
 		// Validate perfrom realignment input string.
 		$performIndelRealign = trim(filter_input(INPUT_POST, "readType", FILTER_SANITIZE_STRING));	// strip out any html tags.
