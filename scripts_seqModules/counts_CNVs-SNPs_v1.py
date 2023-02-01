@@ -106,4 +106,4 @@ for i in my_file:	# process pileup file line by line.
 
 	total = A+T+G+C;
 
-	print chrom + '\t' + pos + '\t' + str(total) + '\t' + ref_base + '\t' + str(A) + '\t' + str(T) + '\t' +  str(G) + '\t' +  str(C);
+	print(chrom + '\t' + pos + '\t' + str(total) + '\t' + ref_base + '\t' + str(A) + '\t' + str(T) + '\t' +  str(G) + '\t' +  str(C));
