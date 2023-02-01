@@ -52,8 +52,8 @@
 					header('Location: .');
 				}
 			}
-		$restrictionEnzymes  = validate_POST("selectRestrictionEnzymes");
-		$parent              = validate_POST("selectParent");
+		$restrictionEnzymes  = sanitize_POST("selectRestrictionEnzymes");
+		$parent              = sanitize_POST("selectParent");
 			if (($parent == "none") || ($parent == "")) {
 				// no parent is used, so all calculations use the current project name as the parent.
 				$parent      = $project;
