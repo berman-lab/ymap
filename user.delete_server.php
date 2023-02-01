@@ -16,7 +16,7 @@
 	$dir     = "users/".$user."/";
 
 	// Confirm if requested project exists.
-	if (is_dir($project_dir)) {
+	if (is_dir($dir)) {
 		// Requested user does exist: Delete installed user.
 		rrmdir($dir);
 		echo "COMPLETE";

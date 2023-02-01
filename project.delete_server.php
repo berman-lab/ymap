@@ -19,7 +19,7 @@
 	$dir     = "users/".$user."/projects/".$project;
 
 	// Confirm if requested project exists.
-	if (is_dir($project_dir)) {
+	if (is_dir($dir)) {
 		// Requested project dir does exist for logged in user: Delete installed project.
 		rrmdir($dir);
 		echo "COMPLETE";
