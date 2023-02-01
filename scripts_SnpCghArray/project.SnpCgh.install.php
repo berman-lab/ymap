@@ -50,7 +50,7 @@
 	$condensedLogOutputName = $project_dir."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Microarray data processing.\n");
-	fclose($condensedLogOutputName);
+	fclose($condensedLogOutput);
 
 // Initialize 'process_log.txt' file.
 	$outputLogName   = $project_dir."/process_log.txt";
@@ -111,7 +111,7 @@
 	$outputString      .= "\tcd ../../../../scripts_SnpCghArray;\n";
 
 	// Log status to process_log.txt file in project directory.
-	$outputString      .= "\tnew_fid = fopen(".$project_dir."/process_log.txt','a');\n";
+	$outputString      .= "\tnew_fid = fopen('".$project_dir."/process_log.txt','a');\n";
 	$outputString      .= "\tfprintf(new_fid,'Starting \"process_main.m\".\\n');\n";
 
 	$outputString      .= "\tprocess_main('".$designDefinition."','".$inputFile."','".$headerRows."','".$colNames."','".$colCh1."','".$colCh2."','".$colRatio."','".$colLog2ratio."','";
@@ -152,8 +152,10 @@
 	SNP probes  : "SNPv1_Ca_..."
 	MLST probes : "MLSTv1_..."
 	*/
-	$cghRowsFile = $workingDir . 'CGH_rows.xls';
-	$snpRowsFile = $workingDir . 'SNP_rows.xls';
+	echo $inputFile."\n\n";
+
+	$cghRowsFile  = $workingDir . 'CGH_rows.xls';
+	$snpRowsFile  = $workingDir . 'SNP_rows.xls';
 	$mlstRowsFile = $workingDir . 'MLST_rows.xls';
 	system('grep "CGHv1_Ca_\|CGH_Ca_" ' . $inputFile . ' > ' . $cghRowsFile);
 	system('grep "SNPv1_Ca_\|SNP_Ca_" ' . $inputFile . ' > ' . $snpRowsFile);
@@ -166,8 +168,7 @@
 	-k1,1 : sort on columns from 1 to 1.
 	-o    : output file.
 	*/
-	foreach (array($cghRowsFile, $snpRowsFile, $mlstRowsFile) as $fileToProcess)
-	{
+	foreach (array($cghRowsFile, $snpRowsFile, $mlstRowsFile) as $fileToProcess) {
 		chmod($fileToProcess, 0644);
 		$tmpFile = "$fileToProcess.tmp";
 		system("sort -b -k1,1 $fileToProcess -o $tmpFile");
@@ -177,7 +178,7 @@
 	fwrite($outputLog, "Current Path = '".getcwd()."'\n");
 	fwrite($outputLog, "Calling Matlab :\n");
 
-	$system_call_string_2 = 'local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run '.$project_dir.'/processing.m\' > /dev/null &';
+	$system_call_string_2 = '. ../local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run '.$project_dir.'/processing.m\' > /dev/null &';
 	fwrite($outputLog, "\t\"".$system_call_string_2."\"\n\n");
 	fclose($outputLog);
 	system($system_call_string_2);
