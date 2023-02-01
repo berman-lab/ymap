@@ -120,9 +120,9 @@ numFragments = fragment_counter
 # End of code section to parse restriction fragments from genome.
 #============================================================================================================
 
-print "### ", time.clock() - t0, "seconds to parse restriction fragments from digested genome."
+print("### " + (time.clock() - t0) + "seconds to parse restriction fragments from digested genome.")
 t1 = time.clock()
-print "### Starting read count data processing."
+print("### Starting read count data processing.")
 
 #============================================================================================================
 # Process 'SNP_CNV_v1.txt' file to determine read count max and average.
@@ -204,7 +204,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tOpen dataset 'SNP_CNV_v1.txt' file.\n")
 
 # Open dataset 'SNP_CNV_v1.txt' file.
-print '### InputFile = ' + inputFile
+print('### InputFile = ' + inputFile)
 datafile      = inputFile;
 data          = open(datafile,'r')
 #............................................................................................................
@@ -217,12 +217,12 @@ current_fragment = 0
 log_count        = 0
 log_offset       = 0
 
-print '### Number of Chromosomes = ' + str(chrCount)
+print('### Number of Chromosomes = ' + str(chrCount))
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
-		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
+		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
 
-print "###" + str(numFragments)
+print("###" + str(numFragments))
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n\t\t|")
@@ -246,7 +246,7 @@ for line in data:
 	chr = 0
 	for x in range(0,chrCount):
 		#if (chrNums[x] != 0):
-			#	print str(chrName[x])
+			#	print(str(chrName[x]))
 		if (chrNums[x] != 0):
 			if chrName[x] == chr_name:
 				chr = x+1
@@ -256,7 +256,7 @@ for line in data:
 	data_point = float(readCount)
 
 	if old_chr != chr:
-		print '### chr change : ' + str(old_chr) + ' -> ' + str(chr)
+		print('### chr change : ' + str(old_chr) + ' -> ' + str(chr))
 		with open(logName, "a") as myfile:
 			myfile.write("\n\t\t|\n\t\t|\t" + str(old_chr) + " -> " + str(chr) + " = " + chr_name + "\n")
 			myfile.write("\t\t|\t1........01........01........01........01........01........01........01........01........01........0\n")
@@ -276,7 +276,7 @@ for line in data:
 		if fragment_found == 0:
 			for frag in range(current_fragment,numFragments):
 				# Check if current coordinate is consistent with this fragment : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
-				# print str(chr)+": "+str(pos_point)+"; "+str(fragments[frag-1][0])+":"+str(fragments[frag-1][1])+"..."+str(fragments[frag-1][2])
+				# print(str(chr)+": "+str(pos_point)+"; "+str(fragments[frag-1][0])+":"+str(fragments[frag-1][1])+"..."+str(fragments[frag-1][2]))
 				if chr == fragments[frag-1][0] and pos_point >= fragments[frag-1][1] and pos_point <= fragments[frag-1][2]:
 					fragment_found   = 1
 					current_fragment = frag
@@ -325,10 +325,10 @@ for fragment in range(1,numFragments):
 #============================================================================================================
 
 
-print "### ", time.clock() - t1, "seconds to process the pileup file."
+print("### "+ (time.clock() - t1) + "seconds to process the pileup file.")
 t2 = time.clock()
-print '### Number of fragments = ' + str(numFragments)
-print '### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]'
+print('### Number of fragments = ' + str(numFragments))
+print('### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]')
 
 #============================================================================================================
 # Code section to output information about read average per standard bin genome fragment.
@@ -346,14 +346,14 @@ for fragment in range(1,numFragments):
 	bp_start        = fragments[fragment-1][1]
 	bp_end          = fragments[fragment-1][2]
 	read_average    = fragments[fragment-1][5]
-	print str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(read_average)
+	print(str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(read_average))
 #------------------------------------------------------------------------------------------------------------
 # End of code section to output information about fragments. 
 #============================================================================================================
 
 
-print "### ", time.clock() - t1, "seconds to output basic stats of each restriction fragment."
-print "### ", time.clock() - t0, "seconds to complete processing of fragment definitions."
+print("### " + (time.clock() - t1) + "seconds to output basic stats of each restriction fragment.")
+print("### " + (time.clock() - t0) + "seconds to complete processing of fragment definitions.")
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) +"\n")
