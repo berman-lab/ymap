@@ -22,20 +22,24 @@
 	$project    = sanitize_POST("project");
 	$key        = sanitize_POST("key");
 
-	if ($dataFormat != "SnpCghArray") {
-		// Confirm if requested genome exists.
-		$genome_dir = "users/".$user."/genomes/".$genome;
-		if (!is_dir($genome_dir)) {
-			// Genome doesn't exist, should never happen: Force logout.
+	if ($project != "") {
+		// Confirm if requested project exists.
+		$project_dir = "users/".$user."/projects/".$project;
+		if (!is_dir($project_dir)) {
+			// Project doesn't exist, should never happen: Force logout.
 			session_destroy();
 			header('Location: .');
 		}
-	}
-
-	// Confirm if requested project exists.
-	$project_dir = "users/".$user."/projects/".$project;
-	if (!is_dir($project_dir)) {
-		// Project doesn't exist, should never happen: Force logout.
+	} else if ($genome != "") {
+		// Confirm if requested project exists.
+		$project_dir = "users/".$user."/projects/".$project;
+		if (!is_dir($project_dir)) {
+			// Project doesn't exist, should never happen: Force logout.
+			session_destroy();
+			header('Location: .');
+		}
+	} else {
+		// No genome or project, should never happen: Force logout.
 		session_destroy();
 		header('Location: .');
 	}
@@ -83,10 +87,6 @@
 		// initiate genome processing.
 		// ideally loaded into iframe id="Hidden_InstallNewGenome_Frame" defined in index.php
 		$conclusion_script = "scripts_genomes/genome.install_1.php";
-	} else {
-		// No genome or project, should never happen: Force logout.
-		session_destroy();
-		header('Location: .');
 	}
 
 	// troubleshooting output
