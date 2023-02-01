@@ -46,6 +46,12 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
+// Initialize 'condensed_log.txt' file.
+	$condensedLogOutputName = $project_dir."/condensed_log.txt";
+	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
+	fwrite($condensedLogOutput, "Microarray data processing.\n");
+	chmod($condensedLogOutputName,0755);
+
 // Initialize 'process_log.txt' file.
 	$outputLogName   = $project_dir."/process_log.txt";
 	$outputLog       = fopen($outputLogName, 'w');
@@ -170,7 +176,8 @@
 
 	fwrite($outputLog, "Current Path = '".getcwd()."'\n");
 	fwrite($outputLog, "Calling Matlab :\n");
-	$system_call_string_2 = ". ../local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run ".$project_dir."/processing.m\' > /dev/null &";
+
+	$system_call_string_2 = 'local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run '.$project_dir.'/processing.m\' > /dev/null &';
 	fwrite($outputLog, "\t\"".$system_call_string_2."\"\n\n");
 	fclose($outputLog);
 	system($system_call_string_2);
@@ -182,7 +189,7 @@
 	var project = "<?php echo $project; ?>";
 	var key     = "<?php echo $key;     ?>";
 	var status  = "0";
-	// construct and submit form to move on to "project.working_server.php";
+	// construct and submit form to move on to "../project.working_server.php";
 	var autoSubmitForm = document.createElement("form");
 		autoSubmitForm.setAttribute("method","post");
 		autoSubmitForm.setAttribute("action","../project.working_server.php");
