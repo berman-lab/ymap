@@ -12,7 +12,6 @@
 /*jslint nomen: true, regexp: true */
 /*global define, window, URL, webkitURL, FileReader */
 
-
 var allFiles = new Array;
 
 (function (factory) {
@@ -27,8 +26,6 @@ var allFiles = new Array;
 (function ($, Handlebars) {
 	'use strict';
 	$.blueimp.fileupload.prototype._specialOptions.push( 'filesContainer', 'uploadTemplateId', 'downloadTemplateId' );
-
-//	$('#hidden_field').val("../../users/darren/projects/"); // redirects target_dir, still on client.
 
 	// The UI version extends the file upload widget and adds complete user interface interaction:
 	// Make widgit filkor.html5Uploader as extension of blueimp.fileupload.
