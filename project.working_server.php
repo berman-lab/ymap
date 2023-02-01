@@ -19,7 +19,7 @@
 	$key     = sanitize_POST("key");
 	$status  = sanitize_POST("status");
 
-	// Confirm if requested genome exists.
+	// Confirm if requested project exists.
 	$project_dir = "users/".$user."/projects/".$project;
 	if (!is_dir($project_dir)) {
 		// Project doesn't exist, should never happen: Force logout.
