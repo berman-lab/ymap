@@ -53,7 +53,7 @@ haplotypeMapEntry_data = open(haplotypeMapEntry_file,'r');
 fragments        = [];
 fragment_counter = 0;
 ## Process fragment file, line by line.
-print '### Fragments found in haplotype entry:';
+print('### Fragments found in haplotype entry:');
 while True:
 	# Line pairs have the following structure.
 	#    >Ca_a.chr1 (9638..10115) (478bp) [*] a
@@ -65,7 +65,7 @@ while True:
 	first_char = line1[:1];
 	if first_char == ">":
 		# Line is header to FASTA entry.
-		line_parts             = string.split(string.strip(line1));
+		line_parts             = line1.strip().split();
 		chrGenomeAndNum_string = line_parts[0];
 		bp_coordinate_string   = line_parts[1];
 		fragment_size_string   = line_parts[2];
@@ -80,14 +80,14 @@ while True:
 		bp_start     = int(float(coordinates[0]));
 		bp_end       = int(float(coordinates[1]));
 		fragments.append([chr_num,bp_start,bp_end,homologID]);
-		print '###\tfragment[' + str(fragment_counter) + '] = [' + str(chr_num) + ', ' + str(bp_start) + ', ' + str(bp_end) + ', ' + homologID + ']';
+		print('###\tfragment[' + str(fragment_counter) + '] = [' + str(chr_num) + ', ' + str(bp_start) + ', ' + str(bp_end) + ', ' + homologID + ']');
 		fragment_counter += 1;
 haplotypeMapEntry_data.close();
 with open(logName, "a") as myfile:
 	myfile.write("|\tThe genome LOH fragment definitions have been loaded.\n");
 # Put fragment counter into a general use variable.
 numFragments = fragment_counter;
-print '### Number of fragments = '+str(numFragments);
+print('### Number of fragments = '+str(numFragments));
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.
@@ -123,7 +123,7 @@ with open(logName, "a") as myfile:
 	myfile.write("|\tDetermining number of chromosomes of interest in genome.\n");
 chrName_maxcount = 0;
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
+	line_parts = line.strip().split();
 	chr_num = line_parts[0];
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]));
@@ -151,7 +151,7 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
+	line_parts = line.strip().split();
 	chr_num = line_parts[0];
 	if chr_num.isdigit():
 		chr_num                        = int(float(line_parts[0]));
@@ -187,10 +187,10 @@ current_fragment = 0;
 log_count        = 0;
 log_offset       = 0;
 
-print '### InputFile1 = ' + inputFile1;
-print '### Number of Chromosomes = ' + str(chrCount);
+print('### InputFile1 = ' + inputFile1);
+print('### Number of Chromosomes = ' + str(chrCount));
 for x in range(0,chrCount):
-	print '### \t' + str(x+1) + ' : ' + str(chrName[x]);
+	print('### \t' + str(x+1) + ' : ' + str(chrName[x]));
 with open(logName, "a") as myfile:
 	myfile.write("|\tProcessing parental SNP loci and determining which genome LOH fragment all loci belong to.\n");
 # Process 'SNPdata_hapmap.txt' file, line by line.
@@ -226,7 +226,7 @@ for line in data:
 					chr = x+1;
 		# Display status updates to log file.
 		if old_chr != chr:
-			print '### chr change : ' + str(old_chr) + ' -> ' + str(chr);
+			print('### chr change : ' + str(old_chr) + ' -> ' + str(chr));
 			with open(logName, "a") as myfile:
 				myfile.write("|\t    " + str(old_chr) + " -> " + str(chr) + " = " + P_chr_name + "\n");
 				myfile.write("|\t\t1........01........01........01........01........01........01........01........01........01........0\n");
@@ -353,7 +353,7 @@ for line in data:
 					else:
 						locus_phase = 12;      # no phase information, due to surprise allele in child dataset.
 			# Output 'SNPdata_hapmap.txt' line with new column containing most recent haplotype entry phase.
-			print string.strip(line)+'\t'+str(locus_phase); # add new phasing information to existing info
+			print(string.strip(line)+'\t'+str(locus_phase)); # add new phasing information to existing info
 		# Reset old_chr/last_fragment to current coordinate chromosome before moving to next line in pileup.
 		old_chr       = chr;
 		last_fragment = current_fragment;
