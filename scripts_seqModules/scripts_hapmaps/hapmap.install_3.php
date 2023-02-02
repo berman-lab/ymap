@@ -3,6 +3,7 @@
 	error_reporting(E_ALL);
         require_once '../../constants.php';
 	require_once '../../POST_validation.php';
+	require_once '../../SecureNewDirectory.php';
         ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
@@ -78,6 +79,7 @@
 
 		// Create the hapmap folder inside the user's hapmaps directory
 		mkdir($hapmap_dir);
+		secureNewDirectory($hapmap_dir);
 		chmod($hapmap_dir,0777);
 
 		// Initialize 'process_log.txt' file.

@@ -12,6 +12,7 @@
 	error_reporting(E_ALL);
         require_once '../../constants.php';
 	require_once '../../POST_validation.php';
+	require_once '../../SecureNewDirectory.php';
         ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
@@ -95,6 +96,7 @@
 	$dir1            = "../../users/".$user."/hapmaps";
 	if (!file_exists($dir1)){
 		mkdir($dir1);
+		secureNewDirectory($dir1);
 		chmod($dir1,0777);
 	}
 
