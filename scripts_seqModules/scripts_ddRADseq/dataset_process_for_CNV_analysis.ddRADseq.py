@@ -317,7 +317,7 @@ for fragment in range(1,numFragments):
 print("### " + str(time.clock()-t1) + "seconds to process the pileup file.")
 t2 = time.clock()
 print('### Number of fragments = ' + str(numFragments))
-print '### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]')
+print('### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]')
 
 
 #============================================================================================================

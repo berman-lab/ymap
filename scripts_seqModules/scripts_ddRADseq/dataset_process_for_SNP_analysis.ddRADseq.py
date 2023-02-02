@@ -219,7 +219,7 @@ current_fragment = 0
 log_count        = 0
 log_offset       = 0
 
-print '### Number of Chromosomes = ' + str(chrCount))
+print('### Number of Chromosomes = ' + str(chrCount))
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
 		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
@@ -244,7 +244,7 @@ for line in data:
 	#       Ca21chr1_C_albicans_SC5314   3706    T         C         1
 	if line[0] != "#":
 		count += 1
-		parentLine    = string.strip(line)
+		parentLine    = line.strip()
 		parentLine    = parentLine.split('\t')
 		P_chr_name    = parentLine[0]        # chr name of bp.		: Ca21chrR_C_albicans_SC5314
 		P_position    = int(parentLine[1])   # chr position of bp.	: 2286371
@@ -339,7 +339,7 @@ for line in data:
 			while P_chr > C_chr:    # WORKING: this section jumps through the child lines of chromosomes with no parent lines.
 				childLine       = searchTarget.readline()
 				if len(childLine) > 0:
-					childLine       = string.strip(childLine)
+					childLine       = childLine.strip()
 					childLine_parts = childLine.split('\t')
 					C_chr_name      = childLine_parts[0]
 					C_position      = int(childLine_parts[1])
@@ -353,7 +353,7 @@ for line in data:
 			while P_chr == C_chr and P_position > C_position:   # WORKING: this section jumps through the child lines until the correct chromosome and coordinate is reached.
 				childLine       = searchTarget.readline()
 				if len(childLine) > 0:
-					childLine       = string.strip(childLine)
+					childLine       = childLine.strip()
 					childLine_parts = childLine.split('\t')
 					C_chr_name      = childLine_parts[0]
 					C_position      = int(childLine_parts[1])
