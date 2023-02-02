@@ -72,8 +72,7 @@ body {font-family: arial;}
 	$parent = trim(fgets($handle));
 	fclose($handle);
 
-	echo "\n<!--\tuser    = ".$user;
-	echo "\n\tproject = ".$project." --!>";
+	//echo "\n<!--\tuser = ".$user."; project = ".$project." --!>";
 
 	$sizeString_1 = "";
 	$sizeString_2 = "";
@@ -137,7 +136,7 @@ body {font-family: arial;}
 			<BODY onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 100);" class="tab">
 				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?><br>
 				<font size="2">Processing of data has taken longer than expected and might be stalled.<br>
-				Check back later or contact the admin through the "System" tab with details and they will check on the job.<br>
+				Check back later or contact the admin with details and they will check on the job.<br>
 				Don't delete the job until the admin has responded, or they will be unable to assist.</font>
 			</BODY>
 			</HTML>
