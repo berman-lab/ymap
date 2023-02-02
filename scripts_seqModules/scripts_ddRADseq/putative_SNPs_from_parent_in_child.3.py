@@ -16,7 +16,7 @@ def process_ChildLine(entry_line):
 	#       ChrA_C_glabrata_CBS138   46      37      T     0    37   0    0
 	#       ChrA_C_glabrata_CBS138   47      38      A     38   0    0    0
 	#       ChrA_C_glabrata_CBS138   48      39      A     39   0    0    0
-	child_line = string.strip(entry_line)
+	child_line = entry_line.strip()
 	child_line = child_line.split('\t')
 	C_chr_name = child_line[0]   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
 	C_position = child_line[1]   # chr position of bp.      : 2286371
@@ -46,7 +46,7 @@ def process_trimmedParentLine(entry_line):
 	#       Ca21chr1_C_albicans_SC5314   13993   12   0     0   1
 	#       Ca21chr1_C_albicans_SC5314   14003   1    412   0   0
 	#       Ca21chr1_C_albicans_SC5314   14004   1    413   0   0
-	parent_line = string.strip(entry_line);
+	parent_line = entry_line.strip()
 	parent_line = parent_line.split('\t');
 	P_chr_name  = parent_line[0];   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
 	P_position  = parent_line[1];   # chr position of bp.      : 2286371
@@ -120,7 +120,7 @@ with open(logName, "a") as myfile:
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]))
@@ -148,7 +148,7 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num                        = int(float(line_parts[0]))
@@ -186,16 +186,16 @@ current_fragment = 0
 log_count        = 0
 log_offset       = 0
 
-print '### Chromosomes of interest : '
+print('### Chromosomes of interest : ')
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
-		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
+		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
 
 
 # Process "trimmed_SNPs_v4.parent.txt" file containing SNP position data from the parent, as well as "SNP_CNV_v1.txt" for the data from the child.
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tLoading SNP coordinates from parent dataset.\n");
-print '### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, countA, countT, countG, countC]';
+print('### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, countA, countT, countG, countC]');
 data_P      = open(inputFile_trimmedP,"r");
 old_P_chrID = 0;
 parent_SNPs = [];
@@ -237,16 +237,16 @@ with open(logName, "a") as myfile:
 for SNP in parent_SNPs:
 	if SNP in child_SNPs_small:
 		SNP_data = child_SNPs[child_SNPs_small.index(SNP)];
-		print SNP[0]+"\t"+SNP[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5];
+		print(SNP[0]+"\t"+SNP[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5]);
 	else:
-		print SNP[0]+"\t"+SNP[1]+"\t0\t0\t0\t0";
+		print(SNP[0]+"\t"+SNP[1]+"\t0\t0\t0\t0");
 
 
 #------------------------------------------------------------------------------------------------------------
 # End of main code block.
 #============================================================================================================
 
-print '### End of preprocessed parental SNP, child SNP data.'
+print('### End of preprocessed parental SNP, child SNP data.')
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")

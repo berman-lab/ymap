@@ -87,7 +87,7 @@ while True:
 	first_char = line1[:1]
 	if first_char == ">":
 		# Line is header to FASTQ entry.
-		line_parts             = string.split(string.strip(line1))
+		line_parts             = line1.strip().split()
 		chrGenomeAndNum_string = line_parts[0]
 		bp_coordinate_string   = line_parts[1]
 		fragment_size_string   = line_parts[2]
@@ -119,9 +119,9 @@ numFragments = fragment_counter
 #============================================================================================================
 
 
-print "### ", time.clock() - t0, "seconds to parse restriction fragments from digested genome."
+print("### " + str(time.clock()-t0) + "seconds to parse restriction fragments from digested genome.")
 t1 = time.clock()
-print "### Starting read count data processing."
+print("### Starting read count data processing.")
 
 
 #============================================================================================================
@@ -144,7 +144,7 @@ with open(logName, "a") as myfile:
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]))
@@ -169,7 +169,7 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num                        = int(float(line_parts[0]))
@@ -197,7 +197,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tOpen dataset 'SNP_CNV_v1.txt' file.\n")
 
 # Open dataset 'SNP_CNV_v1.txt' file.
-print '### InputFile = ' + inputFile
+print('### InputFile = ' + inputFile)
 datafile      = inputFile;
 data          = open(datafile,'r')
 #............................................................................................................
@@ -210,12 +210,12 @@ current_fragment = 0
 log_count        = 0
 log_offset       = 0
 
-print '### Number of Chromosomes = ' + str(chrCount)
+print('### Number of Chromosomes = ' + str(chrCount))
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
-		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
+		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
 
-print "###" + str(numFragments)
+print("###" + str(numFragments))
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering read coverage data for each fragment.")
@@ -227,19 +227,19 @@ for line in data:
 	#     Ca21chr1_C_albicans_SC5314    2388924         123               0
 	#     Ca21chr1_C_albicans_SC5314    2388925         135               0
 	count += 1
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_name   = line_parts[0]   # chr name of bp.      : Ca21chrR_C_albicans_SC5314
 	position   = line_parts[1]   # chr position of bp.  : 2286371
 	readCount  = line_parts[2]   # read count at bp.    : 12
 
 	# Attempt to match up current data line with pre-determined restriction fragments.
-	found = 0 
+	found = 0
 
 	# Identify which chromosome this data point corresponds to.
-	chr = 0                 
+	chr = 0
 	for x in range(0,chrCount):
 		#if (chrNums[x] != 0):
-			#   print str(chrName[x])
+			# print(str(chrName[x]))
 		if (chrNums[x] != 0):
 			if chrName[x] == chr_name:
 				chr = x+1
@@ -249,7 +249,7 @@ for line in data:
 	data_point = float(readCount)
 
 	if old_chr != chr:
-		print '### chr change : ' + str(old_chr) + ' -> ' + str(chr)
+		print('### chr change : ' + str(old_chr) + ' -> ' + str(chr))
 		with open(logName, "a") as myfile:
 			myfile.write("\n\t\t|\t" + str(old_chr) + " -> " + str(chr) + " = " + chr_name + "\n")
 			myfile.write(  "\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
@@ -268,7 +268,7 @@ for line in data:
 		if fragment_found == 0:
 			for frag in range(current_fragment,numFragments):
 				# Check if current coordinate is consistent with this fragment : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
-				# print str(chr)+": "+str(pos_point)+"; "+str(fragments[frag-1][0])+":"+str(fragments[frag-1][1])+"..."+str(fragments[frag-1][2])
+				# print(str(chr)+": "+str(pos_point)+"; "+str(fragments[frag-1][0])+":"+str(fragments[frag-1][1])+"..."+str(fragments[frag-1][2]))
 				if chr == fragments[frag-1][0] and pos_point >= fragments[frag-1][1] and pos_point <= fragments[frag-1][2]:
 					fragment_found   = 1
 					current_fragment = frag
@@ -314,10 +314,10 @@ for fragment in range(1,numFragments):
 #============================================================================================================
 
 
-print "### ", time.clock() - t1, "seconds to process the pileup file."
+print("### " + str(time.clock()-t1) + "seconds to process the pileup file.")
 t2 = time.clock()
-print '### Number of fragments = ' + str(numFragments)
-print '### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]'
+print('### Number of fragments = ' + str(numFragments))
+print '### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]')
 
 
 #============================================================================================================
@@ -336,14 +336,14 @@ for fragment in range(1,numFragments):
 	bp_start        = fragments[fragment-1][1]
 	bp_end          = fragments[fragment-1][2]
 	read_average    = fragments[fragment-1][5]
-	print str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(read_average)
+	print(str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(read_average))
 #------------------------------------------------------------------------------------------------------------
 # End of code section to output information about fragments. 
 #============================================================================================================
 
 
-print "### ", time.clock() - t2, "seconds to output basic stats of each restriction fragment."
-print "### ", time.clock() - t0, "seconds to complete processing of pileup file and fragment definitions."
+print("### " + str(time.clock()-t2) + "seconds to output basic stats of each restriction fragment.")
+print("### " + str(time.clock()-t0) + "seconds to complete processing of pileup file and fragment definitions.")
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*--------------------------------------------------------------------------------------------------------*\n");
