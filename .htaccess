@@ -6,9 +6,9 @@ Order allow,deny
 Deny from all
 </FilesMatch>
 
-#===============================================
-# TXT/ZIP/MAT files should never be accessible.
-#-----------------------------------------------
+#============================================================
+# TXT/ZIP/MAT/JS/SH/CSS/PY/M files should never be accessible.
+#------------------------------------------------------------
 <FilesMatch "<*.txt">
 Order allow,deny
 Deny from all
@@ -20,6 +20,31 @@ Deny from all
 </FilesMatch>
 
 <FilesMatch "<*.zip">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.js">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.sh">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.css">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.py">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.m">
 Order allow,deny
 Deny from all
 </FilesMatch>
