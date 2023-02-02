@@ -21,6 +21,8 @@
 	$project2        = sanitize_POST("project2");
 	$referencePloidy = sanitizeFloat_POST("referencePloidy");
 
+	$hapmap_dir = "../../users/".$user."/hapmaps/".$hapmap;
+
 	// Confirm if requested genome exists.
 	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
 	$genome_dir2 = "../../users/default/genomes/".$genome;

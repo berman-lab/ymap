@@ -19,21 +19,16 @@
 	$genome          = sanitize_POST("genome");
 	$project1        = sanitize_POST("project1");
 	$project2        = sanitize_POST("project2");
-	$colorA          = sanitizeColor_POST("homolog_a_color");
-	$colorB          = sanitizeColor_POST("homolog_b_color");
+	$colorA          = sanitizeWithSpaces_POST("homolog_a_color");
+	$colorB          = sanitizeWithSpaces_POST("homolog_b_color");
 	$referencePloidy = (float)sanitizeFloat_POST("referencePloidy");
 	if ($referencePloidy == 2) {
 		// Validate hapmap description string.
-		$hapmap_description = sanitize_POST("hapmap_description");
+		$hapmap_description = sanitizeWithSpaces_POST("hapmap_description");
 	}
 
-	// Confirm if requested hapmap exists.
+	// Define hapmap directory.
 	$hapmap_dir = "../../users/".$user."/hapmaps/".$hapmap;
-	if (!is_dir($genome_dir1)) {
-		// Hapmap doesn't exist, should never happen: Force logout.
-		session_destroy();
-		?><script type="text/javascript"> parent.location.reload(); </script><?php
-	}
 
 	// Confirm if requested genome exists.
 	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
@@ -45,16 +40,15 @@
 	}
 
 	// Confirm if requested projects exists.
-	$project1_dir1   = "users/".$user."/projects/".$project1;
-	$project1_dir2   = "users/default/projects/".$project1;
-	$project2_dir1   = "users/".$user."/projects/".$project2;
-	$project2_dir2   = "users/default/projects/".$project2;
+	$project1_dir1   = "../../users/".$user."/projects/".$project1;
+	$project1_dir2   = "../../users/default/projects/".$project1;
+	$project2_dir1   = "../../users/".$user."/projects/".$project2;
+	$project2_dir2   = "../../users/default/projects/".$project2;
 	if (!(is_dir($project1_dir1) || is_dir($project1_dir2) || is_dir($project2_dir1) || is_dir($project2_dir2))) {
 		// A project doesn't exist, should never happen: Force logout.
 		session_destroy();
 		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
-
 	$currentPath = getcwd();
 
         if (file_exists($hapmap_dir)) {
