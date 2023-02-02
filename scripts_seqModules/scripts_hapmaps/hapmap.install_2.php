@@ -8,7 +8,7 @@
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	// Load user string from session.
@@ -21,39 +21,35 @@
 	$project2        = sanitize_POST("project2");
 	$referencePloidy = sanitizeFloat_POST("referencePloidy");
 
-	// Confirm if requested hapmap exists.
-	$hapmap_dir = "../../users/".$user."/hapmaps/".$hapmap;
-	if !(is_dir($hapmap_dir)) {
-		// Hapmap doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: ../../');
-	}
-
 	// Confirm if requested genome exists.
 	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
 	$genome_dir2 = "../../users/default/genomes/".$genome;
-	if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
+	if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
-	// Confirm if requested project1 project exists.
-	$project1_dir1 = "../../users/".$user."/projects/".$project1;
-	$project1_dir2 = "../../users/default/projects/".$project1;
-	if !(is_dir($project1_dir1) || is_dir($project1_dir2)) {
-		// Parent project doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: ../../');
+	if ($project1 != '') {
+		// Confirm if requested project1 project exists.
+		$project1_dir1 = "../../users/".$user."/projects/".$project1;
+		$project1_dir2 = "../../users/default/projects/".$project1;
+		if (!(is_dir($project1_dir1) || is_dir($project1_dir2))) {
+			// Parent project doesn't exist, should never happen: Force logout.
+			session_destroy();
+			?><script type="text/javascript"> parent.location.reload(); </script><?php
+		}
 	}
 
-	// Confirm if requested project2 project exists.
-	$project2_dir1 = "../../users/".$user."/projects/".$project2;
-	$project2_dir2 = "../../users/default/projects/".$project2;
-	if !(is_dir($project2_dir1) || is_dir($project2_dir2)) {
-		// Project2 project doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: ../../');
+	if ($project2 != '') {
+		// Confirm if requested project2 project exists.
+		$project2_dir1 = "../../users/".$user."/projects/".$project2;
+		$project2_dir2 = "../../users/default/projects/".$project2;
+		if (!(is_dir($project2_dir1) || is_dir($project2_dir2))) {
+			// Project2 project doesn't exist, should never happen: Force logout.
+			session_destroy();
+			?><script type="text/javascript"> parent.location.reload(); </script><?php
+		}
 	}
 
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
@@ -144,11 +140,11 @@
 	} else {
 		echo "Reference dataset 2 : ".$project2."<br>";
 	}
-	if (file_exists($project2_dir1.)) {
+	if (file_exists($project2_dir1)) {
 		if (file_exists($project2_dir1."/fig.CNV-LOH-map.2.png")) {
 			$imageUrl = $project2_dir1."/fig.CNV-LOH-map.2.png";
 		} else {
-			$imageUrl = $project2_dir1./fig.CNV-SNP-map.2.png";
+			$imageUrl = $project2_dir1."/fig.CNV-SNP-map.2.png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = $project2_dir1."/CGD_annotations.".$project2.".txt";

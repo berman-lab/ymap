@@ -8,7 +8,7 @@
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	// Load user string from session.
@@ -27,13 +27,21 @@
 		$hapmap_description = sanitize_POST("hapmap_description");
 	}
 
+	// Confirm if requested hapmap exists.
+	$hapmap_dir = "../../users/".$user."/hapmaps/".$hapmap;
+	if (!is_dir($genome_dir1)) {
+		// Hapmap doesn't exist, should never happen: Force logout.
+		session_destroy();
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
+	}
+
 	// Confirm if requested genome exists.
 	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
 	$genome_dir2 = "../../users/default/genomes/".$genome;
-	if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
+	if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	// Confirm if requested projects exists.
@@ -41,17 +49,15 @@
 	$project1_dir2   = "users/default/projects/".$project1;
 	$project2_dir1   = "users/".$user."/projects/".$project2;
 	$project2_dir2   = "users/default/projects/".$project2;
-	if !(is_dir($project1_dir1) || is_dir($project1_dir2) || is_dir($project2_dir1) || is_dir($project2_dir2)) {
+	if (!(is_dir($project1_dir1) || is_dir($project1_dir2) || is_dir($project2_dir1) || is_dir($project2_dir2))) {
 		// A project doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	$currentPath = getcwd();
-	$hapmap_dir1  = "../../users/".$user."/hapmaps/".$hapmap;
-	$hapmap_dir2  = "../../users/".$user."/hapmaps/".$hapmap;
 
-        if (file_exists($hapmap_dir1) || file_exists($hapmap_dir2)) {
+        if (file_exists($hapmap_dir)) {
 		//============================================
 		// Hapmap directory already exists, so exit.
 		//--------------------------------------------
@@ -77,11 +83,11 @@
 		//--------------------------------------------------------
 
 		// Create the hapmap folder inside the user's hapmaps directory
-		mkdir($hapmap_dir1);
-		chmod($hapmap_dir1,0777);
+		mkdir($hapmap_dir);
+		chmod($hapmap_dir,0777);
 
 		// Initialize 'process_log.txt' file.
-		$logOutputName = $hapmap_dir1."/process_log.txt";
+		$logOutputName = $hapmap_dir."/process_log.txt";
 		$logOutput     = fopen($logOutputName, 'a');
 		fwrite($logOutput, "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php'.\n");
 		fwrite($logOutput, "\tuser            = ".$user."\n");
@@ -94,7 +100,7 @@
 		fwrite($logOutput, "\tcolorB          = ".$colorB."\n");
 
 		// Create 'colors.txt' file to contain colors used in haplotype figures.
-		$handleName = $hapmap_dir1."/colors.txt";
+		$handleName = $hapmap_dir."/colors.txt";
 		if (file_exists($handleName)) {
 		} else {
 			$handle     = fopen($handleName, 'w');
@@ -103,7 +109,7 @@
 		}
 
 		// Create 'genome.txt' file to contain genome used in haplotype.
-		$handleName = $hapmap_dir1."/genome.txt";
+		$handleName = $hapmap_dir."/genome.txt";
 		if (file_exists($handleName)) {
 		} else {
 			$handle     = fopen($handleName, 'w');
@@ -112,7 +118,7 @@
 		}
 
 		// Create 'parent.txt' file to contain parent genome used in haplotype.
-		$handleName = $hapmap_dir1."/parent.txt";
+		$handleName = $hapmap_dir."/parent.txt";
 		if (file_exists($handleName)) {
 		} else {
 			$handle     = fopen($handleName, 'w');
@@ -126,7 +132,7 @@
 
 		// Initialize 'haplotype.txt' file to hold haplotype entry descriptions.
 		if ($referencePloidy == 2) {
-			$haplotypeFileName = $hapmap_dir1."/haplotypeMap.txt";
+			$haplotypeFileName = $hapmap_dir."/haplotypeMap.txt";
 			$haplotypeFile     = fopen($haplotypeFileName, 'a');
 			fwrite($haplotypeFile, $project1."\n".$project2."\n".$hapmap_description."\n");
 			fclose($haplotypeFile);
@@ -136,7 +142,7 @@
 		}
 
 		// Generate 'working.txt' file to let pipeline know that processing is underway.
-		$handleName      = $hapmap_dir1."/working.txt";
+		$handleName      = $hapmap_dir."/working.txt";
 		$handle          = fopen($handleName, 'w');
 		$startTimeString = date("Y-m-d H:i:s");
 		fwrite($handle, $startTimeString);

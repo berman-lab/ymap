@@ -17,7 +17,7 @@
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	// Load user string from session.
@@ -42,43 +42,51 @@
 	if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
-	// Confirm if requested project1 project exists.
-	$parent_dir1 = "../../users/".$user."/projects/".$parent;
-	$parent_dir2 = "../../users/default/projects/".$parent;
-	if (!(is_dir($parent_dir1) || is_dir($parent_dir2))) {
-		// Parent project doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: ../../');
+	if ($parent != '') {
+		// Confirm if requested project1 project exists.
+		$parent_dir1 = "../../users/".$user."/projects/".$parent;
+		$parent_dir2 = "../../users/default/projects/".$parent;
+		if (!(is_dir($parent_dir1) || is_dir($parent_dir2))) {
+			// Parent project doesn't exist, should never happen: Force logout.
+			session_destroy();
+			?><script type="text/javascript"> parent.location.reload(); </script><?php
+		}
 	}
 
-	// Confirm if requested project1 project exists.
-	$child_dir1 = "../../users/".$user."/projects/".$child;
-	$child_dir2 = "../../users/default/projects/".$child;
-	if (!(is_dir($child_dir1) || is_dir($child_dir2))) {
-		// Child project doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: ../../');
+	if ($child != '') {
+		// Confirm if requested project1 project exists.
+		$child_dir1 = "../../users/".$user."/projects/".$child;
+		$child_dir2 = "../../users/default/projects/".$child;
+		if (!(is_dir($child_dir1) || is_dir($child_dir2))) {
+			// Child project doesn't exist, should never happen: Force logout.
+			session_destroy();
+			?><script type="text/javascript"> parent.location.reload(); </script><?php
+		}
 	}
 
-	// Confirm if requested project1 project exists.
-	$parentHaploid1_dir1 = "../../users/".$user."/projects/".$parentHaploid1;
-	$parentHaploid1_dir2 = "../../users/default/projects/".$parentHaploid1;
-	if (!(is_dir($parentHaploid1_dir1) || is_dir($parentHaploid1_dir2))) {
-		// parentHaploid1 project doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: ../../');
+	if ($parentHaploid1 != '') {
+		// Confirm if requested parentHaploid1 project exists.
+		$parentHaploid1_dir1 = "../../users/".$user."/projects/".$parentHaploid1;
+		$parentHaploid1_dir2 = "../../users/default/projects/".$parentHaploid1;
+		if (!(is_dir($parentHaploid1_dir1) || is_dir($parentHaploid1_dir2))) {
+			// parentHaploid1 project doesn't exist, should never happen: Force logout.
+			session_destroy();
+			?><script type="text/javascript"> parent.location.reload(); </script><?php
+		}
 	}
 
-	// Confirm if requested project1 project exists.
-	$parentHaploid2_dir1 = "../../users/".$user."/projects/".$parentHaploid2;
-	$parentHaploid2_dir2 = "../../users/default/projects/".$parentHaploid2;
-	if (!(is_dir($parentHaploid2_dir1) || is_dir($parentHaploid2_dir2))) {
-		// parentHaploid1 project doesn't exist, should never happen: Force logout.
-		session_destroy();
-		header('Location: ../../');
+	if ($parentHaploid2 != '') {
+		// Confirm if requested parentHaploid2 project exists.
+		$parentHaploid2_dir1 = "../../users/".$user."/projects/".$parentHaploid2;
+		$parentHaploid2_dir2 = "../../users/default/projects/".$parentHaploid2;
+		if (!(is_dir($parentHaploid2_dir1) || is_dir($parentHaploid2_dir2))) {
+			// parentHaploid1 project doesn't exist, should never happen: Force logout.
+			session_destroy();
+			?><script type="text/javascript"> parent.location.reload(); </script><?php
+		}
 	}
 
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
