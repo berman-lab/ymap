@@ -7,7 +7,9 @@
 #============================================================================================================
 
 import string, sys, re;
-my_file = file(sys.argv[1],'r').xreadlines();
+# python 2 : my_file = file(sys.argv[1],'r').xreadlines()
+# python 3
+my_file = open(sys.argv[1]);
 
 #------------------------------------------------------------------------------------------------------------
 # dump_indels(astr) removes any insertions or deletions from the read base data in the pileup.
@@ -57,13 +59,13 @@ def dump_startend(astr):
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
-	line                              = string.split(string.strip(i), ' ');
+	line                              = i.strip().split();
 	chrom                             = line[0];				# chromosome label for locus.
 	pos                               = line[1];				# coordinate for locus (in bp).
 	ref_base                          = line[2];				# reference base at this locus.
 	total                             = line[3];				# total count of reads at locus.
 	if (len(line) > 4):
-		reads                     = string.upper(line[4]);		# string defining locus => capitalized.
+		reads                     = line[4].upper();			# string defining locus => capitalized.
 		reads_noStartEnd          = dump_startend(reads);		# locus string without indels.
 		reads_noIndels_noStartEnd = dump_indels(reads_noStartEnd);	# locus string without indels or end/start/quality.
 		A                         = len(re.findall("A", reads_noIndels_noStartEnd));

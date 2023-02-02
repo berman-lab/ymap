@@ -22,7 +22,7 @@
 
 import string, sys, time;
 
-#print sys.argv[0]+"\t"+sys.argv[1]+"\t"+sys.argv[2]+"\t"+sys.argv[3]+"\t"+sys.argv[4]+"\t"+sys.argv[5]+"\t"+sys.argv[6]+"\t"+sys.argv[7]+"\n\n"
+#print(sys.argv[0]+"\t"+sys.argv[1]+"\t"+sys.argv[2]+"\t"+sys.argv[3]+"\t"+sys.argv[4]+"\t"+sys.argv[5]+"\t"+sys.argv[6]+"\t"+sys.argv[7]+"\n\n")
 
 genome      = sys.argv[1];
 genomeUser  = sys.argv[2];
@@ -98,8 +98,8 @@ with open(logName, "a") as myfile:
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0;
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
-	chr_num = line_parts[0];
+	line_parts = line.strip().split()
+	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]));
 		chr_use    = int(float(line_parts[1]));
@@ -126,7 +126,7 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num                        = int(float(line_parts[0]));
@@ -164,10 +164,10 @@ current_fragment = 0;
 log_count        = 0;
 log_offset       = 0;
 
-print '### Chromosomes of interest : ';
+print('### Chromosomes of interest : ');
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
-		print '### \t' + str(x+1) + ' : ' + str(chrName[x]);
+		print('### \t' + str(x+1) + ' : ' + str(chrName[x]));
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n");
@@ -175,7 +175,7 @@ with open(logName, "a") as myfile:
 # Open dataset 'putative_CNVs_v1.txt' file.
 data = open(inputFile1,"r");
 
-print '### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, allele_1, allele_2]';
+print('### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, allele_1, allele_2]');
 
 # Process parent 'putative_SNPs_v4.txt' file, line by line.
 for line in data:
@@ -185,7 +185,7 @@ for line in data:
 	#		Ca21chr1_C_albicans_SC5314   2463    A     110  1    0    0
 	#		Ca21chr1_C_albicans_SC5314   2464    C     0    0    1    108
 	count += 1;
-	parentLine = string.strip(line);
+	parentLine = line.strip();
 	parentLine = parentLine.split('\t');
 	P_chr_name = parentLine[0];   # chr name of bp.			: Ca21chrR_C_albicans_SC5314
 	P_position = parentLine[1];   # chr position of bp.		: 2286371
@@ -221,7 +221,7 @@ for line in data:
 
 		# Display status updates to log file.
 		if old_chr != chr:
-			print '### chr change : ' + str(old_chr) + ' -> ' + str(chr)
+			print('### chr change : ' + str(old_chr) + ' -> ' + str(chr))
 			with open(logName, "a") as myfile:
 				myfile.write("\t\t|\t    " + str(old_chr) + " -> " + str(chr) + " = " + P_chr_name + "\n");
 				myfile.write("\t\t|\t\t1........01........01........01........01........01........01........01........01........01........0\n");
@@ -256,7 +256,7 @@ for line in data:
 		#	2) baseCall_1    : alphabetical first call of heterozgous locus.
 		#	3) baseCall_2    : alphabetical second call of heterozygous locus.
 		if chr!=0:
-			print P_chr_name + '\t' + str(P_position) + '\t' + Alleles[0][1] + '\t' + Alleles[1][1];
+			print(P_chr_name + '\t' + str(P_position) + '\t' + Alleles[0][1] + '\t' + Alleles[1][1]);
 
 		# Reset old_chr/last_fragment to current coordinate chromosome before moving to next line in pileup. 
 		old_chr       = chr;
@@ -264,7 +264,7 @@ for line in data:
 # End of code section to output information about parental heterozygous loci. 
 #============================================================================================================
 
-print '### End of preprocessed parental SNP data.';
+print('### End of preprocessed parental SNP data.');
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n");

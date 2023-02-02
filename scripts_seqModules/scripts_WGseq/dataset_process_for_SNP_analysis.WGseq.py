@@ -107,7 +107,7 @@ while True:
 	first_char = line1[:1];
 	if first_char == ">":
 		# Line is header to FASTA entry.
-		line_parts             = string.split(string.strip(line1))
+		line_parts             = line1.strip().split()
 		chrGenomeAndNum_string = line_parts[0]
 		bp_coordinate_string   = line_parts[1]
 		fragment_size_string   = line_parts[2]
@@ -130,7 +130,7 @@ while True:
 				phasedAllele       = '(' # start of string for phased alelles.
 				unphasedAllele     = '(' # start of string for unphased alleles.
 				fragments.append([chr_num,bp_start,bp_end,phasedData,unphasedData,phasedCoordinate,unphasedCoordinate,phasedAllele,unphasedAllele])
-				#print '###\tfragment[' + str(fragment_counter) + '] = [' + str(chr_num) + ', ' + str(bp_start) + ', ' + str(bp_end) + ', ' + ']'
+				#print('###\tfragment[' + str(fragment_counter) + '] = [' + str(chr_num) + ', ' + str(bp_start) + ', ' + str(bp_end) + ', ' + ']')
 				fragment_counter += 1
 standardBins_FASTA_data.close()
 with open(logName, "a") as myfile:
@@ -142,9 +142,9 @@ numFragments = fragment_counter
 #============================================================================================================
 
 
-print "### ", time.clock() - t0, "seconds to parse restriction fragments from digested genome."
+print("### " + str(time.clock()-t0) + "seconds to parse restriction fragments from digested genome.")
 t1 = time.clock()
-print "### Starting read count data processing."
+print("### Starting read count data processing.")
 
 
 #============================================================================================================
@@ -167,7 +167,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]))
@@ -189,7 +189,7 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num                        = int(float(line_parts[0]))
@@ -219,17 +219,17 @@ current_fragment = 0
 log_count        = 0
 log_offset       = 0
 
-print '### Number of Chromosomes = ' + str(chrCount)
+print('### Number of Chromosomes = ' + str(chrCount))
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
-		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
-print "###" + str(numFragments)
+		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
+print("###" + str(numFragments))
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n")
 	myfile.write("\t\t|\tparent data file = '"+parentDatafile+"'\n")
 	myfile.write("\t\t|\tchild data file  = '"+childDatafile+"'")
 # Open hapmap 'SNPdata_parent.txt' file, which only contains lines for heterozygous SNP loci in the parent dataset.
-print '### parentDatafile = ' + parentDatafile
+print('### parentDatafile = ' + parentDatafile)
 data         = open(parentDatafile,'r')
 searchTarget = open(childDatafile,'r')
 childLine    = ''
@@ -248,7 +248,7 @@ for line in data:
 	#       Ca21chr1_C_albicans_SC5314   3706    T         C         1            11
 	if line[0] != "#":
 		count += 1
-		parentLine    = string.strip(line)
+		parentLine    = line.strip()
 		parentLine    = parentLine.split('\t')
 		P_chr_name    = parentLine[0]        # chr name of bp.                  : Ca21chrR_C_albicans_SC5314
 		P_position    = int(parentLine[1])   # chr position of bp.              : 2286371
@@ -297,7 +297,7 @@ for line in data:
 						fragment_found   = 1
 						current_fragment = frag
 						break
-			#print str(numFragments)+":"+str(current_fragment)
+			#print(str(numFragments)+":"+str(current_fragment))
 			# If (fragment_found == 1), add current bp coordinate data to fragment data.
 			if fragment_found == 1:
 				# display status updates to log file.
@@ -332,11 +332,11 @@ for line in data:
 				if (chrNums[x] != 0):
 					if chrName[x] == C_chr_name:
 						C_chr = x+1
-			#print "1|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|"
+			#print("1|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
 			while P_chr > C_chr:    # WORKING: this section jumps through the child lines of chromosomes with no parent lines.
 				childLine       = searchTarget.readline()
 				if len(childLine) > 0:
-					childLine       = string.strip(childLine)
+					childLine       = childLine.strip()
 					childLine_parts = childLine.split('\t')
 					C_chr_name      = childLine_parts[0]
 					C_position      = int(childLine_parts[1])
@@ -346,11 +346,11 @@ for line in data:
 								C_chr = x+1
 				else:
 					C_chr = P_chr
-			#print "2|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|"
+			#print("2|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
 			while P_chr == C_chr and P_position > C_position:   # WORKING: this section jumps through the child lines until the correct chromosome and coordinate is reached.
 				childLine       = searchTarget.readline()
 				if len(childLine) > 0:
-					childLine       = string.strip(childLine)
+					childLine       = childLine.strip()
 					childLine_parts = childLine.split('\t')
 					C_chr_name      = childLine_parts[0]
 					C_position      = int(childLine_parts[1])
@@ -360,7 +360,7 @@ for line in data:
 								C_chr = x+1
 				else:
 					C_position = P_position
-			#print "3|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|"
+			#print("3|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
 			if P_chr > C_chr:
 				result          = ""
 			elif P_chr == C_chr and P_position > C_position:
@@ -369,11 +369,11 @@ for line in data:
 				result          = ""
 			elif P_chr == C_chr and P_position == C_position:
 				result          = childLine
-			#print "4|"+childLine+"|"
+			#print("4|"+childLine+"|")
 			C_ratio        = 0.0
 			if result == "":
 				# locus is not found in dataset, no contribution to SNP interpretations.
-				print '# locus not found in dataset.'
+				print('# locus not found in dataset.')
 				C_ratio        = 0.0
 				C_valid        = 0
 			else:
@@ -435,13 +435,13 @@ for line in data:
 						fragments[current_fragment-1][4] = fragments[current_fragment-1][4] + str(C_ratio)    + ','
 						fragments[current_fragment-1][6] = fragments[current_fragment-1][6] + str(C_position) + ','
 						fragments[current_fragment-1][8] = fragments[current_fragment-1][8] + allele_string   + ','
-			#print "|"+str(current_fragment)+" "+str(C_ratio)
+			#print("|"+str(current_fragment)+" "+str(C_ratio))
 
 			#===============================================================================================================
 			# Output log file status updates.
 			#---------------------------------------------------------------------------------------------------------------
 			if old_chr != P_chr:
-				print '### chr change : ' + str(old_chr) + ' -> ' + str(P_chr)
+				print('### chr change : ' + str(old_chr) + ' -> ' + str(P_chr))
 				with open(logName, "a") as myfile:
 					myfile.write("\n\t\t|\t    " + str(old_chr) + " -> " + str(P_chr) + " = " + P_chr_name + "\n")
 					myfile.write(  "\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
@@ -476,10 +476,10 @@ for line in data:
 		if P_position == fragments[current_fragment-1][2]:
 			fragment_found = 0
 
-print "### ", time.clock() - t1, "seconds to parse project SNP data."
+print("### " + str(time.clock()-t1) + "seconds to parse project SNP data.")
 t2 = time.clock()
-print '### Number of fragments = ' + str(numFragments)
-print '### Data from each fragment: [chrNum, bpStart, bpEnd, Max, Ave, Length]'
+print('### Number of fragments = ' + str(numFragments))
+print('### Data from each fragment: [chrNum, bpStart, bpEnd, Max, Ave, Length]')
 
 
 #============================================================================================================
@@ -487,7 +487,7 @@ print '### Data from each fragment: [chrNum, bpStart, bpEnd, Max, Ave, Length]'
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t|\tOutputting LOH status counts of standard-bin fragmented genome.\n")
-print '### chr_num\tbp_start\tbp_end\tHOM_count\tHET_count\toddHET_count'
+print('### chr_num\tbp_start\tbp_end\tHOM_count\tHET_count\toddHET_count')
 for fragment in range(1,numFragments):
 	# Output a line for each fragment.
 	#     fragments[fragment-1] = [chr_num,bp_start,bp_end,phasedData,unphasedData]
@@ -527,14 +527,14 @@ for fragment in range(1,numFragments):
 		unphasedAllele_string =  unphasedAllele_string[:-1]
 	unphasedAllele_string     += ")"
 
-	print chrNum_string+'\t'+bpStart_string+'\t'+bpEnd_string+'\t'+phasedData_string+'\t'+unphasedData_string+'\t'+phasedCoordinate_string+'\t'+unphasedCoordinate_string+'\t'+phasedAllele_string+'\t'+unphasedAllele_string
+	print(chrNum_string+'\t'+bpStart_string+'\t'+bpEnd_string+'\t'+phasedData_string+'\t'+unphasedData_string+'\t'+phasedCoordinate_string+'\t'+unphasedCoordinate_string+'\t'+phasedAllele_string+'\t'+unphasedAllele_string)
 
 #------------------------------------------------------------------------------------------------------------
 # End of code section to output information about fragments. 
 #============================================================================================================
 
-print "### ", time.clock() - t1, "seconds to output basic stats of each restriction fragment."
-print "### ", time.clock() - t0, "seconds to complete processing of fragment definitions."
+print("### ", time.clock() - t1, "seconds to output basic stats of each restriction fragment.")
+print("### ", time.clock() - t0, "seconds to complete processing of fragment definitions.")
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) +"\n")

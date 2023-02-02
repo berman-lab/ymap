@@ -29,7 +29,7 @@ genome     = sys.argv[3]
 genomeUser = sys.argv[4]
 main_dir   = sys.argv[5]
 logName    = sys.argv[6]
-inputFile  = main_dir+"/users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
+inputFile  = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
 
 t0 = time.clock()
 
@@ -86,7 +86,7 @@ while True:
 	first_char = line1[:1]
 	if first_char == ">":
 		# Line is header to FASTA entry.
-		line_parts             = line.strip().split()
+		line_parts             = line1.strip().split()
 		chrGenomeAndNum_string = line_parts[0]
 		bp_coordinate_string   = line_parts[1]
 		fragment_size_string   = line_parts[2]
@@ -120,7 +120,7 @@ numFragments = fragment_counter
 # End of code section to parse restriction fragments from genome.
 #============================================================================================================
 
-print("### " + (time.clock() - t0) + "seconds to parse restriction fragments from digested genome.")
+print("### " + str(time.clock()-t0) + "seconds to parse restriction fragments from digested genome.")
 t1 = time.clock()
 print("### Starting read count data processing.")
 
@@ -147,7 +147,7 @@ with open(logName, "a") as myfile:
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split();
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]))
@@ -175,7 +175,7 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num                        = int(float(line_parts[0]))
@@ -234,7 +234,7 @@ for line in data:
 	#     Ca21chr1_C_albicans_SC5314    2388924         123               0
 	#     Ca21chr1_C_albicans_SC5314    2388925         135               0
 	count += 1
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_name   = line_parts[0]   # chr name of bp.		: Ca21chrR_C_albicans_SC5314
 	position   = line_parts[1]   # chr position of bp.	: 2286371
 	readCount  = line_parts[2]   # read count at bp.	: 12
@@ -325,7 +325,7 @@ for fragment in range(1,numFragments):
 #============================================================================================================
 
 
-print("### "+ (time.clock() - t1) + "seconds to process the pileup file.")
+print("### "+ str(time.clock()-t1) + "seconds to process the pileup file.")
 t2 = time.clock()
 print('### Number of fragments = ' + str(numFragments))
 print('### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]')
@@ -352,8 +352,8 @@ for fragment in range(1,numFragments):
 #============================================================================================================
 
 
-print("### " + (time.clock() - t1) + "seconds to output basic stats of each restriction fragment.")
-print("### " + (time.clock() - t0) + "seconds to complete processing of fragment definitions.")
+print("### " + str(time.clock()-t1) + "seconds to output basic stats of each restriction fragment.")
+print("### " + str(time.clock()-t0) + "seconds to complete processing of fragment definitions.")
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) +"\n")
