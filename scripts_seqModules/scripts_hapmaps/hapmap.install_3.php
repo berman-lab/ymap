@@ -19,12 +19,12 @@
 	$genome          = sanitize_POST("genome");
 	$project1        = sanitize_POST("project1");
 	$project2        = sanitize_POST("project2");
-	$colorA          = sanitizeWithSpaces_POST("homolog_a_color");
-	$colorB          = sanitizeWithSpaces_POST("homolog_b_color");
+	$colorA          = sanitizeColor_POST("homolog_a_color");
+	$colorB          = sanitizeColor_POST("homolog_b_color");
 	$referencePloidy = (float)sanitizeFloat_POST("referencePloidy");
 	if ($referencePloidy == 2) {
 		// Validate hapmap description string.
-		$hapmap_description = sanitizeWithSpaces_POST("hapmap_description");
+		$hapmap_description = sanitizeHapmap_POST("hapmap_description");
 	}
 
 	// Define hapmap directory.
