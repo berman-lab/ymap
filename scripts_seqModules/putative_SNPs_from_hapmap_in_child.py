@@ -1,4 +1,4 @@
-### 
+###
 ### Simplify child putative_SNP list to contain only those loci found in the hapmap.
 ###
 ### Uses genome definition files to only output data lines for chromosomes of interest.
@@ -16,7 +16,7 @@ def process_ChildLine(entry_line):
 	#       ChrA_C_glabrata_CBS138   46      37      T     0    37   0    0
 	#       ChrA_C_glabrata_CBS138   47      38      A     38   0    0    0
 	#       ChrA_C_glabrata_CBS138   48      39      A     39   0    0    0
-	child_line = string.strip(entry_line);
+	child_line = entry_line.strip();
 	child_line = child_line.split('\t');
 	C_chr_name = child_line[0];   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
 	C_position = child_line[1];   # chr position of bp.      : 2286371
@@ -45,7 +45,7 @@ def process_HapmapLine(entry_line):
 	#       Ca21chr1_C_albicans_SC5314   812     C      T      0         (1       ...)
 	#       Ca21chr1_C_albicans_SC5314   816     T      C      0         (1       ...)
 	#       Ca21chr1_C_albicans_SC5314   879     G      A      0         (0       ...)
-	hapmap_line   = string.strip(entry_line);
+	hapmap_line   = entry_line.strip();
 	hapmap_line   = hapmap_line.split('\t');
 	H_chr_name    = hapmap_line[0];   # chromosome   : Ca21chrR_C_albicans_SC5314
 	H_position    = hapmap_line[1];   # coordinate   : 2286371
@@ -120,7 +120,7 @@ with open(logName, "a") as myfile:
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]))
@@ -148,7 +148,7 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
+	line_parts = line.strip().split()
 	chr_num = line_parts[0]
 	if chr_num.isdigit():
 		chr_num                        = int(float(line_parts[0]))
@@ -186,16 +186,16 @@ current_fragment = 0
 log_count        = 0
 log_offset       = 0
 
-print '### Chromosomes of interest : '
+print('### Chromosomes of interest : ')
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
-		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
+		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
 
 
 # Process hapmap file, as well as "SNP_CNV_v1.txt" for the data from the child.
 with open(logName, "a") as myfile:
-        myfile.write("\t\t|\tLoading SNP coordinates from hapmap.\n");
-print '### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, countA, countT, countG, countC]';
+	myfile.write("\t\t|\tLoading SNP coordinates from hapmap.\n");
+print('### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, countA, countT, countG, countC]');
 data_H               = open(inputFile_H,"r");
 old_H_chrID          = 0;
 hapmap_loci          = set();
@@ -221,29 +221,29 @@ child_SNPs_small          = [];
 counter                   = 0;
 for line_C in data_C:
 	if len(line_C) == 0 or line_C[0] == "#" :
-                continue
-        
-        C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
-        if C_chrID != old_C_chrID:
-                with open(logName, "a") as myfile:
-                        myfile.write("\n\t\t|\t\tchr = "+str(C_chrName)+"\n");
-                counter = 0;
-        if (C_chrID > 0) and (int(C_countA)+int(C_countT)+int(C_countG)+int(C_countC) >= 20):   # chromosome is identified and in use; read depth >= 20.
-                if (C_chrName, C_position) in hapmap_loci:
-                        child_SNPs.append( (C_chrName, C_position, C_countA, C_countT, C_countG, C_countC) );
-                        child_SNPs_small.append( (C_chrName, C_position) );
-                        if counter == 0:
-                                with open(logName, "a") as myfile:
-                                        myfile.write("\t\t|\t\t");
-                        if counter%10 == 0:
-                                with open(logName, "a") as myfile:
-                                        myfile.write(".");
-                        if counter == 800:
-                                with open(logName, "a") as myfile:
-                                        myfile.write("\n\t\t|\t\t");
-                                counter = 0;
-                        counter += 1;
-        old_C_chrID = C_chrID;
+		continue
+
+	C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
+	if C_chrID != old_C_chrID:
+		with open(logName, "a") as myfile:
+			myfile.write("\n\t\t|\t\tchr = "+str(C_chrName)+"\n");
+		counter = 0;
+	if (C_chrID > 0) and (int(C_countA)+int(C_countT)+int(C_countG)+int(C_countC) >= 20):   # chromosome is identified and in use; read depth >= 20.
+		if (C_chrName, C_position) in hapmap_loci:
+			child_SNPs.append( (C_chrName, C_position, C_countA, C_countT, C_countG, C_countC) );
+			child_SNPs_small.append( (C_chrName, C_position) );
+			if counter == 0:
+				with open(logName, "a") as myfile:
+					myfile.write("\t\t|\t\t");
+			if counter%10 == 0:
+				with open(logName, "a") as myfile:
+					myfile.write(".");
+			if counter == 800:
+				with open(logName, "a") as myfile:
+					myfile.write("\n\t\t|\t\t");
+				counter = 0;
+			counter += 1;
+	old_C_chrID = C_chrID;
 data_C.close();
 
 # Output child lines from hapmap positions.
@@ -252,13 +252,13 @@ with open(logName, "a") as myfile:
 for SNP in hapmap_loci:
 	if SNP in child_SNPs_small:
 		SNP_data = child_SNPs[child_SNPs_small.index(SNP)];
-		print SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5];
+		print(SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5]);
 
 #------------------------------------------------------------------------------------------------------------
 # End of main code block.
 #============================================================================================================
 
-print '### End of preprocessed hapmap loci vs. child SNP data.'
+print('### End of preprocessed hapmap loci vs. child SNP data.');
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")
