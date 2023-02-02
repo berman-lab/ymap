@@ -1,0 +1,73 @@
+#================================================================
+# Deny access to filenames starting with dot(.); .htaccess, etc.
+#----------------------------------------------------------------
+<FilesMatch "^\.">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+#===============================================
+# TXT/ZIP/MAT files should never be accessible.
+#-----------------------------------------------
+<FilesMatch "<*.txt">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.mat">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.zip">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+#=============================================================================
+# Genome directories have various file types that should never be accessible.
+#-----------------------------------------------------------------------------
+<FilesMatch "<*.bt2">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.dict">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.fai">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.nhr">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.nin">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.nsd">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.nsi">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.nsq">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+<FilesMatch "<*.bed">
+Order allow,deny
+Deny from all
+</FilesMatch>
