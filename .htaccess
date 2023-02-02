@@ -50,6 +50,15 @@ Deny from all
 </FilesMatch>
 
 #=============================================================================
+# Project directories have various file types that should never be accessible.
+#-----------------------------------------------------------------------------
+
+<FilesMatch "<*.xls">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+#=============================================================================
 # Genome directories have various file types that should never be accessible.
 #-----------------------------------------------------------------------------
 <FilesMatch "<*.bt2">
