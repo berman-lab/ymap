@@ -1,6 +1,6 @@
 <?php
 //
-// require_once SecureNewDirectory.php
+// require_once 'SecureNewDirectory.php';
 //
 function secureNewDirectory($dir) {
 	// Generate 'index.php' file into each directory, to redirect to main page

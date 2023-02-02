@@ -3,6 +3,7 @@
 	error_reporting(E_ALL);
 	require_once 'constants.php';
 	require_once 'POST_validation.php';
+	require_once 'SecureNewDirectory.php';
 	ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
@@ -25,6 +26,7 @@
 	// Deals with accidental deletion of user/genomes dir.
 	if (!file_exists($dir1)){
 		mkdir($dir1);
+		secureNewDirectory($dir1);
 		chmod($dir1,0777);
 	}
 
@@ -50,6 +52,7 @@
 	} else {
 		// Create the genome folder inside the user's genomes directory
 		mkdir($dir2);
+		secureNewDirectory($dir2);
 		chmod($dir2,0777);
 
 		// Generate 'name.txt' file containing:

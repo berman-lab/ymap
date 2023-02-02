@@ -11,6 +11,7 @@
  */
 
 session_start();
+require_once '../../SecureNewDirectory.php';
 
 class UploadHandler {
     protected $options;
@@ -268,6 +269,7 @@ class UploadHandler {
             $version_dir = $this->get_upload_path(null, $version);
             if (!is_dir($version_dir)) {
                 mkdir($version_dir, $this->options['mkdir_mode'], true);
+		secureNewDirectory($version_dir);
             }
             $new_file_path = $version_dir.'/'.$file_name;
         } else {
@@ -578,6 +580,7 @@ class UploadHandler {
             $upload_dir = $this->get_upload_path();
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, $this->options['mkdir_mode'], true);
+		secureNewDirectory($upload_dir);
             }
             $file_path = $this->get_upload_path($file->name);
             $append_file = $content_range && is_file($file_path) &&

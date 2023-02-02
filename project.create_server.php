@@ -3,6 +3,7 @@
 	error_reporting(E_ALL);
 	require_once 'constants.php';
 	require_once 'POST_validation.php';
+	require_once 'SecureNewDirectory.php';
 	ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
@@ -77,6 +78,7 @@
 	// Deals with accidental deletion of user/projects dir.
 	if (!file_exists($projects_dir)){
 		mkdir($projects_dir);
+		secureNewDirectory($projects_dir);
 		chmod($projects_dir,0777);
 	}
 
@@ -107,6 +109,7 @@
 
 		// Create the project folder inside the user's projects directory
 		mkdir($project_dir1);
+		secureNewDirectory($project_dir1);
 		chmod($project_dir1,0777);
 
 		// Generate 'name.txt' file containing:

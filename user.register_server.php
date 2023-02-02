@@ -2,6 +2,7 @@
 	session_start();
 	require_once 'constants.php';
 	require_once 'POST_validation.php';
+	require_once 'SecureNewDirectory.php';
 	ini_set('display_errors', 1);
 
 	// validate POST input.
@@ -31,9 +32,14 @@
 		if (!doesUserDirectoryExist($user)) {
 			$dir = "users/".$user;
 			mkdir($dir);
+			secureNewDirectory($dir);
 			chmod($dir,0777);
 			mkdir($dir."/projects/");    // initialize user projects dir.
+			secureNewDirectory($dir."/projects/");
 			mkdir($dir."/genomes/");     // initialize user genomes dir.
+			secureNewDirectory($dir."/genomes/");
+			mkdir($dir."/hapmaps/");     // initialize user hapmaps dir.
+			secureNewDirectory($dir."/hapmaps/");
 			chmod($dir."/projects/",0777);
 			chmod($dir."/genomes/", 0777);
 			writePassword($user, $pw);
