@@ -20,9 +20,22 @@ function sanitize_POST($POST_name) {
 	$cleanString = preg_replace("/[^\w-_.]+/", "", $cleanString);
 	return $cleanString;
 }
-function sanitizeWithSpaces_POST($POST_name) {
+function sanitizeColor_POST($POST_name) {
 	$cleanString = sanitize_POST($POST_name);
-	// convert any underlines to spaces to.
+	// convert any underlines to spaces.
+	$cleanString = str_replace("_"," ", $cleanString);
+	return $cleanString;
+}
+function sanitizeHapmap_POST($POST_name) { //whitelisted characters for hapmap description.
+	// strip out any html tags.
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_SANITIZE_STRING));
+	// convert any spaces to underlines.
+	$cleanString = str_replace(" ","_", $cleanString);
+	// remove whitespace.
+	$cleanString = preg_replace("/[\s]+/", "", $cleanString);
+	// remove everything but alphanumeric characters, underlines, dashes, and periods.
+	$cleanString = preg_replace("/[^\w-_.\[\]\(\):;]+/", "", $cleanString);
+	// convert any underlines to spaces.
 	$cleanString = str_replace("_"," ", $cleanString);
 	return $cleanString;
 }
