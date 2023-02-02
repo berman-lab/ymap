@@ -176,14 +176,14 @@ else
 		cp $projectParentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	else
 		echo "\tDecompressing parent SNP data." >> $logName;
-        parentSnpDataTempDir=$projectDirectory"/SNPdata_parent_temp/";
-        mkdir $parentSnpDataTempDir;
+		parentSnpDataTempDir=$projectDirectory"/SNPdata_parent_temp/";
+		mkdir $parentSnpDataTempDir;
 		unzip -j $projectParentDirectory"putative_SNPs_v4.zip" -d $parentSnpDataTempDir;
-        mv $parentSnpDataTempDir"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
-        rmdir $parentSnpDataTempDir;
+		mv $parentSnpDataTempDir"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
+		rmdir $parentSnpDataTempDir;
 	fi
 
-	# preprocess parent for comparison. abbey
+	# preprocess parent for comparison.
 	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
 
 	rm $projectDirectory"SNPdata_parent.txt";
