@@ -19,8 +19,8 @@
 	$genome          = sanitize_POST("genome");
 	$project1        = sanitize_POST("project1");
 	$project2        = sanitize_POST("project2");
-	$colorA          = sanitize_POST("homolog_a_color");
-	$colorB          = sanitize_POST("homolog_b_color");
+	$colorA          = sanitizeColor_POST("homolog_a_color");
+	$colorB          = sanitizeColor_POST("homolog_b_color");
 	$referencePloidy = (float)sanitizeFloat_POST("referencePloidy");
 	if ($referencePloidy == 2) {
 		// Validate hapmap description string.
