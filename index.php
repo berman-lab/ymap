@@ -57,7 +57,9 @@
 		show_button_element.setAttribute('data-file-list', file_list);
 		show_button_element.style.visibility = 'visible';
 		var project_iframe                   = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key);
-		project_iframe.innerHTML             = '';
+		if (project_iframe != null) {
+			project_iframe.innerHTML     = '';
+		}
 		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById("p_".project_key).style.height = "0px";
 	}
 	function update_project_label_color(project_key,label_color) {
