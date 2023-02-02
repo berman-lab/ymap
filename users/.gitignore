@@ -1,4 +1,5 @@
-# Ignore contents of this directory, except the .gitignore file itself.
+# Ignore contents of this directory, except the .gitignore file itself and index.php.
 *
 !.gitignore
 !default/
+!index.php
