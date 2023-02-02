@@ -19,9 +19,9 @@
 	$genome             = sanitize_POST("genome");
 	$project1           = sanitize_POST("project1");
 	$project2           = sanitize_POST("project2");
-	$colorA             = sanitize_POST("homolog_a_color");
-	$colorB             = sanitize_POST("homolog_b_color");
-	$hapmap_description = sanitize_POST("hapmap_description");
+	$colorA             = sanitizeColor_POST("homolog_a_color");
+	$colorB             = sanitizeColor_POST("homolog_b_color");
+	$hapmap_description = sanitizeHapmap_POST("hapmap_description");
 
 	// Confirm if requested hapmap exists.
 	$hapmap_dir = "../../users/".$user."/hapmaps/".$hapmap;

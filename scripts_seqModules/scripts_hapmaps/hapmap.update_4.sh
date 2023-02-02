@@ -94,7 +94,6 @@ echo "    genome directory            = '"$genomeDirectory"'" >> $logName;
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
 echo "    genome FASTA file           = '"$genomeFASTA"'" >> $logName;
 
-
 ##==============================================================================
 ## Move parent SNP data to hapmap directory and preprocess it for analysis.
 ##------------------------------------------------------------------------------
