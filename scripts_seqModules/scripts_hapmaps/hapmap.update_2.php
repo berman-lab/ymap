@@ -130,7 +130,7 @@
 	        $imageUrl = $project1_dir1."/fig.CNV-SNP-map.2.png";
 	    }
 	    echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
-	} else if (file_exists($project1_dir2.)) {
+	} else if (file_exists($project1_dir2)) {
 		if (file_exists($project1_dir2."/fig.CNV-LOH-map.2.png")) {
 			$imageUrl = $project1_dir2."/fig.CNV-LOH-map.2.png";
 		} else {
