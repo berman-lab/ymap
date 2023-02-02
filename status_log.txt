@@ -1,5 +1,0 @@
-<font color="green">Genomes</font>
-<font color="green">SnpCgh : CNV, SNP, hapmap.</font>
-<font color="green">WGseq : CNV, SNP, LOH, hapmap.</font>
-<font color="green">ddRADseq : CNV, SNP, LOH, hapmap.</font>
-<font color="green">Hapmaps : from one heterozygous-diploid, from two homozygous-haploids.</font>
