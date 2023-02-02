@@ -20,7 +20,7 @@ function sanitize_POST($POST_name) {
 	$cleanString = preg_replace("/[^\w-_.]+/", "", $cleanString);
 	return $cleanString;
 }
-function sanitizeColor_POST($POST_name) {
+function sanitizeWithSpaces_POST($POST_name) {
 	$cleanString = sanitize_POST($POST_name);
 	// convert any underlines to spaces to.
 	$cleanString = str_replace("_"," ", $cleanString);
