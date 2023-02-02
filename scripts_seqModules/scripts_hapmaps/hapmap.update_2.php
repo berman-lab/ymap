@@ -36,7 +36,6 @@
 		session_destroy();
 		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
-
 	// Confirm if requested project1 project exists.
 	$project1_dir1 = "../../users/".$user."/projects/".$project1;
 	$project1_dir2 = "../../users/default/projects/".$project1;

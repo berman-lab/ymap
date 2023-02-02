@@ -28,8 +28,9 @@
 	$genome     = sanitize_POST("genome");
 	$parent     = sanitize_POST("parent");
 	$selectNext = sanitize_POST("selectNext");
+
 	// Confirm if requested hapmap exists.
-	$hapmap_dir = "users/".$user."/hapmaps/".$hapmap;
+	$hapmap_dir = "../../users/".$user."/hapmaps/".$hapmap;
 	if (!is_dir($hapmap_dir)) {
 		// Hapmap doesn't exist, should never happen: Force logout.
 		session_destroy();
@@ -37,8 +38,8 @@
 	}
 
 	// Confirm if requested genome exists.
-	$genome_dir1 = "users/".$user."/genomes/".$genome;
-	$genome_dir2 = "users/default/genomes/".$genome;
+	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
+	$genome_dir2 = "../../users/default/genomes/".$genome;
 	if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
@@ -46,8 +47,8 @@
 	}
 
 	// Confirm if requested parent project exists.
-	$parent_dir1 = "users/".$user."/projects/".$parent;
-	$parent_dir2 = "users/default/projects/".$parent;
+	$parent_dir1 = "../../users/".$user."/projects/".$parent;
+	$parent_dir2 = "../../users/default/projects/".$parent;
 	if (!(is_dir($parent_dir1) || is_dir($parent_dir2))) {
 		// Parent project doesn't exist, should never happen: Force logout.
 		session_destroy();
@@ -55,8 +56,8 @@
 	}
 
 	// Confirm if requested next project exists.
-	$selectNext_dir1 = "users/".$user."/projects/".$selectNext;
-	$selectNext_dir2 = "users/default/projects/".$selectNext;
+	$selectNext_dir1 = "../../users/".$user."/projects/".$selectNext;
+	$selectNext_dir2 = "../../users/default/projects/".$selectNext;
 	if (!(is_dir($selectNext_dir1) || is_dir($selectNext_dir2))) {
 		// next project doesn't exist, should never happen: Force logout.
 		session_destroy();

@@ -8,54 +8,54 @@
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	// Load user string from session.
 	$user       = $_SESSION['user'];
 
 	// Validate input strings.
-	$hapmap             = validate_POST("hapmap");
-	$genome             = validate_POST("genome");
-	$project1           = validate_POST("project1");
-	$project2           = validate_POST("project2");
-	$colorA             = validate_POST("homolog_a_color");
-	$colorB             = validate_POST("homolog_b_color");
-	$hapmap_description = validate_POST("hapmap_description");
+	$hapmap             = sanitize_POST("hapmap");
+	$genome             = sanitize_POST("genome");
+	$project1           = sanitize_POST("project1");
+	$project2           = sanitize_POST("project2");
+	$colorA             = sanitize_POST("homolog_a_color");
+	$colorB             = sanitize_POST("homolog_b_color");
+	$hapmap_description = sanitize_POST("hapmap_description");
 
 	// Confirm if requested hapmap exists.
 	$hapmap_dir = "../../users/".$user."/hapmaps/".$hapmap;
-	if !(is_dir($hapmap_dir)) {
+	if (!is_dir($hapmap_dir)) {
 		// Hapmap doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	// Confirm if requested genome exists.
 	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
 	$genome_dir2 = "../../users/default/genomes/".$genome;
-	if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
+	if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	// Confirm if requested project1 project exists.
 	$project1_dir1 = "../../users/".$user."/projects/".$project1;
 	$project1_dir2 = "../../users/default/projects/".$project1;
-	if !(is_dir($project1_dir1) || is_dir($project1_dir2)) {
+	if (!(is_dir($project1_dir1) || is_dir($project1_dir2))) {
 		// Parent project doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	// Confirm if requested project2 project exists.
 	$project2_dir1 = "../../users/".$user."/projects/".$project2;
 	$project2_dir2 = "../../users/default/projects/".$project2;
-	if !(is_dir($project2_dir1) || is_dir($project2_dir2)) {
+	if (!(is_dir($project2_dir1) || is_dir($project2_dir2))) {
 		// Project2 project doesn't exist, should never happen: Force logout.
 		session_destroy();
-		header('Location: ../../');
+		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
