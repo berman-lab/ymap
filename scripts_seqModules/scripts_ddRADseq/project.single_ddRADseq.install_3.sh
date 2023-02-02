@@ -11,8 +11,6 @@ user=$1;
 project=$2;
 main_dir=$(pwd)"/../../";
 
-user="darren"
-project="test_ddRADseq_SC5314"
 
 ##==============================================================================
 ## Define locations and names to be used later.
