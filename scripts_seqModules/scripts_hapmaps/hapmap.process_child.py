@@ -206,7 +206,7 @@ for line in data:
 	#   4) prior_hapmap entry phasing :
 	if line[0] != "#":
 		count += 1;
-		parentLine  = string.strip(line);
+		parentLine  = line.strip();
 		parentLine  = parentLine.split('\t');
 		lineColumns = len(parentLine);
 		P_chr_name  = parentLine[0];        # chr name of bp.			: Ca21chrR_C_albicans_SC5314
@@ -288,7 +288,7 @@ for line in data:
 			P_chr = chr;
 			while P_chr > C_chr:	# WORKING: this section jumps through the child lines of chromosomes with no parent lines.
 				childLine       = searchTarget.readline();
-				childLine       = string.strip(childLine);
+				childLine       = childLine.strip();
 				childLine_parts = childLine.split('\t');
 				C_chr_name      = childLine_parts[0];
 				C_position      = int(childLine_parts[1]);
@@ -298,7 +298,7 @@ for line in data:
 							C_chr = x+1;
 			while P_chr == C_chr and P_position > C_position:   # WORKING: this section jumps through the child lines until the correct chromosome and coordinate is reached.
 				childLine       = searchTarget.readline();
-				childLine       = string.strip(childLine);
+				childLine       = childLine.strip();
 				childLine_parts = childLine.split('\t');
 				C_chr_name      = childLine_parts[0];
 				C_position      = int(childLine_parts[1]);
@@ -353,7 +353,7 @@ for line in data:
 					else:
 						locus_phase = 12;      # no phase information, due to surprise allele in child dataset.
 			# Output 'SNPdata_hapmap.txt' line with new column containing most recent haplotype entry phase.
-			print(string.strip(line)+'\t'+str(locus_phase)); # add new phasing information to existing info
+			print(line.strip()+'\t'+str(locus_phase)); # add new phasing information to existing info
 		# Reset old_chr/last_fragment to current coordinate chromosome before moving to next line in pileup.
 		old_chr       = chr;
 		last_fragment = current_fragment;

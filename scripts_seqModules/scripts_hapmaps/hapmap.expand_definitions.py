@@ -62,17 +62,17 @@ while True:
 	LOH_entry = LOH_entry[:-1];	# trim last character (';') off the string.
 
 	# break LOH string into per-chromosome definitions.
-	LOH_chr_list = string.split(LOH_entry,"; ");				# '3(b[1:2232036]); 9(a[1:1143195] b[1143196:2286390])' => ['3(b[1:2232036])', '9(a[1:1143195] b[1143196:2286390])']
+	LOH_chr_list = LOH_entry.split("; ");					# '3(b[1:2232036]); 9(a[1:1143195] b[1143196:2286390])' => ['3(b[1:2232036])', '9(a[1:1143195] b[1143196:2286390])']
 	for chr in LOH_chr_list:
 		chr       = chr[:-1];						# trim last character: '9(a[1:1143195] b[1143196:2286390])' => '9(a[1:1143195] b[1143196:2286390]'
-		chr_parts = string.split(chr,"(");				# split into chrID and LOH_list: '9(a[1:1143195] b[1143196:2286390]' => ['9', 'a[1:1143195] b[1143196:2286390]']
+		chr_parts = chr.split("(");					# split into chrID and LOH_list: '9(a[1:1143195] b[1143196:2286390]' => ['9', 'a[1:1143195] b[1143196:2286390]']
 		chrID     = chr_parts[0];
-		LOH_list  = string.split(chr_parts[1]," ");			# 'a[1:1143195] b[1143196:2286390]' => ['a[1:1143195]', 'b[1143196:2286390]']
+		LOH_list  = chr_parts[1].split(" ");				# 'a[1:1143195] b[1143196:2286390]' => ['a[1:1143195]', 'b[1143196:2286390]']
 		for LOH_item in LOH_list:
 			LOH_item       = LOH_item[:-1];				# trim last character (']') off: 'b[1143196:2286390]' => 'b[1143196:2286390'
-			LOH_item_parts = string.split(LOH_item,"[");		# split into homologID and coordiantes: 'b[1143196:2286390' => ['b', '1143196:2286390']
+			LOH_item_parts = LOH_item.split("[");			# split into homologID and coordiantes: 'b[1143196:2286390' => ['b', '1143196:2286390']
 			homologID      = LOH_item_parts[0];
-			coordinates    = string.split(LOH_item_parts[1],":");	# split into coordinates: '1143196:2286390' => ['1143196', '2286390']
+			coordinates    = LOH_item_parts[1].split(":");		# split into coordinates: '1143196:2286390' => ['1143196', '2286390']
 			startbp        = coordinates[0];
 			endbp          = coordinates[1];
 			output.write(">"+child+".chr"+chrID+" ("+str(startbp)+".."+str(endbp)+") ("+str(int(endbp)-int(startbp)+1)+"bp) [*] "+homologID+"\n");

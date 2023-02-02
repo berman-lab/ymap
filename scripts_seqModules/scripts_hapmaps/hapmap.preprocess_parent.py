@@ -187,13 +187,13 @@ for line in data:
 	count += 1;
 	parentLine = line.strip();
 	parentLine = parentLine.split('\t');
-	P_chr_name = parentLine[0];   # chr name of bp.			: Ca21chrR_C_albicans_SC5314
-	P_position = parentLine[1];   # chr position of bp.		: 2286371
+	P_chr_name = parentLine[0];   # chr name of bp.		: Ca21chrR_C_albicans_SC5314
+	P_position = parentLine[1];   # chr position of bp.	: 2286371
 	P_refBase  = parentLine[2];   # reference base at bp.	: T
-	P_countA   = parentLine[3];   # count of A.				: 100
-	P_countT   = parentLine[4];   # count of T.				: 0
-	P_countG   = parentLine[5];   # count of G.				: 0
-	P_countC   = parentLine[6];   # count of C.				: 1
+	P_countA   = parentLine[3];   # count of A.		: 100
+	P_countT   = parentLine[4];   # count of T.		: 0
+	P_countG   = parentLine[5];   # count of G.		: 0
+	P_countC   = parentLine[6];   # count of C.		: 1
 
 	# Determine if parent data point is heterozygous.
 	P_counts   = [int(float(P_countA)), int(float(P_countT)), int(float(P_countG)), int(float(P_countC))];
