@@ -39,7 +39,7 @@
 	// Confirm if requested genome exists.
 	$genome_dir1 = "../../users/".$user."/genomes/".$genome;
 	$genome_dir2 = "../../users/default/genomes/".$genome;
-	if !(is_dir($genome_dir1) || is_dir($genome_dir2)) {
+	if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
 		// Genome doesn't exist, should never happen: Force logout.
 		session_destroy();
 		header('Location: ../../');
@@ -48,7 +48,7 @@
 	// Confirm if requested project1 project exists.
 	$parent_dir1 = "../../users/".$user."/projects/".$parent;
 	$parent_dir2 = "../../users/default/projects/".$parent;
-	if !(is_dir($parent_dir1) || is_dir($parent_dir2)) {
+	if (!(is_dir($parent_dir1) || is_dir($parent_dir2))) {
 		// Parent project doesn't exist, should never happen: Force logout.
 		session_destroy();
 		header('Location: ../../');
@@ -57,7 +57,7 @@
 	// Confirm if requested project1 project exists.
 	$child_dir1 = "../../users/".$user."/projects/".$child;
 	$child_dir2 = "../../users/default/projects/".$child;
-	if !(is_dir($child_dir1) || is_dir($child_dir2)) {
+	if (!(is_dir($child_dir1) || is_dir($child_dir2))) {
 		// Child project doesn't exist, should never happen: Force logout.
 		session_destroy();
 		header('Location: ../../');
@@ -66,7 +66,7 @@
 	// Confirm if requested project1 project exists.
 	$parentHaploid1_dir1 = "../../users/".$user."/projects/".$parentHaploid1;
 	$parentHaploid1_dir2 = "../../users/default/projects/".$parentHaploid1;
-	if !(is_dir($parentHaploid1_dir1) || is_dir($parentHaploid1_dir2)) {
+	if (!(is_dir($parentHaploid1_dir1) || is_dir($parentHaploid1_dir2))) {
 		// parentHaploid1 project doesn't exist, should never happen: Force logout.
 		session_destroy();
 		header('Location: ../../');
@@ -75,7 +75,7 @@
 	// Confirm if requested project1 project exists.
 	$parentHaploid2_dir1 = "../../users/".$user."/projects/".$parentHaploid2;
 	$parentHaploid2_dir2 = "../../users/default/projects/".$parentHaploid2;
-	if !(is_dir($parentHaploid2_dir1) || is_dir($parentHaploid2_dir2)) {
+	if (!(is_dir($parentHaploid2_dir1) || is_dir($parentHaploid2_dir2))) {
 		// parentHaploid1 project doesn't exist, should never happen: Force logout.
 		session_destroy();
 		header('Location: ../../');
