@@ -73,60 +73,68 @@ function showColors(colorName,targetToChange,contentString) {
 
 		foreach($hapmapFolders as $key=>$hapmap) {
 			echo "<div class='tab'><table><tr><td>\n\t\t\t\t";
+
+			// Check status of existing hapmap folders: initial html differs for each.
 			if (file_exists("users/".$user."/hapmaps/".$hapmap."/complete.txt")) {
 				echo "<span id='h_label_".$key."' style='color:#00AA00;'>";
 			} else if (file_exists("users/".$user."/hapmaps/".$hapmap."/working.txt")) {
 				echo "<span id='h_label_".$key."' style='color:#BB9900;'>";
-			} else {
+			} else if (is_dir("users/".$user."/hapmaps/".$hapmap)) {
 				echo "<span id='h_label_".$key."' style='color:#CC0000;'>";
 			}
-			echo "<button id='hapmap_delete_".$key."' type='button' onclick=\"parent.deleteHapmapConfirmation('".$user."','".$hapmap."','".$key."')\">Delete</button>\n\t\t";
-			echo "<font size='2'>".$hapmap."</font></span></td><td>\n\t\t\t\t";
-			echo "<span id='h_delete_".$key."'></span>\n\t\t\t\t";
 
-			echo "<td><div id='userHapmapA_".$key."'  >[a]</div></td>\n\t\t\t\t";
-			echo "<td><div id='userHapmapHET_".$key."'>[ab]</div></td>\n\t\t\t\t";
-			echo "<td><div id='userHapmapB_".$key."'  >[b]</div></td>\n\t\t\t\t";
-			echo "<td><div id='userHapmapHOM_".$key."'>[hom]</div></td></tr></table>\n\t\t\t\t";
-			echo "<div id='frameContainer.h_".$key."'></div></div>\n\t\t\t\t";
+			if (is_dir("users/".$user."/hapmaps/".$hapmap)) {
+				echo "<button id='hapmap_delete_".$key."' type='button' onclick=\"parent.deleteHapmapConfirmation('".$user."','".$hapmap."','".$key."')\">Delete</button>\n\t\t";
+				echo "<font size='2'>".$hapmap."</font></span></td><td>\n\t\t\t\t";
+				echo "<span id='h_delete_".$key."'></span>\n\t\t\t\t";
 
-			echo "<script type='text/javascript'>\n\t\t\t\t";
-			echo "var el_h_".$key." = document.getElementById('frameContainer.h_".$key."');\n\t\t\t\t";
-			echo "function hapmap_UI_refresh_1_".$key."() {\n\t\t\t\t";
-			echo "    var frameString3 = '<iframe id=\"h_".$key."\" name=\"h_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.addTo.php?k=".$key."\"';\n\t\t\t\t";
-			echo "    var frameString4 = ' marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t\t\t\t";
-			echo "    var frameString5 = '<iframe id=\"h2_".$key."\" name=\"h2_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.finalize.php?k=".$key."\"';\n\t\t\t\t";
-			echo "    var frameString6 = '  marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t\t\t\t";
-			echo "    el_h_".$key.".innerHTML = frameString3.concat(frameString4,frameString5,frameString6);\n\t\t\t\t";
-			echo "var h_iframe           = document.getElementById('h_".$key."');\n\t\t\t\t";
-			echo "var h_js               = h_iframe.contentWindow;\n\t\t\t\t";
-			echo "h_js.hapmap            = '".$hapmap."';\n\t\t\t\t";
-			echo "h_js.user              = '".$user."';\n\t\t\t\t";
-			echo "h_js.key               = 'h_".$key."';\n\t\t\t\t";
-			echo "var h2_iframe           = document.getElementById('h2_".$key."');\n\t\t\t\t";
-			echo "var h2_js               = h2_iframe.contentWindow;\n\t\t\t\t";
-			echo "h2_js.hapmap           = '".$hapmap."';\n\t\t\t\t";
-			echo "h2_js.user             = '".$user."';\n\t\t\t\t";
-			echo "h2_js.key              = 'h2_".$key."';\n\t\t\t\t";
-			echo "}\n\t\t\t\t";
-			echo "function hapmap_UI_refresh_2_".$key."() {\n\t\t\t\t";
-			echo "    var frameString1 = '<iframe id=\"h_".$key."\" name=\"h_".$key."\" class=\"upload\" src=\"hapmap.working.php\" ';\n\t\t\t\t";
-			echo "    var frameString2 = 'marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t\t\t\t";
-			echo "    el_h_".$key.".innerHTML = frameString1.concat(frameString2);\n\t\t\t\t";
-			echo "var h_iframe           = document.getElementById('h_".$key."');\n\t\t\t\t";
-			echo "var h_js               = h_iframe.contentWindow;\n\t\t\t\t";
-			echo "h_js.hapmap            = '".$hapmap."';\n\t\t\t\t";
-			echo "h_js.user              = '".$user."';\n\t\t\t\t";
-			echo "h_js.key               = 'h_".$key."';\n\t\t\t\t";
-			echo "}\n\t\t\t\t";
+				echo "<td><div id='userHapmapA_".$key."'  >[a]</div></td>\n\t\t\t\t";
+				echo "<td><div id='userHapmapHET_".$key."'>[ab]</div></td>\n\t\t\t\t";
+				echo "<td><div id='userHapmapB_".$key."'  >[b]</div></td>\n\t\t\t\t";
+				echo "<td><div id='userHapmapHOM_".$key."'>[hom]</div></td></tr></table>\n\t\t\t\t";
+				echo "<div id='frameContainer.h_".$key."'></div></div>\n\t\t\t\t";
 
+				echo "<script type='text/javascript'>\n\t\t\t\t";
+				echo "var el_h_".$key." = document.getElementById('frameContainer.h_".$key."');\n\t\t\t\t";
+				echo "function hapmap_UI_refresh_1_".$key."() {\n\t\t\t\t";
+				echo "    var frameString3 = '<iframe id=\"h_".$key."\" name=\"h_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.addTo.php?k=".$key."\"';\n\t\t\t\t";
+				echo "    var frameString4 = ' marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t\t\t\t";
+				echo "    var frameString5 = '<iframe id=\"h2_".$key."\" name=\"h2_".$key."\" class=\"upload\" style=\"height:38px\" src=\"hapmap.finalize.php?k=".$key."\"';\n\t\t\t\t";
+				echo "    var frameString6 = '  marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t\t\t\t";
+				echo "    el_h_".$key.".innerHTML = frameString3.concat(frameString4,frameString5,frameString6);\n\t\t\t\t";
+				echo "var h_iframe           = document.getElementById('h_".$key."');\n\t\t\t\t";
+				echo "var h_js               = h_iframe.contentWindow;\n\t\t\t\t";
+				echo "h_js.hapmap            = '".$hapmap."';\n\t\t\t\t";
+				echo "h_js.user              = '".$user."';\n\t\t\t\t";
+				echo "h_js.key               = 'h_".$key."';\n\t\t\t\t";
+				echo "var h2_iframe           = document.getElementById('h2_".$key."');\n\t\t\t\t";
+				echo "var h2_js               = h2_iframe.contentWindow;\n\t\t\t\t";
+				echo "h2_js.hapmap           = '".$hapmap."';\n\t\t\t\t";
+				echo "h2_js.user             = '".$user."';\n\t\t\t\t";
+				echo "h2_js.key              = 'h2_".$key."';\n\t\t\t\t";
+				echo "}\n\t\t\t\t";
+				echo "function hapmap_UI_refresh_2_".$key."() {\n\t\t\t\t";
+				echo "    var frameString1 = '<iframe id=\"h_".$key."\" name=\"h_".$key."\" class=\"upload\" src=\"hapmap.working.php\" ';\n\t\t\t\t";
+				echo "    var frameString2 = 'marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t\t\t\t";
+				echo "    el_h_".$key.".innerHTML = frameString1.concat(frameString2);\n\t\t\t\t";
+				echo "var h_iframe           = document.getElementById('h_".$key."');\n\t\t\t\t";
+				echo "var h_js               = h_iframe.contentWindow;\n\t\t\t\t";
+				echo "h_js.hapmap            = '".$hapmap."';\n\t\t\t\t";
+				echo "h_js.user              = '".$user."';\n\t\t\t\t";
+				echo "h_js.key               = 'h_".$key."';\n\t\t\t\t";
+				echo "}\n\t\t\t\t";
+			} else {
+				echo "</tr></table>\n\t\t\t\t";
+			}
+
+			// Check status of existing hapmap folders: final html differs for each.
 			if (file_exists("users/".$user."/hapmaps/".$hapmap."/complete.txt")) {
 				// No user interface required.
 			} elseif (file_exists("users/".$user."/hapmaps/".$hapmap."/working.txt")) {
 				// The hapmap is being processed.
 				// Load 'hapmap.working.php' into an internal frame 'h_$key'.
 				echo "hapmap_UI_refresh_2_".$key."();\n\t\t\t\t";
-			} else {
+			} else if (is_dir("users/".$user."/hapmaps/".$hapmap)) {
 				echo "hapmap_UI_refresh_1_".$key."();\n\t\t\t\t";
 			}
 			echo "</script>\n\t\t\t\t";
@@ -144,12 +152,14 @@ function showColors(colorName,targetToChange,contentString) {
 	foreach($systemHapmapFolders as $key=>$folder) {   $systemHapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
 	echo "<div class='hapmap'><b><font size='2'>System hapmaps:</font></b>\n\t\t\t\t";
 	foreach ($systemHapmapFolders as $key=>$hapmap) {
-		echo "<div class='tab'><table><tr><td><font size='2'>".$hapmap."</font></td>\n\t\t\t\t";
-		echo "<td><div id='defaultHapmapA_".$key."'  >[a]</div></td>\n\t\t\t\t";
-		echo "<td><div id='defaultHapmapHET_".$key."'>[ab]</div></td>\n\t\t\t\t";
-		echo "<td><div id='defaultHapmapB_".$key."'  >[b]</div></td>\n\t\t\t\t";
-		echo "<td><div id='defaultHapmapHOM_".$key."'>[hom]</div></td></tr></table>\n\t\t\t\t";
-		echo "</div>\n\t\t\t\t";
+		if (is_dir("users/default/hapmaps/".$hapmap)) {
+			echo "<div class='tab'><table><tr><td><font size='2'>".$hapmap."</font></td>\n\t\t\t\t";
+			echo "<td><div id='defaultHapmapA_".$key."'  >[a]</div></td>\n\t\t\t\t";
+			echo "<td><div id='defaultHapmapHET_".$key."'>[ab]</div></td>\n\t\t\t\t";
+			echo "<td><div id='defaultHapmapB_".$key."'  >[b]</div></td>\n\t\t\t\t";
+			echo "<td><div id='defaultHapmapHOM_".$key."'>[hom]</div></td></tr></table>\n\t\t\t\t";
+			echo "</div>\n\t\t\t\t";
+		}
 	}
 	?>
 </td></tr></table>

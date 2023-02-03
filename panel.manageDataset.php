@@ -87,7 +87,7 @@
 				array_push($projectFolders_complete,$project);
 			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
-			} else {
+			} else if (is_dir("users/".$user."/projects/".$project)) {
 				array_push($projectFolders_starting,$project);
 			}
 		}

@@ -30,7 +30,7 @@
 				array_push($projectFolders_complete,$project);
 			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
-			} else {
+			} else if (is_dir("users/".$user."/projects/".$project)) {
 				array_push($projectFolders_starting,$project);
 			}
 		}
@@ -190,13 +190,21 @@
 	//.-----------------.
 	//| System projects |
 	//'-----------------'
-	$projectsDir          = "users/default/projects/";
-	$systemProjectFolders = array_diff(glob($projectsDir."*"), array('..', '.'));
+	$projectsDir            = "users/default/projects/";
+	$systemProjectFolders_1 = array_diff(glob($projectsDir."*"), array('..', '.'));
 	// Sort directories by date, newest first.
-	array_multisort($systemProjectFolders, SORT_ASC, $systemProjectFolders);
-	// array_multisort(array_map('filemtime', $systemProjectFolders), SORT_DESC, $systemProjectFolders);
+	array_multisort($systemProjectFolders_1, SORT_ASC, $systemProjectFolders_1);
 	// Trim path from each folder string.
-	foreach($systemProjectFolders as $key=>$folder) {   $systemProjectFolders[$key] = str_replace($projectsDir,"",$folder);   }
+	foreach($systemProjectFolders_1 as $key=>$folder) {
+		$systemProjectFolders_1[$key] = str_replace($projectsDir,"",$folder);
+	}
+	// Remove any non-folders from list.
+	$systemProjectFolders = array();
+	foreach($systemProjectFolders_1 as $project) {
+		if (is_dir("users/default/projects/".$project)) {
+			array_push($systemProjectFolders,$project);
+		}
+	}
 	$systemProjectCount = count($systemProjectFolders);
 	echo "<b><font size='2'>Sample datasets:</font></b>\n\t\t";
 	echo "<br>\n\t\t";

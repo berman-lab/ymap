@@ -71,7 +71,7 @@
 				array_push($genomeFolders_complete,$genome);
 			} else if (file_exists("users/".$user."/genomes/".$genome."/working.txt")) {
 				array_push($genomeFolders_working, $genome);
-			} else {
+			} else if (is_dir("users/".$user."/genomes/".$genome)) {
 				array_push($genomeFolders_starting,$genome);
 			}
 		}
@@ -154,9 +154,11 @@
 	$systemGenomeCount = count($systemGenomeFolders);
 	echo "<b><font size='2'>Installed Reference Genomes:</font></b><br>\n";
 	foreach ($systemGenomeFolders as $key=>$genome) {
-		$genomeNameString = file_get_contents("users/default/genomes/".$genome."/name.txt");
-		$genomeNameString = trim($genomeNameString);
-		echo "\t\t\t\t<font size='2'>".$genomeNameString."</font><br>\n";
+		if (is_dir("users/default/genomes/".$genome)) {
+			$genomeNameString = file_get_contents("users/default/genomes/".$genome."/name.txt");
+			$genomeNameString = trim($genomeNameString);
+			echo "\t\t\t\t<font size='2'>".$genomeNameString."</font><br>\n";
+		}
 	}
 	?>
 </td></tr></table>
