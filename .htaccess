@@ -9,99 +9,16 @@ Deny from all
 #============================================================
 # TXT/ZIP/MAT/JS/SH/CSS/PY/M files should never be accessible.
 #------------------------------------------------------------
-<FilesMatch "<*.txt">
+<FilesMatch "\.(txt|mat|zip|js|sh|css|py|m)$">
 Order allow,deny
 Deny from all
 </FilesMatch>
 
-<FilesMatch "<*.mat">
-Order allow,deny
-Deny from all
-</FilesMatch>
+#=====================================================================================
+# Project/genome directories have various file types that should never be accessible.
+#-------------------------------------------------------------------------------------
 
-<FilesMatch "<*.zip">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.js">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.sh">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.css">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.py">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.m">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-#=============================================================================
-# Project directories have various file types that should never be accessible.
-#-----------------------------------------------------------------------------
-
-<FilesMatch "<*.xls">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-#=============================================================================
-# Genome directories have various file types that should never be accessible.
-#-----------------------------------------------------------------------------
-<FilesMatch "<*.bt2">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.dict">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.fai">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.nhr">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.nin">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.nsd">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.nsi">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.nsq">
-Order allow,deny
-Deny from all
-</FilesMatch>
-
-<FilesMatch "<*.bed">
+<FilesMatch "\.(xls|bt2|dict|fai|nhr|nin|nsd|nsi|nsq|bed)$">
 Order allow,deny
 Deny from all
 </FilesMatch>
