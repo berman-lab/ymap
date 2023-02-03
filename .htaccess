@@ -6,19 +6,18 @@ Order allow,deny
 Deny from all
 </FilesMatch>
 
-#============================================================
-# TXT/ZIP/MAT/JS/SH/CSS/PY/M files should never be accessible.
-#------------------------------------------------------------
+#================================================================
+# General use files that should never be accessible.
+#----------------------------------------------------------------
 <FilesMatch "\.(txt|mat|zip|js|sh|css|py|m)$">
 Order allow,deny
 Deny from all
 </FilesMatch>
 
-#=====================================================================================
-# Project/genome directories have various file types that should never be accessible.
-#-------------------------------------------------------------------------------------
-
-<FilesMatch "\.(xls|bt2|dict|fai|nhr|nin|nsd|nsi|nsq|bed)$">
+#================================================================
+# Project/genome use files that should never be accessible.
+#----------------------------------------------------------------
+<FilesMatch "\.(xls|bt2|dict|fai|nhr|nin|nsd|nsi|nsq)$">
 Order allow,deny
 Deny from all
 </FilesMatch>
