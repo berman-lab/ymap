@@ -9,7 +9,7 @@ Deny from all
 #================================================================
 # General use files that should never be accessible.
 #----------------------------------------------------------------
-<FilesMatch "\.(txt|mat|zip|js|sh|css|py|m)$">
+<FilesMatch "\.(txt|mat|zip|sh|py|m)$">
 Order allow,deny
 Deny from all
 </FilesMatch>
