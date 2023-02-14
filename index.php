@@ -803,7 +803,7 @@ if (isset($_SESSION['logged_on'])) {
 	<script type="text/javascript" src="js/user.delete_index.js"></script>
 	<script type="text/javascript" src="js/hapmap.delete_index.js"></script>
 <!-- Needed for deletion functions.--!>
-	<script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+	<script type="text/javascript" src="js/jquery-3.6.3.js"></script>
 	<script type="text/javascript" src="js/jquery.form.js"></script>
 
 

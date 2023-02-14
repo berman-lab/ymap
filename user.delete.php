@@ -18,7 +18,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<title>Ymap | Delete User</title>
 		<!-- Needed for deletion functions.--!>
-		<script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+		<script type="text/javascript" src="js/jquery-3.6.3.js"></script>
 		<script type="text/javascript" src="js/jquery.form.js"></script>
 		<script type="text/javascript">
 		user = '<?php echo $_SESSION['user']; ?>';
