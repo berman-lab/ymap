@@ -1,9 +1,8 @@
 <?php
 	session_start();
-        error_reporting(E_ALL);
-        require_once '../../constants.php';
-        require_once '../../POST_validation.php';
-        ini_set('display_errors', 1);
+	error_reporting(E_ALL);
+	require_once '../../constants.php';
+	require_once '../../POST_validation.php';
 
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])){
@@ -38,10 +37,6 @@
 			header('Location: .');
 		}
 		$target_dir = "../../users/".$user."/projects/".$project."/";
-	} else {
-		// Genome and project strings sent at once, should never happen: Force logout.
-		session_destroy();
-		header('Location: .');
 	}
 
 
