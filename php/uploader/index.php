@@ -16,7 +16,7 @@
 
 
 // Only information needed by this script, sent by "js/ajaxfileupload.js" from form defined in "uploader.1.php".
-// This safe data is used to construct the target file location.
+// This safe data is used to construct the target file locations.
 	// Sanitize input strings.
 	$genome  = sanitize_POST("genome");
 	$project = sanitize_POST("project");
@@ -48,7 +48,7 @@
 	//============================================================================
 	// HTML5Uploader ::  Adam Filkor : http://filkor.org
 	// Licensed under the MIT license : http://www.opensource.org/licenses/MIT
-	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// non-MySQL version.
 	//----------------------------------------------------------------------------
 	require('UploadHandler.php');
