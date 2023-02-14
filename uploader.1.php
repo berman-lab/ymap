@@ -75,11 +75,9 @@
 			</tr></table>
 
 			<!---------- Pass along the script to be run once all files are loaded. ----------!>
-			<input type="hidden" id="hidden_field1" name="target_user"    value="">
 			<input type="hidden" id="hidden_field2" name="target_genome"  value="">
 			<input type="hidden" id="hidden_field3" name="target_project" value="">
 			<script type="text/javascript">
-				target_user            = user;
 				if (typeof genome !== 'undefined') {
 					target_genome  = genome;
 					target_project = "";
@@ -87,7 +85,6 @@
 					target_genome  = "";
 					target_project = project;
 				}
-				document.getElementById('hidden_field1').value = target_user;
 				document.getElementById('hidden_field2').value = target_genome;
 				document.getElementById('hidden_field3').value = target_project;
 				Finalize=function() { // show upload button once input file is selected.
