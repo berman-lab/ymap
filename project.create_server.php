@@ -23,7 +23,7 @@
 	$showAnnotations = sanitizeIntChar_POST("showAnnotations");
 	$manualLOH       = sanitizeTabbed_POST("manualLOH");
 
-	// Validate additional inputs found when dealing with ddRADseq, WGseq, or RNAseq data types.
+	// Validate additional inputs found when dealing with ddRADseq or WGseq data types.
 	if ($dataFormat != "0") {
 		// Validate input strings.
 		$readType            = sanitizeIntChar_POST("readType");
@@ -155,7 +155,7 @@
 
 		// Generate 'dataFormat.txt' and 'dataBiases.txt' files.
 		// dataFormat.txt file: #:#:# where 1st # indicates type of data, 2nd # indicates format of input data, & 3rd # indicates if indel-realignment should be done.
-		// 1st #: 0=SnpCghArray; 1=WGseq; 2=ddRADseq; 3=RNAseq; 4=IonExpressSeq.
+		// 1st #: 0=SnpCghArray; 1=WGseq; 2=ddRADseq.
 		// 2nd #: 0=single-end-reads FASTQ/ZIP/GZ; 1=paired-end-reads FASTQ/ZIP/GZ; 2=SAM/BAM; 3=TXT.
 		// 3rd #: 0=False, no indel-realignment; 1=True, performe indel-realignment.
 		$fileName1 = $project_dir1."/dataFormat.txt";
@@ -176,27 +176,11 @@
 			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
 			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; } else {$bias_GC  = "True"; }
 			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
-		} else if ($dataFormat == "4") { // IonExpressSeq
-			fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
-			$bias_GC     = filter_input(INPUT_POST, "4_bias2", FILTER_SANITIZE_STRING);
-			$bias_end    = filter_input(INPUT_POST, "4_bias4", FILTER_SANITIZE_STRING);
-			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
-			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; }
-			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
 		} else if ($dataFormat == "2") { // ddRADseq
 			fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
 			$bias_length = filter_input(INPUT_POST, "2_bias1", FILTER_SANITIZE_STRING);
 			$bias_GC     = filter_input(INPUT_POST, "2_bias2", FILTER_SANITIZE_STRING);
 			$bias_end    = filter_input(INPUT_POST, "2_bias4", FILTER_SANITIZE_STRING);
-			if (strcmp($bias_length,"") == 0) { $bias_length = "False"; }
-			if (strcmp($bias_GC    ,"") == 0) { $bias_GC     = "False"; }
-			if (strcmp($bias_end   ,"") == 0) { $bias_end    = "False"; }
-			fwrite($file2,$bias_length."\n".$bias_GC."\nFalse\n".$bias_end);
-		} else if ($dataFormat == "3") { // RNAseq
-			fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
-			$bias_length = filter_input(INPUT_POST, "3_bias1", FILTER_SANITIZE_STRING);
-			$bias_GC     = filter_input(INPUT_POST, "3_bias2", FILTER_SANITIZE_STRING);
-			$bias_end    = filter_input(INPUT_POST, "3_bias4", FILTER_SANITIZE_STRING);
 			if (strcmp($bias_length,"") == 0) { $bias_length = "False"; }
 			if (strcmp($bias_GC    ,"") == 0) { $bias_GC     = "False"; }
 			if (strcmp($bias_end   ,"") == 0) { $bias_end    = "False"; }

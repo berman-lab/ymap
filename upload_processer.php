@@ -70,18 +70,6 @@
 			case "ddRADseq_paired":
 				$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_1.php";
 				break;
-			case "RNAseq_single":
-				$conclusion_script = "scripts_seqModules/scripts_RNAseq/project.single_RNAseq.install_1.php";
-				break;
-			case "RNAseq_paired":
-				$conclusion_script = "scripts_seqModules/scripts_RNAseq/project.paired_RNAseq.install_1.php";
-				break;
-			case "IonExpressSeq_single":
-				$conclusion_script = "scripts_seqModules/scripts_IonExpressSeq/project.single_IonExpressSeq.install_1.php";
-				break;
-			case "IonExpressSeq_paired":
-				$conclusion_script = "scripts_seqModules/scripts_IonExpressSeq/project.paired_IonExpressSeq.install_1.php";
-				break;
 		}
 	} else if ($genome != "") {
 		// initiate genome processing.

@@ -315,32 +315,6 @@ if (isset($_SESSION['logged_on'])) {
 			// ddRADseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : ddRADseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
-		} else if (($dataFormat == '3:0:0') || ($dataFormat == '3:0:1')) {
-			// RNAseq : single-end [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : Single-end-read RNAseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'RNAseq_single';\n";
-		} else if (($dataFormat == '3:1:0') || ($dataFormat == '3:1:1')) {
-			// RNAseq : paired-end [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : Paired-end-read RNAseq data (1/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.display_string[1] = 'Add : Paired-end-read RNAseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'RNAseq_paired';\n";
-		} else if (($dataFormat == '3:2:0') || ($dataFormat == '3:2:1') || ($dataFormat == '3:3:0') || ($dataFormat == '3:3:1')) {
-			// RNAseq : [SAM/BAM/TXT]
-			echo "p_js.display_string[0] = 'Add : RNAseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.dataFormat        = 'RNAseq_single';\n";
-		} else if (($dataFormat == '4:0:0') || ($dataFormat == '4:0:1')) {
-			// IonExpressSeq : single-end [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : Single-end-read IonExpress data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'IonExpressSeq_single';\n";
-		} else if (($dataFormat == '4:1:0') || ($dataFormat == '4:1:1')) {
-			// IonExpressSeq : paired-end [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : Paired-end-read IonExpress data (1/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.display_string[1] = 'Add : Paired-end-read IonExpress data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'IonExpressSeq_paired';\n";
-		} else if (($dataFormat == '4:2:0') || ($dataFormat == '4:2:1') || ($dataFormat == '4:3:0') || ($dataFormat == '4:3:1')) {
-			// IonExpressSeq : [SAM/BAM/TXT]
-			echo "p_js.display_string[0] = 'Add : IonExpress data (SAM/BAM/TXT)...';\n";
-			echo "p_js.dataFormat        = 'IonExpressSeq_single';\n";
 		}
 	}
 	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.

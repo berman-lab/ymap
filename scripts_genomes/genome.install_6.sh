@@ -20,7 +20,6 @@ repetgenome=$reflocation$FASTAname".repetitiveness.txt";				# Name of repetitive
 repetgenome_smoothed=$reflocation$FASTAname".repetitiveness_smoothed.txt";		# Name of Gaussian smoothed repetitiveness profile for genome.
 standard_bin_FASTA=$reflocation$FASTAname".standard_bins.fasta";			# Name of reference genome broken up into standard bins.
 ddRADseq_FASTA=$reflocation$FASTAname".MfeI_MboI.fasta";				# Name of digested reference for ddRADseq analysis.
-RNAseq_FASTA=$reflocation$FASTAname".expression.fasta";					# Name of digested reference for expression analysis.
 logName=$reflocation"process_log.txt";
 condensedLog=$reflocation"condensed_log.txt";
 
@@ -36,7 +35,6 @@ echo "\t\t\$reflocation      = "$reflocation >> $logName;
 echo "\t\t\$FASTA            = "$FASTA >> $logName;
 echo "\t\t\$FASTAname        = "$FASTAname >> $logName;
 echo "\t\t\$ddRADseq_FASTA   = "$ddRADseq_FASTA >> $logName;
-echo "\t\t\$RNAseq_FASTA     = "$RNAseq_FASTA >> $logName;
 echo "" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 
@@ -168,23 +166,6 @@ else
 	echo "\n\tChromosome features file not available." >> $logName;
 fi
 
-echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
-
-if [ -e $RNAseq_FASTA ]
-then
-	echo "\tExpression digest of genome already complete." >> $logName;
-else
-	if [ -e $reflocation"expression.txt" ]
-	then
-		echo "Performing simulated digest of genome into expression units." >> $condensedLog;
-		echo "\tExpression digest of genome being performed." >> $logName;
-
-		## Perform expression digest of genome.
-		echo "" > $RNAseq_FASTA;
-		$python_exec $main_dir"scripts_genomes/genome_process_for_RNAseq_1.py" $user $genome $main_dir $logName >> $RNAseq_FASTA;
-	fi
-fi
-
 echo "\n\t============================================================================================== 7" >> $logName;
 
 ## Reformat standard-bin fragmented FASTA file to have single-line entries for each sequence fragment.
@@ -255,46 +236,6 @@ then
 		echo "\n\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
 		echo "" > $outputFile;
 		$python_exec $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile;
-	fi
-fi
-
-echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
-
-if [ -e $reflocation"expression.txt" ]
-then
-	## Reformat digested FASTA file to have single-line entries for each sequence fragment.
-	echo "Reformatting expression genome fragments FASTA file." >> $condensedLog;
-	echo "\tReformatting expression FASTA file => single-line per sequence fragment." >> $logName;
-	sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $RNAseq_FASTA;
-
-	outputFile=$reflocation$FASTAname".GC_ratios.expression.txt";
-	if [ -e $outputFile ]
-	then
-		echo "\n\tGC-ratios per expression fragment has been calculated." >> $logName
-	else
-		echo "Calculating GC ratios for expression fragments." >> $condensedLog;
-		## Calculating GC_ratio  of RNAseq (expression) fragments.
-		echo "\n\tCalculating GC-ratios per each expression fragment." >> $logName;
-		echo "\n\t\treflocation = "$reflocation >> $logName;
-		echo "" > $outputFile;
-		$python_exec $main_dir"scripts_genomes/genome_process_for_RNAseq.GC_bias_1.py" $user $genome $main_dir $logName >> $outputFile;
-	fi
-
-	if [ -e $repetgenome ]
-	then
-		# This depends on whole genome repetitiveness analysis done previously.
-		outputFile=$reflocation$FASTAname".repetitiveness.expression.txt";
-		if [ -e $outputFile ]
-		then
-			echo "\n\tRepetitiveness per expression fragment has been calculated." >> $logName
-		else
-			echo "Calculating repetitiveness for expression fragments." >> $condensedLog;
-			## Calculating repetitiveness of RNAseq (expression) fragments.
-			echo "\n\n\tCalculating repetitiveness per each expression fragment." >> $logName;
-			inputFile=$reflocation$FASTAname".repetitiveness.txt";
-			echo "" > $outputFile;
-			$python_exec $main_dir"scripts_genomes/genome_process_for_RNAseq.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile;
-		fi
 	fi
 fi
 

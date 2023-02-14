@@ -46,8 +46,6 @@
 						<option value="0">SnpCgh microarray        </option>
 						<option value="1">Whole genome NGS         </option>
 						<option value="2">ddRADseq                 </option>
-						<option value="3">RNAseq (testing)         </option>
-						<option value="4">IonExpress-seq (testing) </option>
 					<!--	<option value="5">RADseq           </option> --!>
 					</select>
 				</td><td>
@@ -241,17 +239,6 @@
 						<input type="checkbox"      name="2_bias2" value="True" checked>GC-content bias<br>
 						<input type="checkbox"      name="2_bias4" value="True"        >chromosome-end bias
 					</div>
-					<div id="hiddenFormSection9d" style="display:none">
-						<!-- RNAseq --!>
-						<input type="checkbox"      name="3_bias1" value="True" checked>ORF-length bias<br>
-						<input type="checkbox"      name="3_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      name="3_bias4" value="True"        >chromosome-end bias
-					</div>
-					<div id="hiddenFormSection9e" style="display:none">
-						<!-- IonExpress-seq --!>
-						<input type="checkbox"      name="4_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      name="4_bias4" value="True"        >chromosome-end bias
-					</div>
 				</td><td>
 				Corrections applied.
 				</td></tr></table><br>
@@ -362,18 +349,6 @@
 						document.getElementById("hiddenFormSection9e").style.display = 'none';
 						document.getElementById("hiddenFormSection10").style.display = 'inline';
 						document.getElementById("hiddenFormSection11").style.display = 'inline';
-					} else if (document.getElementById("dataFormat").value == 3) { // RNAseq (tsting)
-						document.getElementById("hiddenFormSection9a").style.display = 'none';
-						document.getElementById("hiddenFormSection9b").style.display = 'none';
-						document.getElementById("hiddenFormSection9c").style.display = 'none';
-						document.getElementById("hiddenFormSection9d").style.display = 'inline';
-						document.getElementById("hiddenFormSection9e").style.display = 'none';
-					} else { // IonExpress (testing)
-						document.getElementById("hiddenFormSection9a").style.display = 'none';
-						document.getElementById("hiddenFormSection9b").style.display = 'none';
-						document.getElementById("hiddenFormSection9c").style.display = 'none';
-						document.getElementById("hiddenFormSection9d").style.display = 'none';
-						document.getElementById("hiddenFormSection9e").style.display = 'inline';
 					}
 				}
 			}

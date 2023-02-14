@@ -109,8 +109,6 @@
 							echo ",['{$nextName}','{$genome_string}',{$dataFormat_string}]";
 						} else {
 							// 2 : ddRADseq data is unusable.
-							// 3 : IonExpressSeq data is unusable.
-							// 4 : RNAseq data is unusable.
 						}
 					}
 					?>];
