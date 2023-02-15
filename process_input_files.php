@@ -84,11 +84,7 @@ if ($ext == "zip") {
 
 	// rename decompressed file.
 	$rename_target = "datafile_".$key.".".$ext_first;
-	chdir($projectPath);
-	rename($oldName,$rename_target);
-	chdir($currentDir);
-	//rename($projectPath.$name_first,$projectPath.$rename_target);
-	//$null = shell_exec("mv ".$projectPath.$name_first." ".$projectPath.$rename_target);
+	rename($projectPath.$name_first,$projectPath.$rename_target);
 
 	fwrite($logOutput, "\t\t| currentDir    = '".$currentDir."'\n");
 	fwrite($logOutput, "\t\t| projectPath   = '".$projectPath."'\n");
@@ -171,9 +167,7 @@ if ($ext == "zip") {
 
 	// rename decompressed file.
 	$rename_target = "datafile_".$key.".".$name_ext;
-	chdir($projectPath);
-	rename($name_first,$rename_target);
-	chdir($currentDir);
+	rename($projectPath.$name_first,$projectPath.$rename_target);
 	fwrite($logOutput, "\t\t| oldName = '".$oldName."'\n");
 	fwrite($logOutput, "\t\t| rename  = '".$rename_target."'\n");
 
@@ -208,7 +202,6 @@ fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 //---------------------------------------
 if ($ext_new == "fastq") {
 	// Correct filename.
-	rename($projectPath.$name_new,$projectPath.$name_first);
 
 	// Looking at first four lines of text.
 	$file_name   = $projectPath.$name_new;
