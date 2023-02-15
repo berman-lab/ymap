@@ -160,7 +160,6 @@
 
 		// more modern random-salted-hash.
 		$peppered_pw = $pwOrig.$pepper;
-		//return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
-		return password_hash($pwOrig, PASSWORD_DEFAULT, ['cost' => 10]);
+		return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
 	}
 ?>

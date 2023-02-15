@@ -31,7 +31,7 @@
 			$pw_stored_hash = file_get_contents($pwFile);
 
 			// Compare peppered input password to stored hash.
-			$checked = password_verify($pw_in, $pw_stored_hash);
+			$checked = password_verify($pw_in.$pepper, $pw_stored_hash);
 			if ($checked) {
 				$_SESSION['logged_on'] = 1;
 				$_SESSION['user']      = $user;
@@ -122,8 +122,7 @@
 
 		// return modern, random-salted-peppered-hash.
 		$peppered_pw = $pw.$pepper;
-		//return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
-		return password_hash($pw, PASSWORD_DEFAULT, ['cost' => 10]);
+		return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
 	}
 
 // Delay before page reload.
