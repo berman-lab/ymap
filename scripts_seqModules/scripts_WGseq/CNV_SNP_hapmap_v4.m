@@ -639,7 +639,7 @@ for chr = 1:num_chrs
 					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
 					chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
-					
+
 					if (~all(colorList == colorNoData))
 						writeAlleleRatioLine(alleleRatiosFid, chrName, coordinate, ...
 							homologA, homologB, ...
@@ -788,7 +788,7 @@ for chr = 1:num_chrs
 		end;
 		% standard : end determine color of each bin.
 
-		
+
 		%% standard : draw colorbars.
 		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 			x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
@@ -885,7 +885,7 @@ for chr = 1:num_chrs
 		% standard : axes labels etc.
 		hold off;
 		xlim([0,chr_size(chr)/bases_per_bin]);
-    
+
 		% standard : modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
 			ylim([-maxY/10*1.5,maxY]);
@@ -922,7 +922,7 @@ for chr = 1:num_chrs
 		end;
 		hold on;
 		% standard : end axes labels etc.
-    
+
 		if (displayBREAKS == true) && (show_annotations == true)
 			chr_length = ceil(chr_size(chr)/bases_per_bin);
 			for segment = 2:length(chr_breaks{chr})-1
@@ -950,10 +950,10 @@ for chr = 1:num_chrs
 			% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
 			plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx    rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
 			     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY     maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-			      'Color',[0 0 0]);        
+			      'Color',[0 0 0]);
 		end;
 		% standard : end show centromere.
-    
+
 		%% standard : show annotation locations
 		if (show_annotations) && (length(annotations) > 0)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
