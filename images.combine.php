@@ -154,16 +154,16 @@
 
 		if ($entry_key == 0) {
 			// copy first figure entirely
-			//imagecopy($working1, $image1, 0, 0, 0, 0,  $image_width, $image_height);
-			//imagecopy($working2, $image2, 0, 0, 0, 0,  $image_width, $image_height);
-			//imagecopy($working3, $image3, 0, 0, 0, 0,  $image_width, $image_height);
+			imagecopy($working1, $image1, 0, 0, 0, 0,  $image_width, $image_height);
+			imagecopy($working2, $image2, 0, 0, 0, 0,  $image_width, $image_height);
+			imagecopy($working3, $image3, 0, 0, 0, 0,  $image_width, $image_height);
 
 			echo "[] ".$entry_key." ".$fig_CNV_SNP."<br>\n";
 		} else {
 			// copy individual images together.
-			//imagecopy($working1, $image1, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image1_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
-			//imagecopy($working2, $image2, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image2_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
-			//imagecopy($working3, $image3, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image3_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
+			imagecopy($working1, $image1, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image1_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
+			imagecopy($working2, $image2, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image2_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
+			imagecopy($working3, $image3, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image3_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
 
 			// fill white in between.
 			imagefilledrectangle($working1, 50, $image_height + $linearCartoonHeight*($entry_key-1)-10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1)+4, $white);
