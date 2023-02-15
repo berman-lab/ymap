@@ -156,6 +156,9 @@
 			echo "</script>\n";
 			return "";
 		}
-		return md5($pwOrig);
+
+		// more modern random-salted-hash.
+		$peppered_pw = $pwOrig.$pepper;
+		return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
 	}
 ?>

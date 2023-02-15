@@ -11,21 +11,26 @@
 
 	// Validate user and password inputs.
 	$user    = validateUser($user_in);
-	$pw      = validatePassword($pw_in);
+	$pw_hash = validatePassword($pw_in);
 
 	// Validate login.
-	validateLogin($user, $pw);
+	validateLogin($user, $pw_in);
 
 //=========================================================
 // Functions used to validate login credentials.
 //---------------------------------------------------------
-	function validateLogin($user, $pw){
+	function validateLogin($user, $pw_in_hash){
 		global $url;
 		if(doesUserDirectoryExist($user)){
-			// User Exists
-			$pwFile = $GLOBALS['directory']."users/".$user."/pw.txt";
+			// User exists, so we check password.
 
-			if(file_get_contents($pwFile) === $pw){
+			// Load stored password hash.
+			$pwFile         = $GLOBALS['directory']."users/".$user."/pw.txt";
+			$pw_stored_hash = file_get_contents($pwFile);
+
+			// Compare peppered input password to stored hash.
+			$checked = password_verify($pw.$pepper, $pw_stored_hash);
+			if ($checked) {
 				$_SESSION['logged_on']=1;
 				$_SESSION['user']=$user;
 				header('Location: '.$GLOBALS['url']);
@@ -107,6 +112,9 @@
 			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			return "";
 		}
-		return md5($pw);
+
+		// return modern, random-salted-peppered-hash.
+		$peppered_pw = $pw.$pepper;
+                return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
 	}
 ?>
