@@ -34,7 +34,7 @@ fprintf(['    15 : show MRS annotations : ' show_MRS_string    '\n']);
 fprintf(['[process_main.m] : current folder.\n']);
 	currentDir = pwd;
     fprintf(['    ' currentDir '\n']);
-	
+
 % For CGD track functions (createCnvTrack, openAlleleRatiosTrack,
 % writeAlleleRatioLine)
 addpath(fullfile(currentDir, '..', 'scripts_seqModules'));
@@ -240,7 +240,7 @@ end;
 %info from design considerations.
 load(['designs/' microarray_design '/SNP_probeset_2.mat']);
 SNP_probeset_length = length(probeset_2);
-    
+
 % Assign SNP probes to homologs, based on calibration data collected earlier.
 if (no_calibration == 0)
     for i = 1:2:SNP_probeset_length
@@ -656,7 +656,7 @@ else
 	load([workingDir 'SNP_cutoffs.mat']);
 end;
 
-    
+
 %% ========================================================================
 % Plotting probes across genome by interpretation catagory after accounting
 % for polarity of SNP pairs.
@@ -946,9 +946,9 @@ for i = 1:2:SNP_probeset_length
 					color = colorAB;
 				end;
 			end;
-			
+
 			% Write out the allele ratio:
-			if (color ~= -1)				
+			if (color ~= -1)
 				coordinate = probeset1(i).probe_location;
 				homologA = probeset1(i+1).probe_ID(length(probeset1(i+1).probe_ID));
 				homologB = probeset1(i).probe_ID(length(probeset1(i).probe_ID));
@@ -1339,7 +1339,7 @@ for chr = 1:num_chrs
 			ylim([0,1]);
 		end;
 	end;
-    
+
 	% make standard chromosome cartoons.
 	width = Chr_max_width*chr_size(chr)/max(chr_size);
 	if (chr == 8)
