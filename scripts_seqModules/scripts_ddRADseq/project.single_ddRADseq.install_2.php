@@ -59,8 +59,8 @@
 	foreach ($fileNames as $key=>$name) {
 		$projectPath = "../../users/".$user."/projects/".$project."/";
 		$name        = str_replace("\\", ",", $name);
-		rename($projectPath.$name,$projectPath.strtolower($name));
-		$name        = strtolower($name);
+		//rename($projectPath.$name,$projectPath.strtolower($name));
+		//$name        = strtolower($name);
 		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
 		fwrite($logOutput, "\tFile ".$key."\n");
