@@ -271,7 +271,11 @@ if ($ext_new == "fastq") {
 	fwrite($logOutput, "\t\t| This is a FASTA file, only useful for genome installation.\n");
 	fwrite($output, $name_new."\n");
 	// should not be uploaded via here.
-
+	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
+	fwrite($errorFile, "Error : FASTA file uploaded as input. Upload FASTQ, or ZIP or GZ archives.");
+	fclose($errorFile);
+	chmod($errorFileName,0755);
+	exit;
 } else if (($ext_new == "sam") || ($ext_new == "bam")) {
 	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
 
@@ -304,7 +308,7 @@ if ($ext_new == "fastq") {
 	$paired = 1;
 	chdir($currentDir);
 
-} elseif (($ext_new == "txt") || ($ext_new == "tdt")) {
+} elseif ($ext_new == "tdt") {
 	fwrite($logOutput, "\t\t| This is a txt file.\n");
 	fwrite($logOutput, "\t\t|\tCurrentDir = ".getcwd()."\n");
 	fwrite($logOutput, "\t\t|\tshell_exec string = 'sh ../Gareth2pileups.sh ".$user." ".$project." ".$name_new."'\n");
