@@ -93,11 +93,6 @@
 		input2.setAttribute("name","key");
 		input2.setAttribute("value",key);
 		autoSubmitForm.appendChild(input2);
-	var input2 = document.createElement("input");
-		input2.setAttribute("type","hidden");
-		input2.setAttribute("name","user");
-		input2.setAttribute("value",user);
-		autoSubmitForm.appendChild(input2);
 	var input3 = document.createElement("input");
 		input3.setAttribute("type","hidden");
 		input3.setAttribute("name","project");
