@@ -22,7 +22,7 @@ $name      = $name_new;
 
 // If uploaded file is wrong file type, delete.
 $ext = strtolower($ext);
-if (($ext == "csv") || ($ext == "tdt") || ($ext == "txt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fastq") || ($ext == "zip") || ($ext == "gz")) {
+if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fastq") || ($ext == "zip") || ($ext == "gz")) {
 } else {
 	unlink($projectPath.$name);
 	fwrite($logOutput, "\t\t| Incompatible file format uploaded!!!\n");
@@ -221,7 +221,7 @@ if ($ext_new == "fastq") {
 		fwrite($logOutput, "\t\t| FASTQ file format incorrect!!!\n");
 		$ext_new = "none2";
 	}
-} else if (($ext_new == "csv") || ($ext_new == "tdt") || ($ext_new == "txt")) {
+} else if ($ext_new == "tdt") {
 	// if (($ext == "sam") || ($ext == "bam")) {
 
 	// Looking at first four lines of text.
@@ -233,25 +233,15 @@ if ($ext_new == "fastq") {
 	$line_4      = fgets($file_handle);
 	fclose($file_handle);
 
-	// Is this a csv/tdt/txt file?
-	// Determine if the file is TXT or array(XLS) by looking at first line.
-	$line_1_words_tdt = explode('\t',trim($line_1));
-	$line_1_words_csv = explode(',',trim($line_1));
-
-	if ((strcmp($line_1_words_tdt[0],"Ca19-mtDNA") == 0) || (strcmp($line_1_words_tdt[0],"Ca21chr1_C_albicans_SC5314") == 0)
-	|| (strcmp($line_1_words_tdt[0],"Ca21chr2_C_albicans_SC5314") == 0) || (strcmp($line_1_words_tdt[0],"Ca21chr3_C_albicans_SC5314") == 0)
-	|| (strcmp($line_1_words_tdt[0],"Ca21chr4_C_albicans_SC5314") == 0) || (strcmp($line_1_words_tdt[0],"Ca21chr5_C_albicans_SC5314") == 0)
-	|| (strcmp($line_1_words_tdt[0],"Ca21chr6_C_albicans_SC5314") == 0) || (strcmp($line_1_words_tdt[0],"Ca21chr7_C_albicans_SC5314") == 0)
-	|| (strcmp($line_1_words_tdt[0],"Ca21chrR_C_albicans_SC5314") == 0)) {
-		// is a TDT/TXT file, as defined in the paper.
+	// Is this a tdt file with useful information?
+	$line_1_words = explode('\t',trim($line_1));
+	if ((strcmp($line_1_words[0],"Ca19-mtDNA") == 0) || (strcmp($line_1_words[0],"Ca21chr1_C_albicans_SC5314") == 0)
+	|| (strcmp($line_1_words[0],"Ca21chr2_C_albicans_SC5314") == 0) || (strcmp($line_1_words[0],"Ca21chr3_C_albicans_SC5314") == 0)
+	|| (strcmp($line_1_words[0],"Ca21chr4_C_albicans_SC5314") == 0) || (strcmp($line_1_words[0],"Ca21chr5_C_albicans_SC5314") == 0)
+	|| (strcmp($line_1_words[0],"Ca21chr6_C_albicans_SC5314") == 0) || (strcmp($line_1_words[0],"Ca21chr7_C_albicans_SC5314") == 0)
+	|| (strcmp($line_1_words[0],"Ca21chrR_C_albicans_SC5314") == 0)) {
+		// is a TDT file, as defined in the paper.
 		$ext_new = "tdt";
-	} else if ((strcmp($line_1_words_csv[0],"Ca19-mtDNA") == 0) || (strcmp($line_1_words_csv[0],"Ca21chr1_C_albicans_SC5314") == 0)
-	|| (strcmp($line_1_words_csv[0],"Ca21chr2_C_albicans_SC5314") == 0) || (strcmp($line_1_words_csv[0],"Ca21chr3_C_albicans_SC5314") == 0)
-	|| (strcmp($line_1_words_csv[0],"Ca21chr4_C_albicans_SC5314") == 0) || (strcmp($line_1_words_csv[0],"Ca21chr5_C_albicans_SC5314") == 0)
-	|| (strcmp($line_1_words_csv[0],"Ca21chr6_C_albicans_SC5314") == 0) || (strcmp($line_1_words_csv[0],"Ca21chr7_C_albicans_SC5314") == 0)
-	|| (strcmp($line_1_words_csv[0],"Ca21chrR_C_albicans_SC5314") == 0)) {
-		// is a CSV file.
-		$ext_new = "csv";
 	} elseif (strcmp($line_1_words[0],"Created") == 0) {
 		// is Tab-delimited-txt (TXT) file, as output from BlueFuse.
 		$ext_new = "tdt";
@@ -278,16 +268,14 @@ if ($ext_new == "fastq") {
 	fwrite($output, $name_new."\n");
 	$paired = 0;
 } else if ($ext_new == "fasta") {
-	fwrite($logOutput, "\t\t| This is a FASTA file.\n");
-	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
-	fwrite($errorFile, "Error : FASTA file uploaded as input. Upload FASTQ, or ZIP or GZ archives.");
-	fclose($errorFile);
-	chmod($errorFileName,0755);
-	exit;
+	fwrite($logOutput, "\t\t| This is a FASTA file, only useful for genome installation.\n");
+	fwrite($output, $name_new."\n");
+	// should not be uploaded via here.
+
 } else if (($ext_new == "sam") || ($ext_new == "bam")) {
 	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
 
-	// The .sh scripts assume we're running from Ymap root.
+	// The .sh scripts need to be running from Ymap root.
 	$absProjectPath = realpath($projectPath) . "/";
 	$currentDir = getcwd();
 	chdir($projectPath . "/../../../../"); // ymap_root/users/user_name/projects/this_project
@@ -312,6 +300,7 @@ if ($ext_new == "fastq") {
 	// delete original archive.
 	unlink($absProjectPath.$name_new);
 	fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
+
 	$paired = 1;
 	chdir($currentDir);
 
