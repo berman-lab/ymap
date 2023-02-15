@@ -3,7 +3,7 @@
 	require_once 'constants.php';
 
 	if(isset($_SESSION['logged_on'])) {
-        $user == $_SESSION['user'];
+		$user == $_SESSION['user'];
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -32,7 +32,7 @@
 			Are you absolutely sure?<br>
 			<div style='font-size:10pt'>
 			<form action="/">
-				<input type="button" value="Yes! Delete." onclick="console.log('@user.delete.php@ user = '+user); $.ajax({url : 'user.delete_server.php', type : 'post', data : {user : user}, success : function(answer){if(answer == 'COMPLETE'){console.log('user ' + user + ' deleted successfully');}} }); location.replace('panel.user.php');">
+				<input type="button" value="Yes! Delete." onclick="console.log('@user.delete.php@ user = '+user); $.ajax({url : 'user.delete_server.php', type : 'post', data : {user : user}, success : function(answer){if(answer == 'COMPLETE'){console.log('user ' + user + ' deleted successfully');}} }); location.replace('panel.user.php'); parent.reload();">
 				<input type="button" value="No! Cancel."  onclick="location.replace('panel.user.php');">
 			</form>
 			</div>
@@ -40,9 +40,8 @@
 	</body>
 </html>
 
-<?
-    }
-    else {
-        echo "ERROR.";
-    }
+<?php
+	} else {
+		echo "ERROR.";
+	}
 ?>

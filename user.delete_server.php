@@ -42,4 +42,8 @@
 			rmdir($dir);
 		}
 	}
+
+	// logout and reload page after user deletion.
+	session_destroy();
+	header('Location: .');
 ?>
