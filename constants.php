@@ -9,13 +9,12 @@
 	$ui_tab_width      = "80px";
 	$ui_iframe_height  = "255px";  // $ui_tabArea_height - $ui_tab_height.
 
-	// Bugtracker Variables
-	$bugtrackDir  = "bugtracker/";
-	$bugtrackFile = "bugs.txt";
-	$bugNumFile   = "numBugs.txt";
-
+	// uncertain.
 	$directory = ".";
 
 	// hardcoded quota (used in case no globalquota.txt in users folder or no quota.txt exits in user folder)
 	$quota = 25;
+
+	// Pepper string for password security.
+	include(".pepper.php");
 ?>
