@@ -34,9 +34,9 @@ Low_quality_ploidy_estimate = true    % Estimate error in overall ploidy estimat
 %-------------------------------------------------------------------------------------------
 userReference    = [main_dir 'users/' user '/genomes/' genome '/reference.txt'];
 defaultReference = [main_dir 'users/default/genomes/' genome '/reference.txt'];
-if (exist(userReference,'file') == 0)   
+if (exist(userReference,'file') == 0)
 	FASTA_string = strtrim(fileread(defaultReference));
-else                    
+else
 	FASTA_string = strtrim(fileread(userReference));
 end;
 [FastaPath,FastaName,FastaExt] = fileparts(FASTA_string);
@@ -1293,7 +1293,7 @@ for chr = 1:num_chrs
 			else
 			text((chr_size(chr)/bases_per_bin)/2,maxY+0.5,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 			end;
-	        
+
 			% shift back to main figure generation.
 			figure(fig);
 			hold on;
