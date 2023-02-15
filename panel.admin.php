@@ -58,7 +58,7 @@ I have not yet gotten to implementing this function.
 	//'---------------'
 	if (isset($_SESSION['logged_on'])) {
 		$userDir      = "users/";
-		$userFolders   = array_diff(glob($userDir."*"), array('..', '.'));
+		$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.'));
 		// Sort directories by date, newest first.
 		array_multisort($userFolders, SORT_ASC, $userFolders);
 		// Trim path from each folder string.
