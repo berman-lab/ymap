@@ -1,0 +1,7 @@
+#================================================================
+# Files that should never be accessible in user directories.
+#----------------------------------------------------------------
+<FilesMatch "\.(php|phtml|pht|js|sh|m|py)$">
+Order allow,deny
+Deny from all
+</FilesMatch>

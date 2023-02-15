@@ -21,3 +21,8 @@ Deny from all
 Order allow,deny
 Deny from all
 </FilesMatch>
+
+
+#================================================================
+# Prevent php execution in user directories?
+#----------------------------------------------------------------
