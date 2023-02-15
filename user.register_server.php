@@ -48,7 +48,7 @@
 			echo "<font color=\"green\"><b>SUCCESS: User account created.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";
 			return false;
 		} else {
 			// The user directory already exists!
@@ -127,6 +127,7 @@
 // Function used to validate entered user password.
 //---------------------------------------------------------
 	function validatePassword($pwOrig, $pwCopy){
+		global $pepper;
 		$MIN_PASSWORD_LENGTH = 6;
 		$MAX_PASSWORD_LENGTH = 24;
 		// MIN LENGTH CHECK
@@ -159,6 +160,7 @@
 
 		// more modern random-salted-hash.
 		$peppered_pw = $pwOrig.$pepper;
-		return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
+		//return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
+		return password_hash($pwOrig, PASSWORD_DEFAULT, ['cost' => 10]);
 	}
 ?>

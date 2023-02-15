@@ -5,52 +5,53 @@
 	require_once 'POST_validation.php';
 	ini_set('display_errors', 1);
 
-	// validate POST input.
-	$user_in   = sanitize_POST("user");
-	$pw_in     = stripHTML_POST("pw");
+	// Sanitize input strings.
+	$user_in = sanitize_POST("user");
+	$pw_in   = stripHTML_POST("pw");
 
-	$currentPath = getcwd();
-	$user        = validateUser($user_in);
-	$pw          = validatePassword($pw_in);
+	// Validate user and password inputs.
+	$user    = validateUser($user_in);
+	$pw_hash = validatePassword($pw_in);
 
-	validateLogin($user, $pw);
+	// Validate login.
+	validateLogin($user, $pw_in);
 
+	// log-in success boolean.
+	$login_success = false;
 //=========================================================
 // Functions used to validate login credentials.
 //---------------------------------------------------------
-	function validateLogin($user, $pw){
-		global $currentPath;
-		if(doesUserDirectoryExist($user)){
-			// User Exists
-			$userDir = "users/".$user."/";
-			$pwFile  = "users/".$user."/pw.txt";
+	function validateLogin($user, $pw_in){
+		global $pepper;
+		if (doesUserDirectoryExist($user)) {
+			// User exists, so we check password.
 
-			if (file_exists($userDir)) {
-				if(file_get_contents($pwFile) === $pw) {
-					$_SESSION['logged_on'] = 1;
-					$_SESSION['user']      = $user;
-					echo "<font color=\"green\"><b>SUCCESS: User is now logged in.</b></font><br>\n";
-					echo "(Main page will reload shortly...)<br>\n";
-					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-					echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
-				} else {
-					echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
-					echo "(Main page will reload shortly...)<br>\n";
-					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-					echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
-				}
+			// Load stored password hash.
+			$pwFile         = "users/".$user."/pw.txt";
+			$pw_stored_hash = file_get_contents($pwFile);
+
+			// Compare peppered input password to stored hash.
+			$checked = password_verify($pw_in, $pw_stored_hash);
+			if ($checked) {
+				$_SESSION['logged_on'] = 1;
+				$_SESSION['user']      = $user;
+				echo "<font color=\"green\"><b>SUCCESS: User is now logged in.</b></font><br>\n";
+				echo "(Main page will reload shortly...)<br>\n";
+				echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+				echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+				$login_success = true;
 			} else {
 				echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 				echo "(Main page will reload shortly...)<br>\n";
 				echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-				echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+				echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			}
 		} else {
 			//User doesn't exist
 			echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 		}
 	}
 	function doesUserDirectoryExist($user){
@@ -69,7 +70,7 @@
 			echo "<font color=\"red\"><b>ERROR: Usernames must be at least $MIN_USER_LENGTH characters long.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			return "";
 		}
 		// MAX LENGTH CHECK
@@ -77,7 +78,7 @@
 			echo "<font color=\"red\"><b>ERROR: Usernames must be at most $MAX_USER_LENGTH characters long.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			return "";
 		}
 		//CHECK FOR NON ALPHANUMERIC CHARACTERS
@@ -85,7 +86,7 @@
 			echo "<font color=\"red\"><b>ERROR: Your username contains non-alphanumeric characters.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			return "";
 		}
 		//RETURN user
@@ -99,6 +100,7 @@
 // Function used to validate entered user password.
 //---------------------------------------------------------
 	function validatePassword($pw){
+		global $pepper;
 		$MIN_PASSWORD_LENGTH = 6;
 		$MAX_PASSWORD_LENGTH = 24;
 		// MIN LENGTH CHECK
@@ -106,7 +108,7 @@
 			echo "<font color=\"red\"><b>ERROR: Passwords must be at least $MIN_PASSWORD_LENGTH.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			return "";
 		}
 		// MAX LENGTH CHECK
@@ -114,12 +116,22 @@
 			echo "<font color=\"red\"><b>ERROR: Passwords must be at most $MAX_PASSWORD_LENGTH.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 			return "";
 		}
-		return md5($pw);
+
+		// return modern, random-salted-peppered-hash.
+		$peppered_pw = $pw.$pepper;
+		//return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
+		return password_hash($pw, PASSWORD_DEFAULT, ['cost' => 10]);
 	}
+
+// Delay before page reload.
+if ($login_success == false) {
+	echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+	echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
+} else {
+	echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+	echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";
+}
 ?>
-<script type="text/javascript">
-	parent.location.reload();
-</script>
