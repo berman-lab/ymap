@@ -138,7 +138,6 @@
 		</td></tr><tr valign="bottom"><td align="middle">
 <font size='2'>
 	For support, please contact us at <a href="mailto:ymapsupport@tauex.tau.ac.il">ymapsupport@tauex.tau.ac.il</a><br/><br/>
-<!-- Combined figures option is acting strangely. --!>
 	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
 <?php
 	$cfig_CNV_SNP = "users/".$user."/combined_figure.1.png";
@@ -593,14 +592,6 @@ function blank_and_content_tab() {
 	</tr></table>
 	<br>
 	<iframe id="Hidden_AddToHapmap_Frame"></iframe>
-</DIV>
-<DIV id="Hidden_BugTracker" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
-	<table width="100%"><tr>
-	<td width="95%" align="left">Bug Reports</td>
-	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_BugTracker').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
-	</tr></table>
-	<br>
-	<iframe id="Hidden_BugTracker_Frame" src="bug_window.php"></iframe>
 </DIV>
 <?php } ?>
 
