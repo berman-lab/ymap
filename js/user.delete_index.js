@@ -10,9 +10,7 @@ function deleteUser_yes(user){
 	$.ajax({
 		url : 'user.delete_server.php',
 		type : 'post',
-		data : {
-			user : user
-		},
+		data : {},
 		success : function(answer){
 			if(answer == "COMPLETE"){
 				window.location.href=window.location.href;
