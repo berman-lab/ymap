@@ -94,9 +94,9 @@
 	$colLog2ratio       = 7;
 	$phasingData        = "cal_paper";
 	$ploidyFileContents = file_get_contents($project_dir."/ploidy.txt");
-		$ploidyStrings  = explode("\n", $ploidyFileContents);
-		$ploidyEstimate = $ploidyStrings[0];
-		$ploidyBase     = $ploidyStrings[1];
+	$ploidyStrings      = explode("\n", $ploidyFileContents);
+	$ploidyEstimate     = $ploidyStrings[0];
+	$ploidyBase         = $ploidyStrings[1];
 
 	$imageFormat        = "png";
 	$projectName        = $project;
