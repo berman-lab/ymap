@@ -269,7 +269,6 @@ if ($ext_new == "fastq") {
 	$paired = 0;
 } else if ($ext_new == "fasta") {
 	fwrite($logOutput, "\t\t| This is a FASTA file, only useful for genome installation.\n");
-	fwrite($output, $name_new."\n");
 	// should not be uploaded via here.
 	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
 	fwrite($errorFile, "Error : FASTA file uploaded as input. Upload FASTQ, or ZIP or GZ archives.");
@@ -307,7 +306,6 @@ if ($ext_new == "fastq") {
 
 	$paired = 1;
 	chdir($currentDir);
-
 } elseif ($ext_new == "tdt") {
 	fwrite($logOutput, "\t\t| This is a txt file.\n");
 	fwrite($logOutput, "\t\t|\tCurrentDir = ".getcwd()."\n");
@@ -336,16 +334,16 @@ if ($ext_new == "fastq") {
         chmod($errorFileName,0755);
         exit;
 } elseif ($ext_new == "none3") {
-	fwrite($logOutput, "\t\t| The contents of this CSV/TDT/TXT file did not match expectations.\n");
+	fwrite($logOutput, "\t\t| The contents of this TDT file did not match expectations.\n");
 	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
-	fwrite($errorFile, "Error : CSV/TDT/TXT file contents did not match expectations.");
+	fwrite($errorFile, "Error : TDT file contents did not match expectations.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
 	exit;
 } else {
 	fwrite($logOutput, "\t\t| This is an unknown file type.\n");
 	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
-	fwrite($errorFile, "Error : Unknown file type as input.\nUpload FASTQ, or ZIP or GZ archives containing a FASTQ file.");
+	fwrite($errorFile, "Error : Unknown file type as input.\nSee help tab for details of valid file types.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
 	exit;
