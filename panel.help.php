@@ -38,7 +38,7 @@
 <p>
 	<b>1. SnpCgh microarray</b>
 	<ul>
-		<li>Tab-delimited text with the following format (standard output from BlueFuse for Microarrays v3.6):
+		<li>Tab-delimited text (*.tdt) with the following format (standard output from BlueFuse for Microarrays v3.6):
 			<div class="tab"><font size='2'>
 				46 header rows, followed by data rows.<br>
 				1st column: probe ID/name.<br>
@@ -57,7 +57,7 @@
 		<li>Single-end reads as one file in raw FASTQ (*.fastq) or compressed (*.zip; *.fastq.gz) format.</li>
 		<li>Paired-end reads as two files in raw FASTQ (*.fastq) or two compressed (*.zip; *.fastq.gz) format.</li>
 		<li>Sequence Alignment/Map file in raw (*.sam) or compressed (*.bam) format.</li>
-		<li>For examination of custom-filtered data, tab-delimited text (*.txt or *.tdt) with the following format can be used :
+		<li>For examination of custom-filtered data, tab-delimited text (*.tdt) with the following format can be used :
 			<div class="tab"><font size='2'>
 				1st column: chromosome name (must match selected reference).<br>
 				2nd column: chromosome bp coordinate.<br>
@@ -73,13 +73,30 @@
 		</li>
 	</ul>
 </p>
-<hr width="50%">
 <p>
-	Projects are listed with those needing data file upload first, followed by those which are in-process, and then those that are complete. As projects transition from
-	one category to the next, the color of their line will be updated. After a page refresh, position in the list will be updated.
+	<b>3. New Genomes</b>
+	<ul>
+		<li>New reference genomes in FASTA (*.fasta) format can be installed to use YMAP with data from other species.</li>
+		<li>Genomes much smaller or larger than the 16 Mbase of Candida albicans may not work well. Please contact admin to discuss testing.</li>
+	</ul>
 </p>
 <p>
-	Genomes can be installed by the user. The tool has been designed for the analysis of relatively small (~2Gbase) fungal genomes, but others can be used.
+	Uploaded files named with other file types will be discarded.
+	<ul>
+		<li>*.tdt</li>
+		<li>*.fasta</li>
+		<li>*.fastq</li>
+		<li>*.fastq.zip</li>
+		<li>*.fastq.gz</li>
+		<li>*.sam</li>
+		<li>*.bam</li>
+	</ul>
+</p>
+<hr width="50%">
+<p>
+	Projects are listed with those needing data file upload first (highlighted in red), followed by those which are in-process (highlighted in yellow), and then those
+	that are complete (highlighted in green). As projects transition from one category to the next, the color of their line will be updated. After a page refresh,
+	position in the list will be updated.
 </p>
 <p>
 	Haplotype maps can be constructed starting from one heterozygous parent or two homozygous parent datasets. When starting from a single heterozygous parent, additional
