@@ -6,12 +6,8 @@
 	ini_set('display_errors', 1);
 
 	// Sanitize input strings.
-	$user_in = sanitize_POST("user");
+	$user    = sanitize_POST("user");
 	$pw_in   = stripHTML_POST("pw");
-
-	// Validate user and password inputs.
-	$user    = validateUser($user_in);
-	$pw_hash = validatePassword($pw_in);
 
 	// Validate login.
 	validateLogin($user, $pw_in);
@@ -23,7 +19,7 @@
 //---------------------------------------------------------
 	function validateLogin($user, $pw_in){
 		global $pepper;
-		if (doesUserDirectoryExist($user)) {
+		if (file_exists("users/".$user."/")) {
 			// User exists, so we check password.
 
 			// Load stored password hash.
@@ -53,76 +49,6 @@
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 		}
-	}
-	function doesUserDirectoryExist($user){
-		$dir = "users/".$user."/";
-		return file_exists($dir);
-	}
-
-//=========================================================
-// Functions used to validate entered user name.
-//---------------------------------------------------------
-	function validateUser($user){
-		$MIN_USER_LENGTH = 6;
-		$MAX_USER_LENGTH = 24;
-		// MIN LENGTH CHECK
-		if(strlen($user) < $MIN_USER_LENGTH){
-			echo "<font color=\"red\"><b>ERROR: Usernames must be at least $MIN_USER_LENGTH characters long.</b></font><br>\n";
-			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
-			return "";
-		}
-		// MAX LENGTH CHECK
-		if(strlen($user) > $MAX_USER_LENGTH){
-			echo "<font color=\"red\"><b>ERROR: Usernames must be at most $MAX_USER_LENGTH characters long.</b></font><br>\n";
-			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
-			return "";
-		}
-		//CHECK FOR NON ALPHANUMERIC CHARACTERS
-		if(checkForAlphanumericCharacters($user)){
-			echo "<font color=\"red\"><b>ERROR: Your username contains non-alphanumeric characters.</b></font><br>\n";
-			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
-			return "";
-		}
-		//RETURN user
-		return $user;
-	}
-	function checkForAlphanumericCharacters($string){
-		return preg_match( "/^[a-zA-Z0-9]$/", $string);
-	}
-
-//=========================================================
-// Function used to validate entered user password.
-//---------------------------------------------------------
-	function validatePassword($pw){
-		global $pepper;
-		$MIN_PASSWORD_LENGTH = 6;
-		$MAX_PASSWORD_LENGTH = 24;
-		// MIN LENGTH CHECK
-		if(strlen($pw) < $MIN_PASSWORD_LENGTH){
-			echo "<font color=\"red\"><b>ERROR: Passwords must be at least $MIN_PASSWORD_LENGTH.</b></font><br>\n";
-			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
-			return "";
-		}
-		// MAX LENGTH CHECK
-		if(strlen($pw) > $MAX_PASSWORD_LENGTH){
-			echo "<font color=\"red\"><b>ERROR: Passwords must be at most $MAX_PASSWORD_LENGTH.</b></font><br>\n";
-			echo "(Main page will reload shortly...)<br>\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
-			return "";
-		}
-
-		// return modern, random-salted-peppered-hash.
-		$peppered_pw = $pw.$pepper;
-		return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
 	}
 
 // Delay before page reload.
