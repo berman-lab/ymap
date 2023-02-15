@@ -31,7 +31,7 @@
 	echo "projectsShown = '".$projectsShown."'<br><br>\n";
 
 	// general variables
-	$linearCartoonHeight = 120; // the height in px of the cartoon without labels 136 valid so + 4px.
+	$linearCartoonHeight = 139; //139 the height in px of the cartoon without labels 136 valid so + 4px.
 
 	// break projectsShown string into individual strings per project.
 	$projectsShown_entries = explode(" ",$projectsShown);
