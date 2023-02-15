@@ -14,6 +14,14 @@
 
 	// log-in success boolean.
 	$login_success = false;
+
+	// Load any delay from session; to prevent brute-force attacks by reloading page.
+	if (isset($_SESSION['delay'])) {
+		$delay = $_SESSION['delay'];
+		if ($delay > 0) {
+			sleep($delay);
+		}
+	}
 //=========================================================
 // Functions used to validate login credentials.
 //---------------------------------------------------------
@@ -53,9 +61,11 @@
 
 // Delay before page reload.
 if ($login_success == false) {
+	$_SESSION['delay'] = 5;
 	echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 	echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 } else {
+	$_SESSION['delay'] = 0;
 	echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 	echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";
 }

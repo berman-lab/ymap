@@ -8,22 +8,26 @@
 	// validate POST input.
 	$primaryInvestigatorName  = sanitizeName_POST("primaryInvestigator_name");
 	$primaryInvestigatorEmail = sanitizeEmail_POST("primaryInvestigator_email");
+
+	// Not used, but for later use maybe.
 	$researchInstitution      = sanitizeName_POST("researchInstitution");
 	$secondaryName            = sanitizeName_POST("secondary_name");
 	$secondaryEmail           = sanitizeEmail_POST("secondary_email");
 
 	// user and password strings are validated in remainint code block.
-	$userOrig = filter_input(INPUT_POST, "user", FILTER_SANITIZE_STRING);
-	$pwOrig   = filter_input(INPUT_POST, "pwOrig", FILTER_SANITIZE_STRING);
-	$pwCopy   = filter_input(INPUT_POST, "pwCopy", FILTER_SANITIZE_STRING);
+	$userOrig   = filter_input(INPUT_POST, "user",        FILTER_SANITIZE_STRING);
+	$pwOrig     = filter_input(INPUT_POST, "pwOrig",      FILTER_SANITIZE_STRING);
+	$pwCopy     = filter_input(INPUT_POST, "pwCopy",      FILTER_SANITIZE_STRING);
 
-	$user     = validateUser($userOrig);
-	$pw       = validatePassword($pwOrig, $pwCopy);
-	if($user && $pw){
-		// User and Password both validated as correct
+	$user       = validateUser($userOrig);
+	if ($user) { // User validated.
+		$pw = validatePassword($pwOrig, $pwCopy);
+	}
+	if ($user && $pw) { // User and Password both validated.
 		createNewUser($user, $pw);
 		createSecondaryInformationFile($user, $primaryInvestigatorName, $primaryInvestigatorEmail, $researchInstitution, $secondaryName, $secondaryEmail);
 	}
+
 
 //=========================================================
 // Functions used to generate user account.
@@ -108,7 +112,7 @@
 			return "";
 		}
 		//CHECK FOR NON ALPHANUMERIC CHARACTERS
-		if (checkForAlphanumericCharacters($user)) {
+		if (preg_match('/[^a-zA-Z0-9]+/', $user)) {
 			echo "<font color=\"red\"><b>ERROR: You have a non-alphanumeric character in your username.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
@@ -119,36 +123,15 @@
 		//RETURN user
 		return $user;
 	}
-	function checkForAlphanumericCharacters($string){
-		return preg_match( "/^[a-zA-Z0-9]$/", $string);
-	}
 
 //=========================================================
 // Function used to validate entered user password.
 //---------------------------------------------------------
 	function validatePassword($pwOrig, $pwCopy){
-		global $pepper;
-		$MIN_PASSWORD_LENGTH = 6;
-		$MAX_PASSWORD_LENGTH = 24;
-		// MIN LENGTH CHECK
-		if (strlen($pwOrig) < $MIN_PASSWORD_LENGTH) {
-			echo "<font color=\"red\"><b>ERROR: Your password is too short, minimum is $MIN_PASSWORD_LENGTH.</b></font><br>";
-			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
-			echo "</script>\n";
-			return "";
-		}
-		// MAX LENGTH CHECK
-		if (strlen($pwOrig) > $MAX_PASSWORD_LENGTH) {
-			echo "<font color=\"red\"><b>ERROR: Your password is too long, maximum is $MAX_PASSWORD_LENGTH.</b></font><br>";
-			echo "(Main page will reload shortly...)\n";
-			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
-			echo "</script>\n";
-			return "";
-		}
-		// ORIG = COPY check
+		global $pepper, $user, $primaryInvestigatorName, $primaryInvestigatorEmail;
+		//----------------------------------------------------------------
+		// Checks to see if password was entered the same for both tries.
+		//................................................................
 		if ($pwOrig != $pwCopy) {
 			echo "<font color=\"red\"><b>ERROR: The passwords that you entered do not match.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
@@ -158,7 +141,113 @@
 			return "";
 		}
 
-		// more modern random-salted-hash.
+		//-----------------------------------------------
+		// Checks password validity by various criteria.
+		//...............................................
+
+		// MIN LENGTH CHECK
+		$MIN_PASSWORD_LENGTH = 8;
+		if (strlen($pwOrig) < $MIN_PASSWORD_LENGTH) {
+			echo "<font color=\"red\"><b>ERROR: Your password is too short, minimum is $MIN_PASSWORD_LENGTH.</b></font><br>";
+			echo "(Main page will reload shortly...)\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
+			echo "</script>\n";
+			return "";
+		}
+
+		// MAX LENGTH CHECK
+		$MAX_PASSWORD_LENGTH = 64;
+		if (strlen($pwOrig) > $MAX_PASSWORD_LENGTH) {
+			echo "<font color=\"red\"><b>ERROR: Your password is too long, maximum is $MAX_PASSWORD_LENGTH.</b></font><br>";
+			echo "(Main page will reload shortly...)\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
+			echo "</script>\n";
+			return "";
+		}
+
+		// Check to see if username is included in password.
+		if (stristr(strtolower($pwOrig),strtolower($user))) {
+			echo "<font color=\"red\"><b>ERROR: Your password cannot include your user name.</b></font><br>";
+			echo "(Main page will reload shortly...)\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
+			echo "</script>\n";
+			return "";
+		}
+
+		// Check to see if username tokens are included in password. Tokens split by any of: ",.-_ #\t"
+		$name_tokens = preg_split( "/[,.-_ #;\t]/", $primaryInvestigatorName);
+		for ($i=0; $i < sizeof($name_tokens); $i++) {
+			if (strlen($name_tokens[$i]) > 3) {
+				if (stristr(strtolower($pwOrig),strtolower($name_tokens[$i]))) {
+					echo "<font color=\"red\"><b>ERROR: Your password cannot include parts of your name.</b></font><br>";
+					echo "(Main page will reload shortly...)\n";
+					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
+					echo "var intervalID = window.setInterval(reload_page, 5000);\n";
+					echo "</script>\n";
+					return "";
+				}
+			}
+		}
+
+		// Check to see if email address tokens are included in password. Tokens split by any of: ",.-_ #;\t@"
+		$email_tokens = preg_split( "/[,.-_ #;\t@]/", $primaryInvestigatorEmail);
+		for ($i=0; $i < sizeof($email_tokens); $i++) {
+			if (strlen($email_tokens[$i]) > 3) {
+				if (stristr(strtolower($pwOrig),strtolower($email_tokens[$i]))) {
+					echo "<font color=\"red\"><b>ERROR: Your password cannot include parts of your email.</b></font><br>";
+					echo "(Main page will reload shortly...)\n";
+					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
+					echo "var intervalID = window.setInterval(reload_page, 5000);\n";
+					echo "</script>\n";
+					return "";
+				}
+			}
+		}
+
+		// Password must include characters in at least three of the following categories.
+		// 1. Uppercase letters of European languages.
+		// 2. Lowercase letters of European languages.
+		// 3. Base 10 digis.
+		// 4. Non-alphanumeri characters: ~!@#$%^&*_-+=`|\(){}[]:;"'<>,.?/
+		//	Currency symbols such as the Euro or British Pound aren't counted as special characters for this policy setting.
+		$char_req_1 = 0;
+		$char_req_2 = 0;
+		$char_req_3 = 0;
+		$char_req_4 = 0;
+		if (preg_match('/[A-Z]/', $pwOrig)) {
+			// There is at least one uppercase letter.
+			$char_req_1 = 1;
+		}
+		if (preg_match('/[a-z]/', $pwOrig)) {
+			// There is at least one lowercase letter.
+			$char_req_2 = 1;
+		}
+		if (preg_match('/[0-9]/', $pwOrig)) {
+			// There is at least one numeral.
+			$char_req_3 = 1;
+		}
+		if (preg_match('/[^a-zA-Z0-9]+/', $pwOrig)) {
+			// There is at least one special character.
+			$char_req_4 = 1;
+		}
+		if (($char_req_1+$char_req_2+$char_req_3+$char_req_4) < 3) {
+			echo "<font color=\"red\"><b>ERROR: Your password must include characters from at least three of the following categories.</b></font><br>";
+			echo "1. Capital letters.\n";
+			echo "2. Lower case letters.\n";
+			echo "3. Numerals.\n";
+			echo "4. Special characters.\n\n";
+			echo "(Main page will reload shortly...)\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n";
+			echo "</script>\n";
+			return "";
+		}
+
+		// If the password has survived all the above checks, generate a random-salted-peppered-hash.
+		$_SESSION['delay'] = 0;
 		$peppered_pw = $pwOrig.$pepper;
 		return password_hash($peppered_pw, PASSWORD_DEFAULT, ['cost' => 10]);
 	}

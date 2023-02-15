@@ -21,9 +21,11 @@
 		<div style='font-size:10pt'>
 		<form action="user.register_server.php" method="post">
 			<label for="primaryInvestigator_email">Email address: </label>              <input type="text"     id="primaryInvestigator_email" name="primaryInvestigator_email"><br>
+			<label for="primaryInvestigator_name">Contact name: </label>                <input type="text"     id="primaryInvestigator_name"  name="primaryInvestigator_name"><br>
 			<div class='tab' style='font-size:10pt'>
-			Email address will only be used for system administration tasks, such as resetting passwords.<br><br>
+			This information will only be used for system administration tasks, such as resetting passwords.<br>
 			</div>
+			<br>
 			<label for="user">Username: </label>                                        <input type="text"     id="user"                      name="user"><br>
 			<label for="pw1">Password: </label>                                         <input type="password" id="pwOrig"                    name="pwOrig"><br>
 			<label for="pw2">Retype Password: </label>                                  <input type="password" id="pwCopy"                    name="pwCopy"><br>
