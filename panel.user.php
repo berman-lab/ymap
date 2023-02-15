@@ -20,8 +20,15 @@ if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 }
 </script>
 
-<font size='3'>Log into a preexisting user account or create a new user account.</font><br><br>
+<font size='3'>Log into a preexisting user account or create a new user account.</font><br>
 <?php
+if (isset($_SESSION['delay'])) {
+	$delay = $_SESSION['delay'];
+	if ($delay > 0) {
+		echo"<font size='2' color='Red'>(There will be a short delay afer hitting 'Log In' button due to prior log in failure.)</font><br><br>";
+	}
+}
+
 if (isset($_SESSION['logged_on'])) {
 	echo "User '<b>".$user."</b>' logged in. \n";
 	// provide logout button.
@@ -41,7 +48,7 @@ if (isset($_SESSION['logged_on'])) {
 	echo "<form action='user.login_server.php' method='post'>\n\t";
 	echo "<label for='user'>Username: </label><input type='text' id='user' name='user'><br>\n\t";
 	echo "<label for='pw'>Password: </label><input type='password' id='pw' name='pw'><br>\n\t";
-	echo "<button type='submit' onclick=\"parent.update_projectsShown_after_logout();\">Login</button>\n\t";
+	echo "<button type='submit' onclick=\"parent.update_projectsShown_after_logout();\">Log In</button>\n\t";
 	echo "</form>\n\t";
 	echo "<font size='2'>";
 	echo "If you don't have a user account, you may make one by clicking below.<br>\n\t";
