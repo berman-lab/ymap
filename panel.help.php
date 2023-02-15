@@ -38,7 +38,7 @@
 <p>
 	<b>1. SnpCgh microarray</b>
 	<ul>
-		<li>Tab-delimited text with the following format :
+		<li>Tab-delimited text with the following format (standard output from BlueFuse for Microarrays v3.6):
 			<div class="tab"><font size='2'>
 				46 header rows, followed by data rows.<br>
 				1st column: probe ID/name.<br>
@@ -54,10 +54,10 @@
 <p>
 	<b>2. WGseq</b> and <b>3. ddRADseq</b>
 	<ul>
-		<li>Single-end reads as one file in raw FASTQ (*.fastq; *.fq) or compressed (*.zip; *.gz) format.</li>
-		<li>Paired-end reads as two files in raw FASTQ (*.fastq; *.fq) or compressed (*.zip; *.gz) format.</li>
+		<li>Single-end reads as one file in raw FASTQ (*.fastq) or compressed (*.zip; *.fastq.gz) format.</li>
+		<li>Paired-end reads as two files in raw FASTQ (*.fastq) or two compressed (*.zip; *.fastq.gz) format.</li>
 		<li>Sequence Alignment/Map file in raw (*.sam) or compressed (*.bam) format.</li>
-		<li>For examination of custom-filtered data, tab-delimited text with the following format can be used :
+		<li>For examination of custom-filtered data, tab-delimited text (*.txt or *.tdt) with the following format can be used :
 			<div class="tab"><font size='2'>
 				1st column: chromosome name (must match selected reference).<br>
 				2nd column: chromosome bp coordinate.<br>
