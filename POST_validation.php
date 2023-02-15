@@ -93,9 +93,11 @@ function sanitizeName_POST($POST_name) {
 	return $cleanString;
 }
 function sanitizeEmail_POST($POST_email) {
-	if (filter_var($POST_email, FILTER_VALIDATE_EMAIL)) {
+	$emailString = trim(filter_input(INPUT_POST, $POST_email, FILTER_SANITIZE_STRING));
+
+	if (filter_var($emailString, FILTER_VALIDATE_EMAIL)) {
 		// valid email address.
-		return $POST_email;
+		return $emailString;
 	} else {
 		// invalid email address.
 		return "invalid_email_provided";
