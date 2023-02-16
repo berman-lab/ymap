@@ -44,16 +44,22 @@ if (isset($_SESSION['logged_on'])) {
 	echo "Depending on system load, tasks may take an hour or more to complete after data upload is complete.<br><br>\n\t";
 	echo "Reload page and select 'projects' tab to check for newly completed projects.\n";
 	echo "</font>\n";
+
+	if (isset($_SESSION['reload_once'])) {
+		echo "<script type=\"text/javascript\"> parent.location.reload(); </script>\n";
+		unset($_SESSION['reload_once']);
+	}
 } else {
 	echo "<script type=\"text/javascript\">\n\t\n\t</script>\n\t";
 	echo "<form action='user.login_server.php' method='post'>\n\t";
 	echo "<label for='user'>Username: </label><input type='text' id='user' name='user'><br>\n\t";
 	echo "<label for='pw'>Password: </label><input type='password' id='pw' name='pw'><br>\n\t";
-	echo "<button type='submit'">Log In</button>\n\t";
+	echo "<button type='submit'>Log In</button>\n\t";
 	echo "</form>\n\t";
 	echo "<font size='2'>";
 	echo "If you don't have a user account, you may make one by clicking below.<br>Your account will initially remain locked until it has been approved by an admin.<br>\n\t";
 	echo "<button type='button' onclick=\"window.location.href='user.register.php'\">Register new user.</button>\n\t";
 	echo "</font>\n\t";
+	$_SESSION['reload_once'] = "true";
 }
 ?>
