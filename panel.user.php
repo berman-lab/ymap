@@ -28,6 +28,7 @@ if ((isset($_SESSION['delay'])) && !(isset($_SESSION['logged_on']))) {
 		echo "<font size='2' color='Red'>(There will be a short delay afer hitting 'Log In' button due to prior log in failure.)</font><br><br>";
 	}
 }
+echo "<br>";
 
 if (isset($_SESSION['logged_on'])) {
 	echo "User '<b>".$user."</b>' logged in. \n";
@@ -51,7 +52,7 @@ if (isset($_SESSION['logged_on'])) {
 	echo "<button type='submit' onclick=\"parent.update_projectsShown_after_logout();\">Log In</button>\n\t";
 	echo "</form>\n\t";
 	echo "<font size='2'>";
-	echo "If you don't have a user account, you may make one by clicking below.<br>\n\t";
+	echo "If you don't have a user account, you may make one by clicking below.<br>Your account will initially remain locked until it has been approved by an admin.<br>\n\t";
 	echo "<button type='button' onclick=\"window.location.href='user.register.php'\">Register new user.</button>\n\t";
 	echo "</font>\n\t";
 }
