@@ -15,13 +15,13 @@
 	$user    = $_SESSION['user'];
 	$dir     = "users/".$user."/";
 
-	// Confirm if requested project exists.
+	// Confirm if requested user exists.
 	if (is_dir($dir)) {
 		// Requested user does exist: Delete installed user.
 		rrmdir($dir);
 		echo "COMPLETE";
 	} else {
-		// Project doesn't exist, should never happen.
+		// User doesn't exist, should never happen.
 		echo "ERROR:".$user." doesn't exist.";
 	}
 
