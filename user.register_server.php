@@ -49,10 +49,17 @@
 			writePassword($user, $pw);
 			$_SESSION['logged_on'] = 1;
 			$_SESSION['user']      = $user;
-			echo "<font color=\"green\"><b>SUCCESS: User account created.</b></font><br>";
+
+			// Generate lockfile into user account, pending admin approval.
+			$lockFile = "users/".$user."/locked.txt";
+			$lock     = fopen($lockFile, 'w');
+			fclose($lock);
+
+			// Output to user interface.
+			echo "<font color=\"green\"><b>SUCCESS: User account created, pending admin approval.</b></font><br>";
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-			echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";
+			echo "var intervalID = window.setInterval(reload_page, 2500);\n</script>\n";
 			return false;
 		} else {
 			// The user directory already exists!
