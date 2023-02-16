@@ -24,8 +24,9 @@ if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 <?php
 if ((isset($_SESSION['delay'])) && !(isset($_SESSION['logged_on']))) {
 	$delay = $_SESSION['delay'];
-	if ($delay > 0) {
+	if ($delay != 0) {
 		echo "<font size='2' color='Red'>(There will be a short delay afer hitting 'Log In' button due to prior log in failure.)</font><br><br>";
+		echo $delay;
 	}
 }
 echo "<br>";
