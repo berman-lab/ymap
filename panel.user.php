@@ -49,7 +49,7 @@ if (isset($_SESSION['logged_on'])) {
 	echo "<form action='user.login_server.php' method='post'>\n\t";
 	echo "<label for='user'>Username: </label><input type='text' id='user' name='user'><br>\n\t";
 	echo "<label for='pw'>Password: </label><input type='password' id='pw' name='pw'><br>\n\t";
-	echo "<button type='submit' onclick=\"parent.update_projectsShown_after_logout();\">Log In</button>\n\t";
+	echo "<button type='submit'">Log In</button>\n\t";
 	echo "</form>\n\t";
 	echo "<font size='2'>";
 	echo "If you don't have a user account, you may make one by clicking below.<br>Your account will initially remain locked until it has been approved by an admin.<br>\n\t";
