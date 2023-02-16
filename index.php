@@ -182,11 +182,10 @@
 <td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_examples"
 	onclick="tabWindow('examples');"        >Example Datasets</td>
 <?php
-if (strcmp($admin,"true") == 0) {
+if ($admin == "true") {
 	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin" ';
 	echo 'onclick="tabWindow(\'admin\');"           >Admin</td>';
 } else {
-//	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:1px;" align="center" id="tab_admin">&nbsp;</td>';
 	echo '<div id="tab_admin" style="visibility:hidden;"></div>';
 }
 ?>
@@ -198,7 +197,7 @@ if (strcmp($admin,"true") == 0) {
 		// $number_cols in the next line should be the number of tabs+1.
 		$number_cols = 9;
 		// If admin user, then one further column will be displayed.
-		if (strcmp($admin,"true") == 0) {
+		if ($admin == "true") {
 			$number_cols += 1;
 		}
 	?>
