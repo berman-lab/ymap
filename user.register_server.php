@@ -8,9 +8,9 @@
 	// validate POST input.
 	$primaryInvestigatorName  = sanitizeName_POST("primaryInvestigator_name");
 	$primaryInvestigatorEmail = sanitizeEmail_POST("primaryInvestigator_email");
+	$researchInstitution      = sanitizeName_POST("researchInstitution");
 
 	// Not used, but for later use maybe.
-	$researchInstitution      = sanitizeName_POST("researchInstitution");
 	$secondaryName            = sanitizeName_POST("secondary_name");
 	$secondaryEmail           = sanitizeEmail_POST("secondary_email");
 

@@ -22,6 +22,7 @@
 		<form action="user.register_server.php" method="post">
 			<label for="primaryInvestigator_email">Email address: </label>              <input type="text"     id="primaryInvestigator_email" name="primaryInvestigator_email"><br>
 			<label for="primaryInvestigator_name">Contact name: </label>                <input type="text"     id="primaryInvestigator_name"  name="primaryInvestigator_name"><br>
+			<label for="researchInstitution">Institution: </label>                      <input type="text"     id="researchInstitution"       name="researchInstitution"><br>
 			<div class='tab' style='font-size:10pt'>
 			This information will only be used for system administration tasks, such as resetting passwords.<br>
 			</div>
