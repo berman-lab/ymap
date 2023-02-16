@@ -28,7 +28,6 @@
 			// User exists, so we check password.
 
 			// Check if user account is locked.
-			$super_user_flag_file = "users/".$user."/super.txt";
 			if (file_exists("users/".$user."/locked.txt")) {
 				// Account is locked pending admin approval.
 				echo "<font color=\"red\"><b>ERROR: Account is temporarily locked pending admin approval.</b></font><br>\n";
